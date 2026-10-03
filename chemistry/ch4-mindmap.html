@@ -1,0 +1,249 @@
+<title>认识化学反应 思维导图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;900&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+/* Layout: root node on the left, three section branches fanning right; each branch lists topic cards joined by connector lines. Stacks to an indented tree on phones. */
+:root{
+  --bg:#f3f5f4; --paper:#ffffff; --ink:#1d2a2a; --muted:#5d6b6a; --line:#c4cfcc;
+  --fire:#c8501e; --fire-soft:#fbe9df;
+  --mass:#13806f; --mass-soft:#dcf1ec;
+  --eq:#5a46b0; --eq-soft:#e9e5f8;
+  --root:#1d2a2a; --root-fg:#f3f5f4;
+  --display:"Noto Serif SC","Songti SC","SimSun",serif;
+  --body:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121817; --paper:#1b2322; --ink:#e3ebe9; --muted:#9aa9a6; --line:#3a4846;
+  --fire:#f08a5d; --fire-soft:#3a2219; --mass:#4cc7b1; --mass-soft:#15322d;
+  --eq:#a796f2; --eq-soft:#26213f; --root:#e3ebe9; --root-fg:#121817; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121817; --paper:#1b2322; --ink:#e3ebe9; --muted:#9aa9a6; --line:#3a4846;
+  --fire:#f08a5d; --fire-soft:#3a2219; --mass:#4cc7b1; --mass-soft:#15322d;
+  --eq:#a796f2; --eq-soft:#26213f; --root:#e3ebe9; --root-fg:#121817; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.6}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:16px;padding-block:28px 48px}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px 24px;margin-bottom:24px}
+.kicker{font-size:12px;letter-spacing:.12em;color:var(--muted)}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(26px,4vw,38px);line-height:1.2;margin:4px 0 0;text-wrap:balance}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer}
+button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,.card:focus-visible{outline:2px solid var(--eq);outline-offset:2px}
+
+/* map */
+.map{display:grid;grid-template-columns:auto 1fr;align-items:center}
+.root{background:var(--root);color:var(--root-fg);font-family:var(--display);font-weight:900;font-size:22px;line-height:1.3;padding:18px 20px;border-radius:14px;writing-mode:vertical-rl;letter-spacing:.15em;position:relative}
+.root small{display:block;font-family:var(--body);font-weight:500;font-size:12px;letter-spacing:.1em;opacity:.75}
+.branches{display:flex;flex-direction:column;gap:28px;padding-left:36px;position:relative}
+.branches::before{content:"";position:absolute;left:0;top:calc(var(--first,60px));bottom:calc(var(--last,60px));border-left:2px solid var(--line)}
+.branches::after{content:"";position:absolute;left:-36px;top:50%;width:36px;border-top:2px solid var(--line)}
+.branch{display:grid;grid-template-columns:170px 1fr;align-items:center;position:relative;--c:var(--ink);--s:var(--paper)}
+.branch::before{content:"";position:absolute;left:-36px;top:50%;width:36px;border-top:2px solid var(--line)}
+.branch.fire{--c:var(--fire);--s:var(--fire-soft)}
+.branch.mass{--c:var(--mass);--s:var(--mass-soft)}
+.branch.eq{--c:var(--eq);--s:var(--eq-soft)}
+.sec{border:2px solid var(--c);color:var(--c);background:var(--s);border-radius:12px;padding:12px 14px;font-family:var(--display);font-weight:900;font-size:18px;line-height:1.3;position:relative}
+.sec .no{display:block;font-family:var(--body);font-size:12px;font-weight:700;letter-spacing:.1em}
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;padding-left:28px;position:relative}
+.topics::before{content:"";position:absolute;left:0;top:50%;width:28px;border-top:2px solid var(--c);opacity:.6}
+.card{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:10px;padding:10px 12px 12px;min-width:0}
+.card h3{margin:0 0 6px;font-size:15px;font-weight:700;color:var(--c)}
+.card ul{margin:0;padding-left:1.1em}
+.card li{margin:2px 0}
+.card li::marker{color:var(--c)}
+.card p{margin:0}
+.key{font-weight:700;color:var(--ink);background:linear-gradient(transparent 60%,var(--s) 60%)}
+.note{color:var(--muted);font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--c);color:var(--c);border-radius:4px;padding:0 5px;margin:1px 2px 1px 0}
+.chem{font-family:"Times New Roman",Times,serif;font-size:15px;white-space:nowrap}
+.chem sub{font-size:.72em}
+.arr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;margin:0 3px;font-family:var(--body)}
+.arr i{font-style:normal;font-size:10px;color:var(--muted)}
+.arr b{font-weight:400;font-size:14px;letter-spacing:-1px}
+.eqlist{display:flex;flex-direction:column;gap:3px}
+.calc{font-variant-numeric:tabular-nums;border-left:2px solid var(--line);padding-left:8px;margin-top:6px;font-size:13px}
+
+/* quiz mode: hide details until tapped */
+.quiz .card .hide{filter:blur(6px);user-select:none;cursor:pointer;transition:filter .2s}
+.quiz .card.show .hide{filter:none}
+@media (prefers-reduced-motion:reduce){.quiz .card .hide{transition:none}}
+
+footer{margin-top:28px;color:var(--muted);font-size:12px}
+
+@media (max-width:820px){
+  .map{grid-template-columns:1fr}
+  .root{writing-mode:horizontal-tb;letter-spacing:.05em;justify-self:start}
+  .branches{padding-left:18px;margin-left:14px;border-left:2px solid var(--line);padding-top:20px}
+  .branches::before,.branches::after{display:none}
+  .branch{grid-template-columns:1fr;gap:12px}
+  .branch::before{left:-18px;width:18px;top:24px}
+  .sec{justify-self:start}
+  .topics{padding-left:14px;margin-left:12px;border-left:2px solid var(--c);grid-template-columns:1fr}
+  .topics::before{display:none}
+}
+</style>
+
+<div class="wrap" id="app">
+<header>
+  <div>
+    <div class="kicker">沪教版 · 九年级上册 · 化学</div>
+    <h1>第4章 认识化学反应</h1>
+  </div>
+  <div class="tools">
+    <button id="quizBtn" type="button" aria-pressed="false">复习模式：遮住要点</button>
+    <button id="revealBtn" type="button" hidden>全部显示</button>
+  </div>
+</header>
+
+<div class="map">
+  <div class="root">认识化学反应<small>第 4 章</small></div>
+  <div class="branches">
+
+    <!-- 4.1 -->
+    <section class="branch fire">
+      <div class="sec"><span class="no">4.1</span>化学反应发生的条件</div>
+      <div class="topics">
+        <div class="card" tabindex="0"><h3>燃烧</h3><div class="hide">
+          <p>可燃物与<span class="key">氧气</span>发生的一种<span class="key">发光、放热</span>的剧烈的氧化反应。</p>
+          <p class="note">缓慢氧化：呼吸作用、食物腐烂、铁生锈；缓慢氧化积累热量可引起自燃。</p>
+        </div></div>
+        <div class="card" tabindex="0"><h3>燃烧的条件（三者同时具备）</h3><div class="hide"><ul>
+          <li>物质具有<span class="key">可燃性</span></li>
+          <li>可燃物与<span class="key">氧气（空气）接触</span></li>
+          <li>温度达到可燃物的<span class="key">着火点</span></li>
+        </ul><p class="note">实验：铜片上白磷燃烧、红磷不燃烧（着火点不同）；热水中白磷通入氧气后燃烧。</p></div></div>
+        <div class="card" tabindex="0"><h3>灭火的原理</h3><div class="hide"><ul>
+          <li><span class="key">清除或隔离</span>可燃物：森林开辟隔离带、关闭燃气阀门</li>
+          <li><span class="key">隔绝氧气</span>：锅盖盖灭油锅火、沙土覆盖</li>
+          <li>降温到<span class="key">着火点以下</span>：用水浇灭</li>
+        </ul><p class="note">着火点是物质的固有属性，一般不能“降低着火点”。</p></div></div>
+        <div class="card" tabindex="0"><h3>促进燃烧</h3><div class="hide"><ul>
+          <li>增大<span class="key">氧气的浓度</span></li>
+          <li>增大可燃物与氧气的<span class="key">接触面积</span>（如煤做成蜂窝煤）</li>
+        </ul><p class="note">氧气不足时不完全燃烧，碳生成有毒的 <span class="chem">CO</span>。</p></div></div>
+        <div class="card" tabindex="0"><h3>爆炸与安全</h3><div class="hide"><ul>
+          <li>可燃物在<span class="key">有限空间</span>内急剧燃烧，气体体积迅速膨胀</li>
+          <li>可燃性气体、粉尘（面粉、煤粉）遇明火可能爆炸</li>
+          <li>点燃可燃性气体前要先<span class="key">验纯</span></li>
+        </ul><p><span class="tag">禁止烟火</span><span class="tag">禁止吸烟</span><span class="tag">当心爆炸</span></p></div></div>
+        <div class="card" tabindex="0"><h3>反应条件与反应快慢</h3><div class="hide">
+          <p>常见条件：<span class="tag">点燃</span><span class="tag">加热</span><span class="tag">高温</span><span class="tag">通电</span><span class="tag">催化剂</span></p>
+          <p>影响反应快慢：<span class="key">温度、反应物浓度、接触面积、催化剂</span>。</p>
+          <p class="note">催化剂改变反应速率，本身的质量和化学性质在反应前后不变。</p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 4.2 -->
+    <section class="branch mass">
+      <div class="sec"><span class="no">4.2</span>化学反应中的质量关系</div>
+      <div class="topics">
+        <div class="card" tabindex="0"><h3>质量守恒定律</h3><div class="hide">
+          <p><span class="key">参加</span>化学反应的各物质的质量<span class="key">总和</span>，等于反应后生成的各物质的质量总和。</p>
+          <p class="note">只适用于化学变化；守恒的是质量，不是体积；未参加反应的部分不计入。</p>
+        </div></div>
+        <div class="card" tabindex="0"><h3>实验验证</h3><div class="hide"><ul>
+          <li>白磷（红磷）在密闭锥形瓶中燃烧，气球缓冲气压</li>
+          <li>铁钉与硫酸铜溶液反应：<span class="chem">Fe + CuSO<sub>4</sub> <span class="arr"><i>&nbsp;</i><b>══</b></span> FeSO<sub>4</sub> + Cu</span></li>
+          <li>碳酸钠与盐酸在敞口容器中反应，天平不平衡：气体逸出</li>
+        </ul><p class="note">有气体参加或生成的反应，必须在<span class="key">密闭容器</span>中验证。</p></div></div>
+        <div class="card" tabindex="0"><h3>微观解释</h3><div class="hide">
+          <p>化学反应是<span class="key">原子的重新组合</span>：原子的<span class="key">种类、数目、质量</span>都不变。</p>
+        </div></div>
+        <div class="card" tabindex="0"><h3>“六不变·两改变·两可能变”</h3><div class="hide"><ul>
+          <li>宏观不变：物质总质量、元素种类、元素质量</li>
+          <li>微观不变：原子种类、原子数目、原子质量</li>
+          <li>一定改变：物质种类、分子种类</li>
+          <li>可能改变：分子数目、元素化合价</li>
+        </ul></div></div>
+        <div class="card" tabindex="0"><h3>应用</h3><div class="hide"><ul>
+          <li>解释现象：蜡烛燃烧后质量变小、镁带燃烧后质量变大</li>
+          <li>推断物质的元素组成（如某物质燃烧生成 <span class="chem">CO<sub>2</sub></span> 和 <span class="chem">H<sub>2</sub>O</span>，一定含 C、H，可能含 O）</li>
+          <li>根据原子守恒确定未知物质的化学式</li>
+          <li>计算某物质的质量（表格数据题）</li>
+        </ul></div></div>
+      </div>
+    </section>
+
+    <!-- 4.3 -->
+    <section class="branch eq">
+      <div class="sec"><span class="no">4.3</span>化学方程式</div>
+      <div class="topics">
+        <div class="card" tabindex="0"><h3>定义与书写原则</h3><div class="hide">
+          <p>用<span class="key">化学式</span>表示化学反应的式子。</p>
+          <ul><li>以<span class="key">客观事实</span>为基础</li><li>遵守<span class="key">质量守恒定律</span>（等号两边各原子种类、数目相等）</li></ul>
+        </div></div>
+        <div class="card" tabindex="0"><h3>书写步骤</h3><div class="hide"><ul>
+          <li><span class="key">写</span>：左反应物、右生成物，中间短线</li>
+          <li><span class="key">配</span>：配平（最小公倍数法、奇数配偶法、观察法）</li>
+          <li><span class="key">注</span>：标明条件，短线改等号</li>
+          <li><span class="key">标</span>：生成气体标 ↑，溶液中生成沉淀标 ↓</li>
+        </ul><p class="note">反应物中有气体（或固体）时，生成的气体（或固体）不标 ↑（↓）。</p></div></div>
+        <div class="card" tabindex="0"><h3>意义（以氢气燃烧为例）</h3><div class="hide">
+          <p class="chem">2H<sub>2</sub> + O<sub>2</sub> <span class="arr"><i>点燃</i><b>══</b></span> 2H<sub>2</sub>O</p>
+          <ul>
+            <li><span class="key">质</span>：反应物、生成物和反应条件</li>
+            <li><span class="key">量</span>：质量比 4 : 32 : 36 = 1 : 8 : 9</li>
+            <li><span class="key">粒子</span>：分子个数比 2 : 1 : 2</li>
+          </ul>
+        </div></div>
+        <div class="card" tabindex="0"><h3>常见反应</h3><div class="hide eqlist">
+          <span class="chem">C + O<sub>2</sub> <span class="arr"><i>点燃</i><b>══</b></span> CO<sub>2</sub></span>
+          <span class="chem">4P + 5O<sub>2</sub> <span class="arr"><i>点燃</i><b>══</b></span> 2P<sub>2</sub>O<sub>5</sub></span>
+          <span class="chem">3Fe + 2O<sub>2</sub> <span class="arr"><i>点燃</i><b>══</b></span> Fe<sub>3</sub>O<sub>4</sub></span>
+          <span class="chem">2H<sub>2</sub>O <span class="arr"><i>通电</i><b>══</b></span> 2H<sub>2</sub>↑ + O<sub>2</sub>↑</span>
+          <span class="chem">2KMnO<sub>4</sub> <span class="arr"><i>△</i><b>══</b></span> K<sub>2</sub>MnO<sub>4</sub> + MnO<sub>2</sub> + O<sub>2</sub>↑</span>
+          <span class="chem">2H<sub>2</sub>O<sub>2</sub> <span class="arr"><i>MnO<sub>2</sub></i><b>══</b></span> 2H<sub>2</sub>O + O<sub>2</sub>↑</span>
+          <span class="chem">CH<sub>4</sub> + 2O<sub>2</sub> <span class="arr"><i>点燃</i><b>══</b></span> CO<sub>2</sub> + 2H<sub>2</sub>O</span>
+        </div></div>
+        <div class="card" tabindex="0"><h3>根据化学方程式计算</h3><div class="hide">
+          <p>步骤：<span class="key">设 → 写 → 找 → 列 → 求 → 答</span></p>
+          <div class="calc">
+            例：加热分解 3.16 g 高锰酸钾，可得氧气多少克？<br>
+            解：设可得氧气质量为 <i>x</i><br>
+            <span class="chem">2KMnO<sub>4</sub> <span class="arr"><i>△</i><b>══</b></span> K<sub>2</sub>MnO<sub>4</sub> + MnO<sub>2</sub> + O<sub>2</sub>↑</span><br>
+            316 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp; 32<br>
+            3.16 g &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp; <i>x</i><br>
+            316 / 32 = 3.16 g / <i>x</i>，<i>x</i> = 0.32 g<br>
+            答：可得氧气 0.32 g。
+          </div>
+          <p class="note">代入的必须是<span class="key">纯净物</span>的质量；单位统一；设未知数不带单位。</p>
+        </div></div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<footer>依据沪教版（上海教育出版社）九年级上册第4章整理。复习模式下点击卡片可显示要点。</footer>
+</div>
+
+<script>
+(function(){
+  var app=document.getElementById('app'),q=document.getElementById('quizBtn'),r=document.getElementById('revealBtn');
+  var cards=[].slice.call(document.querySelectorAll('.card'));
+  function setQuiz(on){
+    app.classList.toggle('quiz',on);q.setAttribute('aria-pressed',on);r.hidden=!on;
+    cards.forEach(function(c){c.classList.remove('show')});
+  }
+  q.addEventListener('click',function(){setQuiz(!app.classList.contains('quiz'))});
+  r.addEventListener('click',function(){cards.forEach(function(c){c.classList.add('show')})});
+  cards.forEach(function(c){
+    function t(){if(app.classList.contains('quiz'))c.classList.toggle('show')}
+    c.addEventListener('click',t);
+    c.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();t()}});
+  });
+  // align the vertical trunk to the first and last branch centres
+  var b=document.querySelector('.branches');
+  function trunk(){
+    var bs=b.querySelectorAll('.branch'),top=b.getBoundingClientRect().top;
+    var f=bs[0].getBoundingClientRect(),l=bs[bs.length-1].getBoundingClientRect(),bb=b.getBoundingClientRect();
+    b.style.setProperty('--first',(f.top+f.height/2-top)+'px');
+    b.style.setProperty('--last',(bb.bottom-(l.top+l.height/2))+'px');
+  }
+  trunk();addEventListener('resize',trunk);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(trunk);
+})();
+</script>
