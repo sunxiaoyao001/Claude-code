@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>十二号咖啡 · 梧桐路 12 号</title>
+<meta name="description" content="十二号咖啡，梧桐路 12 号。手冲、意式和自家点心，营业时间、价目和到店路线。（示范页面）">
+<meta name="theme-color" content="#1d3c94">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1d3c94;
+  --blue-deep:#142c70;
+  --enamel:#f5f6f2;
+  --red:#c42a1f;
+  --iron:#2a2d33;
+  --ink:#172036;
+  --ink-soft:#3b4866;
+  --wash:#e7eae6;
+  --mortar:#b7bab4;
+  --serif:"Noto Serif SC","Songti SC","STSong",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --sign:"Barlow Semi Condensed","Noto Sans SC",sans-serif;
+  --shadow:0 1px 1px rgba(12,16,26,.35),0 14px 26px -12px rgba(12,16,26,.6);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --gutter:clamp(16px,4vw,48px);
+  --section:clamp(72px,11vw,140px);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scrollbar-color:var(--blue) var(--wash);accent-color:var(--blue);caret-color:var(--blue)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--blue);color:var(--enamel)}
+::-webkit-scrollbar{width:12px}
+::-webkit-scrollbar-track{background:var(--wash)}
+::-webkit-scrollbar-thumb{background:var(--blue);border:3px solid var(--wash);border-radius:8px}
+img,svg{display:block}
+a{color:inherit;text-underline-offset:.22em;text-decoration-thickness:1.5px}
+h1,h2,h3,p,ul,ol,dl,dd{margin:0}
+ul,ol{padding:0;list-style:none}
+:focus-visible{outline:3px solid var(--enamel);outline-offset:3px;box-shadow:0 0 0 6px var(--blue);border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:12px;top:-60px;z-index:20;background:var(--enamel);color:var(--blue);padding:10px 16px;border-radius:8px;font-weight:700;transition:top .2s var(--ease)}
+.skip:focus{top:12px}
+.icon{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ---------- walls ---------- */
+.brick{background-color:var(--mortar);background-image:url("assets/brick.svg");background-size:480px 408px}
+.wash{
+  background-color:var(--wash);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .38 0 0 0 0 .42 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.wrap{width:min(1240px,100%);margin-inline:auto;padding-inline:var(--gutter)}
+
+/* ---------- enamel plate ---------- */
+.plate{
+  --pc:var(--blue);--pf:var(--enamel);--r:22px;--inset:14px;--rule:3px;
+  position:relative;isolation:isolate;background:var(--pc);color:var(--pf);
+  border-radius:var(--r);box-shadow:var(--shadow),inset 0 0 0 1.5px rgba(0,0,0,.22);
+}
+.plate::before{content:"";position:absolute;inset:var(--inset);border:var(--rule) solid currentColor;border-radius:calc(var(--r) - 4px);pointer-events:none;z-index:1}
+.plate::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;
+  background:linear-gradient(162deg,rgba(255,255,255,.17) 0%,rgba(255,255,255,0) 34%),linear-gradient(0deg,rgba(0,0,0,.09) 0%,rgba(0,0,0,0) 26%)}
+.plate--white{--pc:var(--enamel);--pf:var(--blue)}
+.plate--red{--pc:var(--red);--pf:var(--enamel)}
+.plate--iron{--pc:var(--iron);--pf:var(--enamel)}
+.plate--sm{--r:14px;--inset:8px;--rule:2px}
+.plate > *{position:relative;z-index:2}
+.screw{position:absolute;z-index:4;width:10px;height:10px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#f1f2f2 0,#b4b9bc 45%,#6f767b 100%);
+  box-shadow:0 1px 1.5px rgba(0,0,0,.5)}
+.screw::after{content:"";position:absolute;left:1.5px;right:1.5px;top:4.2px;height:1.6px;background:#555b60;border-radius:1px;transform:rotate(var(--rot,30deg))}
+.screw.tl{top:calc(var(--inset) - 4px);left:calc(var(--inset) - 4px)}
+.screw.tr{top:calc(var(--inset) - 4px);right:calc(var(--inset) - 4px);--rot:-55deg}
+.screw.bl{bottom:calc(var(--inset) - 4px);left:calc(var(--inset) - 4px);--rot:80deg}
+.screw.br{bottom:calc(var(--inset) - 4px);right:calc(var(--inset) - 4px);--rot:10deg}
+.chips{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:2}
+.chip{position:absolute;width:40px;height:27px}
+
+/* ---------- street-name sign nav ---------- */
+.street{padding-top:clamp(16px,3vw,32px)}
+.street .plate{--r:14px;--inset:7px;--rule:2px;display:flex;align-items:stretch;justify-content:space-between;gap:8px;padding:14px 22px}
+.street .brand{display:flex;flex-direction:column;justify-content:center;line-height:1.1;padding-right:12px}
+.street .brand b{font-family:var(--serif);font-weight:900;font-size:20px;letter-spacing:.12em}
+.street .brand span{font-family:var(--sign);font-weight:600;font-size:12px;letter-spacing:.24em}
+.street ul{display:flex;gap:clamp(4px,2.4vw,36px)}
+.street a{display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;padding:4px 10px;border-radius:8px;line-height:1.15;transition:background-color .25s var(--ease)}
+.street a b{font-family:var(--serif);font-weight:900;font-size:17px;letter-spacing:.08em}
+.street a span{font-family:var(--sign);font-weight:600;font-size:11px;letter-spacing:.2em;opacity:.85}
+.street a:hover{background:rgba(255,255,255,.12)}
+@media (max-width:640px){
+  .street .brand{display:none}
+  .street .plate{justify-content:center;padding:12px 10px}
+  .street ul{width:100%;justify-content:space-between}
+  .street a{padding:4px 6px}
+}
+
+/* ---------- hero ---------- */
+.hero{padding-bottom:clamp(56px,8vw,104px)}
+.hero-grid{display:grid;gap:clamp(20px,3vw,40px);margin-top:clamp(28px,5vw,64px);
+  grid-template-columns:minmax(0,7fr) minmax(0,5fr);grid-template-areas:"door shop" "door signs";align-items:start}
+.doorplate{grid-area:door;--r:30px;--inset:18px;--rule:4px;padding:clamp(40px,5vw,64px) clamp(36px,5vw,72px) clamp(36px,4.4vw,56px);text-align:center}
+.doorplate .road{display:block;font-family:var(--serif);font-weight:900;font-size:clamp(2.6rem,6.2vw,5.4rem);letter-spacing:.32em;text-indent:.32em;line-height:1.1}
+.doorplate .bar{display:block;height:4px;background:currentColor;margin:clamp(14px,2vw,22px) auto;width:84%;border-radius:2px}
+.doorplate .no{display:flex;align-items:baseline;justify-content:center;gap:.12em;line-height:.9}
+.doorplate .no b{font-family:var(--sign);font-weight:700;font-size:clamp(6.5rem,17vw,12rem);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.doorplate .no span{font-family:var(--serif);font-weight:900;font-size:clamp(2.6rem,6vw,5rem)}
+.doorplate .py{display:block;margin-top:clamp(10px,1.6vw,18px);font-family:var(--sign);font-weight:600;font-size:clamp(15px,1.8vw,22px);letter-spacing:.42em;text-indent:.42em}
+
+.shopplate{grid-area:shop;padding:clamp(30px,3.4vw,42px) clamp(30px,3.4vw,44px)}
+.shopplate h1{font-family:var(--serif);font-weight:900;font-size:clamp(2.2rem,4.2vw,3.6rem);line-height:1.15;letter-spacing:.06em}
+.shopplate .en{display:block;font-family:var(--sign);font-weight:700;font-size:clamp(14px,1.4vw,17px);letter-spacing:.32em;margin-top:6px}
+.shopplate .hook{margin-top:18px;font-family:var(--serif);font-weight:700;font-size:clamp(1.15rem,1.7vw,1.4rem);line-height:1.55;color:var(--ink)}
+.shopplate .offer{margin-top:10px;font-size:15px;color:var(--ink-soft)}
+
+.signs{grid-area:signs;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(16px,2vw,28px);align-items:start}
+
+/* hanging open/closed sign */
+.hang{position:relative;padding-top:46px}
+.hang .nail{position:absolute;top:0;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;z-index:2;
+  background:radial-gradient(circle at 35% 30%,#e9ebec,#8c9396 55%,#4c5257);box-shadow:0 2px 3px rgba(0,0,0,.45)}
+.hang .string{position:absolute;top:6px;left:12%;width:76%;height:44px;overflow:visible}
+.hang .string path{stroke:#3a3328;stroke-width:1.6;fill:none}
+.swinger{transform-origin:50% -40px}
+.swinger.swing{animation:swing 1.8s var(--ease) both}
+@keyframes swing{0%{transform:rotate(5deg)}28%{transform:rotate(-3deg)}52%{transform:rotate(1.6deg)}74%{transform:rotate(-.6deg)}100%{transform:rotate(0)}}
+.flip{display:block;width:100%;padding:0;border:0;background:none;font:inherit;color:inherit;cursor:pointer;perspective:900px;text-align:center;border-radius:16px}
+.flip-inner{display:grid;transition:transform .8s var(--ease);transform-style:preserve-3d}
+.flip.is-flipped .flip-inner{transform:rotateY(180deg)}
+.face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;padding:24px 18px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.face.back{transform:rotateY(180deg)}
+.face .state{font-family:var(--serif);font-weight:900;font-size:clamp(1.9rem,3vw,2.5rem);letter-spacing:.14em;text-indent:.14em;line-height:1.15}
+.face .state-en{font-family:var(--sign);font-weight:700;font-size:14px;letter-spacing:.3em;text-indent:.3em}
+.face .detail{margin-top:10px;font-weight:500;font-size:15px;line-height:1.45}
+.face .hint{margin-top:10px;font-size:12.5px;opacity:.9;display:inline-flex;gap:4px;align-items:center}
+.week{width:100%;font-size:14px;line-height:1.5;text-align:left}
+.week li{display:flex;justify-content:space-between;gap:10px;padding:2px 4px;border-radius:4px}
+.week li span:last-child{font-family:var(--sign);font-weight:600;font-size:15px;font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.week li.is-today{background:var(--red);color:var(--enamel);font-weight:700}
+.back .week-title{font-family:var(--serif);font-weight:900;font-size:16px;letter-spacing:.2em;margin-bottom:6px}
+
+/* street arrow sign = primary action */
+.arrowsign{display:block;margin-top:46px;text-decoration:none;color:var(--enamel);filter:drop-shadow(0 1px 1px rgba(12,16,26,.35)) drop-shadow(0 12px 14px rgba(12,16,26,.38));transition:transform .35s var(--ease)}
+.arrowsign:hover{transform:translateX(6px)}
+.arrowsign:focus-visible{box-shadow:none;outline-offset:6px}
+.arrowsign .shape{--tip:44px;position:relative;display:block;background:var(--blue);padding:22px calc(var(--tip) + 8px) 20px 24px;
+  clip-path:polygon(0 0,calc(100% - var(--tip)) 0,100% 50%,calc(100% - var(--tip)) 100%,0 100%);transition:background-color .25s var(--ease)}
+.arrowsign:hover .shape{background:var(--blue-deep)}
+.arrowsign .shape::before,.arrowsign .shape::after{content:"";position:absolute;pointer-events:none}
+.arrowsign .shape::before{inset:7px 9px 7px 7px;background:var(--enamel);clip-path:polygon(0 0,calc(100% - 39px) 0,100% 50%,calc(100% - 39px) 100%,0 100%)}
+.arrowsign .shape::after{inset:10px 13px 10px 10px;background:inherit;clip-path:polygon(0 0,calc(100% - 37px) 0,100% 50%,calc(100% - 37px) 100%,0 100%)}
+.arrowsign .txt{position:relative;z-index:1;display:block}
+.arrowsign b{display:block;font-family:var(--serif);font-weight:900;font-size:clamp(1.35rem,2.1vw,1.9rem);letter-spacing:.1em;line-height:1.2;white-space:nowrap}
+.arrowsign small{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:14px;font-weight:500;white-space:nowrap}
+
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"shop" "door" "signs"}
+  .doorplate{--r:24px;--inset:14px;--rule:3px}
+}
+@media (max-width:560px){
+  .hero-grid{margin-top:20px;gap:16px}
+  .shopplate{padding:26px 28px 24px}
+  .shopplate h1{font-size:2rem}
+  .shopplate .hook{margin-top:10px;font-size:1.05rem}
+  .shopplate .offer{margin-top:4px;font-size:14px}
+  .doorplate{padding:30px 28px 26px}
+  .doorplate .road{font-size:2.2rem}
+  .doorplate .bar{margin:10px auto;height:3px}
+  .doorplate .no b{font-size:5.4rem}
+  .doorplate .no span{font-size:2.2rem}
+  .doorplate .py{margin-top:8px;font-size:13px}
+  .hang{padding-top:38px}
+  .arrowsign{margin-top:38px}
+}
+@media (max-width:420px){
+  .signs{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+  .arrowsign .shape{--tip:30px;padding:18px 40px 16px 20px;clip-path:polygon(0 0,calc(100% - 30px) 0,100% 50%,calc(100% - 30px) 100%,0 100%)}
+  .arrowsign .shape::before{clip-path:polygon(0 0,calc(100% - 26px) 0,100% 50%,calc(100% - 26px) 100%,0 100%)}
+  .arrowsign .shape::after{clip-path:polygon(0 0,calc(100% - 24px) 0,100% 50%,calc(100% - 24px) 100%,0 100%)}
+  .arrowsign small{font-size:12.5px}
+  .face{padding:20px 10px 16px}
+  .face .detail{font-size:13.5px}
+  .week{font-size:12.5px}
+  .week li span:last-child{font-size:13px}
+}
+
+/* ---------- section headings: small blue title plate ---------- */
+.section{padding-block:var(--section)}
+.titleplate{display:inline-flex;align-items:baseline;gap:14px;padding:14px 26px 12px;margin-bottom:clamp(28px,4vw,48px)}
+.titleplate h2{font-family:var(--serif);font-weight:900;font-size:clamp(1.7rem,3vw,2.4rem);letter-spacing:.16em;line-height:1.2}
+.titleplate span{font-family:var(--sign);font-weight:600;font-size:13px;letter-spacing:.3em}
+.lede{max-width:34em;margin-bottom:clamp(28px,4vw,44px);color:var(--ink-soft)}
+
+/* ---------- price board ---------- */
+.menu-grid{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:clamp(28px,4vw,56px);align-items:start}
+.board{--r:26px;--inset:16px;padding:clamp(40px,5vw,60px) clamp(32px,4.4vw,60px)}
+.board-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,4vw,56px)}
+.board h3{display:flex;align-items:baseline;justify-content:space-between;font-family:var(--serif);font-weight:900;font-size:1.3rem;letter-spacing:.2em;padding-bottom:8px;border-bottom:2px solid currentColor;margin-bottom:10px}
+.board h3 span{font-family:var(--sign);font-weight:600;font-size:12px;letter-spacing:.24em}
+.board ul + h3{margin-top:28px}
+.board li{display:flex;align-items:baseline;gap:8px;padding:6px 0;color:var(--ink)}
+.board li .n{font-weight:500}
+.board li .n small{display:block;font-size:13px;color:var(--ink-soft);font-weight:400;line-height:1.4}
+.board li .dots{flex:1;border-bottom:2px dotted rgba(29,60,148,.45);transform:translateY(-5px);min-width:16px}
+.board li .p{font-family:var(--sign);font-weight:700;font-size:20px;color:var(--blue);font-variant-numeric:tabular-nums}
+.board li.star .n{font-weight:700;color:var(--blue)}
+.board .note{margin-top:28px;font-size:13px;color:var(--ink-soft)}
+
+.signature{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:start}
+.signature .hang{padding-top:40px}
+.vplate{--r:16px;--inset:9px;--rule:2.5px;width:96px;padding:30px 12px 24px;display:flex;flex-direction:column;align-items:center}
+.vplate .v{writing-mode:vertical-rl;font-family:var(--serif);font-weight:900;font-size:30px;letter-spacing:.18em;line-height:1}
+.vplate .v em{font-style:normal;display:block;font-size:17px;letter-spacing:.3em;margin-left:8px;opacity:.95}
+.vplate .price{margin-top:16px;font-family:var(--sign);font-weight:700;font-size:26px;line-height:1}
+.signature .copy{padding-top:52px}
+.signature h3{font-family:var(--serif);font-weight:900;font-size:1.5rem;letter-spacing:.08em;color:var(--blue)}
+.signature p{margin-top:10px;color:var(--ink-soft);font-size:16px}
+.signature .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.signature .tags li{font-size:13px;font-weight:500;border:1.5px solid var(--blue);color:var(--blue);padding:2px 10px;border-radius:6px}
+
+@media (max-width:900px){
+  .menu-grid{grid-template-columns:minmax(0,1fr)}
+  .signature{order:-1}
+}
+@media (max-width:640px){
+  .board-cols{grid-template-columns:minmax(0,1fr);gap:8px}
+  .board{--inset:11px;--rule:2.5px;padding:34px 26px}
+}
+
+/* ---------- beans: bus-stop board ---------- */
+.stopboard{--r:24px;--inset:14px;padding:0;overflow:hidden}
+.stopboard .band{background:var(--blue);color:var(--enamel);padding:30px clamp(30px,4vw,52px) 22px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 24px;border-radius:var(--r) var(--r) 0 0}
+.stopboard .band b{font-family:var(--serif);font-weight:900;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:.14em}
+.stopboard .band span{font-family:var(--sign);font-weight:600;font-size:14px;letter-spacing:.2em}
+.route{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(18px,2.6vw,36px);padding:44px clamp(30px,4vw,52px) 46px}
+.route::before{content:"";position:absolute;left:clamp(30px,4vw,52px);right:clamp(30px,4vw,52px);top:62px;height:6px;border-radius:3px;background:var(--blue)}
+.stop{position:relative;padding-top:46px;color:var(--ink)}
+.stop::before{content:"";position:absolute;top:8px;left:0;width:26px;height:26px;border-radius:50%;background:var(--enamel);border:5px solid var(--blue)}
+.stop.here::before{background:var(--red);border-color:var(--red);box-shadow:0 0 0 5px rgba(196,42,31,.18)}
+.stop .k{font-family:var(--sign);font-weight:700;font-size:13px;letter-spacing:.2em;color:var(--blue)}
+.stop.here .k{color:var(--red)}
+.stop h3{font-family:var(--serif);font-weight:900;font-size:1.3rem;line-height:1.3;letter-spacing:.04em;margin-top:2px}
+.stop .meta{font-size:14px;color:var(--ink-soft);margin-top:6px;line-height:1.55}
+.stop .notes{margin-top:8px;font-size:15px;font-weight:500}
+.stop .cup{margin-top:10px;font-family:var(--sign);font-weight:700;font-size:19px;color:var(--blue);font-variant-numeric:tabular-nums}
+.stop.here h3{color:var(--red)}
+@media (max-width:900px){
+  .route{grid-template-columns:minmax(0,1fr);gap:30px;padding:36px 28px 40px 30px}
+  .route::before{left:40px;right:auto;top:40px;bottom:58px;width:6px;height:auto}
+  .stop{padding-top:0;padding-left:52px}
+  .stop::before{top:2px;left:0}
+}
+
+/* ---------- house notice ---------- */
+.notice{--r:26px;--inset:16px;padding:clamp(40px,5vw,60px) clamp(34px,4.6vw,64px)}
+.notice-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;margin-bottom:28px}
+.notice-head h3{font-family:var(--serif);font-weight:900;font-size:clamp(1.6rem,2.8vw,2.2rem);letter-spacing:.3em}
+.notice-head span{font-family:var(--sign);font-weight:600;font-size:13px;letter-spacing:.3em}
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(28px,5vw,72px)}
+.rules li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px;align-items:start;padding:16px 0;border-top:1.5px solid rgba(245,246,242,.35)}
+.rules li:nth-child(-n+2){border-top:0}
+.rules .icon{width:40px;height:40px;stroke-width:1.75;padding:6px;border:2px solid currentColor;border-radius:9px}
+.rules b{display:block;font-size:17px;font-weight:700;letter-spacing:.04em}
+.rules p{font-size:15px;line-height:1.6;color:#d9e0f2}
+@media (max-width:720px){
+  .rules{grid-template-columns:minmax(0,1fr)}
+  .rules li:nth-child(2){border-top:1.5px solid rgba(245,246,242,.35)}
+  .notice{--inset:11px;--rule:2.5px;padding:36px 28px}
+}
+
+/* ---------- visit ---------- */
+.visit{padding-block:var(--section)}
+.visit-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,5vw,72px);align-items:start}
+.post{position:relative;min-height:520px}
+.post .pole{position:absolute;left:50%;top:0;bottom:-40px;width:16px;margin-left:-8px;border-radius:4px;
+  background:linear-gradient(90deg,#5d646a,#a9b0b4 40%,#6d7479);box-shadow:0 10px 18px -6px rgba(0,0,0,.5)}
+.post .cap{position:absolute;left:50%;top:-10px;width:26px;height:14px;margin-left:-13px;border-radius:6px 6px 2px 2px;background:#4c5257}
+.post .sign{position:absolute;display:flex;align-items:center;gap:16px;padding:20px 30px 18px;--r:12px;--inset:6px;--rule:2px;white-space:nowrap}
+.post .sign b{font-family:var(--serif);font-weight:900;font-size:clamp(1.3rem,2.6vw,2.2rem);letter-spacing:.2em;line-height:1.2}
+.post .sign span{font-family:var(--sign);font-weight:600;font-size:13px;letter-spacing:.24em;line-height:1.2}
+.post .sign .stack{display:flex;flex-direction:column}
+.post .s1{top:30px;left:50%;transform:translateX(-12px)}
+.post .s2{top:140px;right:50%;transform:translateX(12px)}
+.post .s3{top:262px;left:50%;transform:translateX(-12px)}
+.post .s3 .icon{width:26px;height:26px}
+
+.address{padding:clamp(34px,4vw,48px) clamp(30px,4vw,48px)}
+.address .label{font-family:var(--sign);font-weight:700;font-size:13px;letter-spacing:.24em;color:var(--blue)}
+.address .addr{font-family:var(--serif);font-weight:900;font-size:clamp(1.6rem,3vw,2.3rem);line-height:1.3;letter-spacing:.04em;color:var(--blue);margin-top:4px}
+.address .addr small{display:block;font-family:var(--sans);font-weight:500;font-size:15px;letter-spacing:0;color:var(--ink-soft);margin-top:4px}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:10px 20px;border-radius:12px;font:inherit;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;transition:background-color .25s var(--ease),color .25s var(--ease),transform .25s var(--ease)}
+.btn .icon{width:20px;height:20px}
+.btn-blue{background:var(--blue);color:var(--enamel);border:0;box-shadow:0 1px 1px rgba(12,16,26,.3),0 8px 14px -8px rgba(12,16,26,.55)}
+.btn-blue:hover{background:var(--blue-deep)}
+.btn-line{background:transparent;color:var(--blue);border:2px solid var(--blue)}
+.btn-line:hover{background:rgba(29,60,148,.08)}
+.btn:active{transform:translateY(1px)}
+.copied{min-height:1.6em;margin-top:8px;font-size:14px;font-weight:500;color:var(--blue)}
+.ways{margin-top:26px;display:grid;gap:0}
+.ways li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:14px;padding:14px 0;border-top:1.5px solid rgba(29,60,148,.18);color:var(--ink)}
+.ways .icon{width:26px;height:26px;color:var(--blue);margin-top:2px}
+.ways b{font-weight:700}
+.ways p{font-size:15px;color:var(--ink-soft)}
+.hours{margin-top:22px;padding-top:18px;border-top:2px solid var(--blue)}
+.hours h3{font-family:var(--serif);font-weight:900;font-size:1.15rem;letter-spacing:.2em;color:var(--blue);margin-bottom:8px}
+.hours .week{font-size:15px;max-width:360px}
+.hours .week li{padding:4px 8px}
+@media (max-width:900px){
+  .visit-grid{grid-template-columns:minmax(0,1fr)}
+  .post{min-height:330px;order:2}
+  .post .s1{top:24px}.post .s2{top:100px}.post .s3{top:186px}
+}
+@media (max-width:420px){
+  .post .sign{padding:12px 16px 10px;gap:10px}
+  .post .sign b{font-size:1.15rem}
+  .post .sign span{font-size:11px}
+  .address{--inset:10px;--rule:2.5px}
+}
+
+/* ---------- footer ---------- */
+footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
+.foot{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between}
+.foot .plate{padding:20px 26px 18px}
+.foot .mini b{display:block;font-family:var(--serif);font-weight:900;font-size:20px;letter-spacing:.14em}
+.foot .mini span{font-family:var(--sign);font-weight:600;font-size:12px;letter-spacing:.24em}
+.demo{max-width:440px;font-size:14px;line-height:1.6;color:var(--ink)}
+.demo b{color:var(--red)}
+
+@media (prefers-reduced-motion:reduce){
+  .swinger.swing{animation:none}
+  .flip-inner{transition:none}
+  .arrowsign,.btn{transition:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#visit">跳到地址和营业时间</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="chip-a" viewBox="0 0 60 40">
+      <path d="M8 6c6-4 15-5 21-1 5 3 12 2 16 7 3 4-1 9-6 11-6 3-9 9-17 8-6-1-9-6-13-9-5-4-6-12-1-16z" fill="#b9bdc2" opacity=".55"/>
+      <path d="M11 9c5-3 11-4 16-1 4 2 10 2 13 6 2 3-1 6-5 8-5 2-7 6-13 5-5-1-7-4-10-7-4-3-4-9-1-11z" fill="#26282d"/>
+      <path d="M20 15c2-1 5-1 7 1 1 1 0 3-2 3-2 1-4 1-5-1-1-1-1-2 0-3z" fill="#6b4a35" opacity=".8"/>
+    </symbol>
+    <symbol id="chip-b" viewBox="0 0 60 40">
+      <path d="M2 14c5-6 14-9 24-8 9 1 17-2 26 2 6 3 5 9-1 11-8 3-15 1-23 3-9 2-18 3-24-1-4-2-4-5-2-7z" fill="#b9bdc2" opacity=".55"/>
+      <path d="M5 14c5-4 13-6 21-5 8 1 15-1 22 2 4 2 4 6-1 7-7 2-13 1-20 2-8 1-15 2-20-1-3-1-4-3-2-5z" fill="#26282d"/>
+    </symbol>
+    <symbol id="i-chair" viewBox="0 0 24 24"><path d="M7 3v9h10V3M5 12h14M7 12v9M17 12v9M7 17h10"/></symbol>
+    <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.8 16a5 5 0 0 1 6.4 0"/><circle cx="12" cy="19.5" r=".6" fill="currentColor"/></symbol>
+    <symbol id="i-paw" viewBox="0 0 24 24"><circle cx="5.5" cy="10.5" r="1.8"/><circle cx="9.5" cy="6" r="1.8"/><circle cx="14.5" cy="6" r="1.8"/><circle cx="18.5" cy="10.5" r="1.8"/><path d="M12 11.5c-3 0-6 4-6 7a2.4 2.4 0 0 0 3.4 2.1c1.6-.6 3.6-.6 5.2 0A2.4 2.4 0 0 0 18 18.5c0-3-3-7-6-7z"/></symbol>
+    <symbol id="i-cup" viewBox="0 0 24 24"><path d="M6 4h12l1 4H5zM5 8h14M6.5 8l1.3 12h8.4L17.5 8M8 13h8"/></symbol>
+    <symbol id="i-quiet" viewBox="0 0 24 24"><path d="M9 17V6l10-2v10"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="14.5" r="2.5"/><path d="M3 3l18 18"/></symbol>
+    <symbol id="i-metro" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M8 21l2-4M16 21l-2-4"/><circle cx="8.5" cy="14" r=".6" fill="currentColor"/><circle cx="15.5" cy="14" r=".6" fill="currentColor"/></symbol>
+    <symbol id="i-bus" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="15" rx="2.5"/><path d="M4 10.5h16M7 18v3M17 18v3"/><circle cx="8" cy="14.5" r=".6" fill="currentColor"/><circle cx="16" cy="14.5" r=".6" fill="currentColor"/></symbol>
+    <symbol id="i-bike" viewBox="0 0 24 24"><circle cx="5.5" cy="16" r="3.5"/><circle cx="18.5" cy="16" r="3.5"/><path d="M5.5 16l4-8h6l3 8M9.5 8l3.5 8H5.5M14 5h2.5"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M3 15l2.2-6h13.6L21 15v3H3zM6.5 18v2M17.5 18v2"/><circle cx="7" cy="15" r=".6" fill="currentColor"/><circle cx="17" cy="15" r=".6" fill="currentColor"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-turn" viewBox="0 0 24 24"><path d="M4 20v-6a5 5 0 0 1 5-5h11M15 4l5 5-5 5"/></symbol>
+  </defs>
+</svg>
+
+<header class="brick hero">
+  <div class="wrap street">
+    <nav class="plate" aria-label="页面导航">
+      <a class="brand" href="#top" aria-label="十二号咖啡，回到顶部" style="text-decoration:none"><b>十二号咖啡</b><span>NO.12 COFFEE</span></a>
+      <ul>
+        <li><a href="#menu"><b>价目</b><span>MENU</span></a></li>
+        <li><a href="#beans"><b>豆单</b><span>BEANS</span></a></li>
+        <li><a href="#room"><b>店里</b><span>ROOM</span></a></li>
+        <li><a href="#visit"><b>怎么来</b><span>VISIT</span></a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="wrap hero-grid" id="top">
+    <p class="plate doorplate" aria-label="门牌：梧桐路 12 号">
+      <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
+      <span class="chips" aria-hidden="true">
+        <svg class="chip" style="left:-9px;bottom:24%;transform:rotate(-12deg)"><use href="#chip-a"/></svg>
+        <svg class="chip" style="right:14%;top:-10px;width:34px;transform:rotate(172deg)"><use href="#chip-b"/></svg>
+      </span>
+      <span class="road" aria-hidden="true">梧桐路</span>
+      <span class="bar" aria-hidden="true"></span>
+      <span class="no" aria-hidden="true"><b>12</b><span>号</span></span>
+      <span class="py" aria-hidden="true">WUTONG LU</span>
+    </p>
+
+    <div class="plate plate--white shopplate">
+      <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
+      <h1>十二号咖啡<span class="en">NO.12 COFFEE</span></h1>
+      <p class="hook">梧桐路 12 号，推门就是咖啡。</p>
+      <p class="offer">手冲 · 意式 · 每天现烤的点心，24 个座位。</p>
+    </div>
+
+    <div class="signs">
+      <div class="hang">
+        <span class="nail" aria-hidden="true"></span>
+        <svg class="string" viewBox="0 0 100 44" preserveAspectRatio="none" aria-hidden="true"><path d="M50 1 L4 44 M50 1 L96 44" vector-effect="non-scaling-stroke"/></svg>
+        <div class="swinger" data-swing>
+          <button class="flip" type="button" id="openSign" aria-pressed="false" aria-label="营业状态。点按翻面查看一周营业时间">
+            <span class="flip-inner">
+              <span class="face front plate plate--red plate--sm" id="signFront">
+                <span class="state" id="signState">营业时间</span>
+                <span class="state-en" id="signStateEn">HOURS</span>
+                <span class="detail" id="signDetail">周二至周五 08:00–20:00<br>周末 09:00–21:00</span>
+                <span class="hint">翻面看一周</span>
+              </span>
+              <span class="face back plate plate--white plate--sm" aria-hidden="true">
+                <span class="week-title">一周营业</span>
+                <ul class="week" data-week>
+                  <li data-day="1"><span>周一</span><span>休息</span></li>
+                  <li data-day="2"><span>周二</span><span>08:00–20:00</span></li>
+                  <li data-day="3"><span>周三</span><span>08:00–20:00</span></li>
+                  <li data-day="4"><span>周四</span><span>08:00–20:00</span></li>
+                  <li data-day="5"><span>周五</span><span>08:00–20:00</span></li>
+                  <li data-day="6"><span>周六</span><span>09:00–21:00</span></li>
+                  <li data-day="0"><span>周日</span><span>09:00–21:00</span></li>
+                </ul>
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <a class="arrowsign" href="https://uri.amap.com/search?keyword=%E6%A2%A7%E6%A1%90%E8%B7%AF12%E5%8F%B7" target="_blank" rel="noopener">
+        <span class="shape">
+          <span class="txt">
+            <b>带我过去</b>
+            <small><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>打开地图导航</small>
+          </span>
+        </span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="section wash" id="menu" aria-labelledby="menu-h">
+    <div class="wrap">
+      <div class="plate plate--sm titleplate"><h2 id="menu-h">价目</h2><span>PRICE LIST</span></div>
+      <div class="menu-grid">
+        <div class="plate plate--white board">
+          <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
+                    <div class="board-cols">
+            <div>
+              <h3>意式<span>ESPRESSO</span></h3>
+              <ul>
+                <li><span class="n">浓缩</span><span class="dots"></span><span class="p">18</span></li>
+                <li><span class="n">美式<small>热 / 冰</small></span><span class="dots"></span><span class="p">22</span></li>
+                <li><span class="n">拿铁</span><span class="dots"></span><span class="p">28</span></li>
+                <li><span class="n">澳白</span><span class="dots"></span><span class="p">30</span></li>
+                <li class="star"><span class="n">桂花拿铁<small>招牌，见右</small></span><span class="dots"></span><span class="p">32</span></li>
+              </ul>
+              <h3>手冲<span>FILTER</span></h3>
+              <ul>
+                <li><span class="n">今日手冲<small>三支豆子轮换，见豆单</small></span><span class="dots"></span><span class="p">32 起</span></li>
+              </ul>
+            </div>
+            <div>
+              <h3>不含咖啡<span>NO COFFEE</span></h3>
+              <ul>
+                <li><span class="n">热可可</span><span class="dots"></span><span class="p">26</span></li>
+                <li><span class="n">柚子气泡水</span><span class="dots"></span><span class="p">22</span></li>
+                <li><span class="n">茉莉冷泡茶</span><span class="dots"></span><span class="p">20</span></li>
+              </ul>
+              <h3>点心<span>BAKES</span></h3>
+              <ul>
+                <li><span class="n">葱油司康<small>每天 10:00 出炉</small></span><span class="dots"></span><span class="p">16</span></li>
+                <li><span class="n">海盐肉桂卷</span><span class="dots"></span><span class="p">22</span></li>
+                <li><span class="n">芝麻巴斯克</span><span class="dots"></span><span class="p">28</span></li>
+              </ul>
+            </div>
+          </div>
+          <p class="note">单位：元。燕麦奶 +4。自带杯减 3 元。（示范价格）</p>
+        </div>
+
+        <div class="signature">
+          <div class="hang">
+            <span class="nail" aria-hidden="true"></span>
+            <svg class="string" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true" style="height:40px"><path d="M50 1 L18 40 M50 1 L82 40" vector-effect="non-scaling-stroke"/></svg>
+            <div class="swinger" data-swing>
+              <div class="plate vplate" aria-hidden="true">
+                <span class="v">桂花拿铁<em>招牌</em></span>
+                <span class="price">32</span>
+              </div>
+            </div>
+          </div>
+          <div class="copy">
+            <h3>招牌 · 桂花拿铁</h3>
+            <p>秋天自己腌的桂花糖浆，只放一小勺，配中深烘的拼配豆，入口是奶和坚果，咽下去才是桂花。</p>
+            <ul class="tags"><li>热 / 冰</li><li>可换燕麦奶</li><li>微甜</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section wash" id="beans" aria-labelledby="beans-h" style="padding-top:0">
+    <div class="wrap">
+      <div class="plate plate--sm titleplate"><h2 id="beans-h">豆单</h2><span>TODAY'S FILTER</span></div>
+      <p class="lede">手冲豆子每周换一次，像一条公交线：三个产地，终点站是你手里这杯。</p>
+      <div class="plate plate--white stopboard">
+        <div class="band"><b>今日手冲线路</b><span>3 STOPS → NO.12</span></div>
+        <ol class="route">
+          <li class="stop">
+            <span class="k">第 1 站</span>
+            <h3>埃塞俄比亚 耶加雪菲</h3>
+            <p class="meta">水洗 · 浅烘</p>
+            <p class="notes">柑橘、茉莉、红茶</p>
+            <p class="cup">38 元 / 杯</p>
+          </li>
+          <li class="stop">
+            <span class="k">第 2 站</span>
+            <h3>哥伦比亚 慧兰</h3>
+            <p class="meta">厌氧日晒 · 中浅烘</p>
+            <p class="notes">葡萄、红糖、可可</p>
+            <p class="cup">42 元 / 杯</p>
+          </li>
+          <li class="stop">
+            <span class="k">第 3 站</span>
+            <h3>云南 保山</h3>
+            <p class="meta">蜜处理 · 中烘</p>
+            <p class="notes">坚果、蜂蜜、黄糖</p>
+            <p class="cup">32 元 / 杯</p>
+          </li>
+          <li class="stop here">
+            <span class="k">本站</span>
+            <h3>梧桐路 12 号</h3>
+            <p class="meta">吧台现磨现冲，大约 4 分钟</p>
+            <p class="notes">不确定选哪支，就问吧台</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section wash" id="room" aria-labelledby="room-h" style="padding-top:0">
+    <div class="wrap">
+      <div class="plate plate--sm titleplate"><h2 id="room-h">店里</h2><span>THE ROOM</span></div>
+      <div class="plate notice">
+        <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
+        <div class="notice-head"><h3>本店须知</h3><span>HOUSE NOTES</span></div>
+        <ul class="rules">
+          <li><svg class="icon" aria-hidden="true"><use href="#i-chair"/></svg><div><b>24 个座位</b><p>窗边一排 6 个，长桌 8 个，其余是两人小桌。</p></div></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-plug"/></svg><div><b>靠墙有插座</b><p>长桌下面一排，带电脑来可以坐那边。</p></div></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-wifi"/></svg><div><b>免费 Wi-Fi</b><p>密码贴在吧台，问一下就行。</p></div></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-paw"/></svg><div><b>可以带狗</b><p>牵好绳，门口有水碗。</p></div></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-quiet"/></svg><div><b>下午安静时段</b><p>工作日 14:00–17:00 不放音乐，适合看书和干活。</p></div></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-cup"/></svg><div><b>自带杯减 3 元</b><p>任何饮品都算，杯子洗干净就好。</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="brick visit" id="visit" aria-labelledby="visit-h">
+    <div class="wrap">
+      <div class="plate plate--sm titleplate"><h2 id="visit-h">怎么来</h2><span>FIND US</span></div>
+      <div class="visit-grid">
+        <div class="post" aria-hidden="true">
+          <span class="cap"></span><span class="pole"></span>
+          <span class="plate sign s1"><span class="stack"><b>梧桐路</b><span>WUTONG LU</span></span><svg class="icon" style="width:26px;height:26px"><use href="#i-arrow"/></svg></span>
+          <span class="plate sign s2"><svg class="icon" style="width:26px;height:26px;transform:scaleX(-1)"><use href="#i-arrow"/></svg><span class="stack"><b>樟树街</b><span>ZHANGSHU JIE</span></span></span>
+          <span class="plate plate--white sign s3"><svg class="icon"><use href="#i-metro"/></svg><span class="stack"><b>樟树街站</b><span>B 口 · 步行 4 分钟</span></span></span>
+        </div>
+
+        <div class="plate plate--white address">
+          <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
+          <p class="label">ADDRESS</p>
+          <p class="addr" id="addr">梧桐路 12 号<small>梧桐路与樟树街路口往东 30 米，蓝色门牌下面就是门。</small></p>
+          <div class="actions">
+            <a class="btn btn-blue" href="https://uri.amap.com/search?keyword=%E6%A2%A7%E6%A1%90%E8%B7%AF12%E5%8F%B7" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-turn"/></svg>打开地图导航</a>
+            <button class="btn btn-line" type="button" id="copyAddr"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>复制地址</button>
+          </div>
+          <p class="copied" id="copyMsg" role="status" aria-live="polite"></p>
+          <ul class="ways">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-metro"/></svg><div><b>地铁</b><p>2 号线樟树街站 B 口出，右转沿梧桐路走 4 分钟。</p></div></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-bus"/></svg><div><b>公交</b><p>15 路、42 路到「梧桐路樟树街」站，下车就到。</p></div></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-bike"/></svg><div><b>骑车</b><p>门口有 6 个停车架。</p></div></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-car"/></svg><div><b>开车</b><p>门口不能停，樟树街口的公共停车场步行 3 分钟。</p></div></li>
+          </ul>
+          <div class="hours">
+            <h3>营业时间</h3>
+            <ul class="week" data-week>
+              <li data-day="1"><span>周一</span><span>休息</span></li>
+              <li data-day="2"><span>周二</span><span>08:00–20:00</span></li>
+              <li data-day="3"><span>周三</span><span>08:00–20:00</span></li>
+              <li data-day="4"><span>周四</span><span>08:00–20:00</span></li>
+              <li data-day="5"><span>周五</span><span>08:00–20:00</span></li>
+              <li data-day="6"><span>周六</span><span>09:00–21:00</span></li>
+              <li data-day="0"><span>周日</span><span>09:00–21:00</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="wrap foot">
+        <div class="plate plate--sm mini"><b>十二号咖啡</b><span>WUTONG LU 12 · SINCE 2026</span></div>
+        <div class="plate plate--white plate--sm demo"><p><b>示范页面：</b>店名、地址、菜单、价格、营业时间和交通信息都是虚构的，只用来展示设计效果，换成真实信息后才能上线。</p></div>
+      </div>
+    </footer>
+  </section>
+</main>
+
+<script>
+(() => {
+  // 0 = 周日 … 6 = 周六；null = 休息
+  const HOURS = {0:[9,21],1:null,2:[8,20],3:[8,20],4:[8,20],5:[8,20],6:[9,21]};
+  const NAMES = ['周日','周一','周二','周三','周四','周五','周六'];
+  const hh = h => String(h).padStart(2,'0') + ':00';
+
+  function status(now){
+    const d = now.getDay(), mins = now.getHours()*60 + now.getMinutes();
+    const t = HOURS[d];
+    if (t && mins >= t[0]*60 && mins < t[1]*60){
+      const left = t[1]*60 - mins;
+      const tail = left <= 60 ? `还有 ${left} 分钟打烊` : `${hh(t[1])} 打烊`;
+      return {open:true, state:'营业中', en:'OPEN', detail:`今天 ${hh(t[0])}–${hh(t[1])}<br>${tail}`};
+    }
+    if (t && mins < t[0]*60){
+      return {open:false, state:'还没开门', en:'CLOSED', detail:`今天 ${hh(t[0])} 开门`};
+    }
+    for (let i = 1; i <= 7; i++){
+      const nd = (d + i) % 7, nt = HOURS[nd];
+      if (nt){
+        const when = i === 1 ? '明天' : NAMES[nd];
+        const pre = t ? '' : '今天休息<br>';
+        return {open:false, state:'休息中', en:'CLOSED', detail:`${pre}${when} ${hh(nt[0])} 开门`};
+      }
+    }
+  }
+
+  const front = document.getElementById('signFront');
+  function render(){
+    const s = status(new Date());
+    document.getElementById('signState').textContent = s.state;
+    document.getElementById('signStateEn').textContent = s.en;
+    document.getElementById('signDetail').innerHTML = s.detail;
+    front.classList.toggle('plate--red', s.open);
+    front.classList.toggle('plate--iron', !s.open);
+    sign.setAttribute('aria-label', `${s.state}，${s.detail.replace(/<br>/g,'，')}。点按翻面查看一周营业时间`);
+    const today = new Date().getDay();
+    document.querySelectorAll('[data-week] li').forEach(li => {
+      const on = +li.dataset.day === today;
+      li.classList.toggle('is-today', on);
+      const label = li.firstElementChild;
+      label.textContent = on ? `${NAMES[today]}（今天）` : NAMES[+li.dataset.day];
+    });
+  }
+
+  const sign = document.getElementById('openSign');
+  const back = sign.querySelector('.back');
+  sign.addEventListener('click', () => {
+    const flipped = sign.classList.toggle('is-flipped');
+    sign.setAttribute('aria-pressed', String(flipped));
+    back.setAttribute('aria-hidden', String(!flipped));
+    front.setAttribute('aria-hidden', String(flipped));
+  });
+  render();
+  setInterval(render, 60000);
+
+  // 复制地址
+  const msg = document.getElementById('copyMsg');
+  document.getElementById('copyAddr').addEventListener('click', async () => {
+    const text = '梧桐路 12 号（十二号咖啡）';
+    try {
+      await navigator.clipboard.writeText(text);
+      msg.textContent = '地址已复制，可以粘贴到地图或发给朋友。';
+    } catch {
+      msg.textContent = '没能自动复制，请长按上面的地址手动复制。';
+    }
+  });
+
+  // 挂牌第一次出现时轻轻晃一下
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce && 'IntersectionObserver' in window){
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('swing'); io.unobserve(e.target); } });
+    }, {threshold:.6});
+    document.querySelectorAll('[data-swing]').forEach(el => io.observe(el));
+  }
+})();
+</script>
+</body>
+</html>
