@@ -8,6 +8,6 @@ node render.js cues
 python3 music.py
 node render.js video "${WORKERS:-4}"
 ffmpeg -y -loglevel error -i out/video_noaudio.mp4 -i out/music.wav \
-  -c:v copy -af loudnorm=I=-14:TP=-1.5:LRA=11 -c:a aac -b:a 192k -ar 44100 \
+  -c:v libx264 -preset slow -crf 23 -pix_fmt yuv420p -af loudnorm=I=-14:TP=-1.5:LRA=11 -c:a aac -b:a 192k -ar 44100 \
   -movflags +faststart -shortest ../vibe-coding-jargon.mp4
 echo "→ ../vibe-coding-jargon.mp4"
