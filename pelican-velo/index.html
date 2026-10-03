@@ -86,12 +86,12 @@ body {
 .computer .speed b { font-size: 44px; font-weight: 600; letter-spacing: -0.02em; }
 .computer .speed small { font-size: 12px; color: var(--sand-dim); }
 .computer .bar { height: 3px; margin: 10px 0 8px; border-radius: 2px; background: var(--line); overflow: hidden; }
-.computer .bar i { display: block; height: 100%; width: 0; background: var(--pouch); transition: width .2s linear; }
+.computer .bar i { display: block; height: 100%; width: 100%; background: var(--pouch); transform: scaleX(0); transform-origin: left; transition: transform .2s linear; }
 .computer dl { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
 .computer dl div { min-width: 0; }
-.computer dt { font: 400 10px/1.2 var(--f-body); color: var(--sand-dim); letter-spacing: 0.08em; }
+.computer dt { font: 400 11px/1.2 var(--f-body); color: var(--sand-dim); letter-spacing: 0.08em; }
 .computer dd { margin: 2px 0 0; font-size: 15px; font-weight: 600; white-space: nowrap; }
-.computer dd small { font-size: 10px; font-weight: 400; color: var(--sand-dim); }
+.computer dd small { font-size: 11px; font-weight: 400; color: var(--sand-dim); }
 .computer dd.hot { color: var(--pouch); }
 
 /* toast */
@@ -165,7 +165,7 @@ button.primary:hover { background: #ffb067; }
 button.primary.alert { animation: pulse .6s ease-in-out infinite alternate; }
 @keyframes pulse { to { box-shadow: 0 0 0 6px rgba(255, 157, 66, 0.35); } }
 kbd {
-  font: 400 10px/1 var(--f-data);
+  font: 400 11px/1 var(--f-data);
   padding: 3px 5px;
   border-radius: 4px;
   border: 1px solid currentColor;
@@ -1644,7 +1644,7 @@ function updateHud() {
   const kmh = S.speed * 3.6;
   const cad = S.cadence * 60;
   $('hud-speed').textContent = kmh.toFixed(1);
-  $('hud-bar').style.width = (kmh / 45 * 100).toFixed(1) + '%';
+  $('hud-bar').style.transform = 'scaleX(' + clamp(kmh / 45, 0, 1).toFixed(3) + ')';
   const cadEl = $('hud-cad');
   cadEl.firstChild.textContent = Math.round(cad) + ' ';
   cadEl.classList.toggle('hot', cad > 105);
