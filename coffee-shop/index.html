@@ -6,10 +6,12 @@
 <title>十二号咖啡 · 梧桐路 12 号</title>
 <meta name="description" content="十二号咖啡，梧桐路 12 号。手冲、意式和自家点心，营业时间、价目和到店路线。（示范页面）">
 <meta name="theme-color" content="#1d3c94">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
 <style>
+@font-face{font-family:"Plate Song";src:url("assets/fonts/serif-700.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Plate Song";src:url("assets/fonts/serif-900.woff2") format("woff2");font-weight:900;font-display:swap}
+@font-face{font-family:"Sign Gothic";src:url("assets/fonts/sign-500.woff2") format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Sign Gothic";src:url("assets/fonts/sign-600.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Sign Gothic";src:url("assets/fonts/sign-700.woff2") format("woff2");font-weight:700;font-display:swap}
 :root{
   --blue:#1d3c94;
   --blue-deep:#142c70;
@@ -20,9 +22,9 @@
   --ink-soft:#3b4866;
   --wash:#e7eae6;
   --mortar:#b7bab4;
-  --serif:"Noto Serif SC","Songti SC","STSong",serif;
-  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
-  --sign:"Barlow Semi Condensed","Noto Sans SC",sans-serif;
+  --serif:"Plate Song","Songti SC","STSong","SimSun",serif;
+  --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Source Han Sans SC",sans-serif;
+  --sign:"Sign Gothic","PingFang SC","Microsoft YaHei",sans-serif;
   --shadow:0 1px 1px rgba(12,16,26,.35),0 14px 26px -12px rgba(12,16,26,.6);
   --ease:cubic-bezier(.16,1,.3,1);
   --gutter:clamp(16px,4vw,48px);
@@ -48,11 +50,10 @@ ul,ol{padding:0;list-style:none}
 .icon{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
 /* ---------- walls ---------- */
-.brick{background-color:var(--mortar);background-image:url("assets/brick.svg");background-size:480px 408px}
-.wash{
-  background-color:var(--wash);
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .38 0 0 0 0 .42 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
-}
+.brick{background-color:var(--mortar);background-image:url("assets/brick.svg");background-size:520px 420px}
+.wash{position:relative;overflow:hidden;background-color:#e2e5e0;background-image:url("assets/plaster.svg");background-size:640px 640px}
+.loss{position:absolute;width:clamp(220px,30vw,420px);height:auto;pointer-events:none;z-index:0}
+.wash > .wrap{position:relative;z-index:1}
 .wrap{width:min(1240px,100%);margin-inline:auto;padding-inline:var(--gutter)}
 
 /* ---------- enamel plate ---------- */
@@ -71,14 +72,17 @@ ul,ol{padding:0;list-style:none}
 .plate > *{position:relative;z-index:2}
 .screw{position:absolute;z-index:4;width:10px;height:10px;border-radius:50%;
   background:radial-gradient(circle at 35% 30%,#f1f2f2 0,#b4b9bc 45%,#6f767b 100%);
-  box-shadow:0 1px 1.5px rgba(0,0,0,.5)}
+  box-shadow:0 1px 1.5px rgba(0,0,0,.5),0 0 0 2.5px rgba(122,64,32,.26),0 3px 7px 2px rgba(122,64,32,.2)}
 .screw::after{content:"";position:absolute;left:1.5px;right:1.5px;top:4.2px;height:1.6px;background:#555b60;border-radius:1px;transform:rotate(var(--rot,30deg))}
 .screw.tl{top:calc(var(--inset) - 4px);left:calc(var(--inset) - 4px)}
 .screw.tr{top:calc(var(--inset) - 4px);right:calc(var(--inset) - 4px);--rot:-55deg}
 .screw.bl{bottom:calc(var(--inset) - 4px);left:calc(var(--inset) - 4px);--rot:80deg}
 .screw.br{bottom:calc(var(--inset) - 4px);right:calc(var(--inset) - 4px);--rot:10deg}
 .chips{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:2}
-.chip{position:absolute;width:40px;height:27px}
+.chip{position:absolute;overflow:visible}
+.chip--edge{width:96px;height:36px}
+.chip--corner{width:74px;height:74px}
+.streak{position:absolute;top:calc(100% - 6px);width:9px;height:110px;border-radius:5px;background:linear-gradient(rgba(118,62,28,.42),rgba(118,62,28,0));filter:blur(1.5px);pointer-events:none;z-index:0}
 
 /* ---------- street-name sign nav ---------- */
 .street{padding-top:clamp(16px,3vw,32px)}
@@ -140,7 +144,9 @@ ul,ol{padding:0;list-style:none}
 .week li{display:flex;justify-content:space-between;gap:10px;padding:2px 4px;border-radius:4px}
 .week li span:last-child{font-family:var(--sign);font-weight:600;font-size:15px;font-variant-numeric:tabular-nums;letter-spacing:.04em}
 .week li.is-today{background:var(--red);color:var(--enamel);font-weight:700}
-.back .week-title{font-family:var(--serif);font-weight:900;font-size:16px;letter-spacing:.2em;margin-bottom:6px}
+.back .week-title{font-family:var(--serif);font-weight:900;font-size:18px;letter-spacing:.2em;margin-bottom:8px}
+.back .wk{display:flex;flex-direction:column;align-items:center;line-height:1.3;margin-top:6px;font-family:var(--sign);font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;letter-spacing:.03em}
+.back .wk b{font-family:var(--sans);font-weight:500;font-size:13px;letter-spacing:.08em}
 
 /* street arrow sign = primary action */
 .arrowsign{display:block;margin-top:46px;text-decoration:none;color:var(--enamel);filter:drop-shadow(0 1px 1px rgba(12,16,26,.35)) drop-shadow(0 12px 14px rgba(12,16,26,.38));transition:transform .35s var(--ease)}
@@ -157,7 +163,7 @@ ul,ol{padding:0;list-style:none}
 .arrowsign small{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:14px;font-weight:500;white-space:nowrap}
 
 @media (max-width:900px){
-  .hero-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"shop" "door" "signs"}
+  .hero-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"door" "shop" "signs"}
   .doorplate{--r:24px;--inset:14px;--rule:3px}
 }
 @media (max-width:560px){
@@ -174,6 +180,9 @@ ul,ol{padding:0;list-style:none}
   .doorplate .py{margin-top:8px;font-size:13px}
   .hang{padding-top:38px}
   .arrowsign{margin-top:38px}
+  .chip--edge{width:62px;height:24px}
+  .chip--corner{width:46px;height:46px}
+  .face{padding-block:18px 14px}
 }
 @media (max-width:420px){
   .signs{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
@@ -195,7 +204,7 @@ ul,ol{padding:0;list-style:none}
 .lede{max-width:34em;margin-bottom:clamp(28px,4vw,44px);color:var(--ink-soft)}
 
 /* ---------- price board ---------- */
-.menu-grid{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:clamp(28px,4vw,56px);align-items:start}
+.menu-grid{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:clamp(28px,4vw,56px);align-items:center}
 .board{--r:26px;--inset:16px;padding:clamp(40px,5vw,60px) clamp(32px,4.4vw,60px)}
 .board-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,4vw,56px)}
 .board h3{display:flex;align-items:baseline;justify-content:space-between;font-family:var(--serif);font-weight:900;font-size:1.3rem;letter-spacing:.2em;padding-bottom:8px;border-bottom:2px solid currentColor;margin-bottom:10px}
@@ -231,27 +240,27 @@ ul,ol{padding:0;list-style:none}
 }
 
 /* ---------- beans: bus-stop board ---------- */
-.stopboard{--r:24px;--inset:14px;padding:0;overflow:hidden}
-.stopboard .band{background:var(--blue);color:var(--enamel);padding:30px clamp(30px,4vw,52px) 22px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 24px;border-radius:var(--r) var(--r) 0 0}
+.stopboard{--r:24px;--inset:12px;padding:24px}
+.stopboard .band{background:var(--blue);color:var(--enamel);padding:22px clamp(22px,3vw,36px) 18px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 24px;border-radius:10px}
 .stopboard .band b{font-family:var(--serif);font-weight:900;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:.14em}
 .stopboard .band span{font-family:var(--sign);font-weight:600;font-size:14px;letter-spacing:.2em}
-.route{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(18px,2.6vw,36px);padding:44px clamp(30px,4vw,52px) 46px}
-.route::before{content:"";position:absolute;left:clamp(30px,4vw,52px);right:clamp(30px,4vw,52px);top:62px;height:6px;border-radius:3px;background:var(--blue)}
-.stop{position:relative;padding-top:46px;color:var(--ink)}
-.stop::before{content:"";position:absolute;top:8px;left:0;width:26px;height:26px;border-radius:50%;background:var(--enamel);border:5px solid var(--blue)}
-.stop.here::before{background:var(--red);border-color:var(--red);box-shadow:0 0 0 5px rgba(196,42,31,.18)}
-.stop .k{font-family:var(--sign);font-weight:700;font-size:13px;letter-spacing:.2em;color:var(--blue)}
-.stop.here .k{color:var(--red)}
+.route{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(18px,2.6vw,36px);padding:38px clamp(14px,2vw,28px) 22px}
+.route::before{content:"";position:absolute;left:clamp(14px,2vw,28px);right:clamp(14px,2vw,28px);top:54px;height:6px;border-radius:3px;background:var(--blue)}
+.stop{position:relative;padding-top:52px;color:var(--ink)}
+.stop .dot{position:absolute;top:0;left:0;width:38px;height:38px;border-radius:50%;background:var(--enamel);border:4px solid var(--blue);color:var(--blue);display:grid;place-items:center;font-family:var(--sign);font-weight:700;font-size:17px;line-height:1}
+.stop.here .dot{background:var(--red);border-color:var(--red);box-shadow:0 0 0 5px rgba(196,42,31,.18)}
+.stop.here .dot::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--enamel)}
+.stop h3 .tag{display:inline-block;vertical-align:middle;margin-left:8px;font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:.1em;color:var(--enamel);background:var(--red);padding:1px 8px;border-radius:5px}
 .stop h3{font-family:var(--serif);font-weight:900;font-size:1.3rem;line-height:1.3;letter-spacing:.04em;margin-top:2px}
 .stop .meta{font-size:14px;color:var(--ink-soft);margin-top:6px;line-height:1.55}
 .stop .notes{margin-top:8px;font-size:15px;font-weight:500}
 .stop .cup{margin-top:10px;font-family:var(--sign);font-weight:700;font-size:19px;color:var(--blue);font-variant-numeric:tabular-nums}
 .stop.here h3{color:var(--red)}
 @media (max-width:900px){
-  .route{grid-template-columns:minmax(0,1fr);gap:30px;padding:36px 28px 40px 30px}
-  .route::before{left:40px;right:auto;top:40px;bottom:58px;width:6px;height:auto}
-  .stop{padding-top:0;padding-left:52px}
-  .stop::before{top:2px;left:0}
+  .stopboard{padding:16px}
+  .route{grid-template-columns:minmax(0,1fr);gap:30px;padding:30px 12px 18px}
+  .route::before{left:28px;right:auto;top:40px;bottom:60px;width:6px;height:auto}
+  .stop{padding-top:0;padding-left:56px}
 }
 
 /* ---------- house notice ---------- */
@@ -260,11 +269,11 @@ ul,ol{padding:0;list-style:none}
 .notice-head h3{font-family:var(--serif);font-weight:900;font-size:clamp(1.6rem,2.8vw,2.2rem);letter-spacing:.3em}
 .notice-head span{font-family:var(--sign);font-weight:600;font-size:13px;letter-spacing:.3em}
 .rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(28px,5vw,72px)}
-.rules li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px;align-items:start;padding:16px 0;border-top:1.5px solid rgba(245,246,242,.35)}
+.rules li{display:grid;grid-template-columns:2.4em minmax(0,1fr);gap:4px;align-items:baseline;padding:14px 0;border-top:1.5px solid rgba(245,246,242,.3)}
 .rules li:nth-child(-n+2){border-top:0}
-.rules .icon{width:40px;height:40px;stroke-width:1.75;padding:6px;border:2px solid currentColor;border-radius:9px}
-.rules b{display:block;font-size:17px;font-weight:700;letter-spacing:.04em}
-.rules p{font-size:15px;line-height:1.6;color:#d9e0f2}
+.rules .num{font-family:var(--serif);font-weight:900;font-size:19px}
+.rules p{font-size:16px;line-height:1.65;color:#dfe5f4}
+.rules b{font-family:var(--serif);font-weight:900;font-size:19px;letter-spacing:.06em;color:var(--enamel);margin-right:.6em}
 @media (max-width:720px){
   .rules{grid-template-columns:minmax(0,1fr)}
   .rules li:nth-child(2){border-top:1.5px solid rgba(245,246,242,.35)}
@@ -288,8 +297,7 @@ ul,ol{padding:0;list-style:none}
 .post .s3 .icon{width:26px;height:26px}
 
 .address{padding:clamp(34px,4vw,48px) clamp(30px,4vw,48px)}
-.address .label{font-family:var(--sign);font-weight:700;font-size:13px;letter-spacing:.24em;color:var(--blue)}
-.address .addr{font-family:var(--serif);font-weight:900;font-size:clamp(1.6rem,3vw,2.3rem);line-height:1.3;letter-spacing:.04em;color:var(--blue);margin-top:4px}
+.address .addr{font-family:var(--serif);font-weight:900;font-size:clamp(1.6rem,3vw,2.3rem);line-height:1.3;letter-spacing:.04em;color:var(--blue)}
 .address .addr small{display:block;font-family:var(--sans);font-weight:500;font-size:15px;letter-spacing:0;color:var(--ink-soft);margin-top:4px}
 .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
 .btn{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:10px 20px;border-radius:12px;font:inherit;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;transition:background-color .25s var(--ease),color .25s var(--ease),transform .25s var(--ease)}
@@ -342,22 +350,18 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <symbol id="chip-a" viewBox="0 0 60 40">
-      <path d="M8 6c6-4 15-5 21-1 5 3 12 2 16 7 3 4-1 9-6 11-6 3-9 9-17 8-6-1-9-6-13-9-5-4-6-12-1-16z" fill="#b9bdc2" opacity=".55"/>
-      <path d="M11 9c5-3 11-4 16-1 4 2 10 2 13 6 2 3-1 6-5 8-5 2-7 6-13 5-5-1-7-4-10-7-4-3-4-9-1-11z" fill="#26282d"/>
-      <path d="M20 15c2-1 5-1 7 1 1 1 0 3-2 3-2 1-4 1-5-1-1-1-1-2 0-3z" fill="#6b4a35" opacity=".8"/>
+    <radialGradient id="rust" cx=".5" cy=".2" r=".7"><stop offset="0" stop-color="#9a5226" stop-opacity=".85"/><stop offset="1" stop-color="#9a5226" stop-opacity="0"/></radialGradient>
+    <symbol id="chip-edge" viewBox="0 0 90 34">
+      <path d="M0 0H90C86 6 80 9 74 10 68 14 64 22 56 23 49 25 44 18 37 21 30 24 24 30 17 26 11 22 8 13 3 9Z" fill="#cfd2cc"/>
+      <path d="M5 0H85C81 4 76 6 70 7 64 11 60 18 54 19 48 20 44 14 37 17 30 20 25 25 19 22 13 19 11 10 7 6Z" fill="#2a2c30"/>
+      <ellipse cx="44" cy="6" rx="30" ry="11" fill="url(#rust)"/>
     </symbol>
-    <symbol id="chip-b" viewBox="0 0 60 40">
-      <path d="M2 14c5-6 14-9 24-8 9 1 17-2 26 2 6 3 5 9-1 11-8 3-15 1-23 3-9 2-18 3-24-1-4-2-4-5-2-7z" fill="#b9bdc2" opacity=".55"/>
-      <path d="M5 14c5-4 13-6 21-5 8 1 15-1 22 2 4 2 4 6-1 7-7 2-13 1-20 2-8 1-15 2-20-1-3-1-4-3-2-5z" fill="#26282d"/>
+    <symbol id="chip-corner" viewBox="0 0 60 60">
+      <path d="M0 0H52C48 6 44 9 40 14 36 19 38 26 32 30 26 34 22 40 16 44 10 48 6 52 0 56Z" fill="#cfd2cc"/>
+      <path d="M0 0H46C42 5 39 8 35 12 31 17 32 23 27 26 22 29 18 35 13 38 8 41 4 45 0 48Z" fill="#2a2c30"/>
+      <ellipse cx="12" cy="12" rx="22" ry="22" fill="url(#rust)"/>
     </symbol>
-    <symbol id="i-chair" viewBox="0 0 24 24"><path d="M7 3v9h10V3M5 12h14M7 12v9M17 12v9M7 17h10"/></symbol>
-    <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/></symbol>
-    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.8 16a5 5 0 0 1 6.4 0"/><circle cx="12" cy="19.5" r=".6" fill="currentColor"/></symbol>
-    <symbol id="i-paw" viewBox="0 0 24 24"><circle cx="5.5" cy="10.5" r="1.8"/><circle cx="9.5" cy="6" r="1.8"/><circle cx="14.5" cy="6" r="1.8"/><circle cx="18.5" cy="10.5" r="1.8"/><path d="M12 11.5c-3 0-6 4-6 7a2.4 2.4 0 0 0 3.4 2.1c1.6-.6 3.6-.6 5.2 0A2.4 2.4 0 0 0 18 18.5c0-3-3-7-6-7z"/></symbol>
-    <symbol id="i-cup" viewBox="0 0 24 24"><path d="M6 4h12l1 4H5zM5 8h14M6.5 8l1.3 12h8.4L17.5 8M8 13h8"/></symbol>
-    <symbol id="i-quiet" viewBox="0 0 24 24"><path d="M9 17V6l10-2v10"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="14.5" r="2.5"/><path d="M3 3l18 18"/></symbol>
-    <symbol id="i-metro" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M8 21l2-4M16 21l-2-4"/><circle cx="8.5" cy="14" r=".6" fill="currentColor"/><circle cx="15.5" cy="14" r=".6" fill="currentColor"/></symbol>
+                            <symbol id="i-metro" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M8 21l2-4M16 21l-2-4"/><circle cx="8.5" cy="14" r=".6" fill="currentColor"/><circle cx="15.5" cy="14" r=".6" fill="currentColor"/></symbol>
     <symbol id="i-bus" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="15" rx="2.5"/><path d="M4 10.5h16M7 18v3M17 18v3"/><circle cx="8" cy="14.5" r=".6" fill="currentColor"/><circle cx="16" cy="14.5" r=".6" fill="currentColor"/></symbol>
     <symbol id="i-bike" viewBox="0 0 24 24"><circle cx="5.5" cy="16" r="3.5"/><circle cx="18.5" cy="16" r="3.5"/><path d="M5.5 16l4-8h6l3 8M9.5 8l3.5 8H5.5M14 5h2.5"/></symbol>
     <symbol id="i-car" viewBox="0 0 24 24"><path d="M3 15l2.2-6h13.6L21 15v3H3zM6.5 18v2M17.5 18v2"/><circle cx="7" cy="15" r=".6" fill="currentColor"/><circle cx="17" cy="15" r=".6" fill="currentColor"/></symbol>
@@ -371,7 +375,7 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
 <header class="brick hero">
   <div class="wrap street">
     <nav class="plate" aria-label="页面导航">
-      <a class="brand" href="#top" aria-label="十二号咖啡，回到顶部" style="text-decoration:none"><b>十二号咖啡</b><span>NO.12 COFFEE</span></a>
+      <a class="brand" href="#top" aria-label="梧桐路，回到顶部" style="text-decoration:none"><b>梧桐路</b><span>WUTONG LU</span></a>
       <ul>
         <li><a href="#menu"><b>价目</b><span>MENU</span></a></li>
         <li><a href="#beans"><b>豆单</b><span>BEANS</span></a></li>
@@ -385,9 +389,10 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
     <p class="plate doorplate" aria-label="门牌：梧桐路 12 号">
       <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
       <span class="chips" aria-hidden="true">
-        <svg class="chip" style="left:-9px;bottom:24%;transform:rotate(-12deg)"><use href="#chip-a"/></svg>
-        <svg class="chip" style="right:14%;top:-10px;width:34px;transform:rotate(172deg)"><use href="#chip-b"/></svg>
+        <svg class="chip chip--corner" style="left:0;bottom:0;transform:scaleY(-1)"><use href="#chip-corner"/></svg>
+        <svg class="chip chip--edge" style="right:15%;top:0"><use href="#chip-edge"/></svg>
       </span>
+      <span class="streak" aria-hidden="true" style="left:18px"></span>
       <span class="road" aria-hidden="true">梧桐路</span>
       <span class="bar" aria-hidden="true"></span>
       <span class="no" aria-hidden="true"><b>12</b><span>号</span></span>
@@ -415,16 +420,10 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
                 <span class="hint">翻面看一周</span>
               </span>
               <span class="face back plate plate--white plate--sm" aria-hidden="true">
-                <span class="week-title">一周营业</span>
-                <ul class="week" data-week>
-                  <li data-day="1"><span>周一</span><span>休息</span></li>
-                  <li data-day="2"><span>周二</span><span>08:00–20:00</span></li>
-                  <li data-day="3"><span>周三</span><span>08:00–20:00</span></li>
-                  <li data-day="4"><span>周四</span><span>08:00–20:00</span></li>
-                  <li data-day="5"><span>周五</span><span>08:00–20:00</span></li>
-                  <li data-day="6"><span>周六</span><span>09:00–21:00</span></li>
-                  <li data-day="0"><span>周日</span><span>09:00–21:00</span></li>
-                </ul>
+                <span class="week-title">营业时间</span>
+                <span class="wk"><b>周二至周五</b>08:00–20:00</span>
+                <span class="wk"><b>周六 · 周日</b>09:00–21:00</span>
+                <span class="wk"><b>周一</b>休息</span>
               </span>
             </span>
           </button>
@@ -445,11 +444,13 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
 
 <main>
   <section class="section wash" id="menu" aria-labelledby="menu-h">
+    <img class="loss" src="assets/plaster-loss.svg" alt="" aria-hidden="true" style="right:-60px;top:28px">
     <div class="wrap">
       <div class="plate plate--sm titleplate"><h2 id="menu-h">价目</h2><span>PRICE LIST</span></div>
       <div class="menu-grid">
         <div class="plate plate--white board">
           <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
+          <span class="chips" aria-hidden="true"><svg class="chip chip--corner" style="right:0;top:0;transform:scaleX(-1)"><use href="#chip-corner"/></svg></span>
                     <div class="board-cols">
             <div>
               <h3>意式<span>ESPRESSO</span></h3>
@@ -512,29 +513,29 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
         <div class="band"><b>今日手冲线路</b><span>3 STOPS → NO.12</span></div>
         <ol class="route">
           <li class="stop">
-            <span class="k">第 1 站</span>
-            <h3>埃塞俄比亚 耶加雪菲</h3>
+            <span class="dot" aria-hidden="true">1</span>
+            <h3><span class="sr">第 1 站：</span>埃塞俄比亚 耶加雪菲</h3>
             <p class="meta">水洗 · 浅烘</p>
             <p class="notes">柑橘、茉莉、红茶</p>
             <p class="cup">38 元 / 杯</p>
           </li>
           <li class="stop">
-            <span class="k">第 2 站</span>
-            <h3>哥伦比亚 慧兰</h3>
+            <span class="dot" aria-hidden="true">2</span>
+            <h3><span class="sr">第 2 站：</span>哥伦比亚 慧兰</h3>
             <p class="meta">厌氧日晒 · 中浅烘</p>
             <p class="notes">葡萄、红糖、可可</p>
             <p class="cup">42 元 / 杯</p>
           </li>
           <li class="stop">
-            <span class="k">第 3 站</span>
-            <h3>云南 保山</h3>
+            <span class="dot" aria-hidden="true">3</span>
+            <h3><span class="sr">第 3 站：</span>云南 保山</h3>
             <p class="meta">蜜处理 · 中烘</p>
             <p class="notes">坚果、蜂蜜、黄糖</p>
             <p class="cup">32 元 / 杯</p>
           </li>
           <li class="stop here">
-            <span class="k">本站</span>
-            <h3>梧桐路 12 号</h3>
+            <span class="dot" aria-hidden="true"></span>
+            <h3>梧桐路 12 号<span class="tag">本站</span></h3>
             <p class="meta">吧台现磨现冲，大约 4 分钟</p>
             <p class="notes">不确定选哪支，就问吧台</p>
           </li>
@@ -544,19 +545,21 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
   </section>
 
   <section class="section wash" id="room" aria-labelledby="room-h" style="padding-top:0">
+    <img class="loss" src="assets/plaster-loss.svg" alt="" aria-hidden="true" style="left:-90px;bottom:24px;transform:scaleX(-1) rotate(4deg)">
     <div class="wrap">
       <div class="plate plate--sm titleplate"><h2 id="room-h">店里</h2><span>THE ROOM</span></div>
       <div class="plate notice">
         <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
+        <span class="chips" aria-hidden="true"><svg class="chip chip--edge" style="left:22%;bottom:0;transform:scaleY(-1)"><use href="#chip-edge"/></svg></span>
         <div class="notice-head"><h3>本店须知</h3><span>HOUSE NOTES</span></div>
-        <ul class="rules">
-          <li><svg class="icon" aria-hidden="true"><use href="#i-chair"/></svg><div><b>24 个座位</b><p>窗边一排 6 个，长桌 8 个，其余是两人小桌。</p></div></li>
-          <li><svg class="icon" aria-hidden="true"><use href="#i-plug"/></svg><div><b>靠墙有插座</b><p>长桌下面一排，带电脑来可以坐那边。</p></div></li>
-          <li><svg class="icon" aria-hidden="true"><use href="#i-wifi"/></svg><div><b>免费 Wi-Fi</b><p>密码贴在吧台，问一下就行。</p></div></li>
-          <li><svg class="icon" aria-hidden="true"><use href="#i-paw"/></svg><div><b>可以带狗</b><p>牵好绳，门口有水碗。</p></div></li>
-          <li><svg class="icon" aria-hidden="true"><use href="#i-quiet"/></svg><div><b>下午安静时段</b><p>工作日 14:00–17:00 不放音乐，适合看书和干活。</p></div></li>
-          <li><svg class="icon" aria-hidden="true"><use href="#i-cup"/></svg><div><b>自带杯减 3 元</b><p>任何饮品都算，杯子洗干净就好。</p></div></li>
-        </ul>
+        <ol class="rules">
+          <li><span class="num" aria-hidden="true">一、</span><p><b>座位</b>共 24 个：窗边一排 6 个，长桌 8 个，其余是两人小桌。</p></li>
+          <li><span class="num" aria-hidden="true">二、</span><p><b>插座</b>长桌下面一排，带电脑来可以坐那边。</p></li>
+          <li><span class="num" aria-hidden="true">三、</span><p><b>无线网络</b>免费，密码贴在吧台，问一下就行。</p></li>
+          <li><span class="num" aria-hidden="true">四、</span><p><b>宠物</b>可以带狗，牵好绳，门口有水碗。</p></li>
+          <li><span class="num" aria-hidden="true">五、</span><p><b>安静时段</b>工作日 14:00–17:00 不放音乐，适合看书和干活。</p></li>
+          <li><span class="num" aria-hidden="true">六、</span><p><b>自带杯</b>任何饮品减 3 元，杯子洗干净就好。</p></li>
+        </ol>
       </div>
     </div>
   </section>
@@ -574,7 +577,6 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
 
         <div class="plate plate--white address">
           <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
-          <p class="label">ADDRESS</p>
           <p class="addr" id="addr">梧桐路 12 号<small>梧桐路与樟树街路口往东 30 米，蓝色门牌下面就是门。</small></p>
           <div class="actions">
             <a class="btn btn-blue" href="https://uri.amap.com/search?keyword=%E6%A2%A7%E6%A1%90%E8%B7%AF12%E5%8F%B7" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-turn"/></svg>打开地图导航</a>
@@ -624,8 +626,8 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
     const t = HOURS[d];
     if (t && mins >= t[0]*60 && mins < t[1]*60){
       const left = t[1]*60 - mins;
-      const tail = left <= 60 ? `还有 ${left} 分钟打烊` : `${hh(t[1])} 打烊`;
-      return {open:true, state:'营业中', en:'OPEN', detail:`今天 ${hh(t[0])}–${hh(t[1])}<br>${tail}`};
+      const detail = left <= 60 ? `今天营业到 ${hh(t[1])}<br>还有 ${left} 分钟打烊` : `今天 ${hh(t[0])}–${hh(t[1])}`;
+      return {open:true, state:'营业中', en:'OPEN', detail};
     }
     if (t && mins < t[0]*60){
       return {open:false, state:'还没开门', en:'CLOSED', detail:`今天 ${hh(t[0])} 开门`};
@@ -634,8 +636,9 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
       const nd = (d + i) % 7, nt = HOURS[nd];
       if (nt){
         const when = i === 1 ? '明天' : NAMES[nd];
-        const pre = t ? '' : '今天休息<br>';
-        return {open:false, state:'休息中', en:'CLOSED', detail:`${pre}${when} ${hh(nt[0])} 开门`};
+        return t
+          ? {open:false, state:'已打烊', en:'CLOSED', detail:`${when} ${hh(nt[0])} 开门`}
+          : {open:false, state:'休息中', en:'CLOSED', detail:`今天休息<br>${when} ${hh(nt[0])} 开门`};
       }
     }
   }

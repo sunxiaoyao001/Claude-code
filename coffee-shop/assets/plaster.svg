@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640">
+<!-- provenance: procedurally authored by plaster.py (No.12 Coffee demo), seed 21; no external source -->
+<defs>
+<filter id="mottle" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".006 .009" numOctaves="3" seed="2" stitchTiles="stitch"/>
+<feColorMatrix type="matrix" values="0 0 0 0 .55  0 0 0 0 .58  0 0 0 0 .6  0 0 0 .5 -.12"/></filter>
+<filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="5" stitchTiles="stitch"/>
+<feColorMatrix type="matrix" values="0 0 0 0 .4  0 0 0 0 .42  0 0 0 0 .45  0 0 0 .12 0"/></filter>
+<filter id="brush" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".004 .08" numOctaves="2" seed="8" stitchTiles="stitch"/>
+<feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .5 -.2"/></filter>
+</defs>
+<rect width="640" height="640" fill="#e2e5e0"/>
+<rect width="640" height="640" filter="url(#mottle)"/>
+<rect width="640" height="640" filter="url(#brush)" opacity=".6"/>
+<rect width="640" height="640" filter="url(#grain)"/>
+</svg>
