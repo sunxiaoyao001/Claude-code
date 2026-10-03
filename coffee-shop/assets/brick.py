@@ -9,10 +9,13 @@ o.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" view
 o.append('<!-- provenance: procedurally authored by brick.py (No.12 Coffee demo), seed 12; no external source -->')
 o.append('''<defs>
 <filter id="clay" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-  <feTurbulence type="fractalNoise" baseFrequency=".55 .9" numOctaves="3" seed="7" stitchTiles="stitch" result="n"/>
-  <feColorMatrix in="n" type="matrix" values="0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  .9 .9 .9 0 -1.05" result="g"/>
-  <feComposite in="g" in2="SourceGraphic" operator="in" result="gm"/>
-  <feBlend in="gm" in2="SourceGraphic" mode="overlay"/>
+  <feTurbulence type="fractalNoise" baseFrequency=".9 1.3" numOctaves="3" seed="7" stitchTiles="stitch" result="n"/>
+  <feColorMatrix in="n" type="matrix" values=".24 .24 .24 0 .14  .24 .24 .24 0 .14  .24 .24 .24 0 .14  0 0 0 0 1" result="g"/>
+  <feTurbulence type="fractalNoise" baseFrequency=".06 .14" numOctaves="2" seed="3" stitchTiles="stitch" result="m"/>
+  <feColorMatrix in="m" type="matrix" values=".14 .14 .14 0 .29  .14 .14 .14 0 .29  .14 .14 .14 0 .29  0 0 0 0 1" result="mg"/>
+  <feBlend in="g" in2="mg" mode="overlay" result="tex"/>
+  <feBlend in="tex" in2="SourceGraphic" mode="overlay" result="b"/>
+  <feComposite in="b" in2="SourceGraphic" operator="in"/>
 </filter>
 <filter id="grime" x="0" y="0" width="100%" height="100%">
   <feTurbulence type="fractalNoise" baseFrequency=".012 .03" numOctaves="2" seed="4" stitchTiles="stitch"/>
@@ -57,5 +60,5 @@ for (x, y, w, h) in bricks:
 o.append('</g>')
 o.append(f'<rect width="{W}" height="{H}" filter="url(#grime)"/>')
 o.append('</svg>')
-open('/home/user/Claude-code/coffee-shop/assets/brick.svg', 'w').write("\n".join(o))
+open(__import__('os').path.join(__import__('os').path.dirname(__import__('os').path.abspath(__file__)),'brick.svg'), 'w').write("\n".join(o))
 print(W, H)

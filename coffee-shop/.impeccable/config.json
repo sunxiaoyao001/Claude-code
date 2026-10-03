@@ -13,15 +13,6 @@
         "reason": "finish reviewer + builder: remaining flags are full-bleed wall sections and plates whose inner wrappers carry their own padding; verified in screenshots, no text touches a visible edge"
       },
       {
-        "rule": "dark-glow",
-        "value": "*",
-        "files": [
-          "index.html"
-        ],
-        "createdAt": "2026-10-03T10:34:52.850Z",
-        "reason": "builder decision: the only flagged glow is the brown rust bloom around enamel-plate screws, literal material of the committed enamel-sign world"
-      },
-      {
         "rule": "wide-tracking",
         "value": "*",
         "files": [

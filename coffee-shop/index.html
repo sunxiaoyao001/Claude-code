@@ -53,7 +53,8 @@ ul,ol{padding:0;list-style:none}
 .brick{background-color:var(--mortar);background-image:url("assets/brick.svg");background-size:520px 420px}
 .wash{position:relative;overflow:hidden;background-color:#e2e5e0;background-image:url("assets/plaster.svg");background-size:640px 640px}
 .loss{position:absolute;width:clamp(220px,30vw,420px);height:auto;pointer-events:none;z-index:0}
-.wash > .wrap{position:relative;z-index:1}
+.wash .section{position:relative}
+.wash .wrap{position:relative;z-index:1}
 .wrap{width:min(1240px,100%);margin-inline:auto;padding-inline:var(--gutter)}
 
 /* ---------- enamel plate ---------- */
@@ -72,7 +73,7 @@ ul,ol{padding:0;list-style:none}
 .plate > *{position:relative;z-index:2}
 .screw{position:absolute;z-index:4;width:10px;height:10px;border-radius:50%;
   background:radial-gradient(circle at 35% 30%,#f1f2f2 0,#b4b9bc 45%,#6f767b 100%);
-  box-shadow:0 1px 1.5px rgba(0,0,0,.5),0 0 0 2.5px rgba(122,64,32,.26),0 3px 7px 2px rgba(122,64,32,.2)}
+  box-shadow:0 1px 1.5px rgba(0,0,0,.5),0 0 0 2px #6a3c24}
 .screw::after{content:"";position:absolute;left:1.5px;right:1.5px;top:4.2px;height:1.6px;background:#555b60;border-radius:1px;transform:rotate(var(--rot,30deg))}
 .screw.tl{top:calc(var(--inset) - 4px);left:calc(var(--inset) - 4px)}
 .screw.tr{top:calc(var(--inset) - 4px);right:calc(var(--inset) - 4px);--rot:-55deg}
@@ -103,7 +104,7 @@ ul,ol{padding:0;list-style:none}
 }
 
 /* ---------- hero ---------- */
-.hero{padding-bottom:clamp(56px,8vw,104px)}
+.hero{padding-bottom:clamp(56px,8vw,104px);min-height:100vh;min-height:100svh}
 .hero-grid{display:grid;gap:clamp(20px,3vw,40px);margin-top:clamp(28px,5vw,64px);
   grid-template-columns:minmax(0,7fr) minmax(0,5fr);grid-template-areas:"door shop" "door signs";align-items:start}
 .doorplate{grid-area:door;--r:30px;--inset:18px;--rule:4px;padding:clamp(40px,5vw,64px) clamp(36px,5vw,72px) clamp(36px,4.4vw,56px);text-align:center}
@@ -201,7 +202,7 @@ ul,ol{padding:0;list-style:none}
 .titleplate{display:inline-flex;align-items:baseline;gap:14px;padding:14px 26px 12px;margin-bottom:clamp(28px,4vw,48px)}
 .titleplate h2{font-family:var(--serif);font-weight:900;font-size:clamp(1.7rem,3vw,2.4rem);letter-spacing:.16em;line-height:1.2}
 .titleplate span{font-family:var(--sign);font-weight:600;font-size:13px;letter-spacing:.3em}
-.lede{max-width:34em;margin-bottom:clamp(28px,4vw,44px);color:var(--ink-soft)}
+.lede{max-width:34em;text-wrap:pretty;margin-bottom:clamp(28px,4vw,44px);color:var(--ink-soft)}
 
 /* ---------- price board ---------- */
 .menu-grid{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:clamp(28px,4vw,56px);align-items:center}
@@ -269,10 +270,10 @@ ul,ol{padding:0;list-style:none}
 .notice-head h3{font-family:var(--serif);font-weight:900;font-size:clamp(1.6rem,2.8vw,2.2rem);letter-spacing:.3em}
 .notice-head span{font-family:var(--sign);font-weight:600;font-size:13px;letter-spacing:.3em}
 .rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(28px,5vw,72px)}
-.rules li{display:grid;grid-template-columns:2.4em minmax(0,1fr);gap:4px;align-items:baseline;padding:14px 0;border-top:1.5px solid rgba(245,246,242,.3)}
+.rules li{display:grid;grid-template-columns:2.4em minmax(0,1fr);gap:4px;align-items:baseline;align-content:start;padding:14px 0;border-top:1.5px solid rgba(245,246,242,.3)}
 .rules li:nth-child(-n+2){border-top:0}
 .rules .num{font-family:var(--serif);font-weight:900;font-size:19px}
-.rules p{font-size:16px;line-height:1.65;color:#dfe5f4}
+.rules p{font-size:16px;line-height:1.65;color:#dfe5f4;text-wrap:pretty}
 .rules b{font-family:var(--serif);font-weight:900;font-size:19px;letter-spacing:.06em;color:var(--enamel);margin-right:.6em}
 @media (max-width:720px){
   .rules{grid-template-columns:minmax(0,1fr)}
@@ -350,16 +351,20 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <radialGradient id="rust" cx=".5" cy=".2" r=".7"><stop offset="0" stop-color="#9a5226" stop-opacity=".85"/><stop offset="1" stop-color="#9a5226" stop-opacity="0"/></radialGradient>
+    <filter id="oxide" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" seed="4" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 .43  0 0 0 0 .22  0 0 0 0 .12  0 0 0 5 -2.3" result="dots"/>
+      <feComposite in="dots" in2="SourceGraphic" operator="in"/>
+    </filter>
     <symbol id="chip-edge" viewBox="0 0 90 34">
       <path d="M0 0H90C86 6 80 9 74 10 68 14 64 22 56 23 49 25 44 18 37 21 30 24 24 30 17 26 11 22 8 13 3 9Z" fill="#cfd2cc"/>
       <path d="M5 0H85C81 4 76 6 70 7 64 11 60 18 54 19 48 20 44 14 37 17 30 20 25 25 19 22 13 19 11 10 7 6Z" fill="#2a2c30"/>
-      <ellipse cx="44" cy="6" rx="30" ry="11" fill="url(#rust)"/>
+      <path d="M14 0H76C72 4 66 6 60 8 54 12 50 16 44 15 38 14 33 12 27 13 21 13 17 8 14 4Z" fill="#5e3420" opacity=".75"/><path d="M14 0H76C72 4 66 6 60 8 54 12 50 16 44 15 38 14 33 12 27 13 21 13 17 8 14 4Z" fill="#7a4428" filter="url(#oxide)"/>
     </symbol>
     <symbol id="chip-corner" viewBox="0 0 60 60">
       <path d="M0 0H52C48 6 44 9 40 14 36 19 38 26 32 30 26 34 22 40 16 44 10 48 6 52 0 56Z" fill="#cfd2cc"/>
       <path d="M0 0H46C42 5 39 8 35 12 31 17 32 23 27 26 22 29 18 35 13 38 8 41 4 45 0 48Z" fill="#2a2c30"/>
-      <ellipse cx="12" cy="12" rx="22" ry="22" fill="url(#rust)"/>
+      <path d="M0 0H30C28 6 24 10 20 14 16 18 12 22 6 25 3 26 1 28 0 30Z" fill="#5e3420" opacity=".75"/><path d="M0 0H30C28 6 24 10 20 14 16 18 12 22 6 25 3 26 1 28 0 30Z" fill="#7a4428" filter="url(#oxide)"/>
     </symbol>
                             <symbol id="i-metro" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M8 21l2-4M16 21l-2-4"/><circle cx="8.5" cy="14" r=".6" fill="currentColor"/><circle cx="15.5" cy="14" r=".6" fill="currentColor"/></symbol>
     <symbol id="i-bus" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="15" rx="2.5"/><path d="M4 10.5h16M7 18v3M17 18v3"/><circle cx="8" cy="14.5" r=".6" fill="currentColor"/><circle cx="16" cy="14.5" r=".6" fill="currentColor"/></symbol>
@@ -443,7 +448,8 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
 </header>
 
 <main>
-  <section class="section wash" id="menu" aria-labelledby="menu-h">
+  <div class="wash">
+  <section class="section" id="menu" aria-labelledby="menu-h">
     <img class="loss" src="assets/plaster-loss.svg" alt="" aria-hidden="true" style="right:-60px;top:28px">
     <div class="wrap">
       <div class="plate plate--sm titleplate"><h2 id="menu-h">价目</h2><span>PRICE LIST</span></div>
@@ -505,7 +511,7 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
     </div>
   </section>
 
-  <section class="section wash" id="beans" aria-labelledby="beans-h" style="padding-top:0">
+  <section class="section" id="beans" aria-labelledby="beans-h" style="padding-top:0">
     <div class="wrap">
       <div class="plate plate--sm titleplate"><h2 id="beans-h">豆单</h2><span>TODAY'S FILTER</span></div>
       <p class="lede">手冲豆子每周换一次，像一条公交线：三个产地，终点站是你手里这杯。</p>
@@ -544,7 +550,7 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
     </div>
   </section>
 
-  <section class="section wash" id="room" aria-labelledby="room-h" style="padding-top:0">
+  <section class="section" id="room" aria-labelledby="room-h" style="padding-top:0">
     <img class="loss" src="assets/plaster-loss.svg" alt="" aria-hidden="true" style="left:-90px;bottom:24px;transform:scaleX(-1) rotate(4deg)">
     <div class="wrap">
       <div class="plate plate--sm titleplate"><h2 id="room-h">店里</h2><span>THE ROOM</span></div>
@@ -563,6 +569,7 @@ footer{padding:clamp(48px,7vw,80px) 0 clamp(36px,5vw,56px)}
       </div>
     </div>
   </section>
+  </div>
 
   <section class="brick visit" id="visit" aria-labelledby="visit-h">
     <div class="wrap">
