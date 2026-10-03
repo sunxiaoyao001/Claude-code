@@ -1,0 +1,455 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-03T10:43:23+00:00",
+  "title": "Design System: 十二号咖啡 No.12 Coffee",
+  "extensions": {
+    "colorMeta": {
+      "cobalt-enamel": {
+        "role": "primary",
+        "displayName": "Cobalt Enamel",
+        "canonical": "#1d3c94",
+        "oklch": "oklch(39.2% 0.150 265.2)",
+        "tonalRamp": [
+          "#02003d",
+          "#051862",
+          "#1a3788",
+          "#3858a9",
+          "#597ac7",
+          "#7b9ce7",
+          "#a3c3ff",
+          "#d0eeff"
+        ]
+      },
+      "cobalt-deep": {
+        "role": "primary",
+        "displayName": "Deep Cobalt",
+        "canonical": "#142c70",
+        "oklch": "oklch(32.1% 0.122 265.2)",
+        "tonalRamp": [
+          "#010036",
+          "#091c59",
+          "#223b7a",
+          "#415b98",
+          "#617cb7",
+          "#849ed7",
+          "#abc4fa",
+          "#d7efff"
+        ]
+      },
+      "signal-red": {
+        "role": "secondary",
+        "displayName": "Signal Red",
+        "canonical": "#c42a1f",
+        "oklch": "oklch(53.6% 0.192 29.2)",
+        "tonalRamp": [
+          "#320000",
+          "#590000",
+          "#810000",
+          "#ab1f16",
+          "#d14839",
+          "#f37160",
+          "#ff9c8a",
+          "#ffcbb9"
+        ]
+      },
+      "white-enamel": {
+        "role": "neutral",
+        "displayName": "White Enamel",
+        "canonical": "#f5f6f2",
+        "oklch": "oklch(97.1% 0.005 117.9)",
+        "tonalRamp": [
+          "#0b0b09",
+          "#242422",
+          "#3f403d",
+          "#5d5e5b",
+          "#7d7e7a",
+          "#9e9f9b",
+          "#c4c4c1",
+          "#eeefeb"
+        ]
+      },
+      "dark-iron": {
+        "role": "neutral",
+        "displayName": "Dark Iron",
+        "canonical": "#2a2d33",
+        "oklch": "oklch(29.7% 0.012 264.4)",
+        "tonalRamp": [
+          "#090b10",
+          "#21242a",
+          "#3d4046",
+          "#5a5e64",
+          "#7a7d84",
+          "#9b9ea6",
+          "#c0c4cc",
+          "#ebeff6"
+        ]
+      },
+      "street-ink": {
+        "role": "neutral",
+        "displayName": "Street Ink",
+        "canonical": "#172036",
+        "oklch": "oklch(24.7% 0.044 266.3)",
+        "tonalRamp": [
+          "#050a1c",
+          "#1b2338",
+          "#363f55",
+          "#545d73",
+          "#747d92",
+          "#969eb2",
+          "#bcc4d7",
+          "#e7efff"
+        ]
+      },
+      "street-ink-soft": {
+        "role": "neutral",
+        "displayName": "Street Ink Soft",
+        "canonical": "#3b4866",
+        "oklch": "oklch(40.4% 0.054 266.0)",
+        "tonalRamp": [
+          "#040a1d",
+          "#19233b",
+          "#333f5a",
+          "#515d7a",
+          "#717d99",
+          "#929eb9",
+          "#b9c4de",
+          "#e4efff"
+        ]
+      },
+      "limewash": {
+        "role": "neutral",
+        "displayName": "Limewash",
+        "canonical": "#e7eae6",
+        "oklch": "oklch(93.4% 0.006 137.8)",
+        "tonalRamp": [
+          "#0a0c09",
+          "#232522",
+          "#3e403d",
+          "#5c5e5b",
+          "#7b7e7b",
+          "#9d9f9c",
+          "#c2c5c1",
+          "#edefec"
+        ]
+      },
+      "mortar": {
+        "role": "neutral",
+        "displayName": "Mortar",
+        "canonical": "#b7bab4",
+        "oklch": "oklch(78.5% 0.009 128.6)",
+        "tonalRamp": [
+          "#0a0c08",
+          "#232521",
+          "#3e413c",
+          "#5c5f5a",
+          "#7c7e79",
+          "#9d9f9a",
+          "#c2c5bf",
+          "#edf0ea"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display (Plate Song 900)",
+        "purpose": "Road name on the door plate; text-indent equals tracking so it centres.",
+        "source": "Self-hosted subset of Noto Serif SC 700/900, assets/fonts/serif-*.woff2"
+      },
+      "numeral": {
+        "displayName": "House Numeral (Sign Gothic 700)",
+        "purpose": "The house number on the door plate.",
+        "source": "Self-hosted subset of Barlow Semi Condensed 500/600/700, assets/fonts/sign-*.woff2"
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "H1 shop name on the white signboard."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section names on title plates."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "Board column heads, stop names, notice heads, street signs."
+      },
+      "body": {
+        "displayName": "Body (system CJK sans)",
+        "purpose": "All reading text; ledes capped at 34em."
+      },
+      "label": {
+        "displayName": "Sign Line",
+        "purpose": "Uppercase tracked pinyin / English on signs and plates."
+      },
+      "price": {
+        "displayName": "Price",
+        "purpose": "Prices, hours and numbers, tabular figures."
+      }
+    },
+    "shadows": [
+      {
+        "name": "plate-on-wall",
+        "value": "0 1px 1px rgba(12,16,26,.35), 0 14px 26px -12px rgba(12,16,26,.6), inset 0 0 0 1.5px rgba(0,0,0,.22)",
+        "purpose": "Every enamel plate hanging on the wall."
+      },
+      {
+        "name": "arrow-sign",
+        "value": "drop-shadow(0 1px 1px rgba(12,16,26,.35)) drop-shadow(0 12px 14px rgba(12,16,26,.38))",
+        "purpose": "Filter shadow for the clipped arrow sign."
+      },
+      {
+        "name": "button",
+        "value": "0 1px 1px rgba(12,16,26,.3), 0 8px 14px -8px rgba(12,16,26,.55)",
+        "purpose": "Primary blue button."
+      },
+      {
+        "name": "enamel-sheen",
+        "value": "linear-gradient(162deg,rgba(255,255,255,.17) 0%,rgba(255,255,255,0) 34%), linear-gradient(0deg,rgba(0,0,0,.09) 0%,rgba(0,0,0,0) 26%)",
+        "purpose": "Gloss overlay painted above every plate face."
+      },
+      {
+        "name": "focus-ring",
+        "value": "outline: 3px solid #f5f6f2; outline-offset: 3px; box-shadow: 0 0 0 6px #1d3c94",
+        "purpose": "Global keyboard focus; reads on cobalt, white and wall grounds."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-settle",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "The only easing; all transitions and the swing."
+      },
+      {
+        "name": "swing-once",
+        "value": "1.8s; keyframes 5deg, -3deg, 1.6deg, -0.6deg, 0; transform-origin 50% -40px",
+        "purpose": "Hung plates settle once when 60% visible (IntersectionObserver), never loop."
+      },
+      {
+        "name": "flip",
+        "value": "transform rotateY(180deg) .8s",
+        "purpose": "Two-sided hours sign turning on its hook on tap."
+      },
+      {
+        "name": "state",
+        "value": ".25s background-color/color",
+        "purpose": "Hover on nav links, buttons, arrow sign."
+      },
+      {
+        "name": "arrow-slide",
+        "value": "translateX(6px) .35s",
+        "purpose": "Arrow sign hover."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Disables swing, transitions, flip animation and smooth scroll."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "xs",
+        "value": "420px",
+        "purpose": "Short arrow tip (30px), compact signs and hours."
+      },
+      {
+        "name": "sm",
+        "value": "560px",
+        "purpose": "Fixed hero sizes so all hero plates fit the first viewport; smaller chips."
+      },
+      {
+        "name": "md",
+        "value": "640px",
+        "purpose": "Nav drops brand block; price board one column."
+      },
+      {
+        "name": "md-notice",
+        "value": "720px",
+        "purpose": "House notes one column."
+      },
+      {
+        "name": "lg",
+        "value": "900px",
+        "purpose": "Hero, price and visit grids collapse to one column; bean route turns vertical."
+      }
+    ],
+    "plateScale": [
+      {
+        "name": "sm",
+        "radius": "14px",
+        "inset": "8px",
+        "rule": "2px"
+      },
+      {
+        "name": "default",
+        "radius": "22px",
+        "inset": "14px",
+        "rule": "3px"
+      },
+      {
+        "name": "board",
+        "radius": "26px",
+        "inset": "16px",
+        "rule": "3px"
+      },
+      {
+        "name": "door",
+        "radius": "30px",
+        "inset": "18px",
+        "rule": "4px"
+      }
+    ],
+    "grounds": [
+      {
+        "name": "brick",
+        "asset": "assets/brick.svg",
+        "generator": "assets/brick.py (seed 12)",
+        "tile": "520px 420px",
+        "base": "#b7bab4",
+        "purpose": "Street wall: hero and visit sections."
+      },
+      {
+        "name": "limewash",
+        "asset": "assets/plaster.svg",
+        "generator": "assets/plaster.py (seed 21)",
+        "tile": "640px 640px",
+        "base": "#e2e5e0",
+        "purpose": "Interior wall: price, beans, room sections."
+      },
+      {
+        "name": "plaster-loss",
+        "asset": "assets/plaster-loss.svg",
+        "generator": "assets/plaster.py",
+        "size": "clamp(220px,30vw,420px)",
+        "purpose": "Fallen plaster exposing brick, bleeding off a section edge behind content."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Cobalt Door Plate",
+      "kind": "card",
+      "refersTo": "plate-cobalt",
+      "description": "The default enamel plate: cobalt, white inner rule, four screws, sheen. Carries primary lettering.",
+      "html": "<div class=\"ds-wall\"><p class=\"ds-plate ds-door\"><i class=\"ds-screw ds-tl\"></i><i class=\"ds-screw ds-tr\"></i><i class=\"ds-screw ds-bl\"></i><i class=\"ds-screw ds-br\"></i><span class=\"ds-road\">梧桐路</span><span class=\"ds-no\"><b>12</b>号</span><span class=\"ds-py\">WUTONG LU</span></p></div>",
+      "css": ":host{--blue:#1d3c94;--blue-deep:#142c70;--enamel:#f5f6f2;--red:#c42a1f;--iron:#2a2d33;--ink:#172036;--ink-soft:#3b4866;--serif:\"Plate Song\",\"Songti SC\",\"STSong\",\"SimSun\",serif;--sign:\"Sign Gothic\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;--sans:\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Noto Sans CJK SC\",sans-serif;--shadow:0 1px 1px rgba(12,16,26,.35),0 14px 26px -12px rgba(12,16,26,.6);--ease:cubic-bezier(.16,1,.3,1)} .ds-plate{--pc:var(--blue);--pf:var(--enamel);--r:22px;--inset:14px;--rule:3px;position:relative;isolation:isolate;display:inline-block;background:var(--pc);color:var(--pf);border-radius:var(--r);box-shadow:var(--shadow),inset 0 0 0 1.5px rgba(0,0,0,.22)} .ds-plate::before{content:\"\";position:absolute;inset:var(--inset);border:var(--rule) solid currentColor;border-radius:calc(var(--r) - 4px);pointer-events:none;z-index:1} .ds-plate::after{content:\"\";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;background:linear-gradient(162deg,rgba(255,255,255,.17) 0%,rgba(255,255,255,0) 34%),linear-gradient(0deg,rgba(0,0,0,.09) 0%,rgba(0,0,0,0) 26%)} .ds-plate>*{position:relative;z-index:2} .ds-plate--white{--pc:var(--enamel);--pf:var(--blue)} .ds-plate--red{--pc:var(--red);--pf:var(--enamel)} .ds-plate--iron{--pc:var(--iron);--pf:var(--enamel)} .ds-plate--sm{--r:14px;--inset:8px;--rule:2px} .ds-screw{position:absolute;z-index:4;width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f1f2f2 0,#b4b9bc 45%,#6f767b 100%);box-shadow:0 1px 1.5px rgba(0,0,0,.5),0 0 0 2px #6a3c24} .ds-screw::after{content:\"\";position:absolute;left:1.5px;right:1.5px;top:4.2px;height:1.6px;background:#555b60;border-radius:1px;transform:rotate(var(--rot,30deg))} .ds-tl{top:calc(var(--inset) - 4px);left:calc(var(--inset) - 4px)} .ds-tr{top:calc(var(--inset) - 4px);right:calc(var(--inset) - 4px);--rot:-55deg} .ds-bl{bottom:calc(var(--inset) - 4px);left:calc(var(--inset) - 4px);--rot:80deg} .ds-br{bottom:calc(var(--inset) - 4px);right:calc(var(--inset) - 4px);--rot:10deg} .ds-wall{background:#7f8689;padding:28px;} .ds-door{--r:30px;--inset:18px;--rule:4px;padding:40px 48px 34px;text-align:center} .ds-road{display:block;font-family:var(--serif);font-weight:900;font-size:2.6rem;letter-spacing:.32em;text-indent:.32em;line-height:1.1} .ds-no{display:block;line-height:.9} .ds-no b{font-family:var(--sign);font-weight:700;font-size:6rem;letter-spacing:-.02em;font-variant-numeric:tabular-nums} .ds-no{font-family:var(--serif);font-weight:900;font-size:2.4rem} .ds-py{display:block;margin-top:10px;font-family:var(--sign);font-weight:600;font-size:15px;letter-spacing:.42em;text-indent:.42em}"
+    },
+    {
+      "name": "White Signboard",
+      "kind": "card",
+      "refersTo": "plate-white",
+      "description": "White enamel plate for secondary boards: shop name, price board, address card.",
+      "html": "<div class=\"ds-wall\"><div class=\"ds-plate ds-plate--white ds-board\"><i class=\"ds-screw ds-tl\"></i><i class=\"ds-screw ds-tr\"></i><i class=\"ds-screw ds-bl\"></i><i class=\"ds-screw ds-br\"></i><h1>十二号咖啡<span>NO.12 COFFEE</span></h1><p class=\"ds-hook\">梧桐路 12 号，推门就是咖啡。</p><p class=\"ds-offer\">手冲 · 意式 · 每天现烤的点心，24 个座位。</p></div></div>",
+      "css": ":host{--blue:#1d3c94;--blue-deep:#142c70;--enamel:#f5f6f2;--red:#c42a1f;--iron:#2a2d33;--ink:#172036;--ink-soft:#3b4866;--serif:\"Plate Song\",\"Songti SC\",\"STSong\",\"SimSun\",serif;--sign:\"Sign Gothic\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;--sans:\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Noto Sans CJK SC\",sans-serif;--shadow:0 1px 1px rgba(12,16,26,.35),0 14px 26px -12px rgba(12,16,26,.6);--ease:cubic-bezier(.16,1,.3,1)} .ds-plate{--pc:var(--blue);--pf:var(--enamel);--r:22px;--inset:14px;--rule:3px;position:relative;isolation:isolate;display:inline-block;background:var(--pc);color:var(--pf);border-radius:var(--r);box-shadow:var(--shadow),inset 0 0 0 1.5px rgba(0,0,0,.22)} .ds-plate::before{content:\"\";position:absolute;inset:var(--inset);border:var(--rule) solid currentColor;border-radius:calc(var(--r) - 4px);pointer-events:none;z-index:1} .ds-plate::after{content:\"\";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;background:linear-gradient(162deg,rgba(255,255,255,.17) 0%,rgba(255,255,255,0) 34%),linear-gradient(0deg,rgba(0,0,0,.09) 0%,rgba(0,0,0,0) 26%)} .ds-plate>*{position:relative;z-index:2} .ds-plate--white{--pc:var(--enamel);--pf:var(--blue)} .ds-plate--red{--pc:var(--red);--pf:var(--enamel)} .ds-plate--iron{--pc:var(--iron);--pf:var(--enamel)} .ds-plate--sm{--r:14px;--inset:8px;--rule:2px} .ds-screw{position:absolute;z-index:4;width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f1f2f2 0,#b4b9bc 45%,#6f767b 100%);box-shadow:0 1px 1.5px rgba(0,0,0,.5),0 0 0 2px #6a3c24} .ds-screw::after{content:\"\";position:absolute;left:1.5px;right:1.5px;top:4.2px;height:1.6px;background:#555b60;border-radius:1px;transform:rotate(var(--rot,30deg))} .ds-tl{top:calc(var(--inset) - 4px);left:calc(var(--inset) - 4px)} .ds-tr{top:calc(var(--inset) - 4px);right:calc(var(--inset) - 4px);--rot:-55deg} .ds-bl{bottom:calc(var(--inset) - 4px);left:calc(var(--inset) - 4px);--rot:80deg} .ds-br{bottom:calc(var(--inset) - 4px);right:calc(var(--inset) - 4px);--rot:10deg} .ds-wall{background:#7f8689;padding:28px;} .ds-board{padding:32px 34px} .ds-board h1{margin:0;font-family:var(--serif);font-weight:900;font-size:2.4rem;line-height:1.15;letter-spacing:.06em} .ds-board h1 span{display:block;font-family:var(--sign);font-weight:700;font-size:15px;letter-spacing:.32em;margin-top:6px} .ds-hook{margin:16px 0 0;font-family:var(--serif);font-weight:700;font-size:1.2rem;line-height:1.55;color:var(--ink)} .ds-offer{margin:8px 0 0;font-family:var(--sans);font-size:15px;color:var(--ink-soft)}"
+    },
+    {
+      "name": "Title Plate",
+      "kind": "custom",
+      "refersTo": "title-plate",
+      "description": "Small cobalt plate opening each section: Song section name plus tracked English sign line.",
+      "html": "<div class=\"ds-wall\"><div class=\"ds-plate ds-plate--sm ds-title\"><h2>价目</h2><span>PRICE LIST</span></div></div>",
+      "css": ":host{--blue:#1d3c94;--blue-deep:#142c70;--enamel:#f5f6f2;--red:#c42a1f;--iron:#2a2d33;--ink:#172036;--ink-soft:#3b4866;--serif:\"Plate Song\",\"Songti SC\",\"STSong\",\"SimSun\",serif;--sign:\"Sign Gothic\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;--sans:\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Noto Sans CJK SC\",sans-serif;--shadow:0 1px 1px rgba(12,16,26,.35),0 14px 26px -12px rgba(12,16,26,.6);--ease:cubic-bezier(.16,1,.3,1)} .ds-plate{--pc:var(--blue);--pf:var(--enamel);--r:22px;--inset:14px;--rule:3px;position:relative;isolation:isolate;display:inline-block;background:var(--pc);color:var(--pf);border-radius:var(--r);box-shadow:var(--shadow),inset 0 0 0 1.5px rgba(0,0,0,.22)} .ds-plate::before{content:\"\";position:absolute;inset:var(--inset);border:var(--rule) solid currentColor;border-radius:calc(var(--r) - 4px);pointer-events:none;z-index:1} .ds-plate::after{content:\"\";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;background:linear-gradient(162deg,rgba(255,255,255,.17) 0%,rgba(255,255,255,0) 34%),linear-gradient(0deg,rgba(0,0,0,.09) 0%,rgba(0,0,0,0) 26%)} .ds-plate>*{position:relative;z-index:2} .ds-plate--white{--pc:var(--enamel);--pf:var(--blue)} .ds-plate--red{--pc:var(--red);--pf:var(--enamel)} .ds-plate--iron{--pc:var(--iron);--pf:var(--enamel)} .ds-plate--sm{--r:14px;--inset:8px;--rule:2px} .ds-wall{background:#e7eae6;padding:28px} .ds-title{display:inline-flex;align-items:baseline;gap:14px;padding:14px 26px 12px} .ds-title h2{margin:0;font-family:var(--serif);font-weight:900;font-size:2rem;letter-spacing:.16em;line-height:1.2} .ds-title span{font-family:var(--sign);font-weight:600;font-size:13px;letter-spacing:.3em}"
+    },
+    {
+      "name": "Street-Name Sign Nav",
+      "kind": "nav",
+      "refersTo": "plate-cobalt",
+      "description": "Full-width small cobalt plate used as navigation; each link is characters over a tracked English line.",
+      "html": "<div class=\"ds-wall\"><nav class=\"ds-plate ds-plate--sm ds-street\"><a class=\"ds-brand\" href=\"#\"><b>梧桐路</b><span>WUTONG LU</span></a><ul><li><a href=\"#\"><b>价目</b><span>MENU</span></a></li><li><a href=\"#\"><b>豆单</b><span>BEANS</span></a></li><li><a href=\"#\"><b>店里</b><span>ROOM</span></a></li><li><a href=\"#\"><b>怎么来</b><span>VISIT</span></a></li></ul></nav></div>",
+      "css": ":host{--blue:#1d3c94;--blue-deep:#142c70;--enamel:#f5f6f2;--red:#c42a1f;--iron:#2a2d33;--ink:#172036;--ink-soft:#3b4866;--serif:\"Plate Song\",\"Songti SC\",\"STSong\",\"SimSun\",serif;--sign:\"Sign Gothic\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;--sans:\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Noto Sans CJK SC\",sans-serif;--shadow:0 1px 1px rgba(12,16,26,.35),0 14px 26px -12px rgba(12,16,26,.6);--ease:cubic-bezier(.16,1,.3,1)} .ds-plate{--pc:var(--blue);--pf:var(--enamel);--r:22px;--inset:14px;--rule:3px;position:relative;isolation:isolate;display:inline-block;background:var(--pc);color:var(--pf);border-radius:var(--r);box-shadow:var(--shadow),inset 0 0 0 1.5px rgba(0,0,0,.22)} .ds-plate::before{content:\"\";position:absolute;inset:var(--inset);border:var(--rule) solid currentColor;border-radius:calc(var(--r) - 4px);pointer-events:none;z-index:1} .ds-plate::after{content:\"\";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;background:linear-gradient(162deg,rgba(255,255,255,.17) 0%,rgba(255,255,255,0) 34%),linear-gradient(0deg,rgba(0,0,0,.09) 0%,rgba(0,0,0,0) 26%)} .ds-plate>*{position:relative;z-index:2} .ds-plate--white{--pc:var(--enamel);--pf:var(--blue)} .ds-plate--red{--pc:var(--red);--pf:var(--enamel)} .ds-plate--iron{--pc:var(--iron);--pf:var(--enamel)} .ds-plate--sm{--r:14px;--inset:8px;--rule:2px} .ds-wall{background:#7f8689;padding:28px;} .ds-street{--inset:7px;display:flex;justify-content:space-between;gap:8px;padding:14px 22px} .ds-street ul{display:flex;gap:24px;margin:0;padding:0;list-style:none} .ds-street a{display:flex;flex-direction:column;align-items:center;justify-content:center;color:inherit;text-decoration:none;padding:4px 10px;border-radius:8px;line-height:1.15;transition:background-color .25s var(--ease)} .ds-street a.ds-brand{align-items:flex-start;padding-left:0} .ds-street a:hover{background:rgba(255,255,255,.12)} .ds-street a:focus-visible{outline:3px solid var(--enamel);outline-offset:3px;box-shadow:0 0 0 6px var(--blue);border-radius:6px} .ds-street b{font-family:var(--serif);font-weight:900;font-size:17px;letter-spacing:.08em} .ds-street a.ds-brand b{font-size:20px;letter-spacing:.12em} .ds-street span{font-family:var(--sign);font-weight:600;font-size:11px;letter-spacing:.2em;opacity:.85}"
+    },
+    {
+      "name": "Hanging Hours Sign",
+      "kind": "custom",
+      "refersTo": "plate-red-open",
+      "description": "Two-sided small plate hung on a nail; red front when open (iron when closed), flips to a white weekly-hours back on tap.",
+      "html": "<div class=\"ds-wall\"><div class=\"ds-hang\"><span class=\"ds-nail\"></span><button class=\"ds-flip\" type=\"button\" aria-pressed=\"false\" onclick=\"this.classList.toggle('is-flipped');this.setAttribute('aria-pressed',this.classList.contains('is-flipped'))\"><span class=\"ds-inner\"><span class=\"ds-face ds-plate ds-plate--red ds-plate--sm\"><span class=\"ds-state\">营业中</span><span class=\"ds-en\">OPEN</span><span class=\"ds-detail\">今天 08:00–20:00</span></span><span class=\"ds-face ds-back ds-plate ds-plate--white ds-plate--sm\"><span class=\"ds-wt\">营业时间</span><span class=\"ds-wk\">周二至周五 08:00–20:00</span><span class=\"ds-wk\">周一 休息</span></span></span></button></div></div>",
+      "css": ":host{--blue:#1d3c94;--blue-deep:#142c70;--enamel:#f5f6f2;--red:#c42a1f;--iron:#2a2d33;--ink:#172036;--ink-soft:#3b4866;--serif:\"Plate Song\",\"Songti SC\",\"STSong\",\"SimSun\",serif;--sign:\"Sign Gothic\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;--sans:\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Noto Sans CJK SC\",sans-serif;--shadow:0 1px 1px rgba(12,16,26,.35),0 14px 26px -12px rgba(12,16,26,.6);--ease:cubic-bezier(.16,1,.3,1)} .ds-plate{--pc:var(--blue);--pf:var(--enamel);--r:22px;--inset:14px;--rule:3px;position:relative;isolation:isolate;display:inline-block;background:var(--pc);color:var(--pf);border-radius:var(--r);box-shadow:var(--shadow),inset 0 0 0 1.5px rgba(0,0,0,.22)} .ds-plate::before{content:\"\";position:absolute;inset:var(--inset);border:var(--rule) solid currentColor;border-radius:calc(var(--r) - 4px);pointer-events:none;z-index:1} .ds-plate::after{content:\"\";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;background:linear-gradient(162deg,rgba(255,255,255,.17) 0%,rgba(255,255,255,0) 34%),linear-gradient(0deg,rgba(0,0,0,.09) 0%,rgba(0,0,0,0) 26%)} .ds-plate>*{position:relative;z-index:2} .ds-plate--white{--pc:var(--enamel);--pf:var(--blue)} .ds-plate--red{--pc:var(--red);--pf:var(--enamel)} .ds-plate--iron{--pc:var(--iron);--pf:var(--enamel)} .ds-plate--sm{--r:14px;--inset:8px;--rule:2px} .ds-wall{background:#7f8689;padding:28px;} .ds-hang{position:relative;width:200px;padding-top:34px} .ds-nail{position:absolute;top:0;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e9ebec,#8c9396 55%,#4c5257);box-shadow:0 2px 3px rgba(0,0,0,.45)} .ds-flip{display:block;width:100%;padding:0;border:0;background:none;font:inherit;color:inherit;cursor:pointer;perspective:900px;text-align:center;border-radius:16px} .ds-flip:focus-visible{outline:3px solid var(--enamel);outline-offset:3px;box-shadow:0 0 0 6px var(--blue)} .ds-inner{display:grid;transition:transform .8s var(--ease);transform-style:preserve-3d} .ds-flip.is-flipped .ds-inner{transform:rotateY(180deg)} .ds-face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;padding:24px 18px 20px;display:flex;flex-direction:column;align-items:center} .ds-back{transform:rotateY(180deg)} .ds-state{font-family:var(--serif);font-weight:900;font-size:2rem;letter-spacing:.14em;text-indent:.14em;line-height:1.15} .ds-en{font-family:var(--sign);font-weight:700;font-size:14px;letter-spacing:.3em;text-indent:.3em} .ds-detail{margin-top:10px;font-family:var(--sans);font-weight:500;font-size:15px} .ds-wt{font-family:var(--serif);font-weight:900;font-size:18px;letter-spacing:.2em} .ds-wk{font-family:var(--sign);font-weight:700;font-size:15px;margin-top:6px} @media (prefers-reduced-motion:reduce){.ds-inner{transition:none}}"
+    },
+    {
+      "name": "Arrow Sign",
+      "kind": "button",
+      "refersTo": "arrow-sign",
+      "description": "Primary action: a clipped cobalt street-direction sign with nested white outline, linking to the map.",
+      "html": "<div class=\"ds-wall\"><a class=\"ds-arrow\" href=\"#\"><span class=\"ds-shape\"><span class=\"ds-txt\"><b>带我过去</b><small><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z\"/><circle cx=\"12\" cy=\"9\" r=\"2.5\"/></svg>打开地图导航</small></span></span></a></div>",
+      "css": ":host{--blue:#1d3c94;--blue-deep:#142c70;--enamel:#f5f6f2;--red:#c42a1f;--iron:#2a2d33;--ink:#172036;--ink-soft:#3b4866;--serif:\"Plate Song\",\"Songti SC\",\"STSong\",\"SimSun\",serif;--sign:\"Sign Gothic\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;--sans:\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Noto Sans CJK SC\",sans-serif;--shadow:0 1px 1px rgba(12,16,26,.35),0 14px 26px -12px rgba(12,16,26,.6);--ease:cubic-bezier(.16,1,.3,1)} .ds-wall{background:#7f8689;padding:28px;} .ds-arrow{display:inline-block;text-decoration:none;color:var(--enamel);filter:drop-shadow(0 1px 1px rgba(12,16,26,.35)) drop-shadow(0 12px 14px rgba(12,16,26,.38));transition:transform .35s var(--ease)} .ds-arrow:hover{transform:translateX(6px)} .ds-arrow:focus-visible{outline:3px solid var(--enamel);outline-offset:6px} .ds-shape{--tip:44px;position:relative;display:block;background:var(--blue);padding:22px calc(var(--tip) + 8px) 20px 24px;clip-path:polygon(0 0,calc(100% - var(--tip)) 0,100% 50%,calc(100% - var(--tip)) 100%,0 100%);transition:background-color .25s var(--ease)} .ds-arrow:hover .ds-shape{background:var(--blue-deep)} .ds-shape::before,.ds-shape::after{content:\"\";position:absolute;pointer-events:none} .ds-shape::before{inset:7px 9px 7px 7px;background:var(--enamel);clip-path:polygon(0 0,calc(100% - 39px) 0,100% 50%,calc(100% - 39px) 100%,0 100%)} .ds-shape::after{inset:10px 13px 10px 10px;background:inherit;clip-path:polygon(0 0,calc(100% - 37px) 0,100% 50%,calc(100% - 37px) 100%,0 100%)} .ds-txt{position:relative;z-index:1;display:block} .ds-txt b{display:block;font-family:var(--serif);font-weight:900;font-size:1.7rem;letter-spacing:.1em;line-height:1.2;white-space:nowrap} .ds-txt small{display:flex;align-items:center;gap:6px;margin-top:6px;font-family:var(--sans);font-size:14px;font-weight:500;white-space:nowrap}"
+    },
+    {
+      "name": "Blue Button",
+      "kind": "button",
+      "refersTo": "button-blue",
+      "description": "Solid cobalt action button inside white boards.",
+      "html": "<a class=\"ds-btn ds-btn-blue\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 20v-6a5 5 0 0 1 5-5h11M15 4l5 5-5 5\"/></svg>打开地图导航</a>",
+      "css": ":host{--blue:#1d3c94;--blue-deep:#142c70;--enamel:#f5f6f2;--red:#c42a1f;--iron:#2a2d33;--ink:#172036;--ink-soft:#3b4866;--serif:\"Plate Song\",\"Songti SC\",\"STSong\",\"SimSun\",serif;--sign:\"Sign Gothic\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;--sans:\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Noto Sans CJK SC\",sans-serif;--shadow:0 1px 1px rgba(12,16,26,.35),0 14px 26px -12px rgba(12,16,26,.6);--ease:cubic-bezier(.16,1,.3,1)} .ds-btn{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:10px 20px;border-radius:12px;font-family:var(--sans);font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;transition:background-color .25s var(--ease),transform .25s var(--ease)} .ds-btn-blue{background:var(--blue);color:var(--enamel);border:0;box-shadow:0 1px 1px rgba(12,16,26,.3),0 8px 14px -8px rgba(12,16,26,.55)} .ds-btn-blue:hover{background:var(--blue-deep)} .ds-btn:active{transform:translateY(1px)} .ds-btn:focus-visible{outline:3px solid var(--enamel);outline-offset:3px;box-shadow:0 0 0 6px var(--blue)}"
+    },
+    {
+      "name": "Line Button",
+      "kind": "button",
+      "refersTo": "button-line",
+      "description": "Outlined cobalt secondary button.",
+      "html": "<button class=\"ds-btn ds-btn-line\" type=\"button\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"8\" y=\"8\" width=\"12\" height=\"12\" rx=\"2\"/><path d=\"M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3\"/></svg>复制地址</button>",
+      "css": ":host{--blue:#1d3c94;--blue-deep:#142c70;--enamel:#f5f6f2;--red:#c42a1f;--iron:#2a2d33;--ink:#172036;--ink-soft:#3b4866;--serif:\"Plate Song\",\"Songti SC\",\"STSong\",\"SimSun\",serif;--sign:\"Sign Gothic\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;--sans:\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Noto Sans CJK SC\",sans-serif;--shadow:0 1px 1px rgba(12,16,26,.35),0 14px 26px -12px rgba(12,16,26,.6);--ease:cubic-bezier(.16,1,.3,1)} .ds-btn{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:10px 20px;border-radius:12px;font-family:var(--sans);font-weight:700;font-size:16px;cursor:pointer;transition:background-color .25s var(--ease),transform .25s var(--ease)} .ds-btn-line{background:transparent;color:var(--blue);border:2px solid var(--blue)} .ds-btn-line:hover{background:rgba(29,60,148,.08)} .ds-btn:active{transform:translateY(1px)} .ds-btn:focus-visible{outline:3px solid var(--enamel);outline-offset:3px;box-shadow:0 0 0 6px var(--blue)}"
+    },
+    {
+      "name": "Tag",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "Outlined cobalt option tag; solid red variant marks the current stop.",
+      "html": "<ul class=\"ds-tags\"><li>热 / 冰</li><li>可换燕麦奶</li><li class=\"ds-here\">本站</li></ul>",
+      "css": ":host{--blue:#1d3c94;--blue-deep:#142c70;--enamel:#f5f6f2;--red:#c42a1f;--iron:#2a2d33;--ink:#172036;--ink-soft:#3b4866;--serif:\"Plate Song\",\"Songti SC\",\"STSong\",\"SimSun\",serif;--sign:\"Sign Gothic\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;--sans:\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Noto Sans CJK SC\",sans-serif;--shadow:0 1px 1px rgba(12,16,26,.35),0 14px 26px -12px rgba(12,16,26,.6);--ease:cubic-bezier(.16,1,.3,1)} .ds-tags{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none;font-family:var(--sans)} .ds-tags li{font-size:13px;font-weight:500;border:1.5px solid var(--blue);color:var(--blue);padding:2px 10px;border-radius:6px} .ds-tags li.ds-here{background:var(--red);border-color:var(--red);color:var(--enamel);font-weight:700;letter-spacing:.1em}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Street Wall",
+    "overview": "The shop's address is its brand, so the page is the wall the shop hangs on. Every piece of key content is lettered onto a vitreous-enamel plate: a cobalt door plate for the address, white enamel boards for the price list and the address card, a two-sided red/iron hanging sign for live status, a street-sign arrow for the way in. Plates are physical objects: rounded corners, a white inner rule, four slotted screws, chipped edges showing dark iron and rust, and a soft cast shadow on the wall behind them.\n\nThe wall itself changes with the visitor's position. Outside (the hero and 怎么来) it is grey-blue 青砖 brick with recessed mortar. Inside (价目 / 豆单 / 店里) it is a limewashed 粉墙 interior whose plaster has fallen away in places to show the same brick beneath, so the two grounds read as one building. Nothing floats on a blank field; every plate hangs on a wall.\n\nLettering follows real Chinese street signage: a heavy Song face for the characters, a condensed highway-sign gothic for pinyin, numerals and plate codes, and the system CJK sans for anything that is meant to be read rather than seen. Density is low and signage-like; the page is legible on a phone in daylight.",
+    "keyCharacteristics": [
+      "Cobalt enamel is the voice; white enamel is the secondary board; signal red appears only for the live open state and \"you are here\".",
+      "Every content block is a plate with an inner rule, or sits on one.",
+      "Two wall grounds only: brick for the street, limewash with plaster losses for the interior.",
+      "Heavy Song characters with widely tracked Latin sign lettering beside or under them.",
+      "Motion is physical and once: plates settle with a pendulum swing; the hours sign flips on its hook."
+    ],
+    "rules": [
+      {
+        "name": "The Live Red Rule",
+        "body": "Signal red marks only live state or location: open now, today, this stop. It is never decoration and never a second brand color.",
+        "section": "colors"
+      },
+      {
+        "name": "The Closed Is Iron Rule",
+        "body": "The hours sign shows signal red when open and dark iron when closed (before opening, after closing, rest day). Do not show a red plate when the shop is closed.",
+        "section": "colors"
+      },
+      {
+        "name": "The Bilingual Sign Rule",
+        "body": "A lettered plate pairs Plate Song characters with a smaller tracked Sign Gothic line (pinyin or English) beside or below, as on real street signs. Wide tracking is reserved for this short uppercase Latin line and for display characters; reading text is never tracked.",
+        "section": "typography"
+      },
+      {
+        "name": "The Numbers Are Sign Gothic Rule",
+        "body": "Prices, hours, house and stop numbers are set in Sign Gothic with tabular figures.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Wall Rule",
+        "body": "Shadows describe a plate hanging on a wall lit from above. Shadows are soft and drop downward. Nothing floats above another plate.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** put every key fact on an enamel plate with its inner rule; choose cobalt for primary, white for secondary boards.",
+      "**Do** scale the plate radius, inset and rule together using the four existing steps.",
+      "**Do** pair Plate Song characters with a tracked Sign Gothic line on signs, and set all numbers in Sign Gothic with tabular figures.",
+      "**Do** use brick for street-facing sections and limewash with plaster losses for interior sections.",
+      "**Do** keep the hours sign driven by the live clock: red for open, iron for closed.",
+      "**Do** regenerate the font subsets after editing Chinese text, and regenerate wall SVGs from their scripts rather than editing them by hand.",
+      "**Do** honour `prefers-reduced-motion` for every new movement."
+    ],
+    "donts": [
+      "**Don't** use signal red for anything except live state or location.",
+      "**Don't** place a plate on a blank background; it always hangs on brick or limewash.",
+      "**Don't** track body text or set reading paragraphs in Plate Song.",
+      "**Don't** add looping or decorative motion; plates move only as hung objects settling or a sign being turned.",
+      "**Don't** add more than one or two chips to a plate, or chip small plates; wear is evidence of age, not texture.",
+      "**Don't** fabricate photos, reviews or ratings to fill a plate; demo content stays labelled as demo."
+    ]
+  }
+}
