@@ -15,7 +15,7 @@ if (!EP || !fs.existsSync(path.join(ROOT, `${EP}.html`))) { console.error('usage
 const OUT = path.join(ROOT, 'out', EP);
 fs.mkdirSync(OUT, { recursive: true });
 
-const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2', '.woff': 'font/woff' };
+const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2', '.woff': 'font/woff', '.webp': 'image/webp' };
 function serve() {
   return new Promise(res => {
     const srv = http.createServer((req, rsp) => {
@@ -36,6 +36,7 @@ async function openPage(browser, port) {
   await page.evaluate(async () => {
     for (let t = 0; t < window.DUR; t += 0.1) window.seek(t);
     await document.fonts.ready;
+    await Promise.all([...document.images].map(i => i.decode().catch(() => console.error('img failed', i.src))));
     await new Promise(r => setTimeout(r, 300));
     await document.fonts.ready;
   });

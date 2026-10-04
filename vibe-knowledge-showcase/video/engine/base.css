@@ -31,6 +31,7 @@ html, body { background: #000; overflow: hidden; }
 .scene { position: absolute; inset: 0; display: none; }
 .mono { font-family: var(--mono); }
 .emo { font-family: 'Noto Color Emoji'; font-weight: 400; }
+.ico { filter: drop-shadow(0 16px 20px rgba(0,0,0,.45)); transform-origin: 50% 50%; image-rendering: auto; }
 .caret { display: inline-block; width: .55em; height: 1em; background: var(--green); vertical-align: -.12em; margin-left: .06em; }
 
 /* chrome */

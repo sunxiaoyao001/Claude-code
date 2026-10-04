@@ -23,6 +23,17 @@ function mk(parent, css = '', html = '', cls = 'abs') {
   parent.appendChild(e);
   return e;
 }
+// 3D illustration from Fluent Emoji 3D (MIT). `code` is the asset file name (codepoints, e.g. '1f9e0').
+// (cx, cy) is the centre in the parent's coordinates; size is the rendered width/height in px.
+const ICON_DIR = 'node_modules/@lobehub/fluent-emoji-3d/assets/';
+function ico(parent, code, size, cx, cy, css = '') {
+  const e = document.createElement('img');
+  e.className = 'abs ico';
+  e.src = `${ICON_DIR}${code}.webp`;
+  e.style.cssText = `left:${cx - size / 2}px;top:${cy - size / 2}px;width:${size}px;height:${size}px;` + css;
+  parent.appendChild(e);
+  return e;
+}
 // transform/opacity setter
 function T(e, { x = 0, y = 0, s = 1, sx, sy, r = 0, o = 1 } = {}) {
   const scale = sx !== undefined || sy !== undefined ? `scale(${sx ?? s},${sy ?? s})` : `scale(${s})`;
