@@ -1,10 +1,13 @@
 """Synthesize the lo-fi backing track + sound effects for the video.
 
-Reads out/cues.json (exported from index.html by `node render.js cues`) and
-writes out/music.wav. Everything is generated procedurally, so there is no
+Usage: python3 music.py <ep>
+Reads out/<ep>/cues.json (exported by `node render.js <ep> cues`) and writes
+out/<ep>/music.wav. The episode's CONFIG.music picks the chord set and where
+the drop / break / outro land. Everything is generated procedurally, so there is no
 third-party audio and no licensing question.
 """
 import json
+import sys
 import wave
 from pathlib import Path
 
@@ -12,13 +15,13 @@ import numpy as np
 from scipy.signal import butter, sosfilt
 
 SR = 44100
-OUT = Path(__file__).parent / "out"
+OUT = Path(__file__).parent / "out" / sys.argv[1]
 BPM = 100
 BEAT = 60 / BPM          # 0.6 s
 BAR = BEAT * 4           # 2.4 s
-rng = np.random.default_rng(7)
-
 cfg = json.loads((OUT / "cues.json").read_text())
+MUSIC = cfg.get("music") or {}
+rng = np.random.default_rng(MUSIC.get("seed", 7))
 DUR = cfg["dur"]
 N = int(DUR * SR)
 
@@ -111,18 +114,19 @@ def pluck(m):
 
 
 # ---------------------------------------------------------------- arrangement
-CHORDS = [  # Fmaj7, Em7, Dm7, Cmaj7  (midi)
-    ([53, 57, 60, 64], 41),
-    ([52, 55, 59, 62], 40),
-    ([50, 53, 57, 60], 38),
-    ([48, 52, 55, 59], 36),
-]
-PENTA = [72, 74, 76, 79, 81, 84]
+CHORD_SETS = {
+    # Fmaj7, Em7, Dm7, Cmaj7  (midi voicing, bass root)
+    "ep01": ([([53, 57, 60, 64], 41), ([52, 55, 59, 62], 40), ([50, 53, 57, 60], 38), ([48, 52, 55, 59], 36)],
+             [72, 74, 76, 79, 81, 84]),
+    # Am7, Fmaj7, Cmaj7, G6 — warmer, a little wistful
+    "ep02": ([([57, 60, 64, 67], 45), ([53, 57, 60, 64], 41), ([48, 52, 55, 59], 36), ([55, 59, 62, 64], 43)],
+             [69, 72, 74, 76, 79, 81]),
+}
+CHORDS, PENTA = CHORD_SETS[MUSIC.get("chords", "ep01")]
 
-DROP = 8.4          # full beat comes in with the first card
-BREAK_A = 60.0      # BUILD FAILED → drums cut
-BREAK_B = 64.8      # rollback succeeds → drums back
-OUTRO = 74.4        # CTA: drums thin out
+DROP = MUSIC.get("drop", 8.4)                  # full beat comes in with the first card
+BREAK_A, BREAK_B = (MUSIC.get("breaks") or [[DUR + 1, DUR + 1]])[0]   # drums cut for the episode's big moment
+OUTRO = MUSIC.get("outro", 74.4)               # CTA: drums thin out
 
 keys, drums, low, mel = buf(), buf(), buf(), buf()
 kick_times = []
@@ -157,8 +161,9 @@ for b in range(nbars):
                 m = PENTA[int(rng.integers(0, len(PENTA)))]
                 place(mel, pluck(m), tb + (BEAT / 2 if rng.random() < .4 else 0), .07, pan=float(rng.uniform(-.5, .5)))
 
-place(low, bass(CHORDS[3][1]), BREAK_B, .5)   # bass re-enters with the rollback
-place(drums, kick(), BREAK_B, .9); kick_times.append(BREAK_B)
+if BREAK_B < DUR:                              # bass + kick re-enter on the beat after the break
+    place(low, bass(CHORDS[int((BREAK_B - GRID) // BAR) % 4][1]), BREAK_B, .5)
+    place(drums, kick(), BREAK_B, .9); kick_times.append(BREAK_B)
 
 # intro / break: low-pass the keys, open up on the drop
 keys_lp = filt(keys, "low", 900)

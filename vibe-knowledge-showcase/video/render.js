@@ -1,8 +1,8 @@
 // Frame-accurate renderer: seeks the page to each frame time, screenshots it, pipes into ffmpeg.
-// Usage:
-//   node render.js stills 1.5,10,20        -> out/still_<t>.png
-//   node render.js cues                    -> out/cues.json (sound-effect cue list for music.py)
-//   node render.js video [workers]         -> out/video_noaudio.mp4
+// Usage (<ep> is an episode shell, e.g. ep01 → ep01.html):
+//   node render.js <ep> stills 1.5,10,20   -> out/<ep>/still_<t>.png
+//   node render.js <ep> cues               -> out/<ep>/cues.json (sfx cues + music config for music.py)
+//   node render.js <ep> video [workers]    -> out/<ep>/video_noaudio.mp4
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -10,7 +10,9 @@ const { spawn, execFileSync } = require('child_process');
 const { chromium } = require('playwright');
 
 const ROOT = __dirname;
-const OUT = path.join(ROOT, 'out');
+const EP = process.argv[2];
+if (!EP || !fs.existsSync(path.join(ROOT, `${EP}.html`))) { console.error('usage: node render.js <ep> <stills|cues|video> [arg]'); process.exit(1); }
+const OUT = path.join(ROOT, 'out', EP);
 fs.mkdirSync(OUT, { recursive: true });
 
 const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2', '.woff': 'font/woff' };
@@ -29,7 +31,7 @@ function serve() {
 async function openPage(browser, port) {
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
   page.on('pageerror', e => console.error('pageerror:', e.message));
-  await page.goto(`http://127.0.0.1:${port}/index.html`);
+  await page.goto(`http://127.0.0.1:${port}/${EP}.html`);
   // warm every glyph subset: visit the whole timeline once, then wait for fonts
   await page.evaluate(async () => {
     for (let t = 0; t < window.DUR; t += 0.1) window.seek(t);
@@ -41,7 +43,7 @@ async function openPage(browser, port) {
 }
 
 async function main() {
-  const [mode = 'video', arg] = process.argv.slice(2);
+  const [mode = 'video', arg] = process.argv.slice(3);
   const srv = await serve();
   const port = srv.address().port;
   const browser = await chromium.launch();
@@ -54,7 +56,7 @@ async function main() {
       }
     } else if (mode === 'cues') {
       const page = await openPage(browser, port);
-      const data = await page.evaluate(() => ({ dur: window.DUR, cues: window.CUES, subs: window.SUBS }));
+      const data = await page.evaluate(() => ({ dur: window.DUR, slug: window.CONFIG.slug, music: window.CONFIG.music, cues: window.CUES, subs: window.SUBS }));
       fs.writeFileSync(path.join(OUT, 'cues.json'), JSON.stringify(data, null, 1));
       console.log(`${data.cues.length} cues, ${data.subs.length} subtitles`);
     } else {

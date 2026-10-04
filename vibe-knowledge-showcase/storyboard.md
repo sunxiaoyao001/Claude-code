@@ -1,7 +1,7 @@
 # 《Vibe Coding 黑话大赏》分镜 + 文案 v2（字幕 + 音乐版）
 
 > 竖屏 9:16 · 1080×1920 · 30fps · 80 秒 · 无配音，字幕 + 配乐
-> 成片工程在 `video/`；画面、字幕、音效时间以 `video/index.html` 为准
+> 成片工程在 `video/`；画面、字幕、音效时间以 `video/episodes/ep01.js` 为准
 > 形式：代码驱动的动态图形（Vibe Motion 路线，后续可用 HyperFrames / Remotion 直接写 HTML/React 出片）
 
 ---

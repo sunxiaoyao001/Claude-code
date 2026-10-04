@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>认知偏差大赏</title>
+<link rel="stylesheet" href="node_modules/@fontsource-variable/noto-sans-sc/wght.css">
+<link rel="stylesheet" href="node_modules/@fontsource/jetbrains-mono/400.css">
+<link rel="stylesheet" href="node_modules/@fontsource/jetbrains-mono/700.css">
+<link rel="stylesheet" href="engine/base.css">
+<style>
+  /* ep02 palette: warm yellow + pink on a violet-tinted dark */
+  :root { --green: #FFD84D; --orange: #FF8FB8; --bg: #100F16; --panel: #1A1824; --line: #2E2B3B; }
+  #stage {
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 45%, rgba(255,216,77,.06), transparent 70%),
+      linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px) 0 0 / 60px 60px,
+      linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px) 0 0 / 60px 60px,
+      var(--bg);
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="grain" width="270" height="480"></canvas>
+  <div id="vignette"></div>
+  <div id="flash"></div>
+  <div id="chrome"><div id="pill">#01 / 10</div><div id="segs"></div></div>
+  <div id="sub"><span></span></div>
+</div>
+<script src="engine/engine.js"></script>
+<script src="episodes/ep02.js"></script>
+</body>
+</html>

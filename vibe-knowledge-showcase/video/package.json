@@ -1,10 +1,10 @@
 {
   "name": "vibe-coding-jargon-video",
   "version": "1.0.0",
-  "description": "Vibe Coding 黑话大赏 — code-driven motion graphics video",
+  "description": "Vibe 知识大赏 — code-driven motion graphics series",
   "scripts": {
     "build": "./build.sh",
-    "stills": "node render.js stills"
+    "stills": "node render.js"
   },
   "author": "",
   "license": "ISC",
