@@ -89,7 +89,9 @@ export function BattleHUD() {
         <>
           <div className="absolute inset-x-0 top-3 flex flex-col items-center gap-2 px-3">
             <Scoreboard />
-            <TacticalHint />
+            <div className="hidden sm:block">
+              <TacticalHint />
+            </div>
           </div>
           <div className="absolute right-3 top-[86px] xl:top-3">
             <SpeedControls statsOpen={statsOpen} onStats={() => setStatsOpen((v) => !v)} onMenu={() => setMenuOpen(true)} />
@@ -100,7 +102,7 @@ export function BattleHUD() {
             </div>
           )}
           {selected >= 0 && (
-            <div className="absolute bottom-3 right-3 top-[134px] flex items-start md:bottom-[214px] xl:top-[62px]">
+            <div className="absolute inset-x-3 bottom-3 flex items-end sm:inset-x-auto sm:right-3 sm:top-[134px] sm:items-start md:bottom-[214px] xl:top-[62px]">
               <UnitInspector />
             </div>
           )}

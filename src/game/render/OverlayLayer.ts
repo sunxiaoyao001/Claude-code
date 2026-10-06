@@ -166,10 +166,9 @@ export class OverlayLayer {
       if (show) this.bar(top, sx, sy - (s.stance === 'stand' ? 46 : 34), s.hp / s.maxHp, s.team, inv, s.suppression);
       if (opts.callouts && s.callout && s.calloutUntil > now) {
         const t = this.text(ti++);
-        t.setText(opts.translate(`call.${s.callout}`));
+        this.setLabel(t, opts.translate(`call.${s.callout}`), s.team === 0 ? 'rgba(14,30,52,0.82)' : 'rgba(52,18,14,0.82)');
         t.setPosition(sx, sy - (s.stance === 'stand' ? 52 : 40)).setScale(inv).setVisible(true);
         t.setAlpha(Math.min(1, (s.calloutUntil - now) * 3));
-        t.setBackgroundColor(s.team === 0 ? 'rgba(14,30,52,0.82)' : 'rgba(52,18,14,0.82)');
       }
     }
     for (const v of tanks.values()) {
@@ -178,12 +177,21 @@ export class OverlayLayer {
       if (opts.healthBars !== 'off') this.bar(top, v.pos.sx, v.pos.sy - 66, t.hp / t.maxHp, t.team, inv * 1.6, 0);
       if (opts.callouts && t.callout && t.calloutUntil > now) {
         const tx = this.text(ti++);
-        tx.setText(opts.translate(`call.${t.callout}`));
+        this.setLabel(tx, opts.translate(`call.${t.callout}`), t.team === 0 ? 'rgba(14,30,52,0.82)' : 'rgba(52,18,14,0.82)');
         tx.setPosition(v.pos.sx, v.pos.sy - 74).setScale(inv).setVisible(true).setAlpha(1);
       }
     }
     for (let k = ti; k < this.texts.length; k++) this.texts[k].setVisible(false);
     for (let k = ci; k < this.crosses.length; k++) this.crosses[k].setVisible(false);
+  }
+
+  /** Text/background changes re-render the label texture, so only apply real changes. */
+  private setLabel(t: Phaser.GameObjects.Text, text: string, bg: string) {
+    if (t.getData('bg') !== bg) {
+      t.setData('bg', bg);
+      t.setBackgroundColor(bg);
+    }
+    if (t.text !== text) t.setText(text);
   }
 
   private bar(gr: Phaser.GameObjects.Graphics, x: number, y: number, frac: number, team: 0 | 1, s: number, supp: number) {

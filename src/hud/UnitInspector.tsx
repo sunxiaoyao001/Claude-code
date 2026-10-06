@@ -53,7 +53,7 @@ function InspectorBody({ u, t }: { u: UnitInfo; t: (k: string, p?: Record<string
   const color = teamColor(u.team);
   const acc = pct(u.stats.hits, u.stats.shots);
   return (
-    <section className="hud-panel pointer-events-auto flex max-h-full w-[340px] flex-col rounded-md" aria-labelledby="inspect-name">
+    <section className="hud-panel pointer-events-auto flex max-h-[50vh] w-full flex-col rounded-md sm:max-h-full sm:w-[340px]" aria-labelledby="inspect-name">
       <header className="flex items-start gap-3 border-b border-hairline px-3 pb-2.5 pt-3">
         <TeamMark team={u.team} size={14} className="mt-1.5" />
         <div className="min-w-0 flex-1">

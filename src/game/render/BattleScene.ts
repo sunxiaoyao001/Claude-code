@@ -31,6 +31,10 @@ export class BattleScene extends Phaser.Scene {
   private hovered = -1;
   private followId = -1;
   private fpsAvg = 60;
+  /** Average JS time spent in update() per frame (ms), excluding GPU work. */
+  frameMs = 0;
+  /** Of which: view/FX update (everything except stepping the simulation). */
+  viewMs = 0;
   private colorFx: Phaser.FX.ColorMatrix | null = null;
   private exhaustT = 0;
 
@@ -228,9 +232,21 @@ export class BattleScene extends Phaser.Scene {
   };
 
   update(_time: number, delta: number) {
+    const t0 = performance.now();
+    this.frame(delta);
+    this.frameMs = this.frameMs * 0.95 + (performance.now() - t0) * 0.05;
+  }
+
+  private frame(delta: number) {
     const dt = Math.min(0.1, delta / 1000);
     if (delta > 0) this.fpsAvg = this.fpsAvg * 0.95 + (1000 / delta) * 0.05;
     const alpha = game.tick(delta);
+    const tv = performance.now();
+    this.viewPart(dt, alpha);
+    this.viewMs = this.viewMs * 0.95 + (performance.now() - tv) * 0.05;
+  }
+
+  private viewPart(dt: number, alpha: number) {
     const sim = this.sim;
     if (!sim || !this.fx || !this.structures || !this.overlay || !this.camCtl || !this.groundLayer) return;
     const st = useGame.getState();

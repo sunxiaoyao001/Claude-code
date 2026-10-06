@@ -359,7 +359,7 @@ export class GroundLayer {
   }
 
   update(time: number) {
-    if (this.shadowDirty && time - this.lastShadowBake > 400) {
+    if (this.shadowDirty && time - this.lastShadowBake > 1500) {
       this.shadowDirty = false;
       this.lastShadowBake = time;
       this.bakeShadows();

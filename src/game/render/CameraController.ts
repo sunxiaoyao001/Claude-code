@@ -29,6 +29,7 @@ export class CameraController {
   minZoom = 0.3;
   maxZoom = 3.2;
   private pointerInside = true;
+  private pinch: { d: number; z: number } | null = null;
 
   constructor(
     private scene: Phaser.Scene,
@@ -36,13 +37,28 @@ export class CameraController {
   ) {
     this.cam = scene.cameras.main;
     const input = scene.input;
+    input.addPointer(1);
     input.on('pointerdown', (p: Phaser.Input.Pointer) => {
       if (p.event.target !== scene.game.canvas) return;
+      if (input.pointer1.isDown && input.pointer2.isDown) {
+        // second finger: switch from drag to pinch
+        this.downAt = null;
+        this.dragging = false;
+        this.pinch = { d: Phaser.Math.Distance.Between(input.pointer1.x, input.pointer1.y, input.pointer2.x, input.pointer2.y), z: this.targetZoom };
+        return;
+      }
       this.downAt = { x: p.x, y: p.y, sx: this.cam.scrollX, sy: this.cam.scrollY };
       this.dragging = false;
     });
     input.on('pointermove', (p: Phaser.Input.Pointer) => {
       this.pointerInside = true;
+      if (this.pinch && input.pointer1.isDown && input.pointer2.isDown) {
+        const p1 = input.pointer1;
+        const p2 = input.pointer2;
+        const d = Phaser.Math.Distance.Between(p1.x, p1.y, p2.x, p2.y);
+        this.zoomAt((this.pinch.z * d) / Math.max(1, this.pinch.d), (p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+        return;
+      }
       if (this.downAt && p.isDown) {
         const dx = p.x - this.downAt.x;
         const dy = p.y - this.downAt.y;
@@ -61,6 +77,11 @@ export class CameraController {
       }
     });
     input.on('pointerup', (p: Phaser.Input.Pointer) => {
+      if (this.pinch) {
+        if (!input.pointer1.isDown && !input.pointer2.isDown) this.pinch = null;
+        this.downAt = null;
+        return;
+      }
       if (this.downAt && !this.dragging && p.event.target === scene.game.canvas) {
         const w = this.toWorld(p.x, p.y);
         const now = performance.now();
