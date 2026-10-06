@@ -1,0 +1,44 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "huozi/styles.css"
+        ],
+        "createdAt": "2026-10-06T11:59:57.265Z",
+        "reason": "Claude triage: remaining hit is .stick border-left 14px, the composing stick's fixed knee (domain object), not an accent card; the .example quote rule was removed instead"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "huozi/styles.css"
+        ],
+        "createdAt": "2026-10-06T11:59:57.278Z",
+        "reason": "Claude triage: .btn-press 4px darker bottom edge is the metal-sort body depth shared with .sort, a pressable key, not an accent stripe"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "huozi/index.html"
+        ],
+        "createdAt": "2026-10-06T11:59:57.293Z",
+        "reason": "Claude triage: same .stick knee from huozi/styles.css rendered in the page"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "huozi/index.html"
+        ],
+        "createdAt": "2026-10-06T11:59:57.306Z",
+        "reason": "Claude triage: same .btn-press sort depth from huozi/styles.css rendered in the page"
+      }
+    ]
+  }
+}

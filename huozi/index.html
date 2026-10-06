@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>活字背单词</title>
+<meta name="description" content="把单词拆成词根字模，再亲手排回去。墨色褪得越淡，说明你越可能忘了。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Noto+Serif+SC:wght@400;600;900&family=Rokkitt:wght@400..800&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <div class="brand">
+      <div class="brand-sorts" aria-hidden="true"><span>活</span><span>字</span></div>
+      <h1 class="sr-only">活字背单词</h1>
+      <p class="brand-line">把单词拆成词根，再亲手排回去</p>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="主要功能">
+      <button class="tab" role="tab" id="tab-compose" aria-controls="view-compose" aria-selected="true" title="学新词、复习">排字<span class="badge" id="badge-compose"></span></button>
+      <button class="tab" role="tab" id="tab-case" aria-controls="view-case" aria-selected="false" tabindex="-1" title="自由拼词、拆生词">字盘</button>
+      <button class="tab" role="tab" id="tab-proof" aria-controls="view-proof" aria-selected="false" tabindex="-1" title="看记忆褪色">校样</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="view-compose" role="tabpanel" aria-labelledby="tab-compose"></section>
+    <section id="view-case" role="tabpanel" aria-labelledby="tab-case" hidden></section>
+    <section id="view-proof" role="tabpanel" aria-labelledby="tab-proof" hidden></section>
+  </main>
+
+  <footer class="foot">
+    <div class="settings">
+      <label for="set-new">每天新词
+        <select id="set-new">
+          <option value="5">5 个</option>
+          <option value="8">8 个</option>
+          <option value="12">12 个</option>
+          <option value="20">20 个</option>
+        </select>
+      </label>
+      <label for="set-speak"><input type="checkbox" id="set-speak"> 排好后自动朗读</label>
+      <button type="button" class="link" id="reset">清空进度</button>
+      <span class="confirm" id="reset-confirm" hidden>
+        清空后校样上的墨色全部消失，无法恢复。
+        <button type="button" class="btn btn-danger" id="reset-yes">确认清空</button>
+        <button type="button" class="btn" id="reset-no">保留</button>
+      </span>
+    </div>
+    <p><span id="sync-note">学习进度保存在这台设备的浏览器里。</span>词库收录 170 个单词、30 个词根，音标为美式发音。</p>
+  </footer>
+</div>
+<div class="sr-only" id="live" aria-live="polite"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
