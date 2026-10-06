@@ -1,0 +1,44 @@
+{
+  "name": "autonomous-front",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Web RTS where AI armies fight autonomously in 10v10 / 15v15 / 20v20 battles while you observe.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --pretty",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "sim:batch": "SIM_TOOLS=1 vitest run batch --silent=false",
+    "sim:nodes": "SIM_TOOLS=1 vitest run nodes --silent=false",
+    "sim:trace": "SIM_TOOLS=1 vitest run trace --silent=false",
+    "sim:report": "SIM_TOOLS=1 vitest run report --silent=false"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.52.0",
+    "matter-js": "^0.20.0",
+    "phaser": "^3.90.0",
+    "radix-ui": "^1.7.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwind-merge": "^3.7.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/matter-js": "^0.20.2",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "tailwindcss": "^4.3.3",
+    "tw-animate-css": "^1.4.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.3",
+    "vitest": "^5.0.3"
+  }
+}
