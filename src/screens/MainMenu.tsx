@@ -75,7 +75,18 @@ function LiveTicker() {
   const roster = useGame((s) => s.roster);
   const hud = useGame((s) => s.hud);
   const biome = game.sim?.config.biome;
-  const items = useMemo(() => feed.filter((f) => f.kind !== 'capture').slice(-4), [feed]);
+  // newest last; keep one line per kind of event so the ticker shows variety
+  const items = useMemo(() => {
+    const seen = new Set<string>();
+    const out = [];
+    for (let i = feed.length - 1; i >= 0 && out.length < 4; i--) {
+      const f = feed[i];
+      if (f.kind === 'capture' || seen.has(f.key)) continue;
+      seen.add(f.key);
+      out.unshift(f);
+    }
+    return out;
+  }, [feed]);
   if (!hud) return null;
   return (
     <aside className="pointer-events-auto absolute bottom-6 right-6 hidden w-[360px] hud-panel rounded-md p-4 md:block" aria-live="polite">

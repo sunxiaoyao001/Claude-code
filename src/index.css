@@ -1,9 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "@fontsource/ibm-plex-sans-condensed/400";
-@import "@fontsource/ibm-plex-sans-condensed/500";
-@import "@fontsource/ibm-plex-sans-condensed/600";
-@import "@fontsource/ibm-plex-sans-condensed/700";
+@import "@fontsource/ibm-plex-sans-condensed/latin-400";
+@import "@fontsource/ibm-plex-sans-condensed/latin-500";
+@import "@fontsource/ibm-plex-sans-condensed/latin-600";
+@import "@fontsource/ibm-plex-sans-condensed/latin-700";
 @import "@fontsource-variable/big-shoulders-stencil-display";
 
 @custom-variant dark (&:is(.dark *));
@@ -14,6 +14,7 @@
   neutral controls and selection (matches the in-game selection ring).
 */
 :root {
+  color-scheme: dark;
   --background: #0e110c;
   --foreground: #e6e1d2;
   --card: #12160f;
