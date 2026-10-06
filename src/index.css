@@ -1,10 +1,161 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource/ibm-plex-sans-condensed/400";
+@import "@fontsource/ibm-plex-sans-condensed/500";
+@import "@fontsource/ibm-plex-sans-condensed/600";
+@import "@fontsource/ibm-plex-sans-condensed/700";
+@import "@fontsource-variable/big-shoulders-stencil-display";
 
-html,
-body,
-#root {
-  height: 100%;
-  margin: 0;
-  background: #0b0d0c;
-  overflow: hidden;
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Exercise-umpire console: olive-black equipment-case panels over the live battle,
+  bone text, team colours reserved for the two sides, pale signal yellow for
+  neutral controls and selection (matches the in-game selection ring).
+*/
+:root {
+  --background: #0e110c;
+  --foreground: #e6e1d2;
+  --card: #12160f;
+  --card-foreground: #e6e1d2;
+  --popover: #151a12;
+  --popover-foreground: #e6e1d2;
+  --primary: #f2d27a;
+  --primary-foreground: #15180f;
+  --secondary: #20261c;
+  --secondary-foreground: #e6e1d2;
+  --muted: #1b2017;
+  --muted-foreground: #9aa08f;
+  --accent: #262e22;
+  --accent-foreground: #f3eddc;
+  --destructive: #ff5a47;
+  --border: rgb(230 225 210 / 0.13);
+  --input: rgb(230 225 210 / 0.2);
+  --ring: #f2d27a;
+  --radius: 3px;
+
+  --panel: rgb(16 20 13 / 0.84);
+  --panel-strong: rgb(14 17 12 / 0.94);
+  --hairline: rgb(230 225 210 / 0.1);
+  --team-blue: #4fa8ff;
+  --team-blue-dim: #24486b;
+  --team-red: #ff5a47;
+  --team-red-dim: #6b2720;
+  --signal: #f2d27a;
+  --ok: #8fd694;
+  --fail: #c9786b;
+}
+
+@theme inline {
+  --font-sans: "IBM Plex Sans Condensed", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  --font-display: "Big Shoulders Stencil Display Variable", "IBM Plex Sans Condensed", "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-panel: var(--panel);
+  --color-panel-strong: var(--panel-strong);
+  --color-hairline: var(--hairline);
+  --color-blue-team: var(--team-blue);
+  --color-blue-team-dim: var(--team-blue-dim);
+  --color-red-team: var(--team-red);
+  --color-red-team-dim: var(--team-red-dim);
+  --color-signal: var(--signal);
+  --color-ok: var(--ok);
+  --color-fail: var(--fail);
+
+  --radius-sm: calc(var(--radius) - 1px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+
+  --animate-pulse-soft: pulse-soft 1.4s ease-in-out infinite;
+  --animate-ticker-in: ticker-in 280ms ease-out both;
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes ticker-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/60;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--background);
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* panels drawn over the battlefield */
+@utility hud-panel {
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  backdrop-filter: blur(6px) saturate(115%);
+  -webkit-backdrop-filter: blur(6px) saturate(115%);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 8px 24px rgb(0 0 0 / 0.28);
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(230 225 210 / 0.2) transparent;
 }

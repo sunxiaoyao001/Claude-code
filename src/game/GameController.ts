@@ -7,8 +7,10 @@ import { useGame, type BattleResult, type UnitCard, type UnitInfo } from '@/stor
 
 export interface SceneHooks {
   load(sim: Simulation, cinematic: boolean): Promise<void>;
-  focusWorld(x: number, y: number, follow: boolean): void;
+  focusWorld(x: number, y: number, follow: boolean, instant?: boolean): void;
   setFollow(id: number): void;
+  /** Ground-plane world coordinates of the four screen corners (minimap viewport). */
+  viewCorners(): { x: number; y: number }[];
   readonly fps: number;
 }
 
@@ -32,6 +34,7 @@ export class GameController {
   private feedCursor = 0;
   private endedRealTime = 0;
   private attractQueued = false;
+  private resultsShown = false;
   private loadingBattle = false;
   private biomeCycle: Biome[] = ['urban', 'desert', 'snow'];
   private attractIdx = 0;
@@ -76,6 +79,7 @@ export class GameController {
       this.feedCursor = 0;
       this.endedRealTime = 0;
       this.attractQueued = false;
+      this.resultsShown = false;
       this.select(-1);
       const st = useGame.getState();
       st.clearFeed();
@@ -125,7 +129,8 @@ export class GameController {
     if (this.endedRealTime && now - this.endedRealTime > (this.mode === 'attract' ? 3500 : 2600)) {
       if (this.mode === 'battle') {
         const st = useGame.getState();
-        if (st.phase === 'battle') {
+        if (st.phase === 'battle' && !this.resultsShown) {
+          this.resultsShown = true;
           st.setResult(this.buildResult());
           st.setPhase('results');
         }
@@ -188,10 +193,10 @@ export class GameController {
     this.publishUnit();
   }
 
-  focusPoint(x: number, y: number) {
+  focusPoint(x: number, y: number, instant = true) {
     this.following = false;
     this.scene?.setFollow(-1);
-    this.scene?.focusWorld(x, y, false);
+    this.scene?.focusWorld(x, y, false, instant);
   }
 
   // ---------------------------------------------------------------------------
@@ -202,7 +207,7 @@ export class GameController {
     const sim = this.sim;
     if (!sim) return;
     const st = useGame.getState();
-    if (this.mode !== 'battle' && !force) return;
+    void force;
     const total: [number, number] = [0, 0];
     const tanks: [number, number] = [0, 0];
     for (const s of sim.soldiers) total[s.team]++;

@@ -62,10 +62,19 @@ export class BattleScene extends Phaser.Scene {
     const scene = this;
     game.attach({
       load: (sim, cinematic) => scene.loadBattle(sim, cinematic),
-      focusWorld: (x, y, follow) => scene.focusWorld(x, y, follow),
+      focusWorld: (x, y, follow, instant) => scene.focusWorld(x, y, follow, instant),
       setFollow: (id) => {
         scene.followId = id;
         if (scene.camCtl) scene.camCtl.follow = id >= 0 ? () => scene.followTarget() : null;
+      },
+      viewCorners: () => {
+        const v = scene.cameras.main.worldView;
+        return [
+          [v.x, v.y],
+          [v.right, v.y],
+          [v.right, v.bottom],
+          [v.x, v.bottom],
+        ].map(([sx, sy]) => screenToWorld(sx, sy));
       },
       get fps() {
         return scene.fpsAvg;
@@ -163,10 +172,14 @@ export class BattleScene extends Phaser.Scene {
     return v ? { x: v.pos.sx, y: v.pos.sy } : null;
   }
 
-  focusWorld(x: number, y: number, follow: boolean) {
+  focusWorld(x: number, y: number, follow: boolean, instant = false) {
     if (!this.camCtl) return;
     this.camCtl.cinematic = null;
     if (!follow) this.camCtl.follow = null;
+    if (instant) {
+      this.camCtl.centerOn(isoX(x, y), isoY(x, y));
+      return;
+    }
     this.camCtl.panTo(isoX(x, y), isoY(x, y));
     if (this.camCtl.zoom < 1.1) this.camCtl.zoomAt(1.4, this.scale.width / 2, this.scale.height / 2);
   }
