@@ -1,4 +1,13 @@
 # Claude-code
+
+## Vibe知识大赏 · 短视频工程
+
+| 选题 | 目录 | 成片 |
+| --- | --- | --- |
+| 三人决斗（枪手博弈）：枪法最烂的那个，活下来的概率最大 | [`vibe-knowledge/truel`](vibe-knowledge/truel) | [`vibe-truel-1080x1920.mp4`](vibe-knowledge/truel/out/vibe-truel-1080x1920.mp4) · [分镜脚本](vibe-knowledge/truel/SCRIPT.md) |
+
+Remotion + GLSL + Three.js + Canvas，竖屏 1080×1920 / 30fps，无配音、纯字幕叙事，音效与配乐全部程序化合成。
+
 ## 已安装的网站设计 Skills（`.claude/skills/`）
 
 | Skill | 来源 | 用途 |
