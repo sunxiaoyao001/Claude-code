@@ -1,0 +1,32 @@
+{
+  "name": "mirror-brain-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "为什么镜子里的你，比照片里好看10倍？—— 大脑的内置美颜 (Remotion)",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render MirrorBrain out/mirror-brain.mp4 --gl=swangle",
+    "still": "remotion still"
+  },
+  "dependencies": {
+    "@react-three/drei": "9.122.0",
+    "@react-three/fiber": "8.18.0",
+    "@react-three/postprocessing": "2.19.1",
+    "@remotion/cli": "4.0.534",
+    "@remotion/three": "4.0.534",
+    "postprocessing": "6.37.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.534",
+    "simplex-noise": "4.0.3",
+    "three": "0.170.0",
+    "@fontsource/noto-sans-sc": "5.1.1",
+    "@fontsource/noto-serif-sc": "5.1.1",
+    "@fontsource/jetbrains-mono": "5.1.2"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "@types/three": "0.170.0",
+    "typescript": "5.6.3"
+  }
+}
