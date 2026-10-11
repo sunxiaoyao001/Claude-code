@@ -1,4 +1,9 @@
 # Claude-code
+
+## 游戏：方圆（`games/fangyuan/`）
+
+四个形状的平台跳跃冒险：4 个世界、16 个关卡、4 位首领、5 个可解锁角色和永久升级商店。纯 Canvas + 原生 JS，打开 `games/fangyuan/index.html` 即可游玩，详见 [games/fangyuan/README.md](games/fangyuan/README.md)。
+
 ## 已安装的网站设计 Skills（`.claude/skills/`）
 
 | Skill | 来源 | 用途 |
