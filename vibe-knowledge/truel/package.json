@@ -10,7 +10,8 @@
     "audio": "node scripts/gen-audio.mjs",
     "fonts": "python3 scripts/subset-fonts.py",
     "still": "remotion still src/index.ts Truel out/still.png",
-    "render": "remotion render src/index.ts Truel out/vibe-truel-1080x1920.mp4"
+    "render": "remotion render src/index.ts Truel out/vibe-truel-1080x1920.mp4",
+    "finalize": "node scripts/finalize.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "9.3.0",

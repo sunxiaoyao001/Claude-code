@@ -14,7 +14,10 @@
 npm install
 npm run dev        # 打开 Remotion Studio 实时预览、拖时间轴
 npm run render     # 渲染成片到 out/vibe-truel-1080x1920.mp4
+npm run finalize   # 后期：转标准色彩范围 yuv420p + 响度标准化到 -16 LUFS + faststart
 ```
+
+封面建议用 [`out/cover.jpg`](out/cover.jpg)（第 4.2 秒，钩子三行字全部出现的那一帧）。
 
 - 需要 Node.js 18 以上。首次渲染时 Remotion 会自动下载 Chrome Headless Shell；如果机器上已经装了，可以加 `--browser-executable=<路径>` 直接用。
 - 没有 GPU 的服务器用 `swangle`（软件 WebGL）渲染，已经在 `remotion.config.ts` 里设好。有 GPU 的话改成 `angle` 会快很多。
@@ -27,6 +30,7 @@ npm run render     # 渲染成片到 out/vibe-truel-1080x1920.mp4
 | `npm run math` | 打印并校验视频里出现的所有概率（精确解 + 一万场蒙特卡洛） |
 | `npm run audio` | 重新合成全部音效和配乐（纯 DSP，无采样素材） |
 | `npm run fonts -- --src <ttf目录>` | 改了字幕之后重新裁剪中文字体，避免出现缺字方块 |
+| `npm run finalize` | 成片后期处理（色彩范围、响度、faststart） |
 | `node scripts/preview-stills.mjs 120 860 1470` | 只打包一次，批量导出关键帧截图到 `out/stills/` |
 | `npm run render -- --props='{"withAudio":false}'` | 渲染无声版本 |
 
