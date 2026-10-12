@@ -15,3 +15,9 @@
 | `webapp-testing` | anthropics/skills | 用 Playwright 启动本地站点、截图、验证前端行为 |
 
 更新：重新克隆上游仓库并覆盖对应目录；Impeccable 也可用 `npx impeccable install --providers=claude --scope=project`。
+
+## 视频项目
+
+| 项目 | 说明 |
+| --- | --- |
+| [`videos/focus-23min`](videos/focus-23min/README.md) | 《23 分钟：一次分心的真实代价》80 秒赛博 HUD 风抖音竖屏短视频，代码生成：Canvas 2D + WebGL2 后期 + Web Audio 程序化配乐，`node render.mjs` 导出 MP4 |
