@@ -1,0 +1,40 @@
+{
+  "name": "reward-trap",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "为什么你刷短视频停不下来？—— 大脑的「奖励陷阱」 | Remotion knowledge film",
+  "scripts": {
+    "dev": "remotion studio",
+    "charset": "node scripts/gen-charset.mjs",
+    "folds": "node --experimental-strip-types scripts/gen-brain-folds.ts",
+    "audio": "node --experimental-strip-types scripts/gen-audio.ts",
+    "prerender": "node scripts/gen-charset.mjs",
+    "render": "remotion render Main out/reward-trap.mp4",
+    "stills": "node scripts/stills.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/noto-sans-sc": "^5.3.1",
+    "@fontsource/noto-serif-sc": "^5.3.1",
+    "@react-three/fiber": "9.3.0",
+    "@remotion/bundler": "4.0.534",
+    "@remotion/cli": "4.0.534",
+    "@remotion/noise": "4.0.534",
+    "@remotion/paths": "4.0.534",
+    "@remotion/renderer": "4.0.534",
+    "@remotion/three": "4.0.534",
+    "@remotion/transitions": "4.0.534",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "remotion": "4.0.534",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.12",
+    "@types/three": "0.180.0",
+    "typescript": "5.9.2"
+  }
+}
