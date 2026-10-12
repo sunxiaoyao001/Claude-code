@@ -2,8 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {continueRender, delayRender, staticFile} from 'remotion';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
-import {KTX2Loader} from 'three/examples/jsm/loaders/KTX2Loader.js';
-import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 
 export type HeadAssets = {
   geometry: THREE.BufferGeometry;
@@ -127,34 +125,9 @@ let headCache: HeadAssets | null = null;
 /** synchronous access – only valid inside a <Preloaded> subtree */
 export const useHeadAssets = (): HeadAssets | null => headCache;
 
-export type FaceAssets = {
-  scene: THREE.Group;
-};
-
-let facePromise: Promise<FaceAssets> | null = null;
-let faceCache: FaceAssets | null = null;
-export const useFaceAssets = () => faceCache;
-
-const loadFace = () => {
-  if (facePromise) return facePromise;
-  const r = new THREE.WebGLRenderer();
-  const ktx2 = new KTX2Loader().setTranscoderPath(staticFile('basis/')).detectSupport(r);
-  facePromise = new GLTFLoader()
-    .setKTX2Loader(ktx2)
-    .setMeshoptDecoder(MeshoptDecoder)
-    .loadAsync(staticFile('face/facecap.glb'))
-    .then((gltf) => {
-      r.dispose();
-      r.forceContextLoss();
-      return {scene: gltf.scene};
-    });
-  return facePromise;
-};
-
 export const preloadAll = () =>
-  Promise.all([loadHead(), loadFace()]).then(([h, f]) => {
+  loadHead().then((h) => {
     headCache = h;
-    faceCache = f;
   });
 
 /**

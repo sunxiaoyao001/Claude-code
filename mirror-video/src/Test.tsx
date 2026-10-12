@@ -1,22 +1,22 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
-import {Head} from './three/Head';
+import * as THREE from 'three';
 import {Rig} from './three/Rig';
 import {Stage} from './three/Stage';
 import {Studio} from './three/Lights';
-import {Mirror} from './three/Mirror';
-import {Dust} from './three/Dust';
+import {Brain, BRAIN} from './three/Brain';
 
 export const Test: React.FC = () => {
-  const frame = useCurrentFrame();
+  const f = useCurrentFrame();
+  const views: [number, number, number][] = [[2.6, 0.9, 1.6], [3.2, 0.2, 0.0], [0.8, -2.8, 0.6], [0.0, 0.8, 3.4]];
+  const v = views[Math.min(3, Math.floor(f / 10))];
+  const x = f >= 40 ? 0.8 : 0;
   return (
     <AbsoluteFill style={{background: '#04060b'}}>
       <Stage>
-        <Rig position={[0.55, 0.32, 1.25]} target={[-0.05, 0.18, -0.4]} fov={32} />
-        <Studio mood="mirror" />
-        <Head position={[0, 0, 0]} rotation={[0, Math.PI, 0]} gaze={[0, 0.2, 1.4]} />
-        <Mirror position={[0, 0.1, -0.7]} width={0.75} height={1.5} />
-        <Dust count={600} box={[4, 3, 4]} />
+        <Rig position={v} target={[0, -0.1, 0]} fov={34} />
+        <Studio mood="neutral" />
+        <Brain t={f / 30} xray={x} acts={[{pos: BRAIN.v1R, radius: 0.18, strength: 1, color: '#5fd4ff'}, {pos: BRAIN.ffaR, radius: 0.16, strength: 1, color: '#ffc879'}]} />
       </Stage>
     </AbsoluteFill>
   );

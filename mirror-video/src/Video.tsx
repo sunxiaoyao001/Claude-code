@@ -8,6 +8,7 @@ import {S1Hook} from './scenes/S1Hook';
 import {S2Title} from './scenes/S2Title';
 import {S3Flip} from './scenes/S3Flip';
 import {S4Tunnel} from './scenes/S4Tunnel';
+import {S5Brain} from './scenes/S5Brain';
 
 ensureFonts();
 
@@ -16,6 +17,7 @@ export const SCENES: {id: string; range: readonly [number, number]; C: React.FC}
   {id: 'S2Title', range: T.title, C: S2Title},
   {id: 'S3Flip', range: T.flip, C: S3Flip},
   {id: 'S4Tunnel', range: T.tunnel, C: S4Tunnel},
+  {id: 'S5Brain', range: T.brain, C: S5Brain},
 ];
 
 export const Video: React.FC = () => {
