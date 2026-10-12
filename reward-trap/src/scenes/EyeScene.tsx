@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
 import {AbsoluteFill, Img, interpolate, random, useCurrentFrame} from 'remotion';
-import {noise2D} from '@remotion/noise';
+import {noise2D} from '../lib/noise';
 import {C, ease} from '../theme';
 import {irisTexture} from '../components/iris';
 import {Feed} from '../components/phone/FeedUI';
@@ -18,7 +18,7 @@ const IX = 960;
 const IY = 560;
 const IR = 470;
 
-export const EyeScene: React.FC<{probe?: string}> = ({probe = ''}) => {
+export const EyeScene: React.FC = () => {
   const frame = useCurrentFrame();
   const iris = useMemo(() => irisTexture(), []);
   const pos = feedPositionAt(Math.min(frame, STOP), SWIPES);
@@ -87,7 +87,7 @@ export const EyeScene: React.FC<{probe?: string}> = ({probe = ''}) => {
         </svg>
         {/* iris */}
         <div style={{position: 'absolute', left: IX - IR + sx, top: IY - IR + sy, width: IR * 2, height: IR * 2}}>
-          {probe.includes('noiris') ? null : <Img src={iris} style={{width: '100%', height: '100%', opacity: Math.min(1, light * 1.15)}} />}
+          <Img src={iris} style={{width: '100%', height: '100%', opacity: Math.min(1, light * 1.15)}} />
           <div
             style={{
               position: 'absolute',
@@ -127,20 +127,16 @@ export const EyeScene: React.FC<{probe?: string}> = ({probe = ''}) => {
               boxShadow: `0 0 40px rgba(${r},${g},${b},0.6)`,
             }}
           >
-            {probe.includes('noreflect') ? (
-              <div style={{width: 176, height: 380, background: '#456'}} />
-            ) : (
-              <div style={{width: 390, height: 844, transform: `scale(${176 / 390})`, transformOrigin: 'top left'}}>
-                <Feed items={ITEMS} position={pos} t={frame} uid="eyefeed" />
-              </div>
-            )}
+            <div style={{width: 390, height: 844, transform: `scale(${176 / 390})`, transformOrigin: 'top left'}}>
+              <Feed items={ITEMS} position={pos} t={frame} uid="eyefeed" />
+            </div>
           </div>
           {/* soft secondary catchlight */}
           <div style={{position: 'absolute', left: IR + 140, top: IR - 260, width: 70, height: 46, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(255,255,255,0.55), rgba(255,255,255,0) 70%)', opacity: light}} />
           {/* corneal dome sheen */}
           <div style={{position: 'absolute', inset: -10, borderRadius: '50%', background: 'radial-gradient(circle at 38% 30%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 40%)', opacity: light}} />
         </div>
-        {probe.includes('nolids') ? null : <Lids light={light} tint={tint} />}
+        <Lids light={light} tint={tint} />
       </AbsoluteFill>
       <AbsoluteFill style={{background: `radial-gradient(ellipse 70% 65% at 50% 52%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%)`, willChange: 'transform'}} />
       <AbsoluteFill style={{background: '#000', opacity: interpolate(frame, [0, 6], [1, 0], {extrapolateRight: 'clamp'})}} />

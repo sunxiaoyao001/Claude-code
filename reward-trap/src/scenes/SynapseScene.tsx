@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, random, useCurrentFrame} from 'remotion';
-import {noise2D} from '@remotion/noise';
+import {noise2D} from '../lib/noise';
 import {C, F, ease} from '../theme';
 import {prog, smoothstep} from '../lib/math';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, random, useCurrentFrame} from 'remotion';
-import {noise2D} from '@remotion/noise';
+import {noise2D} from '../lib/noise';
 import {W, H} from '../theme';
 
 type RGB = [number, number, number];
@@ -61,7 +61,7 @@ export const Dust: React.FC<{count?: number; seed?: string; color?: string; opac
   const frame = useCurrentFrame();
   return (
     <AbsoluteFill style={{pointerEvents: 'none'}}>
-      <svg width={W} height={H} style={{position: 'absolute'}}>
+      <svg width={W} height={H} style={{position: 'absolute', willChange: 'transform'}}>
         {new Array(count).fill(0).map((_, i) => {
           const z = random(`${seed}z${i}`);
           const r = 0.6 + z * 2.2;

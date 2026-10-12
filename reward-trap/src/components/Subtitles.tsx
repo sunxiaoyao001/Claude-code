@@ -83,7 +83,7 @@ export const Subtitles: React.FC<{cues: Cue[]}> = ({cues}) => {
     return Math.max(acc, a);
   }, 0);
   return (
-    <AbsoluteFill style={{pointerEvents: 'none'}}>
+    <AbsoluteFill style={{pointerEvents: 'none', willChange: 'transform'}}>
       <div
         style={{
           position: 'absolute',

@@ -1,6 +1,6 @@
 import React, {useLayoutEffect, useMemo, useRef} from 'react';
 import {AbsoluteFill, interpolate, random, useCurrentFrame} from 'remotion';
-import {noise2D} from '@remotion/noise';
+import {noise2D} from '../lib/noise';
 import {Backdrop} from '../components/Look';
 import {C, ease} from '../theme';
 import {CLIP_TINT, type ClipId} from '../components/phone/contents';
@@ -76,7 +76,7 @@ const titleGlow = () => {
   return c;
 };
 
-export const TitleScene: React.FC<{probe?: string}> = ({probe = ''}) => {
+export const TitleScene: React.FC = () => {
   const frame = useCurrentFrame();
   const ref = useRef<HTMLCanvasElement>(null);
   const pts = useMemo(samplePoints, []);
@@ -111,6 +111,10 @@ export const TitleScene: React.FC<{probe?: string}> = ({probe = ''}) => {
       x += lift * noise2D(`lx${i}`, f * 0.02, 1) * 80;
       return {x, y, e};
     };
+    // Batch thousands of streaks into a few dozen draw calls: bucket by colour, alpha and width.
+    const ALPHA_STEPS = 6;
+    const lines = new Map<string, number[]>();
+    const glows = new Map<string, number[]>();
     for (let i = 0; i < pts.length; i++) {
       const p = pts[i];
       const {x, y, e} = posAt(p, i, frame);
@@ -118,23 +122,48 @@ export const TitleScene: React.FC<{probe?: string}> = ({probe = ''}) => {
       const settle = Math.max(0, e - textIn * 0.75);
       const depth = 0.45 + 0.55 * random(`dp${i}`);
       const a = clamp(Math.min(1, frame / 10) * depth * (0.3 + 0.6 * (1 - e) + 0.6 * settle) * (1 - embers * 0.6));
+      if (a < 0.02) continue;
       const r = p.size * (1 + (1 - e) * 0.5);
-      const warm = random(`c${i}`);
-      const col = p.gold ? `rgba(255,${160 + Math.floor(warm * 60)},60,${a})` : `rgba(255,${205 + Math.floor(warm * 40)},${150 + Math.floor(warm * 70)},${a})`;
-      g.strokeStyle = col;
-      g.lineCap = 'round';
-      g.lineWidth = r * 1.6;
-      g.beginPath();
-      g.moveTo(prev.x, prev.y);
-      g.lineTo(x + 0.01, y);
-      g.stroke();
+      const tone = random(`c${i}`) > 0.5 ? 1 : 0;
+      const aq = Math.max(1, Math.round(a * ALPHA_STEPS));
+      const wq = Math.max(1, Math.round(r * 1.6 * 2));
+      const key = `${p.gold ? 'g' : 'w'}${tone}|${aq}|${wq}`;
+      let arr = lines.get(key);
+      if (!arr) lines.set(key, (arr = []));
+      arr.push(prev.x, prev.y, x + 0.01, y);
       if (r > 2) {
-        g.fillStyle = p.gold ? `rgba(255,150,40,${a * 0.16})` : `rgba(255,200,140,${a * 0.12})`;
-        g.beginPath();
-        g.arc(x, y, r * 5, 0, Math.PI * 2);
-        g.fill();
+        const gk = `${p.gold ? 'g' : 'w'}|${aq}`;
+        let ga = glows.get(gk);
+        if (!ga) glows.set(gk, (ga = []));
+        ga.push(x, y, r * 5);
       }
     }
+    g.lineCap = 'round';
+    lines.forEach((arr, key) => {
+      const [kind, aq, wq] = key.split('|');
+      const a = Number(aq) / ALPHA_STEPS;
+      const gold = kind[0] === 'g';
+      const tone = kind[1] === '1';
+      g.strokeStyle = gold ? `rgba(255,${tone ? 205 : 170},60,${a})` : `rgba(255,${tone ? 238 : 214},${tone ? 210 : 165},${a})`;
+      g.lineWidth = Number(wq) / 2;
+      g.beginPath();
+      for (let k = 0; k < arr.length; k += 4) {
+        g.moveTo(arr[k], arr[k + 1]);
+        g.lineTo(arr[k + 2], arr[k + 3]);
+      }
+      g.stroke();
+    });
+    glows.forEach((arr, key) => {
+      const [kind, aq] = key.split('|');
+      const a = Number(aq) / ALPHA_STEPS;
+      g.fillStyle = kind === 'g' ? `rgba(255,150,40,${a * 0.16})` : `rgba(255,200,140,${a * 0.12})`;
+      g.beginPath();
+      for (let k = 0; k < arr.length; k += 3) {
+        g.moveTo(arr[k] + arr[k + 2], arr[k + 1]);
+        g.arc(arr[k], arr[k + 1], arr[k + 2], 0, Math.PI * 2);
+      }
+      g.fill();
+    });
     g.globalCompositeOperation = 'source-over';
     // the crisp title, with a light sweep travelling across it
     if (textIn > 0) {
@@ -194,10 +223,10 @@ export const TitleScene: React.FC<{probe?: string}> = ({probe = ''}) => {
   return (
     <AbsoluteFill style={{background: C.void, overflow: 'hidden'}}>
       <Backdrop bg={`radial-gradient(ellipse 70% 60% at 50% 46%, #121019 0%, #07060c 55%, ${C.void} 100%)`} />
-      {probe.includes('nofloor') ? null : <FeedFloor frame={frame} />}
+      <FeedFloor frame={frame} opacity={0.15} />
       <AbsoluteFill style={{background: 'radial-gradient(ellipse 50% 32% at 50% 48%, rgba(255,150,60,0.12), rgba(255,150,60,0) 70%)'}} />
       <AbsoluteFill style={{transform: `scale(${push})`, willChange: 'transform'}}>
-        {probe.includes('nocanvas') ? null : <canvas ref={ref} width={1920} height={1080} style={{position: 'absolute', inset: 0}} />}
+        <canvas ref={ref} width={1920} height={1080} style={{position: 'absolute', inset: 0}} />
       </AbsoluteFill>
     </AbsoluteFill>
   );
@@ -211,42 +240,48 @@ export const FeedFloor: React.FC<{frame: number; opacity?: number; speed?: numbe
   const cw = 84;
   const ch = 150;
   const gap = 18;
-  const scroll = (frame * speed) % (ch + gap);
+  const period = ch + gap;
+  const scroll = (frame * speed) % period;
+  const shift = Math.floor((frame * speed) / period);
   return (
-    <AbsoluteFill style={{perspective: 700, perspectiveOrigin: '50% 40%', opacity}}>
+    <AbsoluteFill style={{perspective: 700, perspectiveOrigin: '50% 40%', opacity, overflow: 'hidden'}}>
       <div
         style={{
           position: 'absolute',
           left: 960 - (cols * (cw + gap)) / 2,
           top: 760,
           width: cols * (cw + gap),
-          height: rows * (ch + gap),
+          height: rows * period,
           transform: 'rotateX(76deg)',
           transformOrigin: '50% 0%',
-          WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.9) 12%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 70%)',
         }}
       >
-        {new Array(rows).fill(0).map((_, r) =>
-          new Array(cols).fill(0).map((__, c) => {
-            const id = FLOOR[(r * 7 + c * 3) % FLOOR.length];
-            const [cr, cg, cb] = CLIP_TINT[id];
-            return (
-              <div
-                key={`${r}-${c}`}
-                style={{
-                  position: 'absolute',
-                  left: c * (cw + gap),
-                  top: r * (ch + gap) - scroll,
-                  width: cw,
-                  height: ch,
-                  borderRadius: 10,
-                  background: `linear-gradient(160deg, rgba(${cr},${cg},${cb},0.5), rgba(${cr * 0.3},${cg * 0.3},${cb * 0.3},0.35))`,
-                }}
-              />
-            );
-          }),
-        )}
+        {/* the whole grid slides as one cached layer; colours step one row per period */}
+        <div style={{position: 'absolute', inset: 0, transform: `translate3d(0, ${-scroll}px, 0)`, willChange: 'transform'}}>
+          {new Array(rows).fill(0).map((_, r) =>
+            new Array(cols).fill(0).map((__, c) => {
+              const id = FLOOR[((r + shift) * 7 + c * 3) % FLOOR.length];
+              const [cr, cg, cb] = CLIP_TINT[id];
+              return (
+                <div
+                  key={`${r}-${c}`}
+                  style={{
+                    position: 'absolute',
+                    left: c * (cw + gap),
+                    top: r * period,
+                    width: cw,
+                    height: ch,
+                    borderRadius: 10,
+                    background: `linear-gradient(160deg, rgba(${cr},${cg},${cb},0.5), rgba(${cr * 0.3},${cg * 0.3},${cb * 0.3},0.35))`,
+                  }}
+                />
+              );
+            }),
+          )}
+        </div>
       </div>
+      {/* fog: the floor dissolves toward the horizon and the near edge */}
+      <AbsoluteFill style={{background: 'linear-gradient(to bottom, #07060c 0%, #07060c 66%, rgba(7,6,12,0.6) 72%, rgba(7,6,12,0) 80%, rgba(7,6,12,0.2) 86%, rgba(7,6,12,0.95) 100%)', willChange: 'transform'}} />
     </AbsoluteFill>
   );
 };

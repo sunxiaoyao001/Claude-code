@@ -26,7 +26,7 @@ const PHONE_SCALE = 0.94;
 
 const TAPS = [205, 212];
 
-export const FeedScene: React.FC<{probe?: string}> = ({probe = ''}) => {
+export const FeedScene: React.FC = () => {
   const frame = useCurrentFrame();
   const pos = feedPositionAt(frame, SWIPES);
   const a = CLIP_TINT[FEED_ITEMS[Math.floor(pos)]] ?? CLIP_TINT.ad;
@@ -83,7 +83,7 @@ export const FeedScene: React.FC<{probe?: string}> = ({probe = ''}) => {
             background: `radial-gradient(ellipse, rgba(${tint[0]},${tint[1]},${tint[2]},0.22) 0%, rgba(${tint[0]},${tint[1]},${tint[2]},0) 70%)`,
           }}
         />
-        {probe.includes('notrace') ? null : <RewardTrace frame={frame} spikes={SPIKES} x={1130} y={330} w={640} h={330} windowFrames={170} opacity={traceIn} label="多巴胺" uid="feedtrace" />}
+        <RewardTrace frame={frame} spikes={SPIKES} x={1130} y={330} w={640} h={330} windowFrames={170} opacity={traceIn} label="多巴胺" uid="feedtrace" />
         <div
           style={{
             position: 'absolute',
@@ -100,15 +100,15 @@ export const FeedScene: React.FC<{probe?: string}> = ({probe = ''}) => {
             overlay={
               <>
                 <TapHearts frame={frame} taps={TAPS} x={205} y={420} />
-                {probe.includes('nothumb') ? null : <Thumb x={thumb.x} y={thumb.y} lift={thumb.lift} press={thumb.press} light={tint} uid="feedthumb" />}
+                <Thumb x={thumb.x} y={thumb.y} lift={thumb.lift} press={thumb.press} light={tint} uid="feedthumb" />
               </>
             }
           >
-            {probe.includes('nofeed') ? null : <Feed items={FEED_ITEMS} position={pos} t={frame} liked={{3: liked, 11: 1}} uid="feed" />}
+            <Feed items={FEED_ITEMS} position={pos} t={frame} liked={{3: liked, 11: 1}} uid="feed" />
           </Phone>
         </div>
         <GoldBurst frame={frame} events={bursts} />
-        {probe.includes('noatmo') ? null : <Dust seed="feeddust" count={70} opacity={0.5} />}
+        <Dust seed="feeddust" count={70} opacity={0.5} />
       </AbsoluteFill>
       {/* out-of-focus foreground motes for depth */}
       <Bokeh seed="feedfg" count={5} colors={[tint]} opacity={0.18} sizeRange={[260, 420]} drift={2.5} />

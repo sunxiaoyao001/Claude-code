@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
-import {noise2D} from '@remotion/noise';
+import {noise2D} from '../lib/noise';
 import {Backdrop} from '../components/Look';
 import {C, F, ease} from '../theme';
 import {BrainStage, NAC, PFC, projectBrainPoint, type BrainStageProps} from '../brain/BrainStage';

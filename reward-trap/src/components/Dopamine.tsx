@@ -1,6 +1,6 @@
 import React, {useLayoutEffect, useRef} from 'react';
 import {random} from 'remotion';
-import {noise2D} from '@remotion/noise';
+import {noise2D} from '../lib/noise';
 
 // Dopamine is the film's only warm light: glossy amber beads with a white-hot core.
 export const GOLD_BEAD =
@@ -139,7 +139,7 @@ export const GoldBurst: React.FC<{frame: number; events: BurstEvent[]; width?: n
     g.globalAlpha = 1;
   }, [frame, events, width, height, live]);
   if (!live) return null;
-  return <canvas ref={ref} width={width} height={height} style={{position: 'absolute', left: 0, top: 0, pointerEvents: 'none'}} />;
+  return <canvas ref={ref} width={width} height={height} style={{position: 'absolute', left: 0, top: 0, pointerEvents: 'none', willChange: 'transform'}} />;
 };
 
 export type Spike = {at: number; mag: number};
@@ -182,7 +182,12 @@ export const RewardTrace: React.FC<{
   const area = `${d} L${x + w} ${y + h} L${x} ${y + h} Z`;
   const head = pts[pts.length - 1];
   return (
-    <svg width={1920} height={1080} style={{position: 'absolute', left: 0, top: 0, opacity, overflow: 'visible'}}>
+    <svg
+      width={w + 120}
+      height={h + 140}
+      viewBox={`${x - 40} ${y - 90} ${w + 120} ${h + 140}`}
+      style={{position: 'absolute', left: x - 40, top: y - 90, opacity, overflow: 'visible', willChange: 'transform'}}
+    >
       <defs>
         <linearGradient id={`${uid}-fill`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#ffb547" stopOpacity="0.28" />

@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
-import {noise2D} from '@remotion/noise';
+import {noise2D} from '../lib/noise';
 import {C, ease} from '../theme';
 import {SevenSeg} from '../components/SevenSeg';
 import {CLIP_TINT, type ClipId} from '../components/phone/contents';

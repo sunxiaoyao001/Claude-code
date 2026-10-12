@@ -35,7 +35,7 @@ export const Phone: React.FC<{
       : 'linear-gradient(135deg, #3a3d44 0%, #9aa0a8 16%, #26282d 36%, #5d6168 58%, #1b1d21 80%, #6f747c 100%)';
   const sheen = 50 + tiltY * 2.2 - tiltX * 1.2;
   return (
-    <div style={{position: 'relative', width: BODY_W, height: BODY_H, ...style}}>
+    <div style={{position: 'relative', width: BODY_W, height: BODY_H, willChange: 'transform', ...style}}>
       {/* light the screen throws into the dark */}
       <div
         style={{
