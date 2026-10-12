@@ -55,33 +55,57 @@ const PRINT_FRAG = /* glsl */ `
   uniform sampler2D uMap; uniform float uBeauty; uniform float uMid; uniform vec2 uTexel;
   uniform float uMode; uniform float uT; uniform vec3 uTint; uniform float uBright; uniform float uScan;
   uniform float uDesat; uniform float uBorder; uniform float uAlpha;
+  uniform float uSym; uniform float uSmooth; uniform float uWarm; uniform float uEdge;
   varying vec2 vUv;
   float h21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
   vec3 tapc(vec2 uv){ return texture2D(uMap, uv).rgb; }
-  vec3 beauty(vec2 uv){
+  vec3 symAt(vec2 uv, float k){
     vec3 c = tapc(uv);
-    if (uBeauty <= 0.0) return c;
-    // 1) symmetry: average with the face mirrored about its own midline
-    vec2 muv = vec2(2.0 * uMid - uv.x, uv.y);
-    vec3 m = tapc(muv);
-    vec3 base = mix(c, 0.5 * (c + m), clamp(uBeauty * 0.9, 0.0, 0.6));
-    // 2) edge-preserving smoothing (bilateral, 16 taps)
-    vec3 acc = base; float wsum = 1.0;
-    for (int i = 0; i < 16; i++) {
-      float a = float(i) * 2.3999632;
-      float r = (1.0 + float(i) * 0.35) * 2.2;
-      vec2 o = vec2(cos(a), sin(a)) * r * uTexel;
-      vec3 s = mix(tapc(uv + o), 0.5 * (tapc(uv + o) + tapc(vec2(2.0 * uMid - uv.x - o.x, uv.y + o.y))), clamp(uBeauty * 0.9, 0.0, 0.6));
-      float w = exp(-dot(s - base, s - base) * 28.0);
-      acc += s * w; wsum += w;
+    vec3 m = tapc(vec2(2.0 * uMid - uv.x, uv.y));
+    return mix(c, 0.5 * (c + m), k);
+  }
+  vec3 beauty(vec2 uv){
+    float sym = uSym >= 0.0 ? uSym : clamp(uBeauty * 0.9, 0.0, 0.6);
+    float smo = uSmooth >= 0.0 ? uSmooth : clamp(uBeauty * 1.1, 0.0, 1.0);
+    float warm = uWarm >= 0.0 ? uWarm : clamp(uBeauty, 0.0, 1.0);
+    vec3 c = tapc(uv);
+    if (uBeauty < 0.0) {
+      // the other direction: exaggerate asymmetry, harsher contrast, colder
+      float k = -uBeauty;
+      vec3 m = tapc(vec2(2.0 * uMid - uv.x, uv.y));
+      c = c + (c - m) * k * 0.9;
+      c = mix(c, (c - 0.45) * 1.25 + 0.45, k);
+      c *= mix(vec3(1.0), vec3(0.94, 0.99, 1.08), k);
+      return max(c, vec3(0.0));
     }
-    vec3 sm = acc / wsum;
-    vec3 outc = mix(base, sm, clamp(uBeauty * 1.1, 0.0, 1.0));
-    // 3) light: lift, warm, a little glow
-    float l = dot(outc, vec3(0.299, 0.587, 0.114));
-    outc = mix(outc, outc * vec3(1.07, 1.0, 0.93) + 0.035 * smoothstep(0.05, 0.6, l), uBeauty);
-    outc = mix(outc, pow(outc, vec3(0.9)), uBeauty * 0.6);
-    return outc;
+    vec3 base = symAt(uv, sym);
+    if (smo > 0.0) {
+      vec3 acc = base; float wsum = 1.0;
+      for (int i = 0; i < 16; i++) {
+        float a = float(i) * 2.3999632;
+        float r = (1.0 + float(i) * 0.35) * 2.2;
+        vec2 o = vec2(cos(a), sin(a)) * r * uTexel;
+        vec3 sp = symAt(uv + o, sym);
+        float w = exp(-dot(sp - base, sp - base) * 28.0);
+        acc += sp * w; wsum += w;
+      }
+      base = mix(base, acc / wsum, smo);
+    }
+    float l = dot(base, vec3(0.299, 0.587, 0.114));
+    base = mix(base, base * vec3(1.07, 1.0, 0.93) + 0.035 * smoothstep(0.05, 0.6, l), warm);
+    base = mix(base, pow(max(base, vec3(0.0)), vec3(0.9)), warm * 0.6);
+    // edge detection pass (V1-like): Sobel magnitude glowing in cyan
+    if (uEdge > 0.0) {
+      vec2 tx = uTexel * 1.5;
+      float g00 = dot(tapc(uv + tx * vec2(-1, -1)), vec3(0.33)); float g10 = dot(tapc(uv + tx * vec2(0, -1)), vec3(0.33)); float g20 = dot(tapc(uv + tx * vec2(1, -1)), vec3(0.33));
+      float g01 = dot(tapc(uv + tx * vec2(-1, 0)), vec3(0.33)); float g21 = dot(tapc(uv + tx * vec2(1, 0)), vec3(0.33));
+      float g02 = dot(tapc(uv + tx * vec2(-1, 1)), vec3(0.33)); float g12 = dot(tapc(uv + tx * vec2(0, 1)), vec3(0.33)); float g22 = dot(tapc(uv + tx * vec2(1, 1)), vec3(0.33));
+      float gx = g20 + 2.0 * g21 + g22 - g00 - 2.0 * g01 - g02;
+      float gy = g02 + 2.0 * g12 + g22 - g00 - 2.0 * g10 - g20;
+      float e = clamp(length(vec2(gx, gy)) * 4.0, 0.0, 1.0);
+      base = mix(base, base * 0.25 + vec3(0.37, 0.83, 1.0) * e * 1.6, uEdge);
+    }
+    return base;
   }
   void main(){
     vec2 uv = vUv;
@@ -131,6 +155,10 @@ export type PrintParams = {
   alpha?: number;
   t?: number;
   mid?: number;
+  sym?: number;
+  smooth?: number;
+  warm?: number;
+  edge?: number;
 };
 
 export const usePrintMaterial = () =>
@@ -153,6 +181,10 @@ export const usePrintMaterial = () =>
           uDesat: {value: 0},
           uBorder: {value: 0},
           uAlpha: {value: 1},
+          uSym: {value: -1},
+          uSmooth: {value: -1},
+          uWarm: {value: -1},
+          uEdge: {value: 0},
         },
         vertexShader: /* glsl */ `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
         fragmentShader: PRINT_FRAG,
@@ -172,6 +204,10 @@ export const applyPrint = (m: THREE.ShaderMaterial, p: PrintParams) => {
   u.uAlpha.value = p.alpha ?? 1;
   u.uT.value = p.t ?? 0;
   u.uMid.value = p.mid ?? 0.5;
+  u.uSym.value = p.sym ?? -1;
+  u.uSmooth.value = p.smooth ?? -1;
+  u.uWarm.value = p.warm ?? -1;
+  u.uEdge.value = p.edge ?? 0;
 };
 
 /** A physical photo print: the rendered face on slightly curved paper with a white border. */

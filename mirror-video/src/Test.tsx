@@ -1,22 +1,20 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
-import * as THREE from 'three';
 import {Rig} from './three/Rig';
 import {Stage} from './three/Stage';
 import {Studio} from './three/Lights';
-import {Brain, BRAIN} from './three/Brain';
+import {CameraModel} from './three/CameraModel';
 
 export const Test: React.FC = () => {
   const f = useCurrentFrame();
-  const views: [number, number, number][] = [[2.6, 0.9, 1.6], [3.2, 0.2, 0.0], [0.8, -2.8, 0.6], [0.0, 0.8, 3.4]];
-  const v = views[Math.min(3, Math.floor(f / 10))];
-  const x = f >= 40 ? 0.8 : 0;
+  const views: [number, number, number][] = [[1.6, 0.8, 2.6], [0.3, 0.1, 2.1], [-2.2, 0.6, 1.2]];
+  const v = views[Math.min(2, Math.floor(f / 10))];
   return (
     <AbsoluteFill style={{background: '#04060b'}}>
       <Stage>
-        <Rig position={v} target={[0, -0.1, 0]} fov={34} />
-        <Studio mood="neutral" />
-        <Brain t={f / 30} xray={x} acts={[{pos: BRAIN.v1R, radius: 0.18, strength: 1, color: '#5fd4ff'}, {pos: BRAIN.ffaR, radius: 0.16, strength: 1, color: '#ffc879'}]} />
+        <Rig position={v} target={[0, 0, 0.4]} fov={30} />
+        <Studio mood="product" />
+        <CameraModel aperture={f >= 10 && f < 20 ? 0.35 : 1} />
       </Stage>
     </AbsoluteFill>
   );

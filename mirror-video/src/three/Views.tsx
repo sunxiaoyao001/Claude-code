@@ -26,7 +26,9 @@ export const MirrorPOV: React.FC<{
   glow?: number;
   sweep?: number;
   frame?: 'bronze' | 'black' | 'none';
-}> = ({mirrorZ = 1.25, camOffset = [0, 0, 0], fov = 20, headRot = [0, 0, 0], open = 1, mirrorW = 1.0, mirrorH = 1.9, dust = true, glow = 0, sweep = -10, frame = 'bronze'}) => {
+  smooth?: number;
+  rim?: [string, number];
+}> = ({mirrorZ = 1.25, camOffset = [0, 0, 0], fov = 20, headRot = [0, 0, 0], open = 1, mirrorW = 1.0, mirrorH = 1.9, dust = true, glow = 0, sweep = -10, frame = 'bronze', smooth = 0, rim}) => {
   const cam: Vec3 = [camOffset[0], EYE_Y + camOffset[1], 0.2 + camOffset[2]];
   // look at the reflection of your own eyes
   const gaze: THREE.Vector3Tuple = [0, EYE_Y, 2 * mirrorZ - 0.2];
@@ -34,7 +36,7 @@ export const MirrorPOV: React.FC<{
     <>
       <Rig position={cam} target={[cam[0] * 0.3, EYE_Y - 0.03, mirrorZ]} fov={fov} />
       <Studio mood="mirror" />
-      <Head layer={1} rotation={headRot} gaze={gaze} open={open} />
+      <Head layer={1} rotation={headRot} gaze={gaze} open={open} smooth={smooth} rim={rim} />
       <Mirror position={[0, EYE_Y - 0.02, mirrorZ]} rotation={[0, Math.PI, 0]} width={mirrorW} height={mirrorH} frame={frame} glow={glow} sweep={sweep} />
       {/* warm practicals behind the viewer, seen as bokeh in the mirror */}
       {[

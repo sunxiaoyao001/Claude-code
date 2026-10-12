@@ -1,7 +1,7 @@
 import React from 'react';
 import {Environment, Lightformer} from '@react-three/drei';
 
-export type LightMood = 'mirror' | 'photo' | 'neutral' | 'dark' | 'lab';
+export type LightMood = 'mirror' | 'photo' | 'neutral' | 'dark' | 'lab' | 'product';
 
 /**
  * Environment (for reflections on skin, glass and metal) + direct lights.
@@ -26,6 +26,14 @@ export const Studio: React.FC<{mood?: LightMood; intensity?: number; envRotation
           <Lightformer form="rect" intensity={4} color="#f2f8ff" position={[0, 0.3, 4]} scale={[1.2, 1.2, 1]} target={[0, 0, 0]} />
           <Lightformer form="rect" intensity={0.6} color="#9fc3ff" position={[-4, 1, 0]} scale={[2, 5, 1]} target={[0, 0, 0]} />
           <Lightformer form="rect" intensity={0.3} color="#ffffff" position={[3, 2, -3]} scale={[3, 3, 1]} target={[0, 0, 0]} />
+        </>
+      ) : mood === 'product' ? (
+        <>
+          <Lightformer form="rect" intensity={5} color="#ffffff" position={[-3, 0.5, 1.5]} scale={[0.6, 6, 1]} target={[0, 0, 0]} />
+          <Lightformer form="rect" intensity={4} color="#dfefff" position={[3, 0.3, 1]} scale={[0.6, 6, 1]} target={[0, 0, 0]} />
+          <Lightformer form="rect" intensity={3} color="#ffffff" position={[0, 4, 0.5]} scale={[4, 2, 1]} target={[0, 0, 0]} />
+          <Lightformer form="ring" intensity={6} color="#ffffff" position={[0, 0, 5]} scale={1.2} target={[0, 0, 0]} />
+          <Lightformer form="rect" intensity={1.5} color="#5fd4ff" position={[0, -3, -2]} scale={[6, 1, 1]} target={[0, 0, 0]} />
         </>
       ) : mood === 'lab' ? (
         <>
@@ -63,6 +71,12 @@ export const Studio: React.FC<{mood?: LightMood; intensity?: number; envRotation
         <directionalLight position={[0, 0.15, 3]} intensity={3.6 * intensity} color="#f4f9ff" />
         <directionalLight position={[2, -1.5, -1]} intensity={0.6 * intensity} color="#7fa7ff" />
         <ambientLight intensity={0.04 * intensity} />
+      </>
+    ) : mood === 'product' ? (
+      <>
+        <directionalLight position={[-2, 2, 2]} intensity={2.2 * intensity} color="#ffffff" />
+        <directionalLight position={[2.5, 0.5, 1]} intensity={1.2 * intensity} color="#cfe4ff" />
+        <directionalLight position={[0, 1, -3]} intensity={2.5 * intensity} color="#9fd3ff" />
       </>
     ) : mood === 'lab' ? (
       <>
