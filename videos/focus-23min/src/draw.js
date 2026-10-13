@@ -169,9 +169,12 @@
     ctx.textAlign = 'right';
     const ff = Math.floor((t % 1) * 60);
     ctx.fillText(`T+${U.pad(t / 60)}:${U.pad(t % 60)}:${U.pad(ff)}`, x1, y0 - 30);
-    // 底部：信号格 + 帧号
+    // 底部：信号格 + 照片授权署名（CC BY 2.0 要求署名，完整名单见 assets/photos/CREDITS.md）
     ctx.textAlign = 'left';
     ctx.fillText(`SIG ${'▮'.repeat(3 + (Math.floor(t * 3) % 3))}`, x0 + 6, y1 + 28);
+    ctx.textAlign = 'right';
+    ctx.font = U.font(400, 18, 'mono');
+    ctx.fillText('PHOTOS: OPEN IMAGES / FLICKR · CC BY 2.0 · CREDITS IN DESCRIPTION', x1, y1 + 28);
     ctx.restore();
   };
 
@@ -237,12 +240,12 @@
       const rl = Math.min(r, 150); // 标签偏移不随准星无限放大
       const side = o.side || (x + rl * 1.25 + 60 + 380 < 1040 ? 'right' : 'left');
       o = Object.assign({}, o, { side });
-      const lx = rl * 1.25 * (o.side === 'left' ? -1 : 1), ly = -rl * 1.25;
+      const lx = rl * 1.25 * (o.side === 'left' ? -1 : 1), ly = (o.below ? 1 : -1) * rl * 1.25;
       // 标签端点夹在画面内
       const ex = side === 'left' ? Math.max(lx - 60, 440 - x) : Math.min(lx + 60, 640 - x);
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(rl * 0.75 * Math.sign(lx), -rl * 0.75);
+      ctx.moveTo(rl * 0.75 * Math.sign(lx), Math.sign(ly) * rl * 0.75);
       ctx.lineTo(lx, ly);
       ctx.lineTo(ex, ly);
       ctx.stroke();

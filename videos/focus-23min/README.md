@@ -20,6 +20,7 @@ node render.mjs                    # → out/focus-23min.mp4（1080×1920 60fps�
 node render.mjs --scale 0.5 --fps 30   # → out/focus-23min-preview.mp4（快速预览版）
 node render.mjs --vo vo.wav        # 混入配音（配乐自动侧链让路）
 node render.mjs --stills 0,30.1,39.7   # 导出指定时间点的 PNG，用于检查画面
+node render.mjs --gpu --jobs 3         # 有独立显卡时：GPU 渲染 + 3 路并行分段
 ```
 
 | 文件 | 作用 |
@@ -148,7 +149,11 @@ node render.mjs --stills 0,30.1,39.7   # 导出指定时间点的 PNG，用于�
 
 ### 2.1 真实照片（真人）
 
-全片 13 张真实照片，在引擎里统一调色，原图色调不影响风格：
+全片使用 **12 张真实照片**（另有 1 个可选的研究者肖像位），全部来自 [Google Open Images 数据集](https://storage.googleapis.com/openimages/web/index.html)（原图在 Flickr），授权 **CC BY 2.0**：可以商用和改编，**必须署名**。完整署名见 [`assets/photos/CREDITS.md`](assets/photos/CREDITS.md)，画面底部 HUD 也有一行授权说明。**发布时请把 CREDITS.md 里的署名段落贴到视频简介。**
+
+挑图方法：在 Open Images 约 170 万张照片的人工标注里，用"人脸 + 手机 + 电脑""黑暗 + 手机""人像"等标签组合筛出 1,175 张候选，再逐张人工挑选。人脸框直接取自数据集的人工标注，HUD 追踪框因此能准确钉在脸上。
+
+照片在引擎里统一调色，原图色调不影响风格：
 
 | 片调 | 用途 | 色彩映射 |
 |---|---|---|
@@ -157,22 +162,25 @@ node render.mjs --stills 0,30.1,39.7   # 导出指定时间点的 PNG，用于�
 | `heal` 恢复绿 | 解法段落 | 黑 → 墨绿 → 薄荷绿 → 白 |
 | `raw` 原色 | 通知卡片里的真人头像 | 保留原色，增加真实感 |
 
-| ID | 文件 | 画面要求 | 出现位置 |
-|---|---|---|---|
-| eye | `p01-eye.jpg` | 人眼极近特写，瞳孔清晰，最好有屏幕反光 | 0–6s、结尾循环 |
-| phoneDark | `p02-phone-dark.jpg` | 昏暗环境里低头看手机，脸被屏幕照亮 | 10–20s |
-| researcher | `p03-researcher.jpg` | 可选：Gloria Mark 肖像（**必须有授权**），缺失时自动显示文字档案卡 | 16–20s |
-| deepWork | `p04-deep-work.jpg` | **主角**：电脑前专注工作的侧脸 / 3/4 侧脸 | 20–30s、44–50s、75–80s |
-| distracted | `p06-distracted.jpg` | 办公桌前分心看手机的人 | 36–44s |
-| stressed | `p07-stressed.jpg` | 压力大、双手抱头的上班族 | 53.5–58s |
-| avBoss / avMom / avColleague / avFriend | `p09`～`p12` | 4 张真人头像（老板 / 妈妈 / 同事 / 朋友） | 通知卡片 |
-| phoneDown | `p13-phone-facedown.jpg` | 手机屏幕朝下扣在桌上 | 67–69.8s |
-| batch | `p14-batch-reply.jpg` | 休息时间放松地集中回复消息 | 69.8–72.6s |
-| timer | `p15-tomato-timer.jpg` | 书桌上的番茄钟 / 计时器 | 72.6–75s |
+| ID | 文件 | 实际画面 | 作者（Flickr） | 出现位置 |
+|---|---|---|---|---|
+| eye | `p01-eye.jpg` | 暗调的人眼特写（竖构图） | Lucky Lynda | 0–6s、结尾循环 |
+| phoneDark | `p02-phone-dark.jpg` | 昏暗礼堂里低头看手机的人 | Simon Bierwald | 10–20s |
+| deepWork | `p04-deep-work.jpg` | **主角**：盯着笔记本电脑、手扶后颈的年轻人，暖色暗调 | Eelke | 20–30s、碎裂、44–50s、75–80s |
+| distracted | `p06-distracted.jpg` | 办公桌前低头看手机的人，桌上有文件 | KOMUnews | 36–44s |
+| stressed | `p07-stressed.jpg` | 手扶着脸、眉头紧锁的男人（竖构图） | danilo mistroni | 53.5–58s |
+| avBoss | `p09-avatar-boss.jpg` | 穿西装的商务男士（"李经理"） | profumo_1997 | 通知卡片 |
+| avMom | `p10-avatar-mom.jpg` | 笑容亲切的女士（"妈妈"） | Delaina Haslam | 通知卡片 |
+| avColleague | `p11-avatar-colleague.jpg` | 笑容明亮的年轻女性（同事"周雨晴"） | Bro. Jeffrey Pioquinto, SJ | 通知卡片 |
+| avFriend | `p12-avatar-friend.jpg` | 年轻男性（朋友"阿杰"） | Lemuel Cantos | 通知卡片 |
+| phoneDown | `p13-phone-facedown.jpg` | 木桌上背面朝上的手机，旁边是笔记本电脑 | Johan Larsson | 67–69.8s |
+| batch | `p14-batch-reply.jpg` | 笑着回消息的年轻女性 | mirjoran | 69.8–72.6s |
+| timer | `p15-tomato-timer.jpg` | 机械定时器（竖构图） | digicla | 72.6–75s |
+| researcher | `p03-researcher.jpg` | 可选：Gloria Mark 肖像（**必须有授权**），缺失时自动显示文字档案卡 | — | 16–20s |
 
-- 推荐来源：Unsplash / Pexels（免费商用，无需署名；署名可写在 `manifest.js` 的 `credit` 字段）。
-- **一键下载**：`PEXELS_API_KEY=你的key node tools/fetch-photos.mjs`（或 `UNSPLASH_ACCESS_KEY=...`）会按清单里的搜索词自动下载每张照片，作者署名写入 `assets/photos/CREDITS.md`。对某张不满意，可以用 `--only eye --pick 2 --force` 换下一个搜索结果。
-- 放好照片后，在 `manifest.js` 中把 `focus`（焦点）和 `face`（人脸框，归一化坐标）改成照片里人脸的真实位置，HUD 追踪框就会钉在脸上。
+- **照片质量**：Open Images 提供的版本最长边为 1024px。引擎会先做轻度 USM 锐化，再以高质量插值放大；叠加调色、半调网点和扫描线后，竖屏全屏也能保持清晰。
+- **换图**：替换 `assets/photos/` 下的同名文件，再在 `manifest.js` 里改 `focus`（焦点）、`face`（人脸框，归一化坐标）和 `credit`。也可以运行 `PEXELS_API_KEY=你的key node tools/fetch-photos.mjs`（或 `UNSPLASH_ACCESS_KEY=...`）按清单自动下载；对某张不满意，用 `--only eye --pick 2 --force` 换下一个搜索结果。
+- **肖像权提醒**：照片里都是真实的人。CC BY 授权不包含肖像授权（model release）。知识科普类内容一般可以正常使用；如果用于商业广告推广，建议换成带肖像授权的商用图库照片，或者自己拍。
 - 缺图时引擎显示"NO SIGNAL · 待放入真实照片"占位面板（标注文件名和画面要求），方便排查。
 
 ### 2.2 场景与道具
@@ -345,7 +353,7 @@ config.js  │  2D 画布 1080×1920                                │
 | 音频 | AAC 320 kbps，48 kHz 立体声 | 同左 |
 | 封装 | MP4，`+faststart`（便于平台快速加载） | 同左 |
 | 中间帧 | JPEG q=0.94 管道传输（`--quality` 可调） | 同左 |
-| 渲染速度参考 | 软件渲染（SwiftShader）约 0.5–0.8 秒/帧；本机 GPU（`--gpu`）快数倍 | 约 0.22 秒/帧，80 秒约 9 分钟 |
+| 渲染速度参考 | 软件渲染（SwiftShader，4 核）约 0.67 秒/帧，1080p30 全片约 27 分钟；本机 GPU 加 `--gpu` 快数倍，GPU 机器上还可加 `--jobs 3` 并行分段渲染 | 约 0.22 秒/帧，80 秒约 9 分钟 |
 
 浏览器内"录制 WebM"按钮为实时录制（VP9 + Opus，16 Mbps），方便快速分享；正式发布请用 `render.mjs` 导出 MP4。
 

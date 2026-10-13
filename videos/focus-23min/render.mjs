@@ -10,10 +10,12 @@
  *   node render.mjs --stills 0,6.3,31,40    # 导出指定时间点的 PNG 截图（用于检查画面）
  *   node render.mjs --vo vo.wav             # 混入配音，并自动对配乐做侧链压缩（人声出现时音乐自动让路）
  *   node render.mjs --gpu                   # 使用本机 GPU（默认用 SwiftShader 软件渲染，任何机器都能跑）
+ *   node render.mjs --jobs 3                # 并行分段渲染（GPU 机器上有效；纯 CPU 软件渲染时已占满核心，保持默认 1）
  * 依赖：Node 18+、ffmpeg（加入 PATH）、playwright（npm i 或全局安装均可）
  * ========================================================================== */
 import { createServer } from 'node:http';
-import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { readFile, mkdir, writeFile, rm } from 'node:fs/promises';
+import os from 'node:os';
 import { spawn, execSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -39,6 +41,7 @@ const VO = opt('vo', null);
 const GPU = !!opt('gpu', false);
 const CRF = Number(opt('crf', SCALE < 1 ? 22 : 17));
 const JPEG_Q = Number(opt('quality', 0.94));
+const JOBS = Math.max(1, Number(opt('jobs', 1)));
 
 /* ---------- 加载 playwright（本地依赖优先，其次全局安装） ---------- */
 async function loadPlaywright() {
@@ -111,14 +114,54 @@ async function main() {
   await writeFile(wavPath, Buffer.from(wav, 'base64'));
   console.log('音频 →', path.relative(ROOT, wavPath));
 
-  /* ---------- ffmpeg 编码 ---------- */
-  const ff = ['-y', '-hide_banner', '-loglevel', 'error',
-    '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'mjpeg', '-i', '-',
+  /* ---------- 并行分段渲染：每个分段一个页面（独立渲染进程）+ 一个 ffmpeg 编码器 ---------- */
+  const n = Math.round((TO - FROM) * FPS);
+  const jobs = Math.min(JOBS, Math.max(1, Math.floor(n / FPS)));
+  const pages = [page];
+  const extra = [];
+  for (let k = 1; k < jobs; k++) {
+    // 每路单独一个浏览器实例：页面共用一个 GPU 进程会串行，独立实例才能真正并行
+    const br = await chromium.launch({ args: [...launchArgs, '--autoplay-policy=no-user-gesture-required'] });
+    extra.push(br);
+    const pg = await br.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
+    pg.on('pageerror', (e) => console.error('[page error]', e.message));
+    await pg.goto(`http://127.0.0.1:${port}/index.html?render=1&scale=${SCALE}`);
+    await pg.evaluate(() => window.__FX_READY.then(() => true));
+    pages.push(pg);
+  }
+  const segDir = path.resolve(ROOT, 'out/segments');
+  await mkdir(segDir, { recursive: true });
+  const vArgs = ['-c:v', 'libx264', '-preset', SCALE < 1 ? 'veryfast' : 'slow', '-crf', String(CRF),
+    '-pix_fmt', 'yuv420p', '-profile:v', 'high', '-level', '4.2', '-r', String(FPS),
+    '-g', String(FPS * 2), '-bf', '2', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709'];
+  let done = 0;
+  const t0 = Date.now();
+  const progress = () => {
+    const el = (Date.now() - t0) / 1000, eta = (el / Math.max(1, done)) * (n - done);
+    process.stdout.write(`\r渲染 ${done}/${n} 帧${jobs > 1 ? `（${jobs} 路并行）` : ''}  ${(done / n * 100).toFixed(1)}%  已用 ${fmt(el)}  剩余 ${fmt(eta)}   `);
+  };
+  const segs = pages.map((pg, k) => ({ pg, i0: Math.floor((n * k) / jobs), i1: Math.floor((n * (k + 1)) / jobs), file: path.join(segDir, `seg${k}.mp4`) }));
+  await Promise.all(segs.map(async (sg) => {
+    const enc = spawn('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS),
+      '-c:v', 'mjpeg', '-i', '-', ...vArgs, '-an', sg.file], { stdio: ['pipe', 'inherit', 'inherit'] });
+    const encDone = new Promise((res, rej) => enc.on('close', (c) => (c === 0 ? res() : rej(new Error('ffmpeg exit ' + c)))));
+    for (let i = sg.i0; i < sg.i1; i++) {
+      const t = FROM + i / FPS;
+      const b64 = await sg.pg.evaluate(([tt, q]) => window.__renderFrame(tt, 'image/jpeg', q), [t, JPEG_Q]);
+      if (!enc.stdin.write(Buffer.from(b64, 'base64'))) await new Promise((r) => enc.stdin.once('drain', r));
+      if (++done % 30 === 0 || done === n) progress();
+    }
+    enc.stdin.end();
+    await encDone;
+  }));
+
+  /* ---------- 拼接视频（无损）+ 合成音轨 ---------- */
+  const list = path.join(segDir, 'list.txt');
+  await writeFile(list, segs.map((sg) => `file '${sg.file.replace(/'/g, "'\\''")}'`).join('\n') + '\n');
+  const ff = ['-y', '-hide_banner', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', list,
     '-ss', String(FROM), '-t', String(TO - FROM), '-i', wavPath];
   if (VO) ff.push('-ss', String(FROM), '-t', String(TO - FROM), '-i', path.resolve(VO));
-  ff.push('-c:v', 'libx264', '-preset', SCALE < 1 ? 'veryfast' : 'slow', '-crf', String(CRF),
-    '-pix_fmt', 'yuv420p', '-profile:v', 'high', '-level', '4.2', '-r', String(FPS),
-    '-g', String(FPS * 2), '-bf', '2', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709');
+  ff.push('-c:v', 'copy');
   if (VO) {
     // 配音作为侧链信号压低配乐，再与配音混合
     ff.push('-filter_complex',
@@ -128,23 +171,9 @@ async function main() {
     ff.push('-map', '0:v', '-map', '1:a');
   }
   ff.push('-c:a', 'aac', '-b:a', '320k', '-ar', '48000', '-movflags', '+faststart', '-shortest', OUT);
-  const enc = spawn('ffmpeg', ff, { stdio: ['pipe', 'inherit', 'inherit'] });
-  const encDone = new Promise((res, rej) => enc.on('close', (c) => (c === 0 ? res() : rej(new Error('ffmpeg exit ' + c)))));
-
-  const n = Math.round((TO - FROM) * FPS);
-  const t0 = Date.now();
-  for (let i = 0; i < n; i++) {
-    const t = FROM + i / FPS;
-    const b64 = await page.evaluate(([tt, q]) => window.__renderFrame(tt, 'image/jpeg', q), [t, JPEG_Q]);
-    const buf = Buffer.from(b64, 'base64');
-    if (!enc.stdin.write(buf)) await new Promise((r) => enc.stdin.once('drain', r));
-    if (i % 30 === 0 || i === n - 1) {
-      const el = (Date.now() - t0) / 1000, eta = (el / (i + 1)) * (n - i - 1);
-      process.stdout.write(`\r渲染 ${i + 1}/${n} 帧  ${((i + 1) / n * 100).toFixed(1)}%  已用 ${fmt(el)}  剩余 ${fmt(eta)}   `);
-    }
-  }
-  enc.stdin.end();
-  await encDone;
+  await new Promise((res, rej) => spawn('ffmpeg', ff, { stdio: 'inherit' }).on('close', (c) => (c === 0 ? res() : rej(new Error('ffmpeg mux exit ' + c)))));
+  await rm(segDir, { recursive: true, force: true });
+  await Promise.all(extra.map((br) => br.close()));
   console.log(`\n完成 → ${path.relative(ROOT, OUT)}`);
   await browser.close();
   srv.close();

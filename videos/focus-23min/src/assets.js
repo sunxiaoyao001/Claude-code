@@ -70,8 +70,16 @@
     const lut = LUTS[grade];
     const id = g.getImageData(0, 0, c.width, c.height);
     const d = id.data;
+    // 轻度 USM 锐化：图库原图最长边只有 1024px，竖屏全屏会放大 2~3 倍，先锐化再放大更清楚
+    const bc = U.canvas(c.width, c.height);
+    const bg = bc.getContext('2d', { willReadFrequently: true });
+    bg.filter = 'blur(1.6px)';
+    bg.drawImage(src, 0, 0);
+    const bd = bg.getImageData(0, 0, c.width, c.height).data;
+    const lum = (a, i) => (a[i] * 0.2126 + a[i + 1] * 0.7152 + a[i + 2] * 0.0722) / 255;
     for (let i = 0; i < d.length; i += 4) {
-      let l = (d[i] * 0.2126 + d[i + 1] * 0.7152 + d[i + 2] * 0.0722) / 255;
+      let l = lum(d, i);
+      l += 0.75 * (l - lum(bd, i));
       l = U.clamp((l - 0.5) * 1.22 + 0.47); // 对比度 + 轻微压暗
       const j = (l * 255) | 0;
       d[i] = lut[j * 3];
@@ -195,6 +203,7 @@
     const cy = fy * ih + (o.dy || 0) * sh;
     const sx = U.clamp(cx - sw / 2, 0, Math.max(0, iw - sw));
     const sy = U.clamp(cy - sh / 2, 0, Math.max(0, ih - sh));
+    ctx.imageSmoothingQuality = 'high';
     if (o.alpha != null && o.alpha < 1) {
       ctx.save();
       ctx.globalAlpha *= o.alpha;

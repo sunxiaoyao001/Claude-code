@@ -57,7 +57,7 @@
       return { x, y, r: 140 };
     }
     const [x0, y0] = map(f.x, f.y), [x1, y1] = map(f.x + f.w, f.y + f.h);
-    return { x: (x0 + x1) / 2, y: (y0 + y1) / 2, r: U.clamp(Math.max(x1 - x0, y1 - y0) * 0.55, 90, 200) };
+    return { x: (x0 + x1) / 2, y: (y0 + y1) / 2, r: U.clamp(Math.max(x1 - x0, y1 - y0) * 0.5, 90, 160) };
   }
   /** 手持感漂移 */
   const drift = (t, amt = 0.012, seed = 1) => [U.fbm(t * 0.35, seed) * amt, U.fbm(t * 0.3, seed + 9) * amt];
@@ -414,12 +414,12 @@
     // 人脸追踪
     const f = faceOf('deepWork', map);
     D.reticle(ctx, f.x, f.y, f.r, t, U.p(lt, 0.4, 1.3), {
-      color: C.cyan, label: 'SUBJECT 01 // DEEP WORK', sub: '深度工作中', alpha: 1 - U.p(lt, 9.0, 9.4),
+      color: C.cyan, label: 'SUBJECT 01 // DEEP WORK', sub: '深度工作中', below: true, alpha: 1 - U.p(lt, 9.0, 9.4),
     });
 
     // 标题：两句接力
-    D.kinetic(ctx, '专注不是开关', 540, H1 + 20, lt - 0.3, { size: 96, out: 2.4 });
-    D.kinetic(ctx, '是一条爬坡曲线', 540, H1 + 20, lt - 2.75, { size: 100, hl: ['爬坡曲线'], hlColor: C.cyan, mode: 'rise', out: 5.05 });
+    D.kinetic(ctx, '专注不是开关', 540, 395, lt - 0.3, { size: 92, out: 2.4 });
+    D.kinetic(ctx, '是一条爬坡曲线', 540, 395, lt - 2.75, { size: 100, hl: ['爬坡曲线'], hlColor: C.cyan, mode: 'rise', out: 5.05 });
 
     // 脑电波：随专注度提高而平稳
     const u = E.inOutSine(U.inv(1.0, 7.8, lt));
@@ -565,10 +565,10 @@
     P.flash += 0.9 * U.hit(lt, 0, 0.06);
     P.flashColor = lt < 0.08 ? [1, 1, 1] : [1, 0.15, 0.22];
     P.flash += 0.1 * U.hit(lt, 0.12, 0.2);
-    shake(P, t, U.hit(lt, 0, 0.55) * 2.2);
-    P.chroma += 0.9 * U.hit(lt, 0, 0.6) + 0.15 * rp;
-    P.glitch += 0.9 * U.hit(lt, 0, 0.35) + 0.6 * U.p(lt, 5.6, 6);
-    P.zoomBlur += 0.3 * U.hit(lt, 0, 0.3);
+    shake(P, t, U.hit(lt, 0, 0.4) * 2.0);
+    P.chroma += 0.7 * U.hit(lt, 0, 0.3) + 0.15 * rp;
+    P.glitch += 0.9 * U.hit(lt, 0, 0.12) + 0.6 * U.p(lt, 5.6, 6);
+    P.zoomBlur += 0.25 * U.hit(lt, 0, 0.12);
     P.zoomCX = ix / 1080;
     P.zoomCY = iy / 1920;
     P.tint = [1.04, 0.95, 0.95];
@@ -587,7 +587,7 @@
     D.kinetic(ctx, '被打断一次', 540, H1, lt - 0.25, { size: 92 });
     D.kinetic(ctx, '平均需要', 540, H2 - 20, lt - 0.9, { size: 56, weight: 700, color: U.rgba(C.ink, 0.75) });
 
-    const cx = 540, cy = 830, R = 285;
+    const cx = 540, cy = 855, R = 280;
     const zin = U.p(lt, 7.3, 8, E.inExpo);
     const lockT = EV.clockLock - 36;
     const v = 23.25 * U.p(lt, 0.6, lockT, E.inOutCubic); // 分钟
@@ -1063,7 +1063,7 @@
       shade(ctx, 0.7, 0.2, 0.9);
       ctx.restore();
       const f = faceOf('deepWork', map);
-      D.reticle(ctx, f.x, f.y, f.r, t, U.p(l2, 0.1, 0.5), { color: C.green, label: 'FOCUS RESTORED', sub: '专注已恢复' });
+      D.reticle(ctx, f.x, f.y, f.r, t, U.p(l2, 0.1, 0.5), { color: C.green, label: 'FOCUS RESTORED', sub: '专注已恢复', below: true });
       D.meter(ctx, 140, 1150, 800, 46, U.p(l2, 0.2, 0.8, E.outExpo), t, { segments: 24, color: C.green });
       D.text(ctx, `${Math.round(100 * U.p(l2, 0.2, 0.8, E.outExpo))}%`, 540, 1290, { font: U.font(900, 110, 'display'), color: '#fff', alpha: U.p(l2, 0.2, 0.3) });
       P.flash += 0.35 * U.hit(l2, 0, 0.15);
