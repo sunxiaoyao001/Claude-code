@@ -5,6 +5,17 @@
 
 ---
 
+## 成片下载
+
+**[▶ GitHub Releases：focus-23min-video](https://github.com/sunxiaoyao001/Claude-code/releases/tag/focus-23min-video)**
+
+| 文件 | 规格 |
+|---|---|
+| [`focus-23min-1080p60-master.mp4`](https://github.com/sunxiaoyao001/Claude-code/releases/download/focus-23min-video/focus-23min-1080p60-master.mp4) | 最高画质母版：1080×1920 · 60fps · H.264 High CRF 16 · AAC 320k 48kHz |
+| [`focus-23min-1080p30-share.mp4`](https://github.com/sunxiaoyao001/Claude-code/releases/download/focus-23min-video/focus-23min-1080p30-share.mp4) | 手机分享版：1080×1920 · 30fps · 约 28MB |
+
+成片由 [`.github/workflows/render-focus-23min.yml`](../../.github/workflows/render-focus-23min.yml) 在 GitHub 服务器上逐帧渲染并自动发布。改了画面以后，在 Actions 页面手动运行这个工作流（可以选帧率和 CRF），Release 里的文件会被新版本覆盖。
+
 ## 0. 快速开始
 
 ```bash
