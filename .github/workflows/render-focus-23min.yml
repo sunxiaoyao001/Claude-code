@@ -1,0 +1,90 @@
+# 在 GitHub 服务器上逐帧渲染《23 分钟》最高画质成片，并发布到 Releases（单文件上限 2GB）
+# 触发：推送本文件到视频分支时自动运行；也可在 Actions 页面手动运行（可改帧率 / CRF）
+name: Render video · focus-23min
+
+on:
+  push:
+    branches: [claude/ai-video-generation-planning-yjd5o4]
+    paths: [.github/workflows/render-focus-23min.yml]
+  workflow_dispatch:
+    inputs:
+      fps:
+        description: 帧率
+        default: '60'
+      crf:
+        description: x264 CRF（越小画质越高，16 ≈ 视觉无损）
+        default: '16'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: render-focus-23min
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    defaults:
+      run:
+        working-directory: videos/focus-23min
+    env:
+      FPS: ${{ github.event.inputs.fps || '60' }}
+      CRF: ${{ github.event.inputs.crf || '16' }}
+      TAG: focus-23min-video
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 安装 ffmpeg
+        run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+
+      - name: 安装 Playwright + Chromium
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: 逐帧渲染母版（1080×1920）
+        run: node render.mjs --fps "$FPS" --crf "$CRF" --out "out/focus-23min-1080p${FPS}-master.mp4"
+
+      - name: 压制手机分享版（约 28MB）
+        run: |
+          V="-vf hqdn3d=1.5:1.5:6:6,fps=30 -c:v libx264 -preset slow -b:v 2600k -pix_fmt yuv420p -profile:v high -level 4.2 -g 60 -colorspace bt709 -color_primaries bt709 -color_trc bt709"
+          ffmpeg -y -hide_banner -loglevel error -i "out/focus-23min-1080p${FPS}-master.mp4" $V -pass 1 -an -f mp4 /dev/null
+          ffmpeg -y -hide_banner -loglevel error -i "out/focus-23min-1080p${FPS}-master.mp4" $V -pass 2 -c:a aac -b:a 160k -movflags +faststart out/focus-23min-1080p30-share.mp4
+          ls -la out
+
+      - name: 发布到 Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          MASTER="out/focus-23min-1080p${FPS}-master.mp4"
+          SIZE=$(du -h "$MASTER" | cut -f1)
+          {
+            echo "## 《23 分钟：一次分心的真实代价》"
+            echo
+            echo "80 秒 · 科技赛博 HUD 风 · 抖音竖屏 9:16 · 代码逐帧渲染（Canvas 2D + WebGL2 + Web Audio）"
+            echo
+            echo "| 文件 | 规格 |"
+            echo "|---|---|"
+            echo "| \`focus-23min-1080p${FPS}-master.mp4\` | **最高画质母版**：1080×1920 · ${FPS}fps · H.264 High CRF ${CRF} · AAC 320k 48kHz · ${SIZE} |"
+            echo "| \`focus-23min-1080p30-share.mp4\` | 手机分享版：1080×1920 · 30fps · 约 28MB |"
+            echo "| \`CREDITS.md\` | 照片署名（CC BY 2.0，发布时请贴到视频简介） |"
+            echo
+            echo "源码与制作方案：[videos/focus-23min](https://github.com/${GITHUB_REPOSITORY}/tree/${GITHUB_REF_NAME}/videos/focus-23min)　·　渲染提交：${GITHUB_SHA::7}"
+            echo
+            sed '1d' assets/photos/CREDITS.md
+          } > out/notes.md
+          FILES=("$MASTER" out/focus-23min-1080p30-share.mp4 assets/photos/CREDITS.md)
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${FILES[@]}" --clobber
+            gh release edit "$TAG" --notes-file out/notes.md
+          else
+            gh release create "$TAG" "${FILES[@]}" --target "$GITHUB_SHA" \
+              --title "23 分钟 · 80 秒成片（1080p${FPS} 最高画质）" --notes-file out/notes.md
+          fi
+          echo "下载地址：https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG}" >> "$GITHUB_STEP_SUMMARY"
