@@ -355,6 +355,14 @@ config.js  │  2D 画布 1080×1920                                │
 | 中间帧 | JPEG q=0.94 管道传输（`--quality` 可调） | 同左 |
 | 渲染速度参考 | 软件渲染（SwiftShader，4 核）约 0.67 秒/帧，1080p30 全片约 27 分钟；本机 GPU 加 `--gpu` 快数倍，GPU 机器上还可加 `--jobs 3` 并行分段渲染 | 约 0.22 秒/帧，80 秒约 9 分钟 |
 
+**体积**：画面有胶片颗粒和扫描线，压缩效率低，CRF 17 母版约 430MB。转一个约 28MB、适合直接分享和上传的 1080p 版本：
+
+```bash
+V="-vf hqdn3d=1.5:1.5:6:6 -c:v libx264 -preset slow -b:v 2600k -pix_fmt yuv420p -g 60"
+ffmpeg -i out/focus-23min.mp4 $V -pass 1 -an -f mp4 /dev/null
+ffmpeg -i out/focus-23min.mp4 $V -pass 2 -c:a aac -b:a 160k -movflags +faststart out/focus-23min-share.mp4
+```
+
 浏览器内"录制 WebM"按钮为实时录制（VP9 + Opus，16 Mbps），方便快速分享；正式发布请用 `render.mjs` 导出 MP4。
 
 ---
