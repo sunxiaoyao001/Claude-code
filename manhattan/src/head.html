@@ -1,0 +1,245 @@
+<title>Manhattan 1:1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>
+/* Layout: full-bleed WebGL street view; HUD pinned to the corners like transit and street signage.
+   Single committed dark look (it sits over a 3D scene), so colors are set explicitly, no theme switch. */
+:root{
+  --ink:#0c0d0e;          /* MTA signage black */
+  --ink-2:#17191b;
+  --paper:#f4f3ee;        /* sign white */
+  --muted:#a3a7a4;
+  --sign:#00704a;         /* NYC street-name sign green */
+  --line-yellow:#fccc0a;  /* N Q R W */
+  --line-orange:#ff6319;  /* B D F M */
+  --line-red:#ee352e;     /* 1 2 3 */
+  --line-green:#00933c;   /* 4 5 6 */
+  --line-blue:#0039a6;    /* A C E */
+  --f-ui:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0;background:var(--ink);color:var(--paper);overflow:hidden;font-family:var(--f-ui);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#app{position:fixed;inset:0;background:#000;color:var(--paper)}
+#c{display:block;width:100%;height:100%;outline:none;touch-action:none}
+.hud{position:absolute;pointer-events:none;font-variant-numeric:tabular-nums}
+button{font-family:var(--f-ui)}
+button:focus-visible,.chip:focus-visible{outline:2px solid var(--line-yellow);outline-offset:2px}
+
+/* ---- Street sign (top-left) ---- */
+#loc{top:calc(14px + env(safe-area-inset-top,0px));left:16px;display:flex;flex-direction:column;gap:6px;max-width:min(360px,calc(100vw - 32px))}
+.blades{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+.blade{background:var(--sign);color:var(--paper);border-radius:5px;padding:3px;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+.blade span{display:block;border:2px solid var(--paper);border-radius:3px;padding:2px 12px 3px;font-weight:800;font-stretch:78%;font-size:22px;line-height:1.1;letter-spacing:.01em;white-space:nowrap}
+.blade.cross span{font-size:17px;padding:1px 10px 2px}
+.band{background:var(--ink);border-top:2px solid var(--paper);padding:5px 10px 6px;font-weight:700;font-stretch:90%;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--paper);box-shadow:0 2px 10px rgba(0,0,0,.35);align-self:flex-start}
+.band small{color:var(--muted);font-weight:600;letter-spacing:.1em}
+
+/* ---- Clock + mode (top-right) ---- */
+#status{top:calc(14px + env(safe-area-inset-top,0px));right:16px;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+#clock{background:var(--ink);border-top:2px solid var(--paper);padding:6px 12px 7px;text-align:right;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+#clock .t{font-weight:800;font-stretch:85%;font-size:24px;line-height:1}
+#clock .d{font-weight:600;font-size:11px;letter-spacing:.14em;color:var(--muted);margin-top:3px;text-transform:uppercase}
+#mode{display:flex;align-items:center;gap:8px;background:var(--ink);padding:5px 10px 5px 6px;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+.bullet{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:16px;line-height:1;color:var(--ink);background:var(--line-yellow);flex:none}
+.bullet.f{background:var(--line-orange);color:var(--paper)}
+#mode .m{font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+#mode .s{font-size:11px;color:var(--muted);letter-spacing:.04em}
+
+/* ---- Minimap (bottom-right) ---- */
+#mini{right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:184px;height:184px;border-radius:50%;overflow:hidden;border:3px solid var(--ink);box-shadow:0 4px 18px rgba(0,0,0,.45);background:#1e2a33}
+#mini canvas{width:100%;height:100%;display:block}
+#miniN{right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:190px;height:190px}
+#miniN b{position:absolute;left:50%;top:-4px;transform:translateX(-50%);background:var(--paper);color:var(--ink);font-size:10px;font-weight:800;border-radius:50%;width:18px;height:18px;display:grid;place-items:center}
+
+/* ---- Help (bottom-left) ---- */
+#help{left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:rgba(12,13,14,.86);border-top:2px solid var(--paper);padding:9px 12px 10px;font-size:12px;line-height:1.55;max-width:300px;transition:opacity .6s}
+#help .row{display:flex;gap:10px}
+#help kbd{display:inline-block;min-width:16px;padding:0 4px;border:1px solid #5b605d;border-radius:3px;font-family:var(--f-ui);font-size:10.5px;font-weight:700;text-align:center;color:var(--paper);background:var(--ink-2);line-height:16px}
+#help .k{flex:0 0 108px;color:var(--paper)}
+#help .v{color:var(--muted)}
+#help.dim{opacity:0}
+
+#cross{left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:rgba(255,255,255,.75);box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+#toast{left:50%;top:calc(18% + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);border-top:2px solid var(--paper);padding:8px 16px;font-weight:700;font-size:13px;letter-spacing:.06em;opacity:0;transition:opacity .35s;white-space:nowrap}
+#toast.on{opacity:1}
+#fps{right:16px;bottom:calc(210px + env(safe-area-inset-bottom,0px));font-size:10px;color:var(--muted);letter-spacing:.08em}
+
+/* ---- Title screen ---- */
+#title{color:var(--paper);position:absolute;inset:0;background:radial-gradient(120% 90% at 70% 10%,#1d2226 0%,#0c0d0e 60%);display:flex;padding-block:24px;padding-inline:16px;overflow:auto;z-index:20}
+#title .card{margin:auto;width:min(760px,100%);display:flex;flex-direction:column;gap:22px}
+#title .rule{height:4px;background:var(--paper)}
+#title h1{margin:0;font-weight:900;font-stretch:72%;font-size:clamp(56px,13vw,132px);line-height:.86;letter-spacing:-.01em;text-wrap:balance}
+#title h1 em{font-style:normal;color:var(--line-yellow)}
+#title p.lede{margin:0;font-size:17px;line-height:1.5;color:#d7d8d3;max-width:58ch}
+.lines{display:flex;gap:6px;flex-wrap:wrap}
+.lines i{color:var(--paper);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:13px}
+#stats{display:flex;gap:26px;flex-wrap:wrap;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#stats b{display:block;color:var(--paper);font-size:22px;letter-spacing:0;font-stretch:85%;font-weight:800}
+.starts{display:flex;flex-direction:column;gap:10px}
+.starts .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid #4a4f4c;background:transparent;color:var(--paper);padding:8px 12px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px}
+.chip[aria-pressed="true"]{border-color:var(--paper);background:var(--paper);color:var(--ink)}
+#go{align-self:flex-start;background:var(--line-yellow);color:var(--ink);border:0;font-weight:800;font-size:18px;letter-spacing:.02em;padding:14px 26px;border-radius:3px;cursor:pointer;display:flex;align-items:center;gap:12px}
+#go[disabled]{background:#2f3331;color:#c9cbc6;cursor:progress}
+#prog{height:3px;background:#2a2e2c;position:relative;overflow:hidden}
+#prog i{position:absolute;inset:0;background:var(--line-yellow);transform:scaleX(0);transform-origin:0 50%;transition:transform .2s}
+#progt{font-size:12px;color:var(--muted);letter-spacing:.04em;min-height:1.2em}
+.keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px 18px;font-size:12.5px;color:#c9cbc6}
+.keys kbd{display:inline-block;min-width:16px;padding:0 4px;border:1px solid #5b605d;border-radius:3px;font-family:var(--f-ui);font-size:11px;font-weight:700;text-align:center;color:var(--paper);background:var(--ink-2);line-height:17px;margin-right:6px}
+
+/* ---- Full map ---- */
+#map{color:var(--paper);position:absolute;inset:0;background:rgba(8,9,10,.94);z-index:15;display:flex;gap:0}
+#map .side{flex:0 0 300px;display:flex;flex-direction:column;border-right:1px solid #2a2e2c;min-width:0;background:var(--ink)}
+#map .side h2{margin:0;padding:18px 18px 10px;font-weight:900;font-stretch:75%;font-size:30px;line-height:1}
+#map .side .sub{padding:0 18px 12px;font-size:12px;color:var(--muted);line-height:1.45}
+#lm{overflow:auto;padding:0 10px 18px;display:flex;flex-direction:column;gap:2px}
+#lm button{display:flex;align-items:center;gap:10px;text-align:left;background:transparent;border:0;color:var(--paper);padding:7px 8px;border-radius:4px;cursor:pointer;font-size:13.5px;font-weight:600}
+#lm button:hover,#lm button:focus-visible{background:#1f2321}
+#lm button small{display:block;color:var(--muted);font-weight:500;font-size:11px;margin-top:1px}
+#lm .dot{width:10px;height:10px;border-radius:50%;flex:none}
+#lm .grp{font-size:10.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;font-weight:700;padding:12px 8px 4px}
+#mapwrap{flex:1;position:relative;overflow:hidden;cursor:grab;min-width:0}
+#mapwrap canvas{position:absolute;left:0;top:0}
+#mapclose{position:absolute;right:16px;top:calc(14px + env(safe-area-inset-top,0px));background:var(--paper);color:var(--ink);border:0;font-weight:800;padding:8px 14px;border-radius:3px;cursor:pointer;z-index:2}
+#maphint{position:absolute;left:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));font-size:12px;color:var(--muted);background:rgba(12,13,14,.8);padding:6px 10px}
+
+/* ---- Settings ---- */
+#settings{right:16px;top:calc(110px + env(safe-area-inset-top,0px));pointer-events:auto;background:rgba(12,13,14,.92);border-top:2px solid var(--paper);padding:12px 14px;width:240px;display:flex;flex-direction:column;gap:12px;font-size:12px}
+#settings label{display:flex;flex-direction:column;gap:6px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700;font-size:11px}
+#settings input[type=range]{width:100%;accent-color:var(--line-yellow)}
+.seg{display:flex;border:1px solid #4a4f4c;border-radius:3px;overflow:hidden}
+.seg button{flex:1;background:transparent;color:var(--paper);border:0;padding:6px 8px;font-size:12px;font-weight:700;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--paper);color:var(--ink)}
+
+/* ---- Touch controls ---- */
+#touch{position:absolute;inset:0;pointer-events:none}
+#stick{position:absolute;left:24px;bottom:calc(28px + env(safe-area-inset-bottom,0px));width:128px;height:128px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(12,13,14,.25);pointer-events:auto;touch-action:none}
+#stick i{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:rgba(244,243,238,.8)}
+.tbtns{position:absolute;right:20px;bottom:calc(220px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px;pointer-events:auto}
+.tbtns button{width:56px;height:56px;border-radius:50%;border:2px solid rgba(255,255,255,.4);background:rgba(12,13,14,.55);color:var(--paper);font-weight:800;font-size:12px;letter-spacing:.04em;touch-action:none}
+#tools{left:16px;top:calc(124px + env(safe-area-inset-top,0px));display:flex;gap:6px;pointer-events:auto}
+#tools button{background:rgba(12,13,14,.82);color:var(--paper);border:1px solid #3a3e3c;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:.08em;padding:6px 9px;cursor:pointer;text-transform:uppercase}
+
+@media (max-width:640px){
+  #loc{max-width:calc(100vw - 196px)}
+  .band{font-size:11px;letter-spacing:.08em}
+  #tools{top:calc(150px + env(safe-area-inset-top,0px));flex-wrap:wrap;max-width:calc(100vw - 32px)}
+  .blade span{font-size:18px;padding:2px 9px}
+  .blade.cross span{font-size:14px}
+  #mini,#miniN{width:120px;height:120px}
+  #miniN{width:126px;height:126px}
+  #help{display:none}
+  #clock .t{font-size:19px}
+  #map{flex-direction:column}
+  #map .side{flex:0 0 auto;max-height:42%;border-right:0;border-bottom:1px solid #2a2e2c}
+  #settings{width:min(240px,calc(100vw - 32px))}
+  #fps{display:none}
+}
+@media (prefers-reduced-motion:reduce){#help,#toast{transition:none}}
+</style>
+
+<div id="app">
+  <canvas id="c" tabindex="0" aria-label="3D view of Manhattan"></canvas>
+
+  <div id="cross" class="hud" hidden></div>
+
+  <div id="loc" class="hud" hidden>
+    <div class="blades">
+      <div class="blade"><span id="sStreet">W 42 St</span></div>
+      <div class="blade cross"><span id="sAve">7 Av</span></div>
+    </div>
+    <div class="band"><span id="sHood">Midtown</span> <small id="sPlace"></small></div>
+  </div>
+
+  <div id="tools" class="hud" hidden>
+    <button id="bMap" type="button">Map <kbd style="display:none">M</kbd></button>
+    <button id="bFly" type="button">Fly</button>
+    <button id="bSet" type="button">Settings</button>
+    <button id="bSnd" type="button">Sound on</button>
+  </div>
+
+  <div id="status" class="hud" hidden>
+    <div id="clock"><div class="t" id="tTime">5:30 PM</div><div class="d" id="tDate">Tue Oct 13</div></div>
+    <div id="mode"><div class="bullet" id="mBullet">W</div><div><div class="m" id="mName">Walking</div><div class="s" id="mSpeed">0.0 m/s</div></div></div>
+  </div>
+
+  <div id="settings" class="hud" hidden>
+    <label for="sTime">Time of day <span id="sTimeV" style="color:var(--paper)"></span>
+      <input id="sTime" type="range" min="0" max="1439" step="1"></label>
+    <label>Clock
+      <div class="seg" id="sFlow"><button type="button" data-v="0">Paused</button><button type="button" data-v="1">Real</button><button type="button" data-v="60">60×</button><button type="button" data-v="600">600×</button></div></label>
+    <label>Graphics
+      <div class="seg" id="sQual"><button type="button" data-v="0">Low</button><button type="button" data-v="1">Medium</button><button type="button" data-v="2">High</button></div></label>
+    <label for="sFov">Field of view <input id="sFov" type="range" min="55" max="100" step="1" value="72"></label>
+  </div>
+
+  <div id="mini" class="hud" hidden><canvas id="miniC" width="368" height="368"></canvas></div>
+  <div id="miniN" class="hud" hidden><b>N</b></div>
+  <div id="fps" class="hud" hidden></div>
+
+  <div id="help" class="hud" hidden>
+    <div class="row"><span class="k"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> + mouse</span><span class="v">walk and look</span></div>
+    <div class="row"><span class="k"><kbd>Shift</kbd></span><span class="v">run (boost when flying)</span></div>
+    <div class="row"><span class="k"><kbd>Space</kbd></span><span class="v">jump / climb</span></div>
+    <div class="row"><span class="k"><kbd>F</kbd></span><span class="v">fly mode, <kbd>C</kbd> descend</span></div>
+    <div class="row"><span class="k"><kbd>M</kbd></span><span class="v">map and teleport</span></div>
+    <div class="row"><span class="k"><kbd>[</kbd> <kbd>]</kbd> <kbd>T</kbd></span><span class="v">time of day, pause clock</span></div>
+    <div class="row"><span class="k"><kbd>H</kbd> <kbd>P</kbd></span><span class="v">help, photo mode</span></div>
+  </div>
+
+  <div id="toast" class="hud"></div>
+
+  <div id="touch" hidden>
+    <div id="stick"><i></i></div>
+    <div class="tbtns"><button id="tRun" type="button">RUN</button><button id="tUp" type="button">UP</button><button id="tDn" type="button">DOWN</button></div>
+  </div>
+
+  <div id="map" hidden>
+    <div class="side">
+      <h2>Manhattan</h2>
+      <div class="sub">Pick a place to jump there, or click anywhere on the map. Drag to pan, scroll to zoom.</div>
+      <div id="lm"></div>
+    </div>
+    <div id="mapwrap"><canvas id="mapC"></canvas><div id="maphint">You are the yellow arrow</div></div>
+    <button id="mapclose" type="button">Close <span style="opacity:.6">M</span></button>
+  </div>
+
+  <div id="title">
+    <div class="card">
+      <div class="rule"></div>
+      <div class="lines" aria-hidden="true">
+        <i style="background:var(--line-red)">1</i><i style="background:var(--line-green)">4</i><i style="background:var(--line-blue)">A</i><i style="background:var(--line-orange)">F</i><i style="background:var(--line-yellow);color:var(--ink)">Q</i>
+      </div>
+      <h1>Manhattan<br><em>1:1</em></h1>
+      <p class="lede">The whole island at real scale, from Inwood Hill to the Battery. Every numbered street, the avenues, Broadway's diagonal, Central Park, the bridges and the harbor. Walk it block by block or take to the air.</p>
+      <div id="stats"></div>
+      <div class="starts">
+        <div class="lbl">Start at</div>
+        <div class="chips" id="starts"></div>
+      </div>
+      <div>
+        <div id="prog"><i></i></div>
+        <div id="progt">Laying out the street grid…</div>
+      </div>
+      <button id="go" type="button" disabled>Building the city…</button>
+      <div class="keys">
+        <span><kbd>WASD</kbd>walk, mouse looks</span>
+        <span><kbd>Shift</kbd>run</span>
+        <span><kbd>F</kbd>fly over the city</span>
+        <span><kbd>M</kbd>map and teleport</span>
+        <span><kbd>[ ]</kbd>change the time</span>
+        <span><kbd>Esc</kbd>release the mouse</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
