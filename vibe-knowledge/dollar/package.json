@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "remotion studio",
     "math": "tsx scripts/verify-math.ts",
-    "audio": "node scripts/gen-audio.mjs",
+    "audio": "tsx scripts/gen-audio.ts",
     "fonts": "python3 scripts/subset-fonts.py",
     "still": "remotion still src/index.ts DollarAuction out/still.png",
     "render": "remotion render src/index.ts DollarAuction out/vibe-dollar-auction-1080x1920.mp4",
