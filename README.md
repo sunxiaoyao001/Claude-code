@@ -2,9 +2,10 @@
 
 ## Vibe知识大赏 · 短视频工程
 
-| 选题 | 目录 | 成片 |
-| --- | --- | --- |
-| 三人决斗（枪手博弈）：枪法最烂的那个，活下来的概率最大 | [`vibe-knowledge/truel`](vibe-knowledge/truel) | [`vibe-truel-1080x1920.mp4`](vibe-knowledge/truel/out/vibe-truel-1080x1920.mp4) · [分镜脚本](vibe-knowledge/truel/SCRIPT.md) |
+| 集 | 选题 | 目录 | 成片 |
+| --- | --- | --- | --- |
+| 01 | 三人决斗（枪手博弈）：枪法最烂的那个，活下来的概率最大 | [`vibe-knowledge/truel`](vibe-knowledge/truel) | [`vibe-truel-1080x1920.mp4`](vibe-knowledge/truel/out/vibe-truel-1080x1920.mp4) · [分镜脚本](vibe-knowledge/truel/SCRIPT.md) |
+| 02 | 阿克塞尔罗德大赛（重复囚徒困境）：冠军只有 4 行代码，一局都没赢过 | [`vibe-knowledge/axelrod`](vibe-knowledge/axelrod) | [`vibe-axelrod-1080x1920.mp4`](vibe-knowledge/axelrod/out/vibe-axelrod-1080x1920.mp4) · [分镜脚本](vibe-knowledge/axelrod/SCRIPT.md) |
 
 Remotion + GLSL + Three.js + Canvas，竖屏 1080×1920 / 30fps，无配音、纯字幕叙事，音效与配乐全部程序化合成。
 
