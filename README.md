@@ -6,6 +6,7 @@
 | --- | --- | --- | --- |
 | 01 | 三人决斗（枪手博弈）：枪法最烂的那个，活下来的概率最大 | [`vibe-knowledge/truel`](vibe-knowledge/truel) | [`vibe-truel-1080x1920.mp4`](vibe-knowledge/truel/out/vibe-truel-1080x1920.mp4) · [分镜脚本](vibe-knowledge/truel/SCRIPT.md) |
 | 02 | 阿克塞尔罗德大赛（重复囚徒困境）：冠军只有 4 行代码，一局都没赢过 | [`vibe-knowledge/axelrod`](vibe-knowledge/axelrod) | [`vibe-axelrod-1080x1920.mp4`](vibe-knowledge/axelrod/out/vibe-axelrod-1080x1920.mp4) · [分镜脚本](vibe-knowledge/axelrod/SCRIPT.md) |
+| 03 | 美元拍卖：第二名也要付钱，价格冲破 100 停不下来 | [`vibe-knowledge/dollar`](vibe-knowledge/dollar) | [`vibe-dollar-auction-1080x1920.mp4`](vibe-knowledge/dollar/out/vibe-dollar-auction-1080x1920.mp4) · [分镜脚本](vibe-knowledge/dollar/SCRIPT.md) |
 
 Remotion + GLSL + Three.js + Canvas，竖屏 1080×1920 / 30fps，无配音、纯字幕叙事，音效与配乐全部程序化合成。
 
