@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "zeigarnik-video/artifact/plan.html"
+        ],
+        "createdAt": "2026-10-15T10:21:25.668Z",
+        "reason": "Claude: false positive - artifact page is a body fragment (skeleton added at publish), so the detector measures text against #ffffff / default black instead of the page's dark tokens (--bg #0A0C12, --fg #ECE6DA); real contrast checked by hand"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "zeigarnik-video/artifact/plan.html"
+        ],
+        "createdAt": "2026-10-15T10:25:29.428Z",
+        "reason": "Claude: false positive - .screen is a 9:16 video monitor whose canvas fills the frame edge to edge by design, and .tbl-wrap's table cells carry 10px 14px padding so no text touches the border"
+      }
+    ]
+  }
+}

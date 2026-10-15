@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>没写完的结局 · 预演播放器</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+  :root { --bg: #07090f; --panel: #0f1420; --line: #263147; --fg: #e9e4da; --dim: #8c94a6; --amber: #ffb547; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 14px/1.5 "ZG Sans", "Noto Sans SC", system-ui, sans-serif; }
+  main { display: grid; place-items: center; gap: 14px; padding: 16px; min-height: 100%; }
+  canvas { width: min(420px, 92vw, calc((100vh - 170px) * 0.5625)); aspect-ratio: 9 / 16; border-radius: 14px; background: #000; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+  .bar { width: min(560px, 92vw); display: grid; gap: 8px; }
+  .row { display: flex; align-items: center; gap: 10px; }
+  button { background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; font: inherit; cursor: pointer; }
+  button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+  .time { font-variant-numeric: tabular-nums; color: var(--dim); min-width: 110px; }
+  .shot { color: var(--amber); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .track { position: relative; height: 34px; }
+  .track input { position: absolute; inset: 0; width: 100%; margin: 0; accent-color: var(--amber); }
+  .marks { position: absolute; left: 0; right: 0; top: 0; height: 10px; pointer-events: none; }
+  .marks i { position: absolute; top: 0; width: 2px; height: 10px; background: var(--amber); opacity: .8; }
+  .marks b { position: absolute; top: 2px; width: 1px; height: 6px; background: var(--dim); }
+</style>
+</head>
+<body>
+<main>
+  <canvas id="cv" width="720" height="1280"></canvas>
+  <div class="bar">
+    <div class="row"><button id="play">▶ 播放（含临时音效）</button><span class="time" id="time">0.00 / 62.00</span><span class="shot" id="shot"></span></div>
+    <div class="track"><div class="marks" id="marks"></div><input id="seek" type="range" min="0" max="62" step="0.01" value="0" aria-label="时间轴"></div>
+  </div>
+</main>
+<script src="engine/timeline.js"></script>
+<script src="engine/core.js"></script>
+<script src="engine/city.js"></script>
+<script src="engine/scenes1.js"></script>
+<script src="engine/scenes2.js"></script>
+<script src="engine/scenes3.js"></script>
+<script src="engine/compose.js"></script>
+<script src="engine/audio.js"></script>
+<script>
+(async () => {
+  const D = ZG.META.DURATION, cv = document.getElementById('cv'), r = ZG.createRenderer(cv);
+  const $ = (id) => document.getElementById(id), seek = $('seek');
+  ZG.SHOTS.forEach((s) => { const b = document.createElement('b'); b.style.left = (s.t0 / D * 100) + '%'; $('marks').appendChild(b); });
+  ZG.CUES.filter((c) => c.hit).forEach((c) => { const i = document.createElement('i'); i.style.left = (c.t / D * 100) + '%'; i.title = c.label; $('marks').appendChild(i); });
+  await ZG.ready('assets/');
+  let t = 0, playing = false, ac = null, src = null, t0 = 0, off = 0;
+  const now = () => (ac ? ac.currentTime : performance.now() / 1000);
+  function draw() {
+    r.render(t); seek.value = t;
+    $('time').textContent = t.toFixed(2) + ' / ' + D.toFixed(2);
+    const s = ZG.SHOTS[ZG.shotAt(t)]; $('shot').textContent = s.id + ' · ' + s.name;
+  }
+  async function play() {
+    if (!ac) { ac = new AudioContext(); }
+    await ac.resume();
+    const buf = await ZG.Audio.buffer();
+    src = ac.createBufferSource(); src.buffer = buf; src.connect(ac.destination);
+    off = t >= D - 0.05 ? 0 : t; t0 = now(); src.start(0, off); playing = true; $('play').textContent = '❚❚ 暂停';
+    (function loop() { if (!playing) return; t = off + now() - t0; if (t >= D) { stop(); t = D - 0.001; } draw(); requestAnimationFrame(loop); })();
+  }
+  function stop() { playing = false; if (src) { try { src.stop(); } catch (e) {} src = null; } $('play').textContent = '▶ 播放（含临时音效）'; }
+  $('play').onclick = () => (playing ? stop() : play());
+  seek.oninput = () => { const was = playing; stop(); t = +seek.value; draw(); if (was) play(); };
+  draw();
+})();
+</script>
+</body>
+</html>

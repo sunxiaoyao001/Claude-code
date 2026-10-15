@@ -1,0 +1,454 @@
+<title>没写完的结局</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;900&family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+  /* 布局：左侧固定“监视器”播放预演，右侧是可滚动的导演手册；窄屏上下堆叠。单一夜色主题，与片子同一个世界。 */
+  :root {
+    color-scheme: dark;
+    --bg: #0A0C12; --surface: #10131B; --surface-2: #161A25; --line: #242A3A;
+    --fg: #ECE6DA; --dim: #A9AEBB; --faint: #8A90A0;
+    --amber: #FFB547; --amber-ink: #FFD08A; --amber-wash: rgba(255, 181, 71, 0.12);
+    --cold: #7FB2D3; --rec: #FF6B5E;
+    --display: "Noto Serif SC", "ZG Serif", "Songti SC", "STSong", serif;
+    --body: "Noto Sans SC", "ZG Sans", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font: 15px/1.75 var(--body); margin: 0; }
+  .wrap { max-width: 1320px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 80px; }
+  a { color: var(--amber-ink); }
+  h1, h2, h3 { font-family: var(--display); font-weight: 900; text-wrap: balance; margin: 0; }
+  .tc { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* 顶部 */
+  .hero { display: grid; gap: 14px; padding-block: 8px 30px; border-bottom: 1px solid var(--line); }
+  .crumb { color: var(--amber-ink); }
+  .hero h1 { font-size: clamp(30px, 4.6vw, 54px); line-height: 1.25; letter-spacing: .02em; }
+  .hero h1 em { font-style: normal; color: var(--amber); }
+  .hero p { margin: 0; color: var(--dim); max-width: 62ch; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 13px; color: var(--dim); }
+  .facts b { color: var(--fg); font-family: var(--mono); font-weight: 500; margin-right: 6px; }
+
+  .layout { display: grid; gap: 36px; margin-top: 30px; }
+  .layout > * { min-width: 0; }
+  .loading[hidden] { display: none; }
+  @media (min-width: 1080px) { .layout { grid-template-columns: 400px minmax(0, 1fr); align-items: start; } .monitor { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); } }
+
+  /* 监视器 */
+  .monitor { display: grid; gap: 12px; }
+  .screen { position: relative; width: 100%; max-width: 400px; aspect-ratio: 9 / 16; margin: 0 auto; border-radius: 18px; overflow: hidden; background: #000; border: 1px solid var(--line); }
+  .screen canvas { width: 100%; height: 100%; display: block; }
+  .loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--dim); font-size: 13px; letter-spacing: .1em; }
+  .ctrl { display: flex; align-items: center; gap: 10px; max-width: 400px; width: 100%; margin: 0 auto; }
+  .btn { appearance: none; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); border-radius: 999px; padding: 8px 16px; font: 500 13px/1 var(--body); cursor: pointer; white-space: nowrap; }
+  .btn:hover { border-color: var(--amber); }
+  .btn:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+  .btn.primary { background: var(--amber); color: #1A1206; border-color: var(--amber); }
+  .now { font-size: 12px; color: var(--dim); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .now .tc { color: var(--fg); margin-right: 8px; }
+  .scrub { position: relative; max-width: 400px; width: 100%; margin: 0 auto; height: 40px; }
+  .scrub input { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; margin: 0; accent-color: var(--amber); }
+  .ticks { position: absolute; left: 8px; right: 8px; top: 0; height: 16px; pointer-events: none; }
+  .ticks span { position: absolute; top: 4px; width: 1px; height: 8px; background: var(--faint); }
+  .ticks i { position: absolute; top: 0; width: 2px; height: 14px; background: var(--amber); border-radius: 1px; }
+  .note { font-size: 12px; color: var(--faint); max-width: 400px; margin: 0 auto; line-height: 1.6; }
+
+  /* 目录 */
+  .toc { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .chip { font-size: 12px; color: var(--dim); border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; text-decoration: none; }
+  .chip:hover { color: var(--fg); border-color: var(--amber); }
+
+  /* 章节 */
+  section { padding-block: 34px; border-bottom: 1px solid var(--line); min-width: 0; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px; }
+  .sec-no { font-family: var(--mono); font-size: 13px; color: var(--amber); letter-spacing: .1em; }
+  section h2 { font-size: clamp(22px, 2.6vw, 30px); }
+  section h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+  .lead { color: var(--dim); max-width: 66ch; margin: 0 0 16px; }
+  .grid2 { display: grid; gap: 14px; }
+  @media (min-width: 720px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; min-width: 0; }
+  .card p { margin: 0; }
+  .card p + p { margin-top: 8px; }
+  .k { color: var(--amber-ink); }
+  .muted { color: var(--dim); }
+  ul.clean { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  ul.clean li { padding-left: 16px; position: relative; }
+  ul.clean li::before { content: ""; position: absolute; left: 0; top: .78em; width: 7px; height: 7px; border: 1.5px solid var(--amber); border-radius: 50%; border-top-color: transparent; transform: rotate(35deg); }
+  .title-main { font-family: var(--display); font-weight: 900; font-size: clamp(22px, 3vw, 32px); line-height: 1.4; margin: 0 0 14px; }
+  .cover { display: grid; place-items: center; aspect-ratio: 3 / 4; max-width: 240px; border-radius: 12px; background: radial-gradient(circle at 58% 62%, rgba(255,181,71,.35), transparent 22%), linear-gradient(#05070D, #0E1828); border: 1px solid var(--line); font-family: var(--display); font-weight: 900; font-size: 34px; line-height: 1.35; text-align: center; letter-spacing: .08em; }
+  .cover span { color: var(--amber); }
+
+  /* 旁白 / 字幕 / 卡点表 */
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 500; color: var(--dim); font-size: 12px; letter-spacing: .08em; background: var(--surface); position: sticky; top: 0; }
+  tr:last-child td { border-bottom: 0; }
+  td.tc { color: var(--dim); white-space: nowrap; }
+  tr.hit td:first-child { color: var(--amber); }
+  .hl { color: var(--amber); }
+  .vo-line { font-family: var(--display); font-weight: 600; font-size: 16px; }
+  .pill { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--dim); white-space: nowrap; }
+  .pill.ai { color: var(--cold); border-color: rgba(127,178,211,.4); }
+  .pill.code { color: var(--amber-ink); border-color: rgba(255,181,71,.4); }
+  .pill.hit { color: #1A1206; background: var(--amber); border-color: var(--amber); }
+  .row-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+
+  /* 时间轴条 */
+  .strip { display: flex; height: 46px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); margin: 6px 0 4px; }
+  .strip button { flex: none; border: 0; border-right: 1px solid var(--bg); background: var(--surface-2); color: var(--dim); font: 500 10px/1 var(--mono); cursor: pointer; padding: 0; min-width: 0; overflow: hidden; }
+  .strip button.code { background: #2A2112; color: var(--amber-ink); }
+  .strip button:hover, .strip button.on { background: var(--amber); color: #1A1206; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--dim); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+  /* 分镜卡 */
+  .shots { display: grid; gap: 14px; }
+  .shot { display: grid; gap: 10px; }
+  .shot-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
+  .shot-id { font-family: var(--mono); color: var(--amber); font-size: 13px; }
+  .shot h3 { margin: 0; font-size: 18px; }
+  .shot .lens { font-size: 12px; color: var(--dim); }
+  .shot .vo { font-family: var(--display); font-weight: 600; border-left: 2px solid var(--amber); padding-left: 12px; }
+  .kv { display: grid; gap: 6px; font-size: 14px; }
+  .kv div { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; }
+  .kv dt, .kv .l { color: var(--faint); font-size: 12px; padding-top: 2px; }
+  .seek { justify-self: start; }
+
+  /* 提示词 */
+  .prompt { display: grid; gap: 10px; }
+  .prompt pre { margin: 0; white-space: pre-wrap; word-break: break-word; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font: 13px/1.65 var(--mono); color: var(--fg); max-height: 220px; overflow: auto; }
+  .prompt .lbl { font-size: 12px; color: var(--dim); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .copy { font-size: 12px; padding: 5px 12px; }
+  .tok { color: var(--cold); }
+  code.inline { font-family: var(--mono); font-size: 13px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+  pre.code { margin: 0; overflow-x: auto; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font: 13px/1.7 var(--mono); }
+  .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); transform: translateX(-50%); background: var(--amber); color: #1A1206; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .toast.on { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <h1>你忘不掉的不是那个人，<br>是那个<em>没写完的结局</em></h1>
+    <p>用一百年前的“蔡格尼克效应”解释为什么没在一起的人最难忘，并给观众一个出口。全片只有一个视觉母题：一个没有闭合的光环。它在结尾闭合成一个句号。</p>
+    <div class="facts">
+      <span class="crumb">抖音知识视觉 / 心理学 / 导演手册</span>
+      <span><b>62s</b>时长</span><span><b>22</b>个镜头</span><span><b>26</b>句旁白</span><span><b>17</b>个强卡点</span><span><b>1080×1920</b>30fps</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="monitor" aria-label="预演监视器">
+      <div class="screen"><canvas id="cv" width="540" height="960" aria-label="预演画面"></canvas><div class="loading" id="loading">载入字体与引擎…</div></div>
+      <div class="ctrl"><button class="btn primary" id="play" type="button">播放预演</button><div class="now" id="now"><span class="tc">00.00</span>SH01</div></div>
+      <div class="scrub"><div class="ticks" id="ticks"></div><input id="seek" type="range" min="0" max="62" step="0.01" value="0" aria-label="拖动时间"></div>
+      <p class="note">这是程序生成的动态预演：动效、字幕、转场和临时音效都是成片里会用的那一层。标着“AI 拟真素材位”的地方，换成按第 12 节提示词生成的真人镜头后，同一套代码会合成出成片。琥珀色刻度是强卡点。</p>
+    </aside>
+
+    <main class="bible">
+      <nav class="toc" aria-label="目录">
+        <a class="chip" href="#s1">01 标题</a><a class="chip" href="#s2">02 爆点</a><a class="chip" href="#s3">03 观众</a><a class="chip" href="#s4">04 旁白</a><a class="chip" href="#s5">05 字幕</a><a class="chip" href="#s6">06 分镜</a><a class="chip" href="#s8">08 人物</a><a class="chip" href="#s9">09 动效</a><a class="chip" href="#s10">10 声音</a><a class="chip" href="#s11">11 卡点</a><a class="chip" href="#s12">12 提示词</a><a class="chip" href="#s13">13 代码</a>
+      </nav>
+
+      <section id="s1">
+        <div class="sec-head"><span class="sec-no">01</span><h2>视频标题</h2></div>
+        <p class="title-main">你忘不掉的不是那个人，是那个没写完的结局</p>
+        <div class="grid2">
+          <div class="card">
+            <h3>备选标题（A/B 测试）</h3>
+            <ul class="clean">
+              <li>为什么没在一起的人，最难忘？</li>
+              <li>一百年前的心理学实验，解释了你为什么放不下</li>
+              <li>你放不下的，可能只是一个句号</li>
+            </ul>
+          </div>
+          <div class="card" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center">
+            <div><h3>封面</h3><p class="muted">两行大字，背景用 SH17“整座城市只剩一扇亮着的窗”。封面和开头第一句是同一个反转，点进来马上兑现。</p></div>
+            <div class="cover" style="width:120px;font-size:20px">不是还爱<br><span>是没结束</span></div>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top:14px">
+          <div class="card">
+            <h3>发布文案</h3>
+            <p>一百年前，一位心理学家在餐馆里注意到一件怪事。后来，这件事被用来解释：为什么那个没好好告别的人，你记了这么多年。</p>
+            <p class="k">#心理学 #蔡格尼克效应 #情感 #放下 #知识视觉</p>
+          </div>
+          <div class="card">
+            <h3>置顶评论（自己发，自己置顶）</h3>
+            <p>补充一个严谨的说法：蔡格尼克效应里“没完成的事记得更清楚”这部分，2025 年的元分析（Ghibellini &amp; Meier）发现并不稳定；更可靠的是“忍不住想回去把它完成”的倾向。所以视频讲的是它一直拉着你回去，不是记得更清楚。你那句没说出口的话，也可以写在这里。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="s2">
+        <div class="sec-head"><span class="sec-no">02</span><h2>选题爆点分析</h2></div>
+        <div class="grid2">
+          <div class="card"><h3>认知翻转</h3><p>把“我还爱他”换成“我只是没等到结局”。观众得到一个体面、不怪自己的解释，这是愿意看完的第一理由。</p></div>
+          <div class="card"><h3>强代入</h3><p>被冷处理、暧昧没下文、异地断联、来不及告别。几乎每个成年人都有一段没好好结束的关系，“这说的就是我”。</p></div>
+          <div class="card"><h3>知识背书</h3><p>有百年前的实验和一个效应名称，观众转发时发的是心理学，不是鸡汤，不尴尬。</p></div>
+          <div class="card"><h3>一个能截图的母题</h3><p>没闭合的圆一眼能懂，贯穿 22 个镜头，结尾闭合成句号。SH17 的“一扇亮着的窗”和 SH21 的金句是两张天然截图。</p></div>
+          <div class="card"><h3>评论有情绪理由</h3><p>结尾把写评论变成一次仪式：“写在评论区，就当替自己结一次账。”评论区会出现大量真实故事，算法会继续推。</p></div>
+          <div class="card"><h3>完播与复播</h3><p>首尾是同一节车厢、同一机位，最后 0.7 秒压暗接回开场，自动循环时看不出断点。前 4 秒内完成“反常识结论 + 玻璃裂开”。</p></div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>风险与对策</h3>
+          <ul class="clean">
+            <li><span class="k">情绪太丧会降低转发。</span>后半段给出能做的出口（写一封不寄出的信），结尾是天亮，不是熄灯。</li>
+            <li><span class="k">科学争议。</span>2025 年的元分析（59 篇研究）没有发现“未完成的事记得更清楚”的普遍优势，但“想回去完成”的倾向（奥夫相基娜效应）是稳定的。旁白只讲后者，服务员的故事作为历史轶事讲，画面底部和置顶评论都有注释。</li>
+            <li><span class="k">“他”的指代会劝退一半观众。</span>口播“他/她”同音，字幕统一写 TA；蒙太奇里加入站台男生。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="s3">
+        <div class="sec-head"><span class="sec-no">03</span><h2>目标观众画像</h2></div>
+        <div class="grid2">
+          <div class="card">
+            <h3>核心：深夜放不下的人</h3>
+            <p>18–30 岁，女性偏多，一二线和新一线城市的学生、职场新人。常在 22:00–01:00 刷抖音。手里有一段“没结束就结束了”的关系。</p>
+            <p class="muted">她们要的是：一个解释，一个不怪自己的理由，一件今晚就能做的事。</p>
+          </div>
+          <div class="card">
+            <h3>次级：不说出口的人</h3>
+            <p>25–35 岁男性。很少评论，但会看完、收藏、私信转发。字幕用 TA、蒙太奇里有男性角色，是给他们留的入口。</p>
+            <p class="muted">内容偏好：心理学科普、情感语录、电影感混剪、深夜电台。</p>
+          </div>
+        </div>
+        <p class="lead" style="margin-top:14px">建议发布时间：周五或周日 21:30–23:00，正好是这类情绪最集中的时段。发布后 1 小时内回复前 20 条故事型评论，带动评论区。</p>
+      </section>
+
+      <section id="s4">
+        <div class="sec-head"><span class="sec-no">04</span><h2>完整旁白稿</h2></div>
+        <p class="lead">女声，低、暖、带一点气声，像深夜电台。语速约每秒 4.5 字。“结局”“张力”“句号”三个词稍微压重；金句前留 0.4 秒呼吸；“叮”的卡点之后再开口。真人配音最好；TTS 可选剪映“知性女声”、火山引擎、MiniMax 或 CosyVoice。</p>
+        <div class="row-actions"><button class="btn copy" type="button" data-copy="vo">复制旁白稿</button></div>
+        <div class="tbl-wrap"><table><thead><tr><th>时间</th><th>旁白（口播用“他/她”）</th><th>镜头</th></tr></thead><tbody id="vo-body"></tbody></table></div>
+      </section>
+
+      <section id="s5">
+        <div class="sec-head"><span class="sec-no">05</span><h2>字幕文案</h2></div>
+        <div class="grid2">
+          <div class="card">
+            <h3>字幕规范</h3>
+            <ul class="clean">
+              <li>思源宋体 SemiBold，54px（以 1080 宽计），字距 2px；关键词琥珀色高亮。</li>
+              <li>超过 14 字在逗号处折成两行；字幕底边在 1390px，避开抖音底部文案区和右侧按钮栏。</li>
+              <li>入场上浮 14px + 淡入 0.18 秒；离场淡出 0.2 秒。浅色画面下自动加底衬。</li>
+              <li>金句改为画面中央 84px 粗宋体并定格；“蔡格尼克效应”一句不出字幕，由标题画面承担。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>导入剪映</h3>
+            <p>复制 SRT 存成 <code class="inline">subtitles.srt</code>，剪映里“文本 → 本地字幕”导入即可对齐时间。项目文件夹里也有同名文件。</p>
+            <div class="row-actions"><button class="btn copy" type="button" data-copy="srt">复制 SRT 字幕</button></div>
+          </div>
+        </div>
+        <div class="tbl-wrap" style="margin-top:14px"><table><thead><tr><th>入</th><th>出</th><th>字幕（高亮词为琥珀色）</th></tr></thead><tbody id="sub-body"></tbody></table></div>
+      </section>
+
+      <section id="s6">
+        <div class="sec-head"><span class="sec-no">06–07</span><h2>分镜脚本与镜头画面</h2></div>
+        <p class="lead">22 个镜头，平均 2.8 秒一切。前 17 秒最密（9 个镜头），用来抢完播；38 秒处故意放空，给高潮蓄力。点任意色块或“在监视器里看”，左侧预演会跳到这个镜头。</p>
+        <div class="strip" id="strip" role="group" aria-label="镜头时间轴"></div>
+        <div class="legend"><span><i style="background:var(--surface-2);border:1px solid var(--line)"></i>含 AI 拟真素材</span><span><i style="background:#2A2112"></i>纯程序动效</span></div>
+        <div class="shots" id="shots" style="margin-top:18px"></div>
+      </section>
+
+      <section id="s8">
+        <div class="sec-head"><span class="sec-no">08</span><h2>人物设计说明</h2></div>
+        <p class="lead">人物全部写实、拟真，有真实的比例、表情、服装和情绪。人物承担动作和转折，不当背景板。全片禁止火柴人、图标和用文字指代人物。</p>
+        <div class="grid2">
+          <div class="card">
+            <h3>她 · 女主（工作代号“夏”）</h3>
+            <p>27 岁，肩长深棕色头发，带碎发；素颜感淡妆，眼睛疲惫但温和。燕麦色粗针织毛衣，外搭驼色呢大衣。</p>
+            <p><span class="k">道具线索：左手腕一根细红绳，是 TA 送的。</span>SH10 里它变成把她往回拉的线，SH20 句号闭合时消散，SH22 她的手腕是空的。观众不一定说得出来，但会感觉到。</p>
+            <p class="muted">情绪弧线：克制 → 被拉回 → 失眠 → 下定决心 → 释然（眼里有泪，嘴角带笑）。</p>
+          </div>
+          <div class="card">
+            <h3>TA</h3>
+            <p>28 岁，短黑发，深藏青呢大衣配白衬衫。全片只出现在倒影、背影和虚焦里，从不给正脸。</p>
+            <p class="muted">原因有两个：他已经是一段记忆；观众更容易把自己的那个人放进去。</p>
+          </div>
+          <div class="card">
+            <h3>服务员（1920 年代）</h3>
+            <p>45 岁欧洲男性，八字胡、背头，白衬衫卷袖、黑马甲、长白围裙，手拿点单本。</p>
+            <p class="muted">表演重点：记单时专注地默数；客人一买单，眼神立刻放空。这个前后对比就是整个知识点。</p>
+          </div>
+          <div class="card">
+            <h3>站台男生</h3>
+            <p>26 岁，黑色羽绒服配灰卫衣。只出现 1.6 秒：车门关上，他抬手，晚了一步。</p>
+            <p class="muted">给男性观众的代入口，也让“没有好好的告别”不只属于女主。</p>
+          </div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>多镜头保持同一张脸的做法</h3>
+          <ul class="clean">
+            <li>先为女主生成一组定妆照：正面、四分之三侧、侧面，各配平静、难过、释然三种表情，挑一张做“角色参考图”。</li>
+            <li>之后每个镜头都用工具的角色参考或主体参考功能锁定这张图（可灵“主体参考”、即梦“角色一致”、Midjourney <code class="inline">--cref</code>）。</li>
+            <li>提示词里的 <span class="tok">[女主]</span> 等标记会展开成同一段角色描述，服装和光线关键词每次保持一致。</li>
+            <li>同一张图里不要同时出两个主要角色的正脸；TA 永远在虚焦、背影或倒影里。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="s9">
+        <div class="sec-head"><span class="sec-no">09</span><h2>动效设计说明</h2></div>
+        <div class="grid2">
+          <div class="card">
+            <h3>母题：没有闭合的光环</h3>
+            <p>琥珀色圆环，留约 60° 缺口，缺口两端在呼吸，慢速自转。它代表“没结账的单”。</p>
+            <p>出现在：裂开的玻璃、撕掉的照片、餐馆的单子、标题、心里、巷口、站台、咖啡桌、聊天框的发送键、城市的窗、信纸上方、清晨的车窗。</p>
+            <p class="k">闭合时：缺口 0.2 秒收拢 → 一个光点 → 粒子散开。全片只完整闭合两次：餐馆的单子（知识点）和她画上的句号（高潮）。</p>
+          </div>
+          <div class="card">
+            <h3>三种光</h3>
+            <ul class="clean">
+              <li><span class="k">琥珀暖光</span>：未完成的事。只有它会发光。</li>
+              <li><span style="color:var(--cold)">冷蓝光</span>：现实、地铁、失眠的手机屏。</li>
+              <li><span style="color:#F2B79E">晨光桃色</span>：释然。只在最后 12 秒出现。</li>
+            </ul>
+            <p class="muted" style="margin-top:10px">背景从深夜蓝黑开始，到天亮结束，色温变化本身就是叙事。</p>
+          </div>
+          <div class="card">
+            <h3>线与粒子</h3>
+            <p>服务员头上连向单子的线、心里绷紧的弦、手腕往回拉的线，是同一种“张力线”。绷紧代表张力，松开代表放下。</p>
+            <p>粒子三种用法：化灰（照片和单子，向上飘、带湍流）、汇聚（标题，螺旋收拢成环）、爆散（句号闭合的冲击波）。</p>
+          </div>
+          <div class="card">
+            <h3>镜头与转场</h3>
+            <ul class="clean">
+              <li>推：车窗倒影、半张照片、聊天框。</li>
+              <li>穿越：穿过太阳穴进到心里，穿过窗户。</li>
+              <li>环绕：时间静止的服务员。移焦：笔尖到服务员。</li>
+              <li>震屏只用一次（3.35 秒玻璃裂开），用多了就不值钱了。</li>
+              <li>转场：钩子段全硬切；照片到餐馆用光线匹配；标题和天亮用闪白；进入心里和窗户用推进穿越；其余淡化。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>抖音安全区</h3>
+          <p>字幕底边 1390px；关键视觉放在纵向 300–1350px、横向 80–940px 之间（以 1080×1920 计），避开顶部标签栏、底部文案区和右侧点赞栏。</p>
+        </div>
+      </section>
+
+      <section id="s10">
+        <div class="sec-head"><span class="sec-no">10</span><h2>音乐与音效建议</h2></div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>时间</th><th>音乐</th><th>关键音效</th></tr></thead>
+          <tbody>
+            <tr><td class="tc">0–4s</td><td>只有地铁低频和心跳</td><td>3.35 秒玻璃裂开 + 低频下坠，之后静音 0.3 秒</td></tr>
+            <tr><td class="tc">4–17s</td><td>A 小调氛围铺底；进入餐馆后叠老唱片底噪和远处旧钢琴</td><td>照片化灰 ×3，年份翻页滴答，单子弹出 ×5，硬币 + 三声收银铃“叮”</td></tr>
+            <tr><td class="tc">17–26s</td><td>标题重击后接大提琴长音，带颤音，越拉越紧</td><td>“拉着你”一拍：被拉紧的弦 + 心跳</td></tr>
+            <tr><td class="tc">26–35s</td><td>钢琴分解和弦 Am–F–C–G，是全片最“好听”的一段</td><td>熄灯咔嗒 ×4，车门提示音，手机震动，三声不和谐的铃</td></tr>
+            <tr><td class="tc">35–41s</td><td>抽空：倒带声之后只剩一个钢琴单音和很弱的心跳</td><td>倒带 ×3</td></tr>
+            <tr><td class="tc">41.5s</td><td>台灯一亮，转 C 大调</td><td>开关声</td></tr>
+            <tr><td class="tc">46–48s</td><td>上扬，在 47.8 秒突然静音 0.2 秒</td><td>笔尖沙沙声</td></tr>
+            <tr><td class="tc">48.0s</td><td>一声清亮的钟，弦乐全部释放</td><td>低频冲击 + 冲击波</td></tr>
+            <tr><td class="tc">49.6–53.7s</td><td>钢琴解决 F → C</td><td>晨鸟，金句处一个高音</td></tr>
+            <tr><td class="tc">53.7–62s</td><td>回到车厢，停在没有解决的 Am9 和弦，方便循环</td><td>车门提示音，最后一声“叮”</td></tr>
+          </tbody>
+        </table></div>
+        <div class="grid2" style="margin-top:14px">
+          <div class="card">
+            <h3>选曲</h3>
+            <p>优先用抖音商用曲库，避免版权限流。搜索：“氛围钢琴 治愈”“情绪钢琴 渐强”“cinematic piano emotional build”。挑没有鼓、有明显起伏的曲子，按上表剪辑。</p>
+            <p class="muted">也可以用 Suno 之类的工具按下方提示词生成一条 62 秒的配乐，再按卡点微调。</p>
+          </div>
+          <div class="card">
+            <h3>混音</h3>
+            <ul class="clean">
+              <li>人声为主，整片响度约 -14 到 -16 LUFS。</li>
+              <li>音乐压在人声下 12–15 dB；卡点音效比音乐高 3–6 dB。</li>
+              <li>48 秒前那 0.2 秒静音要连人声一起空出来。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="prompt" style="margin-top:14px">
+          <div class="lbl"><span>AI 配乐提示词（Suno / Udio）</span><button class="btn copy" type="button" data-copy="music">复制</button></div>
+          <pre id="music-prompt">Emotional cinematic ambient piano score, 62 seconds, no vocals, no drums. 0-4s: dark low drone with a single heartbeat pulse. 4-17s: soft A minor pad with faint vintage vinyl crackle. 17-26s: sustained cello with tremolo building tension. 27-35s: gentle piano arpeggios Am-F-C-G. 35-41s: drop to near silence, single piano notes. 41s: modulate to C major. 46-48s: riser, then 0.2s of silence. 48s: one bright resonant bell hit with warm strings releasing. 49-54s: piano resolves F to C, hopeful. 54-62s: ends on an unresolved A minor add9 chord, intimate.</pre>
+        </div>
+      </section>
+
+      <section id="s11">
+        <div class="sec-head"><span class="sec-no">11</span><h2>节奏卡点表</h2></div>
+        <p class="lead">这张表就是预演引擎里的卡点数据，临时音效就是按它合成的。琥珀色行是强卡点：画面冲击、旁白关键词和音效必须落在同一帧（±1 帧）。</p>
+        <div class="tbl-wrap" style="max-height:520px"><table><thead><tr><th>时间</th><th>事件</th><th>镜头</th><th>类型</th></tr></thead><tbody id="cue-body"></tbody></table></div>
+      </section>
+
+      <section id="s12">
+        <div class="sec-head"><span class="sec-no">12</span><h2>视频生成提示词</h2></div>
+        <p class="lead">工作流：先用生图工具（Midjourney v7、即梦、Flux）出每个镜头的首帧，再用图生视频工具（可灵、即梦、海螺、Runway、Veo）按运动提示词生成 3–5 秒，挑最稳的一条。复制按钮会把角色标记展开成完整描述，并附上统一的风格词和参数。</p>
+        <div class="grid2">
+          <div class="prompt"><div class="lbl"><span>全局风格词（每条都会自动附上）</span><button class="btn copy" type="button" data-copy="style">复制</button></div><pre id="style-prompt"></pre></div>
+          <div class="prompt"><div class="lbl"><span>负面提示词</span><button class="btn copy" type="button" data-copy="neg">复制</button></div><pre id="neg-prompt"></pre></div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>角色锚点</h3>
+          <div class="kv" id="char-list"></div>
+        </div>
+        <div class="shots" id="prompts" style="margin-top:14px"></div>
+      </section>
+
+      <section id="s13">
+        <div class="sec-head"><span class="sec-no">13</span><h2>代码级视频生成方案</h2></div>
+        <p class="lead">左边的预演就是这套代码实时渲染的。它是确定性的：同一个时间点永远画出同一帧，所以既能在浏览器里拖动预览，也能逐帧导出成片。AI 生成的真人素材放进 <code class="inline">assets/</code> 后会自动铺进对应镜头，动效和字幕叠在上面。</p>
+        <pre class="code">zeigarnik-video/
+├─ index.html              本地预演播放器
+├─ engine/
+│  ├─ timeline.js          镜头、旁白、卡点（改这里就能改节奏）
+│  ├─ core.js              光环母题、发光、粒子、字幕排版、胶片质感
+│  ├─ city.js              “心里的城市”，窗户明暗随时间连续变化
+│  ├─ scenes1–3.js         22 个镜头的动效与镜头运动
+│  ├─ compose.js           转场、AI 素材贴入、字幕、安全区
+│  └─ audio.js             按卡点合成临时音轨
+├─ render/render.mjs       Playwright 逐帧截取 → ffmpeg 编码
+├─ assets/manifest.json    AI 素材清单，如 {"SH01":"SH01.mp4"}
+├─ subtitles.srt           剪映可直接导入
+└─ voiceover.txt           配音稿（含停顿）</pre>
+        <div class="grid2" style="margin-top:14px">
+          <div class="card">
+            <h3>命令</h3>
+            <pre class="code" style="margin-top:6px"># 本地预览
+npx serve . → 打开 index.html
+
+# 导出 1080×1920 成片（含临时音轨）
+node render/render.mjs
+
+# 只导出动效+字幕的透明层
+# （ProRes 4444，叠在 AI 素材上剪辑）
+node render/render.mjs --overlay
+
+# 导出指定秒数的静帧
+node render/render.mjs --stills 3.4,48</pre>
+          </div>
+          <div class="card">
+            <h3>从预演到成片，6 步</h3>
+            <ul class="clean">
+              <li>按第 8 节做女主定妆照，锁定角色参考图。</li>
+              <li>按第 12 节生成 15 个 AI 镜头和 5 张回忆照片，命名为 SH01.mp4、SH03-1.jpg 这样。</li>
+              <li>放进 assets/，写好 manifest.json。</li>
+              <li>按 voiceover.txt 录旁白或用 TTS 生成，对齐时间轴。</li>
+              <li>运行 render.mjs 出成片；或者导出透明层，在剪映、PR、达芬奇里叠到素材上。</li>
+              <li>替换正式配乐，混音，按第 1 节的标题、封面和置顶评论发布。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="engine/timeline.js"></script>
+<script src="engine/core.js"></script>
+<script src="engine/city.js"></script>
+<script src="engine/scenes1.js"></script>
+<script src="engine/scenes2.js"></script>
+<script src="engine/scenes3.js"></script>
+<script src="engine/compose.js"></script>
+<script src="engine/audio.js"></script>
+<script src="shots-doc.js"></script>
+<script src="page.js"></script>

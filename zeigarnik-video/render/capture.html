@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>capture</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>html,body{margin:0;background:#000}</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<script src="../engine/timeline.js"></script>
+<script src="../engine/core.js"></script>
+<script src="../engine/city.js"></script>
+<script src="../engine/scenes1.js"></script>
+<script src="../engine/scenes2.js"></script>
+<script src="../engine/scenes3.js"></script>
+<script src="../engine/compose.js"></script>
+<script src="../engine/audio.js"></script>
+<script>
+  // 由 render.mjs 通过 Playwright 驱动：逐帧渲染并以 JPEG/PNG 的 base64 返回
+  window.CAPTURE = {
+    async init(scale, overlay) {
+      const cv = document.getElementById('cv');
+      cv.width = Math.round(ZG.W * scale); cv.height = Math.round(ZG.H * scale);
+      ZG.OVERLAY = !!overlay;
+      this.r = ZG.createRenderer(cv, { overlayOnly: !!overlay });
+      this.cv = cv;
+      await ZG.ready('../assets/');
+      return { w: cv.width, h: cv.height, plates: Object.keys(ZG.assets) };
+    },
+    async frames(start, count, fps, fmt) {
+      const out = [];
+      for (let i = 0; i < count; i++) {
+        const t = (start + i) / fps;
+        await ZG.prepareFrame(t);
+        this.r.render(t);
+        out.push(this.cv.toDataURL(fmt === 'png' ? 'image/png' : 'image/jpeg', 0.93).split(',')[1]);
+      }
+      return out;
+    },
+    audio() { return ZG.Audio.wavBase64(); },
+  };
+</script>
+</body>
+</html>

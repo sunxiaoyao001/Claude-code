@@ -1,0 +1,5 @@
+# 渲染产物（预演视频、音轨、静帧、打包文件）体积大，按需用 render/render.mjs 重新生成
+out/
+# 放进来的 AI 素材不入库，只保留清单示例
+assets/*
+!assets/manifest.example.json
