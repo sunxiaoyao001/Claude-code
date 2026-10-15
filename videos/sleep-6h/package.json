@@ -1,0 +1,16 @@
+{
+  "name": "sleep-6h-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "《6 小时睡眠陷阱》80 秒梦境流体风竖屏短视频（代码生成）",
+  "type": "module",
+  "scripts": {
+    "preview": "python3 -m http.server 8080",
+    "render": "node render.mjs",
+    "render:preview": "node render.mjs --scale 0.5 --fps 30",
+    "fonts": "node tools/build-fonts.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
+}

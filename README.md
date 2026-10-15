@@ -21,3 +21,4 @@
 | 项目 | 说明 |
 | --- | --- |
 | [`videos/focus-23min`](videos/focus-23min/README.md) | 《23 分钟：一次分心的真实代价》80 秒赛博 HUD 风抖音竖屏短视频，代码生成：Canvas 2D + WebGL2 后期 + Web Audio 程序化配乐，`node render.mjs` 导出 MP4 |
+| [`videos/sleep-6h`](videos/sleep-6h/README.md) | 《6 小时睡眠陷阱》80 秒梦境流体风抖音竖屏短视频：15 张真实照片 + 液态扭曲 / 涟漪 / 眼皮开合后期 + 75 BPM 程序化 lo-fi 配乐，成片见 [Releases](https://github.com/sunxiaoyao001/Claude-code/releases/tag/sleep-6h-video) |
