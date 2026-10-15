@@ -28,8 +28,8 @@
 <main>
   <canvas id="cv" width="720" height="1280"></canvas>
   <div class="bar">
-    <div class="row"><button id="play">▶ 播放（含临时音效）</button><span class="time" id="time">0.00 / 62.00</span><span class="shot" id="shot"></span></div>
-    <div class="track"><div class="marks" id="marks"></div><input id="seek" type="range" min="0" max="62" step="0.01" value="0" aria-label="时间轴"></div>
+    <div class="row"><button id="play">▶ 播放（含临时音效）</button><span class="time" id="time">0.00</span><span class="shot" id="shot"></span></div>
+    <div class="track"><div class="marks" id="marks"></div><input id="seek" type="range" min="0" max="80" step="0.01" value="0" aria-label="时间轴"></div>
   </div>
 </main>
 <script src="engine/timeline.js"></script>
@@ -38,21 +38,22 @@
 <script src="engine/scenes1.js"></script>
 <script src="engine/scenes2.js"></script>
 <script src="engine/scenes3.js"></script>
+<script src="engine/final.js" onerror="void 0"></script>
 <script src="engine/compose.js"></script>
 <script src="engine/audio.js"></script>
 <script>
 (async () => {
-  const D = ZG.META.DURATION, cv = document.getElementById('cv'), r = ZG.createRenderer(cv);
+  const D = ZG.duration(), cv = document.getElementById('cv'), r = ZG.createRenderer(cv);
   const $ = (id) => document.getElementById(id), seek = $('seek');
-  ZG.SHOTS.forEach((s) => { const b = document.createElement('b'); b.style.left = (s.t0 / D * 100) + '%'; $('marks').appendChild(b); });
-  ZG.CUES.filter((c) => c.hit).forEach((c) => { const i = document.createElement('i'); i.style.left = (c.t / D * 100) + '%'; i.title = c.label; $('marks').appendChild(i); });
+  ZG.SHOTS.forEach((s) => { const b = document.createElement('b'); b.style.left = (ZG.toNew(s.t0) / D * 100) + '%'; $('marks').appendChild(b); });
+  ZG.CUES.filter((c) => c.hit).forEach((c) => { const i = document.createElement('i'); i.style.left = (ZG.toNew(c.t) / D * 100) + '%'; i.title = c.label; $('marks').appendChild(i); });
   await ZG.ready('assets/');
   let t = 0, playing = false, ac = null, src = null, t0 = 0, off = 0;
   const now = () => (ac ? ac.currentTime : performance.now() / 1000);
   function draw() {
     r.render(t); seek.value = t;
-    $('time').textContent = t.toFixed(2) + ' / ' + D.toFixed(2);
-    const s = ZG.SHOTS[ZG.shotAt(t)]; $('shot').textContent = s.id + ' · ' + s.name;
+    $('time').textContent = t.toFixed(2) + ' / ' + D.toFixed(2); seek.max = D;
+    const s = ZG.SHOTS[ZG.shotAt(ZG.toOld(t))]; $('shot').textContent = s.id + ' · ' + s.name;
   }
   async function play() {
     if (!ac) { ac = new AudioContext(); }

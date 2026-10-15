@@ -152,7 +152,7 @@
         for (let k = 0; k < 14; k++) ZG.glow(ctx, ix + R() * iw, iy + R() * ih, 18 + R() * 50, k % 3 ? C.amber : '#E4564A', 0.4);
         ctx.strokeStyle = 'rgba(200,220,255,0.18)'; ctx.lineWidth = 2;
         for (let k = 0; k < 40; k++) { const rx = ix + R() * iw, ry = iy + ((R() * ih + s.t * 900) % ih); ctx.beginPath(); ctx.moveTo(rx, ry); ctx.lineTo(rx - 6, ry + 34); ctx.stroke(); }
-        ZG.label(ctx, '雨夜路口 · TA 转身（AI 素材）', ix + 30, iy + ih - 40, { size: 24, a: 0.6 });
+        if (!ZG.NO_PLACEHOLDER) ZG.label(ctx, '雨夜路口 · TA 转身（AI 素材）', ix + 30, iy + ih - 40, { size: 24, a: 0.6 });
       }
       ctx.restore();
       ZG.glowStroke(ctx, (c) => { for (let i = 0; i <= 24; i++) { const px = x + w * 0.62 + noise(i * 2.3) * 26 + (i % 2 ? 10 : -8), py = y + (h * i) / 24; i ? c.lineTo(px, py) : c.moveTo(px, py); } }, C.amber, 3, 0.9, 1.4);

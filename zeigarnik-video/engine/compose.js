@@ -4,6 +4,23 @@
   const ZG = window.ZG, C = ZG.C, W = ZG.W, H = ZG.H;
   const { clamp, lerp, inv, E } = ZG;
 
+  // ---------- 成片时间映射 ----------
+  // engine/final.js 提供 ZG.FINAL = { duration, map: { old: [...], new: [...] }, lines: [...] }
+  // 画面与卡点都按原分镜（设计时间）编排；成片按真实配音的节奏把设计时间分段拉伸。
+  function interp(x, xs, ys) {
+    if (x <= xs[0]) return ys[0] + (x - xs[0]);
+    for (let i = 1; i < xs.length; i++) if (x <= xs[i]) return ys[i - 1] + (ys[i] - ys[i - 1]) * (x - xs[i - 1]) / (xs[i] - xs[i - 1]);
+    return ys[ys.length - 1] + (x - xs[xs.length - 1]);
+  }
+  ZG.toOld = (t) => (ZG.FINAL ? interp(t, ZG.FINAL.map.new, ZG.FINAL.map.old) : t);
+  ZG.toNew = (t) => (ZG.FINAL ? interp(t, ZG.FINAL.map.old, ZG.FINAL.map.new) : t);
+  ZG.duration = () => (ZG.FINAL ? ZG.FINAL.duration : ZG.META.DURATION);
+  ZG.lines = () => {
+    if (!ZG.FINAL) return ZG.LINES;
+    if (!ZG.FINAL.lines) ZG.FINAL.lines = ZG.LINES.map((l, i) => Object.assign({}, l, { t0: ZG.FINAL.lineTimes[i][0], t1: ZG.FINAL.lineTimes[i][1] }));
+    return ZG.FINAL.lines;
+  };
+
   // ---------- AI 素材 ----------
   // assets/manifest.json 例：{ "SH01": "SH01.mp4", "SH06": "SH06.png", "SH03-1": "photo1.jpg" }
   ZG.assets = {};
@@ -22,8 +39,8 @@
     return ZG.assets;
   };
   // 逐帧导出前调用：把视频素材精确 seek 到该帧
-  ZG.prepareFrame = async function (t) {
-    const jobs = [];
+  ZG.prepareFrame = async function (tNew) {
+    const t = ZG.toOld(tNew), jobs = [];
     ZG.SHOTS.forEach((sh) => {
       if (t < sh.t0 - 0.5 || t > sh.t1 + 0.5) return;
       Object.keys(ZG.assets).forEach((id) => {
@@ -55,6 +72,7 @@
     if (kb && kb.fx != null) { ctx.translate(kb.fx, kb.fy); ctx.scale(kb.s, kb.s); ctx.translate(-kb.fx, -kb.fy); }
     const ok = ZG.drawPlate(ctx, s.shot.id, 0, 0, W, H, s.t, kb && kb.fx == null ? kb : null);
     ctx.restore();
+    if (!ok && ZG.NO_PLACEHOLDER) { if (!o.mini) { ctx.save(); ctx.globalAlpha = alpha; ZG.vgrad(ctx, '#04060C', '#0B1222'); ZG.glow(ctx, 700, 880, 380, '#4C7FB0', 0.28); ctx.restore(); } return; }
     if (!ok) {
       if (o.mini) ZG.label(ctx, `${s.shot.id} · AI 素材叠入位：${s.shot.note}`, 540, 230, { size: 24, align: 'center', a: 0.5 * alpha, ls: 2 });
       else { ctx.save(); ctx.globalAlpha = alpha; ZG.vgrad(ctx, '#05070D', '#121A2A'); ZG.placeholder(ctx, s.shot, s.lt); ctx.restore(); }
@@ -78,7 +96,7 @@
     }
     sc.fx(ctx, s);
     ctx.restore();
-    if (shot.plate && !s.hasPlate && !sc.insetPlate && !ZG.OVERLAY) ZG.placeholder(ctx, shot, lt);
+    if (shot.plate && !s.hasPlate && !sc.insetPlate && !ZG.OVERLAY && !ZG.NO_PLACEHOLDER) ZG.placeholder(ctx, shot, lt);
   }
 
   // ---------- 字幕 ----------
@@ -91,7 +109,7 @@
   }
   ZG.SUB_Y = 1390; // 抖音安全区：避开底部文案区与右侧按钮
   function subtitles(ctx, t) {
-    ZG.LINES.forEach((ln) => {
+    ZG.lines().forEach((ln) => {
       if (ln.hideSub || t < ln.t0 - 0.05 || t > ln.t1 + 0.25) return;
       const a = E.out(inv(ln.t0 - 0.05, ln.t0 + 0.18, t)) * (1 - inv(ln.t1 + 0.05, ln.t1 + 0.25, t));
       const rise = (1 - E.out(inv(ln.t0 - 0.05, ln.t0 + 0.25, t))) * 14;
@@ -135,8 +153,9 @@
     function into(c2, i, t) { c2.setTransform(scale, 0, 0, scale, 0, 0); renderShot(c2, i, t); }
     return {
       ctx,
-      render(t) {
-        t = clamp(t, 0, ZG.META.DURATION - 1e-4);
+      render(tNew) {
+        tNew = clamp(tNew, 0, ZG.duration() - 1e-4);
+        const t = clamp(ZG.toOld(tNew), 0, ZG.META.DURATION - 1e-4);
         const i = ZG.shotAt(t), sh = ZG.SHOTS[i];
         if (sh.xin > 0 && i > 0 && t < sh.t0 + sh.xin) {
           into(actx, i - 1, t); into(bctx, i, t);
@@ -145,8 +164,8 @@
           composite(ctx, A, B, E.inOut((t - sh.t0) / sh.xin), sh.tx);
         } else { into(ctx, i, t); }
         ctx.setTransform(scale, 0, 0, scale, 0, 0);
-        if (!opts.overlayOnly) { ZG.vignette(ctx, 0.55); ZG.grain(ctx, t, 0.07); }
-        if (opts.subtitles !== false) subtitles(ctx, t);
+        if (!opts.overlayOnly) { ZG.vignette(ctx, 0.55); ZG.grain(ctx, tNew, ZG.GRAIN == null ? 0.07 : ZG.GRAIN); }
+        if (opts.subtitles !== false) subtitles(ctx, tNew);
       },
     };
   };

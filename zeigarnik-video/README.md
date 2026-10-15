@@ -37,6 +37,34 @@ node render/fetch-fonts.mjs
 
 依赖：Node 18+、`playwright`（带 Chromium）、`ffmpeg`。
 
+## 成片（release/）
+
+`release/` 里是可以直接上传抖音的成片：1080×1920、30fps、H.264、AAC 48kHz，响度约 -15 LUFS。
+
+| 文件 | 说明 |
+| --- | --- |
+| `没写完的结局_抖音成片.mp4` | 旁白 + 配乐 + 音效 + 字幕 |
+| `没写完的结局_无配乐版.mp4` | 只有旁白和音效，可以在抖音 App 里自己选曲库音乐 |
+| `封面_1080x1920.png` | 封面图，“不是还爱 / 是没结束” |
+
+成片时长跟随真实配音（约 77 秒）。画面和卡点仍按 62 秒分镜设计，`engine/final.js` 把设计时间分段映射到配音时间，玻璃裂开、收银铃、钟声等卡点对齐到对应的字。
+
+### 重新生成成片
+
+```bash
+# 1. 配音（本地开源 TTS：Kokoro v1.1，Apache-2.0；需要 sherpa-onnx 和模型，见 tts/ 里的脚本）
+python3 tts/vo_build.py 1.25 <每句语速.json>      # 逐句合成并排版
+python3 tts/make_final.py <配音目录>              # 生成 assets/vo.wav 和 engine/final.js
+node render/export-text.mjs                      # 字幕与配音稿跟随真实时间
+
+# 2. 写实人物镜头（需要能访问 image.pollinations.ai）
+node render/gen-images.mjs
+
+# 3. 出片：成片、无配乐版、封面
+node render/render.mjs --final
+node render/render.mjs --final --cover
+```
+
 ## 放入 AI 素材
 
 1. 按导演手册生成素材，命名为镜头号：`SH01.mp4`、`SH06.png`、回忆照片 `SH03-1.jpg` … `SH03-5.jpg`、半张照片里的画面 `SH04.mp4`。

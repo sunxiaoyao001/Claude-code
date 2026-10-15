@@ -9,8 +9,10 @@
     G: ['G2', 'D3', 'G3', 'B3', 'D4'], Am9: ['A2', 'E3', 'B3', 'C4', 'G4'],
   };
 
-  function build(sampleRate = 48000) {
-    const D = ZG.META.DURATION, ac = new OfflineAudioContext(2, Math.ceil(D * sampleRate), sampleRate);
+  // only: 'music' 只要配乐 | 'sfx' 只要音效与环境声 | 省略 = 全部。voBuf: 预览时把配音一起混进来
+  const MUSIC = new Set(['pad', 'piano', 'cello', 'swell', 'vinyl', 'note']);
+  function build(sampleRate = 48000, only, voBuf) {
+    const D = ZG.duration ? ZG.duration() : ZG.META.DURATION, ac = new OfflineAudioContext(2, Math.ceil(D * sampleRate), sampleRate);
     const R = ZG.rng(4242);
     // 母线：压缩 → 输出；混响发送
     const comp = ac.createDynamicsCompressor(); comp.threshold.value = -16; comp.ratio.value = 3; comp.attack.value = 0.005; comp.release.value = 0.25;
@@ -165,7 +167,18 @@
         }
       },
     };
-    ZG.CUES.forEach((c) => { const fn = SFX[c.sfx]; if (fn) fn(c.t, c); });
+    const toNew = ZG.toNew || ((x) => x);
+    ZG.CUES.forEach((c) => {
+      const fn = SFX[c.sfx]; if (!fn) return;
+      if (only === 'music' && !MUSIC.has(c.sfx)) return;
+      if (only === 'sfx' && MUSIC.has(c.sfx)) return;
+      const t = toNew(c.t), m = Object.assign({}, c, c.dur ? { dur: toNew(c.t + c.dur) - t } : {});
+      fn(t, m);
+    });
+    if (voBuf) {
+      const s = ac.createBufferSource(), g = ac.createGain(); s.buffer = voBuf; g.gain.value = 1.0;
+      s.connect(g); g.connect(ac.destination); master.gain.value = 0.42; s.start(0);
+    }
     return ac.startRendering();
   }
 
@@ -180,11 +193,20 @@
     return ab;
   }
 
+  async function loadVO() {
+    if (!ZG.FINAL || !ZG.FINAL.vo) return null;
+    try {
+      const r = await fetch(ZG.FINAL.vo); if (!r.ok) return null;
+      const tmp = new OfflineAudioContext(1, 1, 48000); return await tmp.decodeAudioData(await r.arrayBuffer());
+    } catch (e) { return null; }
+  }
   ZG.Audio = {
     _buf: null,
-    async buffer() { return this._buf || (this._buf = await build()); },
-    async wavBase64() {
-      const ab = wav(await this.buffer()), u8 = new Uint8Array(ab); let s = '';
+    // 预览用：配乐 + 音效 + 配音（如果有）
+    async buffer() { return this._buf || (this._buf = await build(48000, undefined, await loadVO())); },
+    // 导出用：分轨，配音在 ffmpeg 里做闪避混音
+    async wavBase64(only) {
+      const ab = wav(only === undefined ? await this.buffer() : await build(48000, only)), u8 = new Uint8Array(ab); let s = '';
       for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
       return btoa(s);
     },

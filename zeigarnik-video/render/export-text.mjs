@@ -3,7 +3,11 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 const ctx = { window: {} }; vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(new URL('../engine/timeline.js', import.meta.url), 'utf8'), ctx);
-const { LINES } = ctx.window.ZG;
+// 有成片配音时（engine/final.js），字幕时间跟随真实配音
+const finalJs = new URL('../engine/final.js', import.meta.url);
+if (fs.existsSync(finalJs)) vm.runInContext(fs.readFileSync(finalJs, 'utf8').replace(/^ZG\./m, 'window.ZG.'), ctx);
+const Z = ctx.window.ZG, F = Z.FINAL;
+const LINES = F ? Z.LINES.map((l, i) => ({ ...l, t0: F.lineTimes[i][0], t1: F.lineTimes[i][1], voEnd: undefined })) : Z.LINES;
 const ts = (t) => { const ms = Math.round(t * 1000), h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, s = Math.floor(ms / 1000) % 60;
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')},${String(ms % 1000).padStart(3, '0')}`; };
 const srt = LINES.map((l, i) => `${i + 1}\n${ts(l.t0)} --> ${ts(l.t1)}\n${l.text}\n`).join('\n');

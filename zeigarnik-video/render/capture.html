@@ -14,19 +14,22 @@
 <script src="../engine/scenes1.js"></script>
 <script src="../engine/scenes2.js"></script>
 <script src="../engine/scenes3.js"></script>
+<script src="../engine/final.js" onerror="void 0"></script>
 <script src="../engine/compose.js"></script>
 <script src="../engine/audio.js"></script>
 <script>
   // 由 render.mjs 通过 Playwright 驱动：逐帧渲染并以 JPEG/PNG 的 base64 返回
   window.CAPTURE = {
-    async init(scale, overlay) {
+    async init(scale, overlay, final) {
+      if (final) { ZG.GRAIN = 0.035; ZG.NO_PLACEHOLDER = true; } // 发布版颗粒更细：平台二次压缩时不容易糊成色块
       const cv = document.getElementById('cv');
       cv.width = Math.round(ZG.W * scale); cv.height = Math.round(ZG.H * scale);
       ZG.OVERLAY = !!overlay;
       this.r = ZG.createRenderer(cv, { overlayOnly: !!overlay });
       this.cv = cv;
       await ZG.ready('../assets/');
-      return { w: cv.width, h: cv.height, plates: Object.keys(ZG.assets) };
+      if (ZG.FINAL && ZG.FINAL.vo) ZG.FINAL.vo = '../' + ZG.FINAL.vo;
+      return { w: cv.width, h: cv.height, plates: Object.keys(ZG.assets), duration: ZG.duration(), vo: ZG.FINAL && ZG.FINAL.vo ? ZG.FINAL.vo.replace('../', '') : null };
     },
     async frames(start, count, fps, fmt) {
       const out = [];
@@ -38,7 +41,22 @@
       }
       return out;
     },
-    audio() { return ZG.Audio.wavBase64(); },
+    audio(only) { return ZG.Audio.wavBase64(only); },
+    // 封面：SH17“只剩一扇亮着的窗”+ 两行大字
+    cover() {
+      const c = this.cv, ctx = c.getContext('2d');
+      const lines = ZG.FINAL ? ZG.FINAL.lines : ZG.LINES; const keep = ZG.FINAL; if (keep) ZG.FINAL = Object.assign({}, keep, { lines: [] }); else ZG.LINES_BAK = ZG.LINES, ZG.LINES = [];
+      this.r.render(ZG.toNew ? ZG.toNew(39.3) : 39.3);
+      if (keep) ZG.FINAL = keep; else ZG.LINES = ZG.LINES_BAK;
+      void lines;
+      const s = c.width / ZG.W; ctx.setTransform(s, 0, 0, s, 0, 0);
+      const g = ctx.createLinearGradient(0, 300, 0, 1000); g.addColorStop(0, 'rgba(3,5,10,0.85)'); g.addColorStop(1, 'rgba(3,5,10,0)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, ZG.W, 1000);
+      ZG.richText(ctx, '不是还爱', [], 540, 470, { size: 150, weight: 900, ls: 16, color: ZG.C.white });
+      ZG.richText(ctx, '是没结束', ['是没结束'], 540, 660, { size: 150, weight: 900, ls: 16 });
+      ZG.label(ctx, '蔡格尼克效应 · 心理学', 540, 800, { size: 34, align: 'center', a: 0.75, ls: 12, fam: 'serif' });
+      return c.toDataURL('image/png').split(',')[1];
+    },
   };
 </script>
 </body>
