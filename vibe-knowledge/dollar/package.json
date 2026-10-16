@@ -1,0 +1,32 @@
+{
+  "name": "vibe-dollar-auction",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vibe知识大赏 · 第 3 集 · 美元拍卖 — Remotion 竖屏知识短视频",
+  "type": "module",
+  "scripts": {
+    "dev": "remotion studio",
+    "math": "tsx scripts/verify-math.ts",
+    "audio": "tsx scripts/gen-audio.ts",
+    "fonts": "python3 scripts/subset-fonts.py",
+    "still": "remotion still src/index.ts DollarAuction out/still.png",
+    "render": "remotion render src/index.ts DollarAuction out/vibe-dollar-auction-1080x1920.mp4",
+    "finalize": "node scripts/finalize.mjs"
+  },
+  "dependencies": {
+    "@react-three/fiber": "9.3.0",
+    "@remotion/cli": "4.0.534",
+    "@remotion/fonts": "4.0.534",
+    "@remotion/three": "4.0.534",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.534",
+    "three": "0.179.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "@types/three": "0.179.0",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3"
+  }
+}
