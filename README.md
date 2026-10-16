@@ -9,6 +9,7 @@
 | 03 | 美元拍卖：第二名也要付钱，价格冲破 100 停不下来 | [`vibe-knowledge/dollar`](vibe-knowledge/dollar) | [`vibe-dollar-auction-1080x1920.mp4`](vibe-knowledge/dollar/out/vibe-dollar-auction-1080x1920.mp4) · [分镜脚本](vibe-knowledge/dollar/SCRIPT.md) |
 | 04 | 最后通牒博弈：理论说给 1 块就够了，真人宁可一分不要也要说“不” | [`vibe-knowledge/ultimatum`](vibe-knowledge/ultimatum) | [`vibe-ultimatum-1080x1920.mp4`](vibe-knowledge/ultimatum/out/vibe-ultimatum-1080x1920.mp4) · [分镜脚本](vibe-knowledge/ultimatum/SCRIPT.md) |
 | 05 | 猜平均数的 2/3：一层层推理答案是 0，可选 0 的人全输了 | [`vibe-knowledge/guess`](vibe-knowledge/guess) | [`vibe-guess-two-thirds-1080x1920.mp4`](vibe-knowledge/guess/out/vibe-guess-two-thirds-1080x1920.mp4) · [分镜脚本](vibe-knowledge/guess/SCRIPT.md) |
+| 06 | 海盗分金：最危险的船长，倒着想就能拿走 98 枚金币 | [`vibe-knowledge/pirates`](vibe-knowledge/pirates) | [`vibe-pirate-gold-1080x1920.mp4`](vibe-knowledge/pirates/out/vibe-pirate-gold-1080x1920.mp4) · [分镜脚本](vibe-knowledge/pirates/SCRIPT.md) |
 
 Remotion + GLSL + Three.js + Canvas，竖屏 1080×1920 / 30fps，无配音、纯字幕叙事，音效与配乐全部程序化合成。
 
