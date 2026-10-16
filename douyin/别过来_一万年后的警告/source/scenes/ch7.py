@@ -148,23 +148,30 @@ def ending(c, lt, dur, ctx, sh):
     a2 *= 1 - smooth(remap(lt, tend - 0.2, tend + 0.8))
     draw_text(c, '永远没有人，需要读到这封信。', LW / 2, LH / 2 + 20, 'serif-sb', 62, 'bone', a2, t=lt - T['L103'],
               stagger=0.07, tracking=0.16, blur_in=10)
-    # 片尾
+    # 片尾：互动提问 + 片名 + 参考资料
     te = lt - tend
     if te > 0:
-        fa = smooth(remap(te, 0.6, 1.6))
-        draw_text(c, '别过来', LW / 2, 420, 'serif-k', 120, 'bone', fa, tracking=0.25, t=te - 0.6, stagger=0.12, blur_in=10)
-        draw_text(c, '如何给一万年后的人类，写一封信', LW / 2, 500, 'serif', 28, 'ash', fa, tracking=0.16)
-        line(c, LW / 2 - 50, 540, LW / 2 + 50, 540, 'vermilion', 1.4, fa)
-        refs = ['参考资料', 'Sandia National Laboratories · SAND92-1382 (1993)',
-                'U.S. DOE · Waste Isolation Pilot Plant · Permanent Markers',
-                'IAEA / ISO 21482 (2007) · Posiva Oy · Onkalo',
-                'Bastide & Fabbri (1984) · Sebeok (1984)']
-        ra = smooth(remap(te, 1.6, 2.6))
-        for k, s in enumerate(refs):
-            draw_text(c, s, LW / 2, 640 + k * 34, 'mono' if k else 'sans', 15 if k else 18, 'ash', ra * (0.85 if k else 1),
-                      tracking=0.15 if k else 0.3)
-        draw_text(c, '画面与配乐由代码逐帧生成 · AI 配音', LW / 2, 860, 'sans', 16, 'dim', ra, tracking=0.25)
-        fo = smooth(remap(lt, dur - 1.6, dur))
+        fa = smooth(remap(te, 0.3, 1.2))
+        ring_text(c, LW / 2, 420, 440, size=13, color='ash', alpha=0.3 * fa, rot=te * 0.05,
+                  reveal=ease_out_cubic(remap(te, 0.2, 2.0)))
+        draw_text(c, '如果让你给一万年后的人', LW / 2, 360, 'serif-sb', 50, 'bone', fa, t=te - 0.3, stagger=0.05,
+                  tracking=0.14, blur_in=8)
+        draw_text(c, '留一句话，你会写什么？', LW / 2, 440, 'serif-sb', 50, 0xFFF2B45A, fa, t=te - 0.9, stagger=0.05,
+                  tracking=0.14, blur_in=8)
+        ca = smooth(remap(te, 2.2, 3.0))
+        bob = 6 * math.sin(te * 3)
+        draw_text(c, '评论区见', LW / 2, 530 + bob * 0.3, 'sans-m', 26, 'ember', ca, tracking=0.5)
+        line(c, LW / 2, 552 + bob, LW / 2, 576 + bob, 'ember', 1.6, ca)
+        line(c, LW / 2 - 7, 569 + bob, LW / 2, 576 + bob, 'ember', 1.6, ca)
+        line(c, LW / 2 + 7, 569 + bob, LW / 2, 576 + bob, 'ember', 1.6, ca)
+        ra = smooth(remap(te, 4.0, 5.0))
+        draw_text(c, '别过来 · 如何给一万年后的人类，写一封信', LW / 2, 700, 'serif', 22, 'ash', ra, tracking=0.16)
+        refs = ['Sandia National Laboratories · SAND92-1382 (1993)  ·  U.S. DOE · WIPP Permanent Markers',
+                'IAEA / ISO 21482 (2007)  ·  Posiva Oy · Onkalo  ·  Bastide & Fabbri (1984)  ·  Sebeok (1984)']
+        for k, s_ in enumerate(refs):
+            draw_text(c, s_, LW / 2, 760 + k * 30, 'mono', 14, 'dim', ra, tracking=0.12)
+        draw_text(c, '画面与配乐由代码逐帧生成 · AI 配音', LW / 2, 850, 'sans', 15, 'dim', ra, tracking=0.25)
+        fo = smooth(remap(lt, dur - 1.2, dur))
         if fo > 0:
             c.drawRect(skia.Rect.MakeWH(LW, LH), paint(0xFF000000, fo))
     dust(c, lt, n=60, seed=903, alpha=0.2)

@@ -147,6 +147,11 @@ def message(c, lt, dur, ctx, sh):
     # 掠射光
     lx = LW * 0.5 + math.sin(lt * 0.12) * 600
     glow(c, lx, -200, 1300, 'ember', 0.07)
+    # 背景：缓慢旋转的“信息系统”文字环（双层，反向）
+    ra = smooth(remap(lt, 0.3, 2.5)) * out
+    ring_text(c, LW / 2, 470, 560, size=15, color='ash', alpha=0.13 * ra, rot=lt * 0.025)
+    ring_text(c, LW / 2, 470, 610, text='这里不是一个荣耀之地 · 这里没有任何有价值的东西 · 危险依然存在 · ',
+              size=16, color='ash', alpha=0.10 * ra, rot=-lt * 0.018, name='serif')
     for i, (lid, en, cn, hl) in enumerate(MSG):
         s, e = ctx.lines[lid]
         ts = s - sh.start
@@ -178,6 +183,16 @@ def message(c, lt, dur, ctx, sh):
             glow(c, LW / 2, 900, 160, 'vermilion', 0.3 * a)
         if lid == 'L78':
             glow(c, LW / 2, 470, 700, 'vermilion', 0.08 * a)
+        if lid == 'L75':
+            from scenes import icons as _I
+            _I.skull(c, LW / 2, 760, 70, 'vermilion', 0.22 * a, bones=False, bg_col=0xFF161514)
+        if lid == 'L79':
+            for k_ in range(3):
+                yy_ = 760 + ((lt * 60 + k_ * 40) % 120)
+                line(c, LW / 2 - 60 + k_ * 60, yy_ - 40, LW / 2 - 60 + k_ * 60, yy_, 'vermilion', 2.0, 0.5 * a)
+        if lid == 'L80':
+            w_ = 900 * ease_in_out_cubic(remap(ta, 0.3, 2.0))
+            line(c, LW / 2 - w_ / 2, 800, LW / 2 + w_ / 2, 800, 'ash', 1.2, 0.6 * a)
     dust(c, lt, n=90, seed=651, alpha=0.3)
 
 

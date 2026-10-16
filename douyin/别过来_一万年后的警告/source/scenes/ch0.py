@@ -160,6 +160,8 @@ def title(c, lt, dur, ctx, sh):
             aa = (1 - remap(tt - k * 0.12, 0, 2.0)) * 0.5
             c.drawCircle(LW / 2, LH / 2 - 20, rr, paint('vermilion' if k == 0 else 'bone', aa, stroke=2.2 - k))
         glow(c, LW / 2, LH / 2 - 30, 900, 'vermilion', 0.22 * smooth(remap(tt, 0, 0.4)) * (1 - 0.5 * smooth(remap(tt, 1, 5))))
+        ring_text(c, LW / 2, LH / 2 - 20, 470, size=14, color='ash', alpha=0.32 * smooth(remap(tt, 0.6, 2.0)),
+                  rot=tt * 0.04, reveal=ease_out_cubic(remap(tt, 0.4, 2.4)))
         # 震动
         shake = 10 * math.exp(-tt * 7) * math.sin(tt * 70) if tt > 0 else 0
         c.save()

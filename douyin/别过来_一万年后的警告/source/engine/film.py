@@ -7,7 +7,7 @@ from .core import *
 import script as S
 
 SUB_FONT = 'sans-m'
-SUB_SIZE = 44
+SUB_SIZE = 46
 SUB_Y = LH - 82
 SUB_MAX = 22  # 每条字幕最多字数
 
@@ -58,6 +58,8 @@ def split_sub(text):
 
 
 def build_subs(tl):
+    global _LINE_STARTS
+    _LINE_STARTS = sorted(v[0] for v in tl['lines'].values())
     subs = []
     for lid, chid, text, pause in S.LINES:
         if lid in NO_SUB:
@@ -74,7 +76,30 @@ def build_subs(tl):
     return subs
 
 
-NO_SUB = {'L102', 'L103', 'L72', 'L73', 'L74', 'L75', 'L76', 'L77', 'L78', 'L79', 'L80'}
+KEYWORDS = ['荣耀之地', '核废料', '钚-239', '半衰期', '甲骨文', '线形文字A', '印章文字', '饥饿石', '海啸石',
+            '如果你看见我，就哭吧', '此处以下，勿建房屋', '骷髅头', '逃跑的人', '诅咒', '宝藏', '原子祭司团', '辐射猫',
+            '荆棘之地', '黑洞', '禁忌巨石', '七种语言', '中文', '安卡罗', '铜罐', '膨润土', '乏燃料', '北山', '什么都不留',
+            '别过来', '评论区', '强大的文明', '疯狂', '冰盖', '磁铁', '一封信', '这封信', '陌生人', '危险']
+_NUM = re.compile(r'[0-9][0-9,.\-]*\+?(?:年|米|人|个国家)?|[零〇一二三四五六七八九十百千万亿两]{2,}多?(?:亿年|万年|年|米|代|个国家|个人)?|[一二三四五六七八九十两]多?(?:亿年|万年|年|米)')
+
+
+def highlight_mask(text):
+    m = [False] * len(text)
+    for kw in KEYWORDS:
+        i = text.find(kw)
+        while i >= 0:
+            for j in range(i, i + len(kw)):
+                m[j] = True
+            i = text.find(kw, i + 1)
+    for mt in _NUM.finditer(text):
+        s_, e_ = mt.span()
+        if e_ - s_ >= 2 or text[s_].isdigit():
+            for j in range(s_, e_):
+                m[j] = True
+    return m
+
+
+NO_SUB = {'L102', 'L103', 'L104', 'L72', 'L73', 'L74', 'L75', 'L76', 'L77', 'L78', 'L79', 'L80'}
 
 
 def draw_subtitle(c, t, subs):
@@ -111,12 +136,14 @@ def draw_subtitle(c, t, subs):
         f_sh = skia.Paint(AntiAlias=True, Color4f=C(0xFF000000, 0.55 * a),
                           MaskFilter=skia.MaskFilter.MakeBlur(skia.kNormal_BlurStyle, 7))
         p = skia.Paint(AntiAlias=True, Color4f=C('bone', a))
+        ph = skia.Paint(AntiAlias=True, Color4f=C(0xFFF2B45A, a))
+        hm = highlight_mask(text)
         for ch, fn, cx in items:
             f = font(fn, SUB_SIZE)
             c.drawString(ch, x0 + cx, SUB_Y + 3, f, f_sh)
-        for ch, fn, cx in items:
+        for k, (ch, fn, cx) in enumerate(items):
             f = font(fn, SUB_SIZE)
-            c.drawString(ch, x0 + cx, SUB_Y, f, p)
+            c.drawString(ch, x0 + cx, SUB_Y, f, ph if hm[k] else p)
 
 
 def chapter_tag(c, t, ctx):
@@ -143,12 +170,21 @@ NOPUSH = {'wipp', 'thorns', 'blackhole', 'blocks', 'primal', 'repository', 'tsun
           'letter', 'glacier', 'well', 'beishan'}
 
 
+_LINE_STARTS = []
+
+
 def _call(sh, c, lt, dur, ctx):
     """镜头统一加一层极缓的推近，让静态画面也有呼吸感。"""
     if sh.name in NOPUSH:
         sh.fn(c, lt, dur, ctx, sh)
         return
     z = 1 + 0.028 * ease_in_out_sine(clamp(lt / max(dur, 0.1)))
+    # 每句旁白开始时给一个极轻的“推一下”，让画面跟着语气呼吸
+    t_abs = sh.start + lt
+    for st in _LINE_STARTS:
+        x = t_abs - st
+        if 0 < x < 4.0 and sh.start - 0.2 <= st <= sh.end:
+            z += 0.014 * ease_out_cubic(clamp(x / 0.35)) * math.exp(-max(0.0, x - 0.35) / 1.1)
     c.save()
     c.translate(LW / 2, LH / 2)
     c.scale(z, z)
@@ -183,6 +219,9 @@ def render_frame(fr, t, shots, subs, ctx, overlay=True):
                 c.drawRect(skia.Rect.MakeWH(LW, LH), paint(0xFF000000, 1 - w))
             else:
                 _call(sh, c, lt, dur, ctx)
+                if sh.trans == 'flash' and i > 0 and lt < sh.xd:
+                    k = 1 - lt / sh.xd
+                    c.drawRect(skia.Rect.MakeWH(LW, LH), paint(0xFFFFF1E0, 0.6 * k * k))
             drawn = True
         else:
             if sh.trans == 'black':

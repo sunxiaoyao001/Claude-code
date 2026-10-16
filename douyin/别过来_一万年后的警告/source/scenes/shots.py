@@ -21,16 +21,20 @@ def card(idx, cn, en, theme='ink', accent='ember'):
     return f
 
 
+XD = {'black': 0.7, 'fade': 0.45, 'cut': 0.0, 'flash': 0.3}
+
+
 def build(tl):
     ctx = Ctx(tl)
     L = lambda lid, d=0.0: tl['lines'][lid][0] + d
     CH = lambda k, d=0.0: tl['chapters'][k][0] + d
     m0 = M('ch0')
-    plan = [
-        ('opening', 0.0, m0.opening, 'cut'),
+    hk = M('hook')
+    plan = hk.plan_hook(tl, L, CH) + [
+        ('title', tl['title'][0] - 0.02, m0.title, 'cut'),
+        ('opening', CH('story', -0.3), m0.opening, 'black'),
         ('letter', L('L03', -0.5), m0.letter, 'fade'),
         ('team', L('L06', -0.4), m0.team, 'fade'),
-        ('title', L('L08', -0.3), m0.title, 'fade'),
         ('card1', CH('c1', -0.2), card(1, '一万年有多远', 'HOW FAR IS TEN THOUSAND YEARS'), 'black'),
     ]
     more = []
@@ -44,7 +48,8 @@ def build(tl):
     plan.sort(key=lambda x: x[1])
     shots = []
     for name, start, fn, trans in plan:
-        shots.append(Shot(name, start, fn, trans, xd=1.0 if trans == 'black' else 0.9))
+        shots.append(Shot(name, start, fn, trans, xd=XD.get(trans, 0.45)))
     for i, s in enumerate(shots):
         s.end = shots[i + 1].start if i + 1 < len(shots) else tl['total']
+    ctx.shots = shots
     return shots, ctx

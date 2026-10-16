@@ -10,9 +10,11 @@
 | `engine/core.py` | 渲染核心：缓动、配色、字体、排版、图形 |
 | `engine/three.py` | 软件 3D：透视、平面着色、雾、地面阴影 |
 | `engine/film.py` | 镜头编排、转场、字幕、章节角标 |
-| `scenes/ch0.py`~`ch7.py` | 8 个段落共 46 个镜头 |
+| `scenes/hook.py` | V2 前置高光钩子（数字冲击 + 地下核废料 + 高光快剪） |
+| `scenes/ch0.py`~`ch7.py` | 8 个段落共 49 个镜头 |
 | `audio/synth.py` / `audio/score.py` | 代码合成乐器与音效、按时间轴编曲、混音 |
 | `render.py` | 多进程逐帧渲染 → x264 |
+| `repair.py` / `fixgops.py` | 补渲中断的分段、按关键帧无损替换个别片段 |
 | `finalize.sh` | 拼接视频分段 + 响度标准化（-14 LUFS）+ 封装 |
 | `cover.py` | 抖音封面 |
 

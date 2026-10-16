@@ -14,6 +14,7 @@ from scenes import shots as SH
 tl = TLM.load()
 shots, ctx = SH.build(tl)
 SHOT = {s.name: (s.start, s.end) for s in shots}
+TRANS = {s.name: s.trans for s in shots}
 LN = tl['lines']
 CH = tl['chapters']
 TOTAL = tl['total']
@@ -73,12 +74,39 @@ def Le(lid):
 
 # =================================================================== 编排
 title_t = tl['title'][0]
-# --- 冷开场 ---
-music.add(0.0, pad([N('D4'), N('A4')], title_t - 1.0, amp=0.05, attack=4.0, release=3.0, bright=0.15, seed=1))
-music.add(0.0, pad([N('D2')], title_t + 1, amp=0.06, attack=6.0, release=3.0, bright=0.1, seed=2))
-amb.add(0.0, wind(title_t + 2, amp=0.035, seed=11))
-for k, (t_, m) in enumerate([(L('L01') - 0.2, N('A4')), (L('L03'), N('F4')), (L('L04') + 2.5, N('E4')),
-                             (L('L06'), N('D4')), (L('L07') + 1.0, N('C5')), (L('L08'), N('A4'))]):
+# --- 前置高光钩子 ---
+story_t = CH['story'][0]
+h1, h2, h3 = SHOT['hook1'], SHOT['hook2'], SHOT['hook3']
+music.add(0.0, pad([N('D2'), N('A2')], title_t + 0.5, amp=0.10, attack=0.8, release=1.0, bright=0.2, seed=91))
+music.add(0.0, pad([N('D4'), N('A4'), N('E5')], title_t + 0.3, amp=0.04, attack=1.5, release=0.8, bright=0.35, seed=92))
+# H1：数字滚动的细碎机械声
+for k in range(26):
+    sfx.add(h1[0] + 0.2 + k * 0.055, click(0.03, 3200 + (k % 4) * 300, 0.03, p=0.2))
+sfx.add(h1[0] + 0.15, thump(0.3, 48, 1.8))
+# H2：下沉的风声 + 盖革计数器 + 心跳
+sfx.add(h2[0], whoosh(1.4, 0.10))
+sfx.add(h2[0] + 1.0, thump(0.45, 40, 2.4))
+rng = np.random.default_rng(7)
+t_ = h2[0] + 0.8
+while t_ < h2[1]:
+    sfx.add(t_, click(0.05 + 0.03 * rng.random(), 3500, 0.03, p=rng.uniform(-0.6, 0.6)))
+    t_ += rng.exponential(0.07)
+for t_ in np.arange(h2[0] + 1.2, h2[1], 0.85):
+    sfx.add(float(t_), heartbeat(0.3))
+# H3：快剪，每一刀一个冲击
+n_cut = 8
+seg = (h3[1] - h3[0] - 0.25) / n_cut
+for k in range(n_cut):
+    tc = h3[0] + k * seg
+    sfx.add(tc - 0.25, whoosh(0.5, 0.07))
+    sfx.add(tc, thump(0.28 + 0.03 * k, 55 - k * 2, 1.2))
+# --- 故事开场（打字机）---
+music.add(story_t - 0.5, pad([N('D4'), N('A4')], CH['c1'][0] - story_t + 1.0, amp=0.05, attack=3.0, release=2.5,
+                             bright=0.15, seed=1))
+music.add(story_t - 0.5, pad([N('D2')], CH['c1'][0] - story_t + 1.5, amp=0.06, attack=4.0, release=3.0, bright=0.1, seed=2))
+amb.add(story_t - 0.5, wind(CH['c1'][0] - story_t + 2, amp=0.035, seed=11))
+for k, (t_, m) in enumerate([(L('L01') - 0.2, N('A4')), (L('L03'), N('F4')), (L('L04') + 2.0, N('E4')),
+                             (L('L06'), N('D4')), (L('L07') + 1.0, N('C5'))]):
     music.add(t_, piano(m, 6.0, vel=0.45, p=(k % 3 - 1) * 0.3))
 # 打字机：开场英文 + 报告封面
 op_txt = 'This place is not a place of honor.'
@@ -95,9 +123,19 @@ for li, s in enumerate(['EXPERT JUDGMENT ON MARKERS', 'TO DETER INADVERTENT HUMA
 # 片名：上扬 + 重击 + 和弦
 sfx.add(title_t - 3.0, riser(3.0, 0.16))
 sfx.add(title_t, boom(0.55))
-music.add(title_t, pad(Dm9, 8.0, amp=0.13, attack=0.4, release=4.0, bright=0.55, seed=3))
-music.add(title_t, choir([N('D4'), N('A4'), N('F5')], 7.5, amp=0.05, vowel='o', attack=1.0, release=4.0))
-music.add(title_t, bass(N('D2'), 7.0, 0.22, attack=0.05, release=4))
+tdur = story_t - title_t + 0.5
+music.add(title_t, pad(Dm9, tdur + 1.0, amp=0.13, attack=0.4, release=2.5, bright=0.55, seed=3))
+music.add(title_t, choir([N('D4'), N('A4'), N('F5')], tdur, amp=0.05, vowel='o', attack=1.0, release=2.5))
+music.add(title_t, bass(N('D2'), tdur, 0.22, attack=0.05, release=2.5))
+sfx.add(story_t - 0.8, whoosh(1.2, 0.07))
+# --- 每个镜头转场：轻 whoosh；闪白转场加一记低鼓 ---
+for nm, (st, en) in SHOT.items():
+    trans = TRANS[nm]
+    if trans in ('fade', 'flash') and st > story_t + 1:
+        sfx.add(st - 0.45, whoosh(0.9, 0.045))
+    if trans == 'flash':
+        sfx.add(st, thump(0.3, 46, 2.0))
+        sfx.add(st, boom(0.12, 3.0))
 
 # --- 章节卡：whoosh + 低鼓 + 钟 ---
 for k in ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7']:
@@ -156,8 +194,9 @@ for k, t_ in enumerate(np.arange(SHOT['ideas'][0], t3d1, 2.0)):
     sfx.add(float(t_), thump(a, 52, 1.6))
 amb.add(t3d0, wind(t3d1 - t3d0 + 1, 0.07, seed=14))
 for nm in ['thorns', 'blackhole', 'blocks']:
-    st = SHOT[nm][0] + (L('L59') - SHOT['thorns'][0] if nm == 'thorns' else 0.4)
-    sfx.add(st, boom(0.22, 4.0))
+    st = SHOT[nm][0] + (L('L59') - SHOT['thorns'][0] if nm == 'thorns' else 0.1)
+    if nm == 'thorns':
+        sfx.add(st, boom(0.22, 4.0))
     music.add(st, bell(N('D5'), 5.0, 0.05))
 # 辐射猫：变色时的上扬音
 d56 = Le('L56') - L('L56')

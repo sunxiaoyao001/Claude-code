@@ -352,14 +352,31 @@ def trimmed(path, p0, p1):
     return skia.TrimPathEffect.Make(max(0.0, p0), min(1.0, p1))
 
 
+TRIM_EVENTS = []   # 记录“旧实现会画空”的情形，用于定位受影响帧
+
+
 def stroke_path(c, path, color='bone', w=1.5, alpha=1.0, p=1.0, p0=0.0, dash=None, cap='round', blur=None):
     if alpha <= 0.003 or p <= p0: return
+    # Skia 的 TrimPathEffect 在端点极接近 0/1 时会画空，这里吸附到端点
+    if 1.0 - 1e-6 < p < 1.0:
+        TRIM_EVENTS.append(('p_near_1', p))
+        p = 1.0
+    if 0.0 < p0 < 1e-6:
+        TRIM_EVENTS.append(('p0_near_0', p0))
+        p0 = 0.0
     pt = paint(color, alpha, stroke=w, cap=cap, blur=blur)
     effs = []
     if p < 1.0 or p0 > 0:
-        effs.append(trimmed(path, p0, p))
+        if p - p0 < 1e-4:
+            return
+        tr = trimmed(path, p0, p)
+        if tr is None:
+            return
+        effs.append(tr)
     if dash:
-        effs.append(skia.DashPathEffect.Make(dash, 0))
+        d = skia.DashPathEffect.Make(dash, 0)
+        if d is not None:
+            effs.append(d)
     if len(effs) == 1:
         pt.setPathEffect(effs[0])
     elif len(effs) == 2:

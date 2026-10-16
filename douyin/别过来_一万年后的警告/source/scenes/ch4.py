@@ -371,7 +371,7 @@ def plan(tl, L, CH, card):
         ('priest', L('L52', -0.4), priest, 'fade'),
         ('raycat', L('L55', -0.4), raycat, 'fade'),
         ('thorns', L('L58', -0.4), thorns, 'fade'),
-        ('blackhole', L('L60', -0.3), blackhole, 'fade'),
-        ('blocks', L('L61', -0.3), blocks, 'fade'),
+        ('blackhole', L('L60', -0.15), blackhole, 'flash'),
+        ('blocks', L('L61', -0.15), blocks, 'flash'),
         ('primal', L('L63', -0.3), primal, 'fade'),
     ]

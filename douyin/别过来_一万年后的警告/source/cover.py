@@ -39,11 +39,18 @@ if __name__ == '__main__':
     # 左侧压暗
     hgrad(c, 0, 0, LW, LH, [CI(0xFF07050A, 0.82), CI(0xFF07050A, 0.35), CI(0xFF07050A, 0.0)], [0, 0.5, 0.8])
     vgrad(c, 0, 0, LW, LH, [CI(0xFF000000, 0.25), CI(0xFF000000, 0.0), CI(0xFF000000, 0.35)], [0, 0.5, 1])
-    title_block(c, 150, 500, 1.0, align='l')
-    line(c, 152, 720, 300, 720, 'vermilion', 3.0, 1.0)
-    draw_text(c, '一部关于“深时间”的纪录短片', 150, 780, 'sans', 30, 'paper', 0.85, align='l', tracking=0.15)
+    title_block(c, 150, 470, 1.0, align='l')
+    # 反差数字：文字史 5000 年 vs 危险 10 万年
+    y = 790
+    draw_text(c, '文字只有', 152, y, 'sans-m', 34, 'paper', 0.9, align='l')
+    draw_text(c, '5000年', 152 + text_width('文字只有', 'sans-m', 34) + 12, y + 4, 'inter-sb', 60, 'bone', 1.0, align='l')
+    x2 = 152 + text_width('文字只有', 'sans-m', 34) + 12 + text_width('5000年', 'inter-sb', 60) + 40
+    draw_text(c, '它却危险', x2, y, 'sans-m', 34, 'paper', 0.9, align='l')
+    x3 = x2 + text_width('它却危险', 'sans-m', 34) + 12
+    rect(c, x3 - 10, y - 58, text_width('100000年', 'inter-sb', 60) + 20, 76, 'vermilion', 1.0, r=6)
+    draw_text(c, '100000年', x3, y + 4, 'inter-sb', 60, 'bone', 1.0, align='l')
     a = fr.read()
-    Image.fromarray(a[..., :3].copy()).save('/tmp/claude-0/proj/out/cover_16x9.jpg', quality=95)
+    Image.fromarray(a[..., :3].copy()).save('/tmp/claude-0/proj/out/cover_v2_16x9.jpg', quality=95)
     # 3:4 竖版：从无字背景中裁切
     fr2 = background(3840)
     bgarr = fr2.read()[..., :3].copy()
@@ -58,8 +65,10 @@ if __name__ == '__main__':
     s = cw / 810.0
     cc.scale(s, s)
     vgrad(cc, 0, 0, 810, 1080, [CI(0xFF000000, 0.15), CI(0xFF000000, 0.0), CI(0xFF06040A, 0.88)], [0, 0.35, 0.8])
-    title_block(cc, 405, 780, 0.62)
-    line(cc, 380, 900, 430, 900, 'vermilion', 2.0, 1.0)
+    title_block(cc, 405, 740, 0.62)
+    rect(cc, 405 - 170, 880, 340, 56, 'vermilion', 1.0, r=5)
+    draw_text(cc, '危险 100000 年', 405, 920, 'sans-b', 34, 'bone', 1.0, tracking=0.08)
+    draw_text(cc, '人类文字只有 5000 年', 405, 985, 'sans-m', 26, 'paper', 0.9, tracking=0.1)
     out = surf.makeImageSnapshot().toarray(colorType=skia.kRGBA_8888_ColorType)[..., :3]
-    Image.fromarray(out.copy()).save('/tmp/claude-0/proj/out/cover_3x4.jpg', quality=95)
+    Image.fromarray(out.copy()).save('/tmp/claude-0/proj/out/cover_v2_3x4.jpg', quality=95)
     print('ok')

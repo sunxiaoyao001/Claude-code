@@ -154,6 +154,24 @@ def deeptime(c, lt, dur, ctx, sh):
     span = lerp(10000, 100000, z)
     px_per_year = 720 / span
     X = lambda yrs: cx + yrs * px_per_year   # 负为过去，正为未来
+    # 镜头跟随：每出现一个事件，镜头就推近并移向它
+    keys = [(0.0, 0, 1.15), (T['L16'], -10000, 1.22), (T['L17'], -5200, 1.25), (T['L18'], -4560, 1.25),
+            (T['L19'], -3200, 1.22), (T['L20'], 0, 1.0), (T['L21'] + 1.0, 30000, 1.0), (T['L22'], -40000, 1.05)]
+    fy, fz = keys[0][1], keys[0][2]
+    for (ta, ya, za), (tb, yb, zb) in zip(keys, keys[1:]):
+        if lt >= tb:
+            fy, fz = yb, zb
+        elif lt >= ta:
+            e = ease_in_out_cubic(remap(lt, tb - 1.1, tb))
+            fy, fz = lerp(ya, yb, e), lerp(za, zb, e)
+            break
+    if lt >= keys[-1][0]:
+        fy, fz = keys[-1][1], keys[-1][2]
+    fx_ = X(fy)
+    c.save()
+    c.translate(LW / 2, cy)
+    c.scale(fz, fz)
+    c.translate(-LW / 2 + (LW / 2 - fx_) * 0.55, -cy)
     axa = smooth(remap(lt, 0.0, 1.0)) * out
     line(c, 60, cy, LW - 60, cy, 'dim', 1.2, axa)
     # 刻度：每千年 / 每万年
@@ -246,6 +264,7 @@ def deeptime(c, lt, dur, ctx, sh):
                       align='l')
             if i == 0 and hi > 0:
                 draw_text(c, '← 我们', x + 300, yy, 'sans-m', 20, 'ember', a * hi, align='l')
+    c.restore()
     dust(c, lt, n=60, seed=62, alpha=0.25)
 
 

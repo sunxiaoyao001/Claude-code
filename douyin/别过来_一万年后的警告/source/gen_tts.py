@@ -4,7 +4,7 @@ sys.path.insert(0, '/tmp/claude-0/proj')
 import sherpa_onnx as so, soundfile as sf, numpy as np
 import script as S
 SID = 88
-SPEED = float(os.environ.get('SPEED', '1.28'))
+SPEED = float(os.environ.get('SPEED', '1.35'))
 # 多音字/读音修正：只改送进 TTS 的文本，字幕不变
 FIX = {
     '之地': '之第',
