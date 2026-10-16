@@ -1,0 +1,8 @@
+node_modules/
+.remotion/
+out/stills/
+out/render.log
+out/*.png
+# 成片需要提交到仓库
+!out/vibe-guess-two-thirds-1080x1920.mp4
+!out/cover.jpg

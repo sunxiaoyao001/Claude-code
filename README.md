@@ -8,6 +8,7 @@
 | 02 | 阿克塞尔罗德大赛（重复囚徒困境）：冠军只有 4 行代码，一局都没赢过 | [`vibe-knowledge/axelrod`](vibe-knowledge/axelrod) | [`vibe-axelrod-1080x1920.mp4`](vibe-knowledge/axelrod/out/vibe-axelrod-1080x1920.mp4) · [分镜脚本](vibe-knowledge/axelrod/SCRIPT.md) |
 | 03 | 美元拍卖：第二名也要付钱，价格冲破 100 停不下来 | [`vibe-knowledge/dollar`](vibe-knowledge/dollar) | [`vibe-dollar-auction-1080x1920.mp4`](vibe-knowledge/dollar/out/vibe-dollar-auction-1080x1920.mp4) · [分镜脚本](vibe-knowledge/dollar/SCRIPT.md) |
 | 04 | 最后通牒博弈：理论说给 1 块就够了，真人宁可一分不要也要说“不” | [`vibe-knowledge/ultimatum`](vibe-knowledge/ultimatum) | [`vibe-ultimatum-1080x1920.mp4`](vibe-knowledge/ultimatum/out/vibe-ultimatum-1080x1920.mp4) · [分镜脚本](vibe-knowledge/ultimatum/SCRIPT.md) |
+| 05 | 猜平均数的 2/3：一层层推理答案是 0，可选 0 的人全输了 | [`vibe-knowledge/guess`](vibe-knowledge/guess) | [`vibe-guess-two-thirds-1080x1920.mp4`](vibe-knowledge/guess/out/vibe-guess-two-thirds-1080x1920.mp4) · [分镜脚本](vibe-knowledge/guess/SCRIPT.md) |
 
 Remotion + GLSL + Three.js + Canvas，竖屏 1080×1920 / 30fps，无配音、纯字幕叙事，音效与配乐全部程序化合成。
 
