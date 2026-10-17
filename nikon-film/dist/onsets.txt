@@ -1,0 +1,38 @@
+shot  0 grid     drone   picture    0.000 s  audio    0.001 s  Δ   +1.0 ms  OK
+shot  1 cell     glass   picture    2.500 s  audio    2.501 s  Δ   +0.5 ms  OK
+shot  2 title    glass   picture    5.000 s  audio    5.000 s  Δ   +0.5 ms  OK
+shot  3 chapter  glass   picture    7.500 s  audio    7.500 s  Δ   +0.5 ms  OK
+shot  4 item     glass   picture   10.000 s  audio   10.001 s  Δ   +0.5 ms  OK
+shot  5 item     glass   picture   12.500 s  audio   12.501 s  Δ   +0.5 ms  OK
+shot  6 item     glass   picture   15.000 s  audio   15.001 s  Δ   +0.5 ms  OK
+shot  7 chapter  mech    picture   17.500 s  audio   17.500 s  Δ   +0.0 ms  OK
+shot  8 item     mech    picture   20.000 s  audio   20.000 s  Δ   -0.1 ms  OK
+shot  9 item     mech    picture   22.500 s  audio   22.500 s  Δ   -0.0 ms  OK
+shot 10 item     mech    picture   25.000 s  audio   25.000 s  Δ   -0.1 ms  OK
+shot 11 item     mech    picture   27.500 s  audio   27.500 s  Δ   -0.0 ms  OK
+shot 12 chapter  beep    picture   30.000 s  audio   30.001 s  Δ   +0.6 ms  OK
+shot 13 item     beep    picture   32.500 s  audio   32.501 s  Δ   +0.6 ms  OK
+shot 14 item     beep    picture   35.000 s  audio   35.001 s  Δ   +0.6 ms  OK
+shot 15 item     beep    picture   37.500 s  audio   37.501 s  Δ   +0.6 ms  OK
+shot 16 chapter  etick   picture   40.000 s  audio   40.000 s  Δ   -0.1 ms  OK
+shot 17 spec     etick   picture   42.500 s  audio   42.500 s  Δ   -0.0 ms  OK
+shot 18 item     etick   picture   47.500 s  audio   47.500 s  Δ   -0.0 ms  OK
+shot 19 item     etick   picture   50.000 s  audio   50.000 s  Δ   -0.1 ms  OK
+shot 20 item     etick   picture   52.500 s  audio   52.500 s  Δ   -0.1 ms  OK
+shot 21 chapter  whoosh  picture   55.000 s  audio   55.000 s  Δ   -0.1 ms  OK
+shot 22 focal    whoosh  picture   57.500 s  audio   57.500 s  Δ   +0.0 ms  OK
+shot 23 focal    whoosh  picture   58.750 s  audio   58.750 s  Δ   -0.1 ms  OK
+shot 24 focal    whoosh  picture   60.000 s  audio   60.000 s  Δ   -0.1 ms  OK
+shot 25 focal    whoosh  picture   61.250 s  audio   61.250 s  Δ   -0.2 ms  OK
+shot 26 focal    whoosh  picture   62.500 s  audio   62.500 s  Δ   -0.1 ms  OK
+shot 27 focal    whoosh  picture   63.750 s  audio   63.750 s  Δ   -0.1 ms  OK
+shot 28 focal    whoosh  picture   65.000 s  audio   65.000 s  Δ   -0.1 ms  OK
+shot 29 focal    whoosh  picture   66.250 s  audio   66.250 s  Δ   -0.1 ms  OK
+shot 30 focal    whoosh  picture   67.500 s  audio   67.500 s  Δ   -0.1 ms  OK
+shot 31 focal    whoosh  picture   68.750 s  audio   68.750 s  Δ   -0.1 ms  OK
+shot 32 wall     hit     picture   70.000 s  audio   70.000 s  Δ   +0.1 ms  OK
+shot 33 end      hit     picture   75.000 s  audio   75.000 s  Δ   +0.1 ms  OK
+shot 34 out      pluck   picture   85.000 s  audio   85.001 s  Δ   +0.7 ms  OK
+
+onsets: 35  worst |Δ| = 1.0 ms  (all within ±15 ms)
+loudness: -14.02 LUFS integrated, true peak -2.40 dBTP
