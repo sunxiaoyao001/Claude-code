@@ -1,0 +1,6 @@
+@font-face { font-family: NotoSC; font-weight: 500; src: url(NotoSerifSC-500.woff2) format('woff2'); }
+@font-face { font-family: NotoSC; font-weight: 700; src: url(NotoSerifSC-700.woff2) format('woff2'); }
+@font-face { font-family: NotoJP; font-weight: 700; src: url(NotoSerifJP-700.woff2) format('woff2'); }
+@font-face { font-family: MaShan; font-weight: 400; src: url(MaShanZheng.woff2) format('woff2'); }
+@font-face { font-family: CormorantI; font-style: italic; font-weight: 500; src: url(Cormorant-Italic-500.woff2) format('woff2'); }
+@font-face { font-family: Cormorant; font-weight: 500 600; src: url(Cormorant-500-600.woff2) format('woff2'); }

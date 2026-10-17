@@ -1,0 +1,20 @@
+字体（全部 SIL Open Font License 1.1，已按用到的字做子集，授权全文在 fonts/OFL-*.txt）
+- Noto Serif SC（思源宋体）— Google，https://fonts.google.com/noto/specimen/Noto+Serif+SC
+- Noto Serif JP — Google，https://fonts.google.com/noto/specimen/Noto+Serif+JP
+- Ma Shan Zheng（马善政楷书）— https://github.com/googlefonts/mashanzheng
+- Cormorant Garamond — Christian Thalmann / Catharsis Fonts，https://github.com/CatharsisFonts/Cormorant
+
+代码
+- lemo-opuscar（MIT）：水墨笔刷引擎、纸面合成器、渲染管线的原型，见 LICENSE-lemo-opuscar.txt
+
+音乐
+- 坂本龙一《Merry Christmas Mr. Lawrence》：不包含在工程里，由使用者自备并自行确认使用权利。
+
+画面
+- 所有画面均由代码绘制。真实人物只以剪影、背影、侧影表现，没有使用任何电影截图、剧照或照片。
+
+史实来源
+- Criterion：Ryuichi Sakamoto: “It All Seems Limitless”（出演的条件、"Yes, please"、第一部电影配乐）
+- MusicRadar 关于《Merry Christmas Mr. Lawrence》配乐的报道（制片人 Jeremy Thomas：大岛渚让他"当成世野井来写"）
+- BFI / Rolling Stone / Hollywood Reporter：《Opus》于 2022 年 9 月在 NHK 509 录音室分多次录制，本曲为收尾曲
+- 官方讣告（2023-04-02）：2023 年 3 月 28 日离世；生前喜欢的一句话 "Ars longa, vita brevis"
