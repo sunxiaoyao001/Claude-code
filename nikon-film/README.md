@@ -2,6 +2,8 @@
 
 90 秒、16:9、24 fps，只有音乐与字卡。分镜、色板、史实核查与节拍表见 [TREATMENT.md](TREATMENT.md)。
 
+**成片**：[dist/nikon-century.mp4](dist/nikon-century.mp4)（高画质，70 MB）· [dist/nikon-century-small.mp4](dist/nikon-century-small.mp4)（压缩版，24 MB）· [字幕 .srt](dist/nikon-century.srt) · [缩略图](dist/contact-sheet.png) · [音画对位报告](dist/onsets.txt)
+
 ## 构建
 
 ```sh
