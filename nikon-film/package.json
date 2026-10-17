@@ -1,0 +1,19 @@
+{
+  "name": "nikon-century",
+  "version": "1.0.0",
+  "description": "Pictogram Motion brand film: 百年，为看见 (Nikon 1917—2025)",
+  "scripts": {
+    "build": "node src/build.js 4",
+    "build:zh": "SECOND=zh node src/build.js 4",
+    "stills": "node src/stills.js",
+    "poses": "node src/lab.js",
+    "edl": "node src/edl.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.11"
+  },
+  "private": true
+}
