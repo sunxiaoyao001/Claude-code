@@ -95,7 +95,14 @@ export function draw(L, t, o = {}) {
   // 沙滩
   mass(cw, [[-600, 1190], [2000, 1180], [2000, 2400], [-600, 2400]], .2, 4, 405);
   // 椰树（随风轻摆）
-  for (const p of S.palms) { paint(L.ink, p.trunk, 1, .9); p.fronds.forEach(f => paint(L.ink, f, 1, .85)); }
+  S.palms.forEach((p, i) => {
+    paint(L.ink, p.trunk, 1, .9);
+    // 叶子绕树顶随风轻摆（确定性：只由 t 决定）
+    const top = p.trunk.P[p.trunk.P.length - 1], ang = Math.sin(t * .9 + i * 1.7) * .035 + Math.sin(t * 2.3 + i) * .012;
+    for (const c of [cw, cd]) { c.save(); c.translate(top[0], top[1]); c.rotate(ang); c.translate(-top[0], -top[1]); }
+    p.fronds.forEach(f => paint(L.ink, f, 1, .85));
+    for (const c of [cw, cd]) c.restore();
+  });
 
   // 铁丝网后面的人：金发，白衬衫，看着这边
   const pk = SNAP(clamp((t - (T.pan - .4)) / 1.2));

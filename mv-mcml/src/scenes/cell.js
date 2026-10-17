@@ -97,7 +97,9 @@ function close(L, t) {
   cc.save(); const g = cc.createRadialGradient(820, 420, 40, 760, 600, 760); g.addColorStop(0, 'rgba(150,170,210,.22)'); g.addColorStop(1, 'rgba(150,170,210,0)'); cc.fillStyle = g; cc.fillRect(-200, -200, 1500, 2400); cc.restore();
   const smile = SNAP(clamp((t - CUT - .6) / 1.6));
   const tear = SNAP(clamp((t - (T.climax - 1.6)) / 2.0));
-  haraFace(L, 540, 860, 2.25, { smile: lerp(.5, 1, smile), tear, light: 1 });
+  // 很轻的呼吸和点头
+  const nod = Math.sin((t - CUT) * .9) * .012, bob = Math.sin((t - CUT) * 1.3) * 4;
+  haraFace(L, 540, 860 + bob, 2.25, { smile: lerp(.5, 1, smile), tear, light: 1, rot: nod });
   return cam;
 }
 
@@ -123,7 +125,7 @@ export function draw(L, t, o = {}) {
   const lines2 = [[0, 1], [2, 3]];
   lines2.forEach((ix, r) => {
     const txt = ix.map(i => words[i]).join(' ');
-    line(L, { id: 'c10_' + r, t, t0: wt[ix[0]], t1: cap.t[1], text: txt, x: 540, y: 1360 + r * 112, size: 96, font: FONT.en(), align: 'center', tone: 'light', color: [240, 236, 226], ls: 1, stagger: .045, din: .6 });
+    line(L, { id: 'c10_' + r, t, t0: wt[ix[0]], t1: cap.t[1], text: txt, x: 540, y: 1420 + r * 112, size: 96, font: FONT.en(), align: 'center', tone: 'light', color: [240, 236, 226], ls: 1, stagger: .045, din: .6 });
   });
   return { tone: TONES.night, paperX: cam.paper(), bleed: 4, rim: .6, vig: .42 };
 }

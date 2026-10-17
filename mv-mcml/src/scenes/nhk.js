@@ -33,7 +33,7 @@ export function draw(L, t, o = {}) {
     // 人画在一张单独的画布上，散去时只擦这张（不擦到光）
     const off = offCanvas(), oc = off.getContext('2d');
     oc.setTransform(1, 0, 0, 1, 0, 0); oc.clearRect(0, 0, off.width, off.height); oc.setTransform(...cam.m);
-    pianist({ cc: oc }, M.x, M.y, M.s, { age: 1, glasses: true, lift: Math.max(.12 * play, lift) });
+    pianist({ cc: oc }, M.x, M.y, M.s, { age: 1, glasses: true, lift: Math.max(.35 * play, lift) });
     // 像墨迹被时间擦去：一个个不规则的小洞，从上往下、越来越多
     if (gone > 0) {
       const cc = oc;
