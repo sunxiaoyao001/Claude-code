@@ -27,6 +27,49 @@ export const S5Detective: React.FC = () => {
 
 	return (
 		<AbsoluteFill>
+			{/* 开头：猜字 → 写论文、解数学题？ */}
+			<AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', opacity: 1 - progress(frame, c.book - 8, 14)}}>
+				<div style={{marginTop: -80, display: 'flex', alignItems: 'center', gap: 56}}>
+					<div
+						style={{
+							...rise(frame, 4, 18),
+							fontFamily: F.sans,
+							fontSize: 56,
+							fontWeight: 700,
+							color: C.amber,
+							padding: '22px 44px',
+							border: `3px solid ${C.amber}`,
+							borderRadius: 24,
+							letterSpacing: 4,
+						}}
+					>
+						猜下一个字
+					</div>
+					<div style={{...rise(frame, S.lines[1].from, 16), fontFamily: F.mono, fontSize: 64, color: C.dim}}>→</div>
+					<div style={{display: 'flex', flexDirection: 'column', gap: 22}}>
+						{['写论文', '解数学题'].map((t, i) => (
+							<div
+								key={t}
+								style={{
+									...rise(frame, S.lines[1].from + 8 + i * 8, 16),
+									fontFamily: F.sans,
+									fontSize: 48,
+									fontWeight: 600,
+									color: C.text,
+									padding: '14px 36px',
+									borderRadius: 20,
+									background: 'rgba(29,32,40,0.92)',
+									border: `1px solid ${C.line}`,
+								}}
+							>
+								{t}
+							</div>
+						))}
+					</div>
+					<div style={{...rise(frame, S.lines[1].from + 30, 16), fontFamily: F.serif, fontSize: 140, fontWeight: 800, color: C.amber}}>?</div>
+				</div>
+			</AbsoluteFill>
+
 			{/* A. 侦探小说 */}
 			<AbsoluteFill style={{opacity: phaseA}}>
 				<div
