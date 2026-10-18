@@ -15,3 +15,7 @@
 | `webapp-testing` | anthropics/skills | 用 Playwright 启动本地站点、截图、验证前端行为 |
 
 更新：重新克隆上游仓库并覆盖对应目录；Impeccable 也可用 `npx impeccable install --providers=claude --scope=project`。
+
+## 视频项目
+
+- [`ai-video/`](ai-video/)：用 Remotion 做的科普视频《AI 根本不会“说话”，它只会猜下一个字》，详见目录内 README。

@@ -1,0 +1,26 @@
+{
+  "name": "ai-video",
+  "private": true,
+  "version": "1.0.0",
+  "description": "科普视频《AI 根本不会“说话”，它只会猜下一个字》",
+  "type": "module",
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render AIVideo out/ai-video.mp4",
+    "render:nosubs": "remotion render AIVideoNoSubs out/ai-video-nosubs.mp4",
+    "still": "remotion still AIVideo out/still.png",
+    "srt": "node scripts/export-srt.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.532",
+    "@remotion/fonts": "4.0.532",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "remotion": "4.0.532"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.12",
+    "typescript": "5.9.3"
+  }
+}
