@@ -3,6 +3,7 @@ import {progress, rise, visible} from '../anim';
 import {Blank} from '../components/Blank';
 import {scene} from '../script';
 import {C, F} from '../theme';
+import {Sfx} from '../components/Sfx';
 
 const S = scene('detective');
 
@@ -27,6 +28,21 @@ export const S5Detective: React.FC = () => {
 
 	return (
 		<AbsoluteFill>
+			<Sfx name="pop" at={4} />
+			<Sfx name="pop" at={S.lines[1].from + 8} volume={0.7} />
+			<Sfx name="pop" at={S.lines[1].from + 16} volume={0.7} />
+			<Sfx name="pop" at={S.lines[1].from + 30} />
+			<Sfx name="paper" at={c.book} />
+			<Sfx name="pop" at={c.lastline} />
+			{CLUES.map((_, i) => (
+				<Sfx key={i} name="pop" at={c.clues + i * 9} volume={0.7} />
+			))}
+			<Sfx name="swell" at={c.same - 60} />
+			<Sfx name="pop" at={c.skills} />
+			<Sfx name="pop" at={c.skills + 14} />
+			<Sfx name="pop" at={c.reason} />
+			<Sfx name="chime" at={c.understand} />
+
 			{/* 开头：猜字 → 写论文、解数学题？ */}
 			<AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', opacity: 1 - progress(frame, c.book - 8, 14)}}>
 				<div style={{marginTop: -80, display: 'flex', alignItems: 'center', gap: 56}}>

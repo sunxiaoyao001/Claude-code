@@ -3,6 +3,7 @@ import {progress, rise, typed, visible} from '../anim';
 import {Caret, ChatWindow, UserBubble} from '../components/Chat';
 import {scene} from '../script';
 import {C, F} from '../theme';
+import {Sfx, Typing} from '../components/Sfx';
 
 const S = scene('hallucinate');
 
@@ -42,6 +43,21 @@ export const S7Hallucinate: React.FC = () => {
 
 	return (
 		<AbsoluteFill>
+			<Sfx name="pop" at={c.ask - 10} />
+			<Sfx name="pop" at={c.like} />
+			<Sfx name="pop" at={c.db} />
+			<Typing at={c.answer + 6} chars={Array.from(full).length} cps={cps} volume={0.7} />
+			{BOOKS.map((_, i) => (
+				<Sfx key={i} name="stamp" at={stampAt(i)} />
+			))}
+			<Sfx name="impact" at={stampAt(2) + 10} volume={0.45} />
+			<Sfx name="whoosh" at={c.search} volume={0.6} />
+			<Typing at={c.search + 14} chars={9} cps={10} volume={0.6} />
+			{[0, 1, 2].map((i) => (
+				<Sfx key={i} name="pop" at={c.search + 40 + i * 8} volume={0.5} />
+			))}
+			<Sfx name="ding" at={c.verify} />
+
 			<div style={{position: 'absolute', left: 130, top: 160, ...rise(frame, c.ask - 10, 18, 24, `translate(${sx}px, ${sy}px)`)}}>
 				<ChatWindow width={1000} height={660}>
 					<UserBubble>李明远教授写过哪些书？</UserBubble>

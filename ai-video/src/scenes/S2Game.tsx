@@ -4,6 +4,7 @@ import {Blank} from '../components/Blank';
 import {ProbBars} from '../components/ProbBars';
 import {scene} from '../script';
 import {C, F} from '../theme';
+import {Sfx} from '../components/Sfx';
 
 const S = scene('game');
 
@@ -84,6 +85,18 @@ export const S2Game: React.FC = () => {
 
 	return (
 		<AbsoluteFill>
+			<Sfx name="pop" at={c.poem - 6} />
+			<Sfx name="pop" at={c.guang} />
+			<Sfx name="blip" at={c.bars + 8} />
+			<Sfx name="ding" at={c.top + 14} />
+			<Sfx name="whoosh" at={c.next} volume={0.5} />
+			<Sfx name="pop" at={c.weather} />
+			<Sfx name="blip" at={c.wbars + 8} />
+			<Sfx name="pop" at={c.summary} />
+			<Sfx name="whoosh" at={c.token} volume={0.5} />
+			<Sfx name="ratchet" at={c.split} volume={0.7} />
+			<Sfx name="pop" at={c.callit} />
+
 			{/* 第一题 */}
 			<AbsoluteFill
 				style={{

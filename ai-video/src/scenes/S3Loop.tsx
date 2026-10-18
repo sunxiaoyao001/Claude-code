@@ -4,6 +4,7 @@ import {Caret} from '../components/Chat';
 import {ProbBars} from '../components/ProbBars';
 import {scene} from '../script';
 import {C, F} from '../theme';
+import {Sfx} from '../components/Sfx';
 
 const S = scene('loop');
 
@@ -79,6 +80,15 @@ export const S3Loop: React.FC = () => {
 
 	return (
 		<AbsoluteFill>
+			<Sfx name="pop" at={c.q} />
+			<Sfx name="tick" at={c.first + 30} />
+			<Sfx name="tick" at={c.second + 30} />
+			<Sfx name="pop" at={c.reread} volume={0.6} />
+			{appendAt.map((f, i) => (
+				<Sfx key={i} name="blip" at={f} volume={i < 2 ? 0.9 : 0.5} />
+			))}
+			<Sfx name="pop" at={c.notfx} />
+
 			{/* 计数器 */}
 			<div style={{position: 'absolute', top: 66, right: 88, fontFamily: F.mono, fontSize: 30, color: C.muted, opacity: progress(frame, c.first, 12)}}>
 				第 <span style={{color: C.amber, fontSize: 44, fontWeight: 700}}>{String(counter).padStart(2, '0')}</span> 次猜

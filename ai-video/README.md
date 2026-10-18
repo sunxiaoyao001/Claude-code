@@ -17,11 +17,13 @@
 
 `release/` 里是已经渲染好的文件，可以直接下载：
 
-- `ai-video.mp4`：带字幕的成片，1920×1080，3 分 45 秒，无声（配音另录）
+- `ai-video.mp4`：带字幕的成片，1920×1080，3 分 45 秒，含配乐和音效（人声配音另录）
 - `subtitles.srt`：字幕文件，可以导入剪映等剪辑软件
 - `narration.txt`：录音稿，标了每个镜头的开始时间
 
 ## 常用命令
+
+需要 Node.js 22.18 及以上版本（`scripts/` 里的 .ts 脚本直接用 Node 运行）。
 
 ```bash
 npm install
@@ -29,6 +31,7 @@ npm run dev            # 打开 Remotion Studio 实时预览（Scenes 文件夹�
 npm run render         # 渲染带字幕的成片 → out/ai-video.mp4
 npm run render:nosubs  # 渲染无字幕版本 → out/ai-video-nosubs.mp4（适合自己在剪映里加字幕）
 npm run srt            # 导出 out/subtitles.srt 和录音稿 out/narration.txt
+npm run audio          # 重新生成配乐和音效（改了文案、时间轴变了之后运行）
 npm run typecheck
 ```
 
@@ -43,10 +46,24 @@ npm run typecheck
 
 1. 运行 `npm run srt`，照着 `out/narration.txt` 录音（里面标了每个镜头的开始时间）。
 2. 如果录出来整体偏快或偏慢，调整 `CHARS_PER_SECOND`。个别句子对不上，就给那一句加 `sec: 实际秒数`。
-3. 把录音放到 `public/voiceover.mp3`，再在 `src/Video.tsx` 的 `<Background />` 下面加一行
-   `<Audio src={staticFile('voiceover.mp3')} />`（从 `remotion` 引入 `Audio` 和 `staticFile`），然后重新渲染。
+3. 把录音放到 `public/voiceover.mp3`，在 `src/Video.tsx` 的配乐那一行下面加
+   `<Html5Audio src={staticFile('voiceover.mp3')} />`，并把 `src/Root.tsx` 里的 `musicVolume` 调到 0.3 左右（让配乐给人声让路），然后重新渲染。
 
    也可以直接把 `render:nosubs` 的成片拖进剪辑软件，在那里配音、加 BGM 和字幕。
+
+## 配乐与音效
+
+全部由 `scripts/make-audio.ts` 用代码合成，不涉及版权：
+
+- **配乐** `public/audio/music.mp3`：96 BPM，C 大调，Fmaj7 → G → Em7 → Am7。按镜头分段编排：
+  - 开场：垫音配琶音。定格时收住，揭晓那一下给一个重音。
+  - 01～03：加入鼓和贝斯；逐字生成那段换成更密的十六分琶音。
+  - 04 侦探：去掉鼓，换成低音持续音加钟声，营造悬疑感。"理解"出现时滤波打开。
+  - 05～06：律动回来。
+  - 结尾：提问时只留垫音和钟声，最后落在 Cmaj9。
+- **音效** `public/audio/sfx/`：打字、弹出、转场、猜错、拧旋钮、计数、转盘、盖章等 18 个。每个镜头用 `<Sfx name=… at={帧} />` 按画面事件触发。
+
+配乐的分段时间读的是 `src/script.ts` 里的时间轴，所以改了文案以后要运行一次 `npm run audio`。成片默认带配乐和音效，Studio 里可以通过 `music` / `sfx` / `musicVolume` 这三个属性单独开关或调音量。
 
 ## 目录
 
@@ -57,9 +74,11 @@ src/
   Root.tsx           注册成片 / 无字幕版 / 单镜头预览
   theme.ts           颜色与字体
   anim.ts            动画小工具（淡入、弹出、打字机…）
-  components/        对话框、概率柱、填空框、旋钮、字幕、背景
+  components/        对话框、概率柱、填空框、旋钮、字幕、背景、音效
   scenes/S1~S8       8 个镜头
-scripts/export-srt.ts
+scripts/export-srt.ts  导出字幕 / 录音稿
+scripts/make-audio.ts  合成配乐和音效
+public/audio/          配乐与音效
 public/fonts/        思源黑体 / 思源宋体（Noto Sans/Serif SC）与 JetBrains Mono，均为 SIL OFL 授权
 ```
 

@@ -3,6 +3,7 @@ import {pop, progress, rise, typed} from '../anim';
 import {Caret, ChatWindow, UserBubble} from '../components/Chat';
 import {scene} from '../script';
 import {C, F} from '../theme';
+import {Sfx, Typing} from '../components/Sfx';
 
 const S = scene('hook');
 export const POEM = '秋风翻过旧书页，\n银杏把阳光一片片还给大地。\n远处有人在晒柿子，\n整条街都是甜的。';
@@ -37,6 +38,12 @@ export const S1Hook: React.FC = () => {
 					</div>
 				</ChatWindow>
 			</div>
+
+			<Sfx name="pop" at={8} volume={0.5} />
+			<Typing at={26} chars={Array.from(POEM).length} cps={9} volume={0.7} />
+			<Sfx name="riser" at={reveal - 90} />
+			<Sfx name="impact" at={reveal} />
+			<Sfx name="pop" at={ask} />
 
 			{/* 定格后：大标题 */}
 			<div style={{position: 'absolute', top: 330, left: 0, right: 0, textAlign: 'center'}}>

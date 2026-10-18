@@ -4,6 +4,7 @@ import {Blank} from '../components/Blank';
 import {Knob} from '../components/Knob';
 import {scene} from '../script';
 import {C, F} from '../theme';
+import {Sfx, Typing} from '../components/Sfx';
 
 const S = scene('train');
 
@@ -58,6 +59,21 @@ export const S4Train: React.FC = () => {
 
 	return (
 		<AbsoluteFill>
+			<Sfx name="whoosh" at={c.feed} volume={0.6} />
+			<Sfx name="pop" at={c.years} />
+			<Sfx name="pop" at={c.years + 10} />
+			<Sfx name="pop" at={c.quiz} />
+			<Sfx name="error" at={c.wrong} />
+			<Sfx name="ratchet" at={c.twist + 6} />
+			<Sfx name="ding" at={c.twist + 40} />
+			<Sfx name="whoosh" at={c.knobs} volume={0.7} />
+			<Sfx name="count" at={c.count + 4} />
+			<Sfx name="pop" at={c.assistant} />
+			<Typing at={c.assistant + 30} chars={24} cps={16} volume={0.6} />
+			<Typing at={c.after} chars={33} cps={16} volume={0.6} />
+			<Sfx name="ding" at={c.after + 50} />
+			<Sfx name="error" at={c.chain} />
+
 			{/* A. 海量文字流进模型 */}
 			<AbsoluteFill style={{opacity: phaseA}}>
 				{SNIPPETS.map((t, i) => {

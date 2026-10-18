@@ -5,8 +5,8 @@ import {SingleScene, Video} from './Video';
 
 export const RemotionRoot: React.FC = () => (
 	<>
-		<Composition id="AIVideo" component={Video} durationInFrames={TOTAL_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{subtitles: true}} />
-		<Composition id="AIVideoNoSubs" component={Video} durationInFrames={TOTAL_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{subtitles: false}} />
+		<Composition id="AIVideo" component={Video} durationInFrames={TOTAL_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{subtitles: true, music: true, sfx: true, musicVolume: 1}} />
+		<Composition id="AIVideoNoSubs" component={Video} durationInFrames={TOTAL_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{subtitles: false, music: true, sfx: true, musicVolume: 1}} />
 		<Folder name="Scenes">
 			{SCENES.map((s) => (
 				<Composition

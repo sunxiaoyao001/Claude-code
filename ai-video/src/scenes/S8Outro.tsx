@@ -4,6 +4,7 @@ import {Caret, ChatWindow, UserBubble} from '../components/Chat';
 import {ProbBars} from '../components/ProbBars';
 import {scene} from '../script';
 import {C, F} from '../theme';
+import {Sfx, Typing} from '../components/Sfx';
 import {POEM} from './S1Hook';
 
 const S = scene('outro');
@@ -40,6 +41,14 @@ export const S8Outro: React.FC = () => {
 
 	return (
 		<AbsoluteFill>
+			<Typing at={8} chars={Array.from(POEM).length} cps={9} volume={0.6} />
+			<Sfx name="whoosh" at={c.zoom} volume={0.6} />
+			<Sfx name="ding" at={c.zoom + 46} />
+			<Sfx name="whoosh" at={c.field} volume={0.5} />
+			<Sfx name="swell" at={c.question - 40} />
+			<Sfx name="chime" at={c.dong + 8} />
+			<Sfx name="pop" at={c.end} />
+
 			{/* 对话框继续逐字输出 */}
 			<AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', opacity: 1 - zoom}}>
 				<div style={{marginTop: -60, transform: `scale(${1 + zoom * 0.6})`}}>

@@ -3,6 +3,7 @@ import {easeInOut, progress, rise, visible} from '../anim';
 import {ProbBars} from '../components/ProbBars';
 import {scene} from '../script';
 import {C, F} from '../theme';
+import {Sfx} from '../components/Sfx';
 
 const S = scene('sample');
 
@@ -85,6 +86,22 @@ export const S6Sample: React.FC = () => {
 
 	return (
 		<AbsoluteFill>
+			<Sfx name="pop" at={6} />
+			{ANSWERS.map((_, i) => (
+				<Sfx key={i} name="pop" at={c.three + i * 10} />
+			))}
+			<Sfx name="whoosh" at={c.bars} volume={0.5} />
+			{[0, 1, 2].map((k) => (
+				<Sfx key={`s${k}`} name="spin" at={spinStart(k)} />
+			))}
+			{[0, 1, 2].map((k) => (
+				<Sfx key={`d${k}`} name="ding" at={spinStart(k) + SPIN} volume={0.6} />
+			))}
+			<Sfx name="pop" at={c.temp + 6} />
+			<Sfx name="slideDown" at={c.low} />
+			<Sfx name="slideUp" at={c.high} />
+			<Sfx name="error" at={c.weird} />
+
 			{/* 同一个问题，三次回答 */}
 			<div style={{position: 'absolute', left: 0, right: 0, top: 180, display: 'flex', justifyContent: 'center', opacity: 1 - toBars}}>
 				<div style={{...rise(frame, 6, 16), fontFamily: F.sans, fontSize: 38, color: C.text, background: 'rgba(255,255,255,0.08)', padding: '14px 32px', borderRadius: 24}}>
