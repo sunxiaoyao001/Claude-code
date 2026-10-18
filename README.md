@@ -18,4 +18,4 @@
 
 ## 视频项目
 
-- [`ai-video/`](ai-video/)：用 Remotion 做的科普视频《AI 根本不会“说话”，它只会猜下一个字》，详见目录内 README。
+- [`ai-video/`](ai-video/)：用 Remotion 做的科普视频：《AI 根本不会“说话”，它只会猜下一个字》（横屏）和《囚徒困境》（抖音竖屏），详见目录内 README。

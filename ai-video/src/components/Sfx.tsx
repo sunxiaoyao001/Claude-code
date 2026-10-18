@@ -19,7 +19,19 @@ export type SfxName =
 	| 'slideUp'
 	| 'slideDown'
 	| 'paper'
-	| 'swell';
+	| 'swell'
+	// 《囚徒困境》新增
+	| 'clunk'
+	| 'hum'
+	| 'slam'
+	| 'heartbeat'
+	| 'glitch'
+	| 'braam'
+	| 'thud'
+	| 'lock'
+	| 'metal'
+	| 'cash'
+	| 'shimmer';
 
 export const SfxEnabled = createContext(true);
 
