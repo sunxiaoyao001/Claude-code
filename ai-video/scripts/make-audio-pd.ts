@@ -1,484 +1,403 @@
-// 《囚徒困境》配乐和新增音效：node scripts/make-audio-pd.ts
-// 配乐按 src/pd/timeline.ts 的节拍编排，改了时间轴之后重新运行即可。
-//   public/audio/pd-music.mp3
-//   public/audio/sfx/{clunk,hum,slam,heartbeat,glitch,braam,thud,lock,metal,cash,shimmer}.wav
+// 《囚徒困境》声音：node scripts/make-audio-pd.ts → public/audio/pd-mix.mp3
+// 画面和声音共用 src/pd/score.ts：每一次落位都是一声拟音，每一条规则加一件乐器。
+// 拟音是印刷车间的材料声，干、近、不加混响：铅字、裁纸刀、纸张、数字落位、毛毡、橡皮章。
 import {execFileSync} from 'node:child_process';
-import {mkdirSync, rmSync} from 'node:fs';
-import {CUES, PD_TOTAL_SEC, sceneStartSec} from '../src/pd/timeline.ts';
-import {
-	SR,
-	type Stereo,
-	TAU,
-	addMono,
-	bassNote,
-	bellNote,
-	biquad,
-	clap,
-	epNote,
-	hat,
-	kick,
-	mixInto,
-	mono,
-	mtof,
-	noise,
-	padNote,
-	peakNormalize,
-	pingPong,
-	reverb,
-	rnd,
-	stereo,
-	sweepFilter,
-	toStereo,
-	woodTick,
-	writeWav,
-} from './synth.ts';
+import {rmSync} from 'node:fs';
+import {BAR, BEAT, DUR, E16, events, ORANGE_AT, ORANGE_PAUSE, ROUNDS, T, type Ev} from '../src/pd/score.ts';
+import {SR, type Stereo, TAU, addMono, biquad, mixInto, mono, mtof, noise, reverb, stereo, sweepFilter, writeWav} from './synth.ts';
 
-// ———————————————————— 新音效 ————————————————————
+// ———————————————— 拟音 ————————————————
+const env = (t: number, a: number, d: number) => Math.min(1, t / a) * Math.exp(-t / d);
 
-const SFX: Record<string, () => Stereo> = {
-	// 审讯灯"咔哒"开灯
-	clunk: () => {
-		const out = mono(0.6);
-		const hp = biquad('hp', 3000);
-		const bz = biquad('lp', 900);
-		let ph = 0;
-		for (let i = 0; i < out.length; i++) {
-			const t = i / SR;
-			ph += (TAU * (95 - 35 * Math.min(1, t / 0.1))) / SR;
-			const click = hp(noise()) * Math.exp(-t * 500);
-			const thump = Math.sin(ph) * Math.exp(-t * 22) * 0.9;
-			const ring = (Math.sin(TAU * 1240 * t) + 0.6 * Math.sin(TAU * 2710 * t)) * Math.exp(-t * 18) * 0.12;
-			const buzz = t > 0.02 && t < 0.2 ? bz(Math.sign(Math.sin(TAU * 120 * t))) * 0.18 * Math.exp(-(t - 0.02) * 14) : 0;
-			out[i] = click + thump + ring + buzz;
-		}
-		const s = toStereo(out);
-		mixInto(s, reverb(s, 0.6, 0.4, 0.25));
-		return peakNormalize(s, 0.55);
-	},
-	// 灯的电流声
-	hum: () => {
-		const len = 3.2;
-		const out = mono(len);
-		const lp = biquad('lp', 2200);
-		for (let i = 0; i < out.length; i++) {
-			const t = i / SR;
-			const env = Math.min(1, t / 0.08) * Math.min(1, (len - t) / 0.3);
-			const am = 0.85 + 0.15 * Math.sin(TAU * 7 * t);
-			out[i] = (Math.sin(TAU * 100 * t) * 0.6 + Math.sin(TAU * 150 * t) * 0.3 + Math.sin(TAU * 200 * t) * 0.15 + lp(noise()) * 0.08) * env * am;
-		}
-		return peakNormalize(toStereo(out), 0.1);
-	},
-	// 文字砸下来的重击
-	slam: () => {
-		const out = mono(1.2);
-		const bp = biquad('bp', 700, 0.6);
-		let ph = 0;
-		for (let i = 0; i < out.length; i++) {
-			const t = i / SR;
-			ph += (TAU * (40 + 40 * Math.exp(-t * 12))) / SR;
-			out[i] = Math.sin(ph) * Math.exp(-t * 4.5) + bp(noise()) * Math.exp(-t * 16) * 0.7;
-		}
-		const s = toStereo(out);
-		mixInto(s, reverb(s, 0.82, 0.3, 0.45));
-		return peakNormalize(s, 0.65);
-	},
-	// 心跳（咚—咚）
-	heartbeat: () => {
-		const out = mono(0.5);
-		const lp = biquad('lp', 160);
-		for (let i = 0; i < out.length; i++) {
-			const t = i / SR;
-			const b1 = Math.sin(TAU * 58 * t) * Math.exp(-t * 20);
-			const t2 = t - 0.17;
-			const b2 = t2 > 0 ? Math.sin(TAU * 50 * t2) * Math.exp(-t2 * 16) * 0.75 : 0;
-			out[i] = lp((b1 + b2) * 1.4);
-		}
-		return peakNormalize(toStereo(out), 0.7);
-	},
-	// 数字故障
-	glitch: () => {
-		const len = 0.45;
-		const s = stereo(len);
-		let t = 0;
-		while (t < len - 0.03) {
-			const d = 0.015 + rnd() * 0.045;
-			const f = 180 + rnd() * 2200;
-			const kind = rnd();
-			const seg = mono(d);
-			for (let i = 0; i < seg.length; i++) {
-				const tt = i / SR;
-				const v = kind < 0.4 ? Math.sign(Math.sin(TAU * f * tt)) : kind < 0.75 ? Math.round(noise() * 3) / 3 : Math.sin(TAU * f * tt * (1 + tt * 30));
-				seg[i] = v * 0.6;
-			}
-			addMono(s, seg, t, 0.5 + rnd() * 0.5, rnd() * 2 - 1);
-			t += d + (rnd() < 0.3 ? rnd() * 0.03 : 0);
-		}
-		return peakNormalize(s, 0.3);
-	},
-	// 电影感低音"嗡"
-	braam: () => {
-		const len = 2.2;
-		const s = stereo(len);
-		for (const [n, g] of [
-			[33, 1],
-			[45, 0.8],
-			[52, 0.5],
-			[57, 0.35],
-		] as const) {
-			for (const det of [-9, 0, 9]) {
-				const f = mtof(n) * Math.pow(2, det / 1200);
-				const v = mono(len);
-				let ph = rnd();
-				for (let i = 0; i < v.length; i++) {
-					ph = (ph + f / SR) % 1;
-					v[i] = (2 * ph - 1) * g;
-				}
-				const filt = sweepFilter(v, 'lp', (t) => 180 + 1400 * Math.exp(-t * 2.2) * Math.min(1, t / 0.04), 0.9);
-				for (let i = 0; i < filt.length; i++) {
-					const t = i / SR;
-					filt[i] *= Math.min(1, t / 0.03) * Math.exp(-t * 1.3);
-				}
-				addMono(s, filt, 0, 0.25, det / 12);
-			}
-		}
-		mixInto(s, reverb(s, 0.85, 0.35, 0.35));
-		return peakNormalize(s, 0.6);
-	},
-	// 墙落地 / 方块堆叠
-	thud: () => {
-		const out = mono(0.5);
-		const lp = biquad('lp', 450);
-		for (let i = 0; i < out.length; i++) {
-			const t = i / SR;
-			out[i] = Math.sin(TAU * 68 * t) * Math.exp(-t * 14) + lp(noise()) * Math.exp(-t * 22) * 0.6;
-		}
-		return peakNormalize(toStereo(out), 0.5);
-	},
-	// 格子填进去时的"咔嗒"
-	lock: () => {
-		const s = stereo(0.35);
-		addMono(s, woodTick(2300), 0, 1, -0.1);
-		addMono(s, woodTick(1700), 0.045, 0.8, 0.1);
-		const ping = mono(0.3);
-		for (let i = 0; i < ping.length; i++) {
-			const t = i / SR;
-			ping[i] = Math.sin(TAU * 2400 * t) * Math.exp(-t * 22) * 0.35;
-		}
-		addMono(s, ping, 0.045);
-		return peakNormalize(s, 0.32);
-	},
-	// 铁栏杆砸下
-	metal: () => {
-		const len = 2.4;
-		const out = mono(len);
-		const partials = [
-			[187, 1.2, 0.5],
-			[441, 1.8, 0.45],
-			[812, 2.6, 0.35],
-			[1323, 3.4, 0.25],
-			[1907, 4.5, 0.18],
-			[2734, 6, 0.12],
-		];
-		const bp = biquad('bp', 1500, 0.7);
-		for (let i = 0; i < out.length; i++) {
-			const t = i / SR;
-			let v = 0;
-			for (const [f, d, a] of partials) v += Math.sin(TAU * f * t + f) * Math.exp(-t * d) * a;
-			v += bp(noise()) * Math.exp(-t * 30) * 0.8;
-			v += Math.sin(TAU * 52 * t) * Math.exp(-t * 6) * 0.7;
-			out[i] = v;
-		}
-		const s = toStereo(out);
-		mixInto(s, reverb(s, 0.86, 0.3, 0.5));
-		return peakNormalize(s, 0.7);
-	},
-	// 降价
-	cash: () => {
-		const out = mono(0.18);
-		let ph = 0;
-		for (let i = 0; i < out.length; i++) {
-			const t = i / SR;
-			ph += (TAU * (1250 - 550 * Math.min(1, t / 0.12))) / SR;
-			out[i] = (Math.sin(ph) + 0.25 * Math.sin(ph * 2)) * Math.min(1, t / 0.002) * Math.exp(-t * 20);
-		}
-		return peakNormalize(toStereo(out), 0.28);
-	},
-	// 闪光
-	shimmer: () => {
-		const s = stereo(2.6);
-		[84, 88, 91, 95, 98, 100].forEach((n, i) => addMono(s, bellNote(mtof(n), 2, 2.8, 2), i * 0.045, 0.4, -0.6 + i * 0.24));
-		mixInto(s, reverb(s, 0.9, 0.2, 0.8));
-		return peakNormalize(s, 0.3);
-	},
-};
-
-// ———————————————————— 配乐 ————————————————————
-
-const T = PD_TOTAL_SEC;
-const at = (scene: Parameters<typeof sceneStartSec>[0], cue: number) => sceneStartSec(scene) + cue;
-const M = {
-	drop: at('hook', CUES.hook.drop),
-	setup: sceneStartSec('setup'),
-	matrix: sceneStartSec('matrix'),
-	reason: at('matrix', CUES.matrix.head),
-	concl: at('matrix', CUES.matrix.concl),
-	slam: at('matrix', CUES.matrix.slam),
-	title: sceneStartSec('title'),
-	titleHit: at('title', CUES.title.t1),
-	life: sceneStartSec('life'),
-	way: sceneStartSec('way'),
-	champ: at('way', CUES.way.champ),
-	end: sceneStartSec('end'),
-	resolve: at('end', CUES.end.l2b),
-};
-
-const BPM = 110;
-const BEAT = 60 / BPM;
-const BAR = BEAT * 4;
-const G0 = M.drop; // 2.7 秒变红的那一下正好是第一小节的强拍
-
-type Chord = {root: number; notes: number[]};
-const CH: Record<string, Chord> = {
-	Am: {root: 45, notes: [57, 60, 64, 69]},
-	Am9: {root: 45, notes: [57, 60, 64, 71]},
-	F: {root: 41, notes: [57, 60, 65, 69]},
-	E: {root: 40, notes: [56, 59, 64, 68]},
-	Dm: {root: 38, notes: [57, 62, 65, 69]},
-	C: {root: 36, notes: [55, 60, 64, 67]},
-	G: {root: 43, notes: [55, 59, 62, 67]},
-	Cfin: {root: 36, notes: [55, 60, 64, 67, 72]},
-};
-const nBars = Math.ceil((T - G0) / BAR) + 1;
-const barStart = (k: number) => G0 + k * BAR;
-const endBar = Math.ceil((M.end - G0) / BAR);
-const chordOf = (k: number): Chord => {
-	const t = barStart(k);
-	if (k >= endBar) return [CH.F, CH.G][k - endBar] ?? CH.Cfin;
-	if (t >= M.way) return [CH.C, CH.G, CH.Am, CH.F][k % 4];
-	if (t >= M.life) return [CH.Am, CH.F, CH.C, CH.G][k % 4];
-	if (t >= M.title - 0.3) return CH.Am9;
-	if (t >= M.slam - 0.1) return CH.Am;
-	if (t >= M.reason) return [CH.Am, CH.F, CH.Dm, CH.E][k % 4];
-	return [CH.Am, CH.Am, CH.F, CH.E][k % 4];
-};
-const finalBar = endBar + 2;
-
-type Auto = [number, number][];
-const autoAt = (a: Auto, t: number) => {
-	if (t <= a[0][0]) return a[0][1];
-	for (let i = 1; i < a.length; i++) {
-		if (t <= a[i][0]) {
-			const [t0, v0] = a[i - 1];
-			const [t1, v1] = a[i];
-			return v0 + ((v1 - v0) * (t - t0)) / (t1 - t0 || 1);
-		}
-	}
-	return a[a.length - 1][1];
-};
-// 从一串 [时间, 目标值, 过渡秒数] 生成包络
-const auto = (initial: number, ...steps: [number, number, number?][]): Auto => {
-	const out: Auto = [[0, initial]];
-	for (const [t, v, fade = 0.8] of steps) {
-		out.push([t - fade / 2, autoAt(out, t - fade / 2)], [t + fade / 2, v]);
+const clack = () => {
+	const out = mono(0.09);
+	const hp = biquad('hp', 3000);
+	const lp = biquad('lp', 1200);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		out[i] =
+			hp(noise()) * env(t, 0.0003, 0.0018) * 0.9 +
+			Math.sin(TAU * 3300 * t) * env(t, 0.0005, 0.035) * 0.22 +
+			Math.sin(TAU * 5100 * t) * env(t, 0.0005, 0.022) * 0.14 +
+			Math.sin(TAU * 190 * t) * env(t, 0.001, 0.03) * 0.35 +
+			lp(noise()) * env(t, 0.0005, 0.018) * 0.3;
 	}
 	return out;
 };
-const applyAuto = (s: Stereo, a: Auto) => {
-	for (let i = 0; i < s.L.length; i++) {
-		const g = autoAt(a, i / SR);
-		s.L[i] *= g;
-		s.R[i] *= g;
-	}
-	return s;
-};
-
-const BREATH = M.slam - 0.4; // 铁栏落下前的静音
-const END = T;
-const A = {
-	drone: auto(0, [0.25, 0.4, 0.5], [G0, 0.25, 0.3], [M.setup + 1, 0, 3], [M.slam, 0.45, 0.1], [M.title + 0.5, 0.25, 1.5], [M.life, 0, 1.5]),
-	pad: auto(0, [G0, 0.65, 0.1], [M.matrix, 0.85], [BREATH, 0, 0.3], [M.slam, 1, 0.1], [M.title - 0.3, 0, 0.4], [M.titleHit, 1, 0.6], [M.life, 0.75], [M.way, 1], [END - 1.2, 0, 2.2]),
-	cutoff: auto(1000, [M.matrix, 1100, 2], [M.reason, 1100, 1], [M.concl, 2400, 6], [M.slam, 850, 0.2], [M.titleHit, 1500, 1.5], [M.life, 1900, 1], [M.way, 2700, 2], [M.end, 2300, 2]),
-	pulse: auto(0, [G0, 0.8, 0.1], [M.reason, 1], [BREATH, 0, 0.25], [M.slam + 1, 0, 0.1]),
-	groove: auto(0, [M.life, 1, 0.3], [M.way, 0.8, 1], [M.end, 0, 1.5]),
-	hold: auto(0, [M.end + 1, 0.7, 2], [END - 1, 0, 2]),
-	clock: auto(0, [0.3, 0.5, 0.2], [G0, 0.8, 0.1], [M.reason, 0.4], [BREATH, 0, 0.2]),
-	kick: auto(0, [M.matrix, 0.6, 0.3], [M.reason, 1, 0.3], [BREATH, 0, 0.15], [M.life, 1, 0.2], [M.way, 0.7, 0.5], [M.end, 0, 1]),
-	hats: auto(0, [M.reason, 0.7, 0.5], [M.concl, 1, 1], [BREATH, 0, 0.15], [M.life, 1, 0.2], [M.way, 0.7, 0.5], [M.end, 0, 1]),
-	clap: auto(0, [M.reason + 4, 0.8, 0.5], [BREATH, 0, 0.15], [M.life, 1, 0.2], [M.way, 0.6, 0.5], [M.end, 0, 1]),
-	arp8: auto(0, [M.matrix, 0.6, 1], [M.reason, 0.9], [BREATH, 0, 0.2], [M.life, 0.9, 0.3], [M.way, 1, 0.5], [M.end + 2, 0.5, 2], [END - 2, 0, 2]),
-	arp16: auto(0, [M.concl, 0.8, 3], [BREATH, 0, 0.2], [M.way + 2, 0.7, 2], [M.end, 0, 2]),
-	bells: auto(0, [M.titleHit, 1, 0.3], [M.life, 0, 1], [M.champ, 0.9, 1], [END - 0.5, 0, 1]),
-};
-
-const makeMusic = (): Stereo => {
-	const len = T;
-
-	const kickTimes: number[] = [];
-	const K = kick();
-	const H = hat();
-	const HO = hat(true);
-	const CL = clap();
-	const drums = stereo(len);
-	for (let t = G0 - BEAT; t > 0; t -= BEAT) {
-		const ck = autoAt(A.clock, t);
-		if (ck > 0) addMono(drums, woodTick(1700), t, 0.32 * ck, 0.3);
-	}
-	for (let k = 0; k < nBars; k++) {
-		const b = barStart(k);
-		for (let beat = 0; beat < 4; beat++) {
-			const t = b + beat * BEAT;
-			const kg = autoAt(A.kick, t);
-			const four = t >= M.reason && t < M.slam; // 推演段：四拍底鼓
-			const groove = t >= M.life;
-			const hit = four ? true : groove ? beat === 0 || beat === 2 : beat === 0;
-			if (kg > 0 && hit) {
-				addMono(drums, K, t, 0.36 * kg);
-				kickTimes.push(t);
-			}
-			if (groove && beat === 2 && kg > 0) addMono(drums, K, t + BEAT * 0.5, 0.22 * kg);
-			const cg = autoAt(A.clap, t);
-			if (cg > 0 && (beat === 1 || beat === 3)) addMono(drums, CL, t, 0.28 * cg, -0.1);
-			// 时钟滴答（四分音符）
-			const ck = autoAt(A.clock, t);
-			if (ck > 0) addMono(drums, woodTick(beat === 0 ? 2100 : 1700), t, 0.32 * ck, 0.3);
-			for (let s = 0; s < 4; s++) {
-				const ts = t + s * (BEAT / 4);
-				const hg = autoAt(A.hats, ts);
-				if (hg <= 0) continue;
-				if (s === 2) addMono(drums, beat === 3 && k % 2 ? HO : H, ts, 0.18 * hg, 0.25);
-				else addMono(drums, H, ts, 0.07 * hg, 0.25);
-			}
-		}
-	}
-	const kickEnv = new Float32Array(Math.ceil(len * SR));
-	for (const kt of kickTimes) {
-		const o = Math.round(kt * SR);
-		for (let i = 0; i < 0.35 * SR && o + i < kickEnv.length; i++) kickEnv[o + i] = Math.max(kickEnv[o + i], Math.exp(-(i / SR) * 10));
-	}
-	const pump = (i: number) => 1 - 0.38 * kickEnv[Math.min(kickEnv.length - 1, i)];
-
-	// 低音持续音（开场、陷阱之后、点题）
-	const drone = stereo(len);
-	for (let i = 0; i < drone.L.length; i++) {
+const tss = (dur: number) => {
+	const len = dur + 0.06;
+	const src = mono(len);
+	for (let i = 0; i < src.length; i++) src[i] = noise();
+	const f = sweepFilter(src, 'bp', (t) => 5200 + 2600 * (t / len), 0.9);
+	for (let i = 0; i < f.length; i++) {
 		const t = i / SR;
-		const v = (Math.sin(TAU * 55 * t) * 0.6 + Math.sin(TAU * 82.41 * t) * 0.25 + Math.sin(TAU * 110 * t + Math.sin(TAU * 0.3 * t)) * 0.12) * (0.8 + 0.2 * Math.sin(TAU * 0.25 * t)) * 0.3;
-		drone.L[i] = v;
-		drone.R[i] = v;
+		f[i] *= Math.min(1, t / 0.015) * Math.min(1, Math.max(0, (len - t) / 0.05)) * 0.5;
 	}
-	applyAuto(drone, A.drone);
-
-	// 垫音
-	const pad = stereo(len);
-	for (let k = 0; k < nBars; k++) {
-		if (k > finalBar) break;
-		const ch = chordOf(k);
-		const held = k === finalBar;
-		const dur = held ? len - barStart(k) + 1 : BAR;
-		ch.notes.forEach((n, i) => addMono(pad, padNote(mtof(n), dur, held ? 1 : 0.35, held ? 2 : 0.7), barStart(k), 0.1, i % 2 ? 0.4 : -0.4));
+	return f;
+};
+const snick = () => {
+	const len = 0.16;
+	const src = mono(len);
+	for (let i = 0; i < src.length; i++) src[i] = noise();
+	const sw = sweepFilter(src, 'bp', (t) => 900 * Math.pow(7, Math.min(1, t / 0.05)), 1.4);
+	const out = mono(len);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		out[i] =
+			sw[i] * env(t, 0.002, 0.03) * 0.8 +
+			(Math.sin(TAU * 2830 * t) + 0.7 * Math.sin(TAU * 4410 * t)) * env(t, 0.0008, 0.045) * 0.22 +
+			Math.sin(TAU * 120 * t) * env(t, 0.001, 0.03) * 0.3;
 	}
-	{
-		let yl = 0, yr = 0, yl2 = 0, yr2 = 0;
-		const hpL = biquad('hp', 150);
-		const hpR = biquad('hp', 150);
-		for (let i = 0; i < pad.L.length; i++) {
-			const a = Math.exp((-TAU * autoAt(A.cutoff, i / SR)) / SR);
-			yl = (1 - a) * pad.L[i] + a * yl;
-			yr = (1 - a) * pad.R[i] + a * yr;
-			yl2 = (1 - a) * yl + a * yl2;
-			yr2 = (1 - a) * yr + a * yr2;
-			pad.L[i] = hpL(yl2) * pump(i);
-			pad.R[i] = hpR(yr2) * pump(i);
-		}
+	return out;
+};
+const slap = () => {
+	const out = mono(0.18);
+	const lp = biquad('lp', 2800);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		out[i] = lp(noise()) * env(t, 0.0008, 0.05) * 0.9 + Math.sin(TAU * 90 * t) * env(t, 0.002, 0.06) * 0.5;
 	}
-	applyAuto(pad, A.pad);
-
-	// 贝斯：紧张段是八分音符的"脉搏"，律动段是切分，结尾长音
-	const pulse = stereo(len);
-	const groove = stereo(len);
-	const hold = stereo(len);
-	for (let k = 0; k < nBars; k++) {
-		const ch = chordOf(k);
-		const b = barStart(k);
-		for (let e = 0; e < 8; e++) addMono(pulse, bassNote(mtof(ch.root), BEAT * 0.38), b + e * (BEAT / 2), e % 2 ? 0.08 : 0.11);
-		for (const [beat, d] of [
-			[0, 1.25],
-			[1.5, 0.45],
-			[2, 1.25],
-			[3.5, 0.4],
-		] as const)
-			addMono(groove, bassNote(mtof(ch.root), d * BEAT), b + beat * BEAT, 0.16);
-		if (k >= endBar && k <= finalBar) addMono(hold, bassNote(mtof(ch.root), k === finalBar ? len - b : BAR), b, 0.16);
+	return out;
+};
+const slide = (dur: number) => {
+	const len = dur + 0.08;
+	const src = mono(len);
+	for (let i = 0; i < src.length; i++) src[i] = noise();
+	const f = sweepFilter(src, 'bp', (t) => 900 + 1400 * Math.sin((Math.PI * t) / len), 0.6);
+	for (let i = 0; i < f.length; i++) f[i] *= Math.pow(Math.sin((Math.PI * i) / f.length), 1.5) * 0.45;
+	return f;
+};
+const thunk = () => {
+	const out = mono(0.14);
+	let ph = 0;
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		ph += (TAU * (150 + 90 * Math.exp(-t * 60))) / SR;
+		out[i] =
+			Math.sin(ph) * env(t, 0.001, 0.05) * 0.8 +
+			Math.sin(TAU * 620 * t) * env(t, 0.0005, 0.03) * 0.45 +
+			Math.sin(TAU * 1240 * t) * env(t, 0.0005, 0.012) * 0.2 +
+			noise() * env(t, 0.0003, 0.0025) * 0.5;
 	}
-	for (const s of [pulse, groove]) {
-		for (let i = 0; i < s.L.length; i++) {
-			s.L[i] *= pump(i);
-			s.R[i] *= pump(i);
-		}
+	return out;
+};
+const snapS = () => {
+	const out = mono(0.07);
+	const hp = biquad('hp', 2000);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		out[i] = hp(noise()) * env(t, 0.0003, 0.003) * 0.7 + Math.sin(TAU * 230 * t) * env(t, 0.001, 0.022) * 0.45;
 	}
-	applyAuto(pulse, A.pulse);
-	applyAuto(groove, A.groove);
-	applyAuto(hold, A.hold);
-
-	// 琶音
-	const arp8 = stereo(len);
-	const arp16 = stereo(len);
-	const pat8 = [0, 2, 1, 3, 2, 1, 3, 2];
-	for (let k = 0; k < Math.min(nBars, finalBar + 1); k++) {
-		const ch = chordOf(k);
-		const b = barStart(k);
-		for (let e = 0; e < 8; e++) addMono(arp8, epNote(mtof(ch.notes[pat8[e]] + 12), 4.5, 0.9, 2), b + e * (BEAT / 2), 0.15 * (e % 2 ? 0.75 : 1), e % 2 ? 0.35 : -0.35);
-		for (let s = 0; s < 16; s++) addMono(arp16, epNote(mtof(ch.notes[s % 4] + 24), 8, 0.5, 1.3), b + s * (BEAT / 4), 0.07 * (s % 4 ? 0.7 : 1), ((s % 4) - 1.5) / 3);
+	return out;
+};
+const thump = () => {
+	const out = mono(0.6);
+	const lp = biquad('lp', 300);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		out[i] = Math.sin(TAU * 58 * t) * env(t, 0.004, 0.22) + lp(noise()) * env(t, 0.002, 0.05) * 0.4;
 	}
-	applyAuto(arp8, A.arp8);
-	applyAuto(arp16, A.arp16);
-	const arps = stereo(len);
-	mixInto(arps, arp8);
-	mixInto(arps, arp16);
-	mixInto(arps, pingPong(arps, BEAT * 0.75, 0.32, 0.28));
-
-	// 钟声：点题、出路、结尾
-	const bells = stereo(len);
-	{
-		const notes = [76, 72, 69, 71];
-		notes.forEach((n, i) => addMono(bells, bellNote(mtof(n), 3), M.titleHit + 0.6 + i * BEAT * 2, 0.08, i % 2 ? 0.4 : -0.4));
-		const hope = [79, 76, 72, 74, 76, 79, 84, 79];
-		let i = 0;
-		for (let t = M.champ + 0.3; t < END - 1.5; t += BEAT * 2) addMono(bells, bellNote(mtof(hope[i++ % hope.length]), 3, 2, 2), t, 0.06, i % 2 ? 0.45 : -0.45);
-		applyAuto(bells, A.bells);
+	return out;
+};
+const stamp = () => {
+	const out = mono(0.3);
+	const lp = biquad('lp', 1800);
+	const hit = (tt: number, g: number) => (tt < 0 ? 0 : (Math.sin(TAU * 85 * tt) * env(tt, 0.001, 0.09) + Math.sin(TAU * 420 * tt) * env(tt, 0.001, 0.03) * 0.5) * g);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		out[i] = hit(t, 1) + hit(t - 0.028, 0.25) + lp(noise()) * env(t, 0.0008, 0.04) * 0.6;
 	}
-
-	const bus = stereo(len);
-	for (const s of [drone, pad, pulse, groove, hold, arps, drums, bells]) mixInto(bus, s);
-	const send = stereo(len);
-	mixInto(send, pad, 0.5);
-	mixInto(send, arps, 0.55);
-	mixInto(send, bells, 1);
-	mixInto(send, drums, 0.12);
-	mixInto(bus, reverb(send, 0.86, 0.35, 0.85));
-
-	// 纯配乐视频，响度比上一个视频高一点：RMS 约 -17 dBFS
-	let sum = 0;
-	for (let i = 0; i < bus.L.length; i++) sum += bus.L[i] * bus.L[i] + bus.R[i] * bus.R[i];
-	const g = Math.pow(10, -17 / 20) / Math.sqrt(sum / (bus.L.length * 2));
-	for (let i = 0; i < bus.L.length; i++) {
-		bus.L[i] = Math.tanh(bus.L[i] * g * 1.15) / 1.15;
-		bus.R[i] = Math.tanh(bus.R[i] * g * 1.15) / 1.15;
-	}
-	const tail = Math.floor(0.4 * SR);
-	for (let i = 0; i < tail; i++) {
-		const j = bus.L.length - 1 - i;
-		bus.L[j] *= i / tail;
-		bus.R[j] *= i / tail;
-	}
-	return bus;
+	return out;
 };
 
-mkdirSync('public/audio/sfx', {recursive: true});
-for (const [name, make] of Object.entries(SFX)) writeWav(`public/audio/sfx/${name}.wav`, make());
-console.log(`新增音效 ${Object.keys(SFX).length} 个 → public/audio/sfx/`);
+// ———————————————— 乐器 ————————————————
+const kick = () => {
+	const out = mono(0.35);
+	let ph = 0;
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		ph += (TAU * (48 + 75 * Math.exp(-t * 35))) / SR;
+		out[i] = Math.sin(ph) * env(t, 0.001, 0.12) + noise() * env(t, 0.0003, 0.0025) * 0.3;
+	}
+	return out;
+};
+const snare = () => {
+	const out = mono(0.25);
+	const bp = biquad('bp', 1900, 0.7);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		out[i] = bp(noise()) * env(t, 0.0008, 0.06) * 1.1 + Math.sin(TAU * 185 * t) * env(t, 0.001, 0.03) * 0.4;
+	}
+	return out;
+};
+const hat = () => {
+	const out = mono(0.06);
+	const hp = biquad('hp', 8000);
+	for (let i = 0; i < out.length; i++) out[i] = hp(noise()) * env(i / SR, 0.0005, 0.012);
+	return out;
+};
+const tick = () => {
+	const out = mono(0.05);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		out[i] = Math.sin(TAU * 2500 * t) * env(t, 0.0003, 0.008) + noise() * env(t, 0.0002, 0.002) * 0.3;
+	}
+	return out;
+};
+// 电贝斯：八分音符根音脉冲（motorik）
+const bassNote = (f: number, dur: number) => {
+	const out = mono(dur + 0.05);
+	const lp = biquad('lp', 900, 0.8);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		const v = Math.sin(TAU * f * t) + 0.5 * Math.sin(TAU * 2 * f * t) + 0.25 * Math.sin(TAU * 3 * f * t) + 0.12 * Math.sin(TAU * 4 * f * t);
+		out[i] = lp(v * Math.min(1, t / 0.004) * Math.exp(-t * 3) * Math.min(1, Math.max(0, (dur + 0.05 - t) / 0.03)));
+	}
+	return out;
+};
+// 木琴：基音 + 约 4 倍泛音，很快衰减
+const marimba = (f: number) => {
+	const out = mono(0.5);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		out[i] = Math.sin(TAU * f * t) * env(t, 0.002, 0.12) + Math.sin(TAU * f * 3.93 * t) * env(t, 0.001, 0.02) * 0.35;
+	}
+	return out;
+};
+// 钟琴
+const glock = (f: number, len = 1.2) => {
+	const out = mono(len);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		out[i] = (Math.sin(TAU * f * t) + 0.35 * Math.sin(TAU * f * 2.76 * t) * Math.exp(-t * 6) + 0.2 * Math.sin(TAU * f * 5.4 * t) * Math.exp(-t * 12)) * env(t, 0.001, 0.45);
+	}
+	return out;
+};
+// 软方波主旋律（垫在钟琴下面）
+const squareLead = (f: number, dur: number) => {
+	const out = mono(dur + 0.08);
+	const lp = biquad('lp', 1800);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		let v = 0;
+		for (let h = 1; h <= 9; h += 2) v += Math.sin(TAU * f * h * t) / h;
+		out[i] = lp(v) * Math.min(1, t / 0.01) * Math.min(1, Math.max(0, (dur + 0.08 - t) / 0.06)) * 0.5;
+	}
+	return out;
+};
+// 锯齿琶音
+const sawNote = (f: number, dur: number) => {
+	const out = mono(dur + 0.02);
+	let ph = 0;
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		ph = (ph + f / SR) % 1;
+		out[i] = (2 * ph - 1) * Math.min(1, t / 0.003) * Math.exp(-t * 9);
+	}
+	return out;
+};
 
-const music = makeMusic();
-writeWav('public/audio/pd-music.wav', music);
-execFileSync('npx', ['remotion', 'ffmpeg', '-y', '-loglevel', 'error', '-i', 'public/audio/pd-music.wav', '-c:a', 'libmp3lame', '-b:a', '192k', 'public/audio/pd-music.mp3'], {stdio: 'inherit'});
-rmSync('public/audio/pd-music.wav');
-console.log(`配乐 ${T.toFixed(1)} 秒 → public/audio/pd-music.mp3`);
+// ———————————————— 编曲：A 多利亚，120 BPM，一条规则加一件乐器 ————————————————
+const LEN = DUR + 1.5;
+const CHORDS = [
+	{root: 45, tones: [57, 60, 64, 67]}, // Am7
+	{root: 38, tones: [57, 62, 66, 69]}, // D
+	{root: 45, tones: [57, 60, 64, 67]}, // Am7
+	{root: 43, tones: [55, 59, 62, 67]}, // G
+];
+const chordAt = (t: number) => CHORDS[Math.floor(t / BAR) % 4];
+const DORIAN = [69, 71, 72, 74, 76, 78, 79, 81, 83, 84, 86, 88];
+
+type Seg = [number, number]; // [开始, 结束)
+const on = (t: number, segs: Seg[]) => segs.some(([a, b]) => t >= a && t < b);
+const STOP = T.stop;
+// 0–4 只有镲和滴答；4 秒（拉远落定）鼓进；规则一加贝斯；规则二加木琴；规则三的钟琴来自画面；
+// 规则四加锯齿琶音；38–40 几乎无声；40 推进时全编制；点题只剩贝斯和旋律；
+// 例外独唱时（55.5–58）鼓全部撤掉；冠军出现时（58）鼓和旋律回来；78 秒强拍硬停。
+const LAYER: Record<string, Seg[]> = {
+	hats: [
+		[0, 55.5],
+		[58, STOP],
+	],
+	tick: [
+		[0, 4],
+		[38, 40],
+	],
+	kick: [
+		[4, 38],
+		[40, 55.5],
+		[58, 76],
+	],
+	snare: [
+		[4, 38],
+		[40, 44],
+		[48, 55.5],
+		[58, 76],
+	],
+	bass: [
+		[8, 38],
+		[40, 54],
+		[58, STOP],
+	],
+	marimba: [
+		[12, 38],
+		[40, 44],
+		[48, STOP],
+	],
+	arp: [
+		[26, 38],
+		[40, 44],
+		[48, 54],
+		[60, 76],
+	],
+	lead: [
+		[44, 48],
+		[58, 68],
+	],
+	pedal: [
+		[38, 40],
+		[55.5, 58],
+	],
+};
+
+// 橙色在墙上的连续轮次（与画面同一算法）
+const roundAt = (t: number) => {
+	for (let j = 1; j < ROUNDS; j++) {
+		const dep = j - 1 === 3 ? ORANGE_PAUSE[1] : ORANGE_AT[j - 1];
+		if (t <= dep) return j - 1;
+		if (t <= ORANGE_AT[j]) return j - 1 + (t - dep) / (ORANGE_AT[j] - dep);
+	}
+	return ROUNDS - 1;
+};
+
+const makeMix = (): Stereo => {
+	const drums = stereo(LEN);
+	const tonal = stereo(LEN);
+	const K = kick();
+	const SN = snare();
+	const H = hat();
+	const TK = tick();
+	const beats = Math.floor(STOP / BEAT);
+	for (let b = 0; b < beats; b++) {
+		const t = b * BEAT;
+		const inBar = b % 4;
+		if (on(t, LAYER.kick) && (inBar === 0 || inBar === 2)) addMono(drums, K, t, 0.36);
+		if (on(t + BEAT / 2, LAYER.kick) && inBar === 2) addMono(drums, K, t + BEAT / 2, 0.24);
+		if (on(t, LAYER.snare) && (inBar === 1 || inBar === 3)) addMono(drums, SN, t, 0.36, -0.08);
+		if (on(t, LAYER.tick)) addMono(drums, TK, t, 0.22, 0.2);
+		for (const e of [0, 0.5]) {
+			const te = t + e * BEAT;
+			if (on(te, LAYER.hats)) addMono(drums, H, te, e ? 0.17 : 0.12, 0.25);
+		}
+	}
+	// 贝斯：八分音符根音
+	for (let k = 0; k < STOP / (BEAT / 2); k++) {
+		const t = k * (BEAT / 2);
+		if (on(t, LAYER.bass)) addMono(tonal, bassNote(mtof(chordAt(t).root), BEAT / 2 - 0.03), t, 0.12);
+	}
+	for (const [a, b] of LAYER.pedal) addMono(tonal, bassNote(mtof(45), b - a), a, 0.12);
+	// 木琴：十六分音符的多利亚音型
+	const pat = [0, 2, 1, 3, 2, 0, 3, 1];
+	for (let k = 0; k < STOP / E16; k++) {
+		const t = k * E16;
+		if (!on(t, LAYER.marimba)) continue;
+		const ch = chordAt(t);
+		addMono(tonal, marimba(mtof(ch.tones[pat[k % 8]] + 12)), t, k % 2 ? 0.12 : 0.17, k % 2 ? 0.3 : -0.3);
+	}
+	// 锯齿琶音：规则四里滤波一点点打开
+	const arp = stereo(LEN);
+	for (let k = 0; k < STOP / E16; k++) {
+		const t = k * E16;
+		if (!on(t, LAYER.arp)) continue;
+		addMono(arp, sawNote(mtof(chordAt(t).tones[k % 4] + 12), E16), t, 0.07, ((k % 4) - 1.5) / 3);
+	}
+	const cutoff = (t: number) => (t < 32 ? 500 + 2600 * Math.max(0, (t - 26) / 6) : 2600);
+	mixInto(tonal, {L: sweepFilter(arp.L, 'lp', cutoff, 0.9), R: sweepFilter(arp.R, 'lp', cutoff, 0.9)});
+	// 主旋律：钟琴 + 软方波
+	const MOTIF: [number, number][] = [
+		[69, 1], [72, 0.5], [74, 0.5], [76, 1], [79, 1],
+		[76, 0.5], [74, 0.5], [72, 1], [74, 1], [69, 1],
+		[69, 1], [72, 0.5], [74, 0.5], [78, 1], [76, 1],
+		[74, 0.5], [72, 0.5], [71, 1], [72, 1], [69, 1],
+	];
+	for (const [a, b] of LAYER.lead) {
+		let t = a;
+		let i = 0;
+		while (t < b - 0.01) {
+			const [n, d] = MOTIF[i % MOTIF.length];
+			addMono(tonal, glock(mtof(n + 12)), t, 0.13, 0.15);
+			addMono(tonal, squareLead(mtof(n), d * BEAT * 0.9), t, 0.08, -0.15);
+			t += d * BEAT;
+			i++;
+		}
+	}
+	// 规则三：每一格刑期长一级，钟琴上行一个音（画面就是乐谱）
+	for (const e of events()) if (e.kind === 'snap' && e.note !== undefined) addMono(tonal, glock(mtof(DORIAN[e.note % DORIAN.length]), 0.6), e.t, 0.11, 0.1);
+
+	// ———— 例外独唱：一条正弦，跟着橙色的位置滑动；回到主矩阵时滑回起点 ————
+	const sine = stereo(LEN);
+	{
+		let ph = 0;
+		const t0 = ORANGE_AT[0];
+		const t1 = T.land;
+		for (let i = Math.floor(t0 * SR); i < Math.floor(t1 * SR); i++) {
+			const t = i / SR;
+			const k = t > T.heroIn ? (ROUNDS - 1) * (1 - (t - T.heroIn) / (t1 - T.heroIn)) : roundAt(t);
+			const f = 330 * Math.pow(2, k / 15) * (1 + 0.004 * Math.sin(TAU * 5 * t));
+			ph += (TAU * f) / SR;
+			const a = Math.min(1, (t - t0) / 0.2) * Math.min(1, (t1 - t) / 0.05);
+			const v = Math.sin(ph) * a * 0.09;
+			sine.L[i] += v;
+			sine.R[i] += v;
+		}
+	}
+	mixInto(tonal, sine);
+
+	// 音乐：一点点空间；拟音：完全干声
+	const music = stereo(LEN);
+	mixInto(music, drums);
+	mixInto(music, tonal);
+	mixInto(music, reverb(tonal, 0.7, 0.4, 0.18));
+	// 第 78 秒强拍：全部硬停
+	const stopI = Math.floor(STOP * SR);
+	for (let i = stopI; i < music.L.length; i++) {
+		const g = Math.max(0, 1 - (i - stopI) / (0.004 * SR));
+		music.L[i] *= g;
+		music.R[i] *= g;
+	}
+
+	const foley = stereo(LEN);
+	const make: Record<Ev['kind'], (e: Ev) => Float32Array> = {
+		clack: () => clack(),
+		tss: (e) => tss(e.dur ?? 0.25),
+		snick: () => snick(),
+		slap: () => slap(),
+		slide: (e) => slide(e.dur ?? 0.25),
+		thunk: () => thunk(),
+		snap: () => snapS(),
+		thump: () => thump(),
+		stamp: () => stamp(),
+	};
+	const LEVEL: Record<Ev['kind'], number> = {clack: 0.5, tss: 0.35, snick: 0.6, slap: 0.55, slide: 0.4, thunk: 0.75, snap: 0.45, thump: 0.9, stamp: 0.8};
+	events().forEach((e, i) => addMono(foley, make[e.kind](e), e.t, (e.gain ?? 1) * LEVEL[e.kind], ((i * 7) % 5) / 10 - 0.2));
+
+	const mix = stereo(LEN);
+	mixInto(mix, music);
+	mixInto(mix, foley);
+	return mix;
+};
+
+const mix = makeMix();
+// 响度：按 −14 LUFS 校准（RMS 目标由 ebur128 实测换算），柔和限幅
+const N = Math.floor(DUR * SR);
+let sum = 0;
+for (let i = 0; i < N; i++) sum += mix.L[i] * mix.L[i] + mix.R[i] * mix.R[i];
+const g = Math.pow(10, -15.3 / 20) / Math.sqrt(sum / (N * 2));
+for (let i = 0; i < mix.L.length; i++) {
+	mix.L[i] = Math.tanh(mix.L[i] * g * 1.2) / 1.2;
+	mix.R[i] = Math.tanh(mix.R[i] * g * 1.2) / 1.2;
+}
+writeWav('public/audio/pd-mix.wav', {L: mix.L.slice(0, N), R: mix.R.slice(0, N)});
+execFileSync('npx', ['remotion', 'ffmpeg', '-y', '-loglevel', 'error', '-i', 'public/audio/pd-mix.wav', '-c:a', 'libmp3lame', '-b:a', '256k', 'public/audio/pd-mix.mp3'], {stdio: 'inherit'});
+rmSync('public/audio/pd-mix.wav');
+console.log(`声音 ${DUR} 秒（配乐 + ${events().length} 个拟音事件）→ public/audio/pd-mix.mp3`);
