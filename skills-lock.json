@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "shader-dev": {
+      "source": "MiniMax-AI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/shader-dev/SKILL.md",
+      "computedHash": "169d2cc594e0962e37f1cc58aef6d2efcf78f3408627bd909383d8724a133cd9"
+    },
+    "vitest": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vitest/SKILL.md",
+      "computedHash": "21af2b13d47d31f3094b61c0f41abc8d6a7eed0df3c9a4029ea671f6978b7209"
+    },
+    "wechat-miniprogram": {
+      "source": "joneqian/claude-skills-suite",
+      "sourceType": "github",
+      "skillPath": "skills/wechat-miniprogram/SKILL.md",
+      "computedHash": "ee89719115df3129040bf2ee6f02b319b8a3b4a9b40b28df91c397a9cf41f5be"
+    }
+  }
+}
