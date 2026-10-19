@@ -5,7 +5,7 @@ description: Project knowledge for the WeChat mini-program film camera — rende
 
 # Film Pipeline (project skill)
 
-Source of truth for the product spec is `CLAUDE.md`. This skill condenses the rendering/pack parts plus the P0 research findings in `docs/research/`. Items marked **[pending C-xx]** depend on a decision listed in `docs/research/conflicts.md`; until decided, implement behind a flag or keep the CLAUDE.md wording.
+Source of truth for the product spec is `CLAUDE.md`. This skill condenses the rendering/pack parts plus the P0 research findings in `docs/research/`. Tags like "(decided: C-xx)" point to the approved item in `docs/research/conflicts.md` (all approved 2026-10-19 and written back into CLAUDE.md v6).
 
 ## 1. Hard platform constraints (verified in P0)
 
@@ -15,12 +15,12 @@ Source of truth for the product spec is `CLAUDE.md`. This skill condenses the re
 - **NPOT textures**: `CLAMP_TO_EDGE`, `LINEAR`, no mipmaps (camera frames ≈480×640, LUT 198×198).
 - **Query limits at startup** (`MAX_TEXTURE_SIZE`, `MAX_RENDERBUFFER_SIZE`, `MAX_VIEWPORT_DIMS`) into a `GLCaps` object; capture size never exceeds them (tile if it must).
 - **Camera frames**: `onCameraFrame` gives RGBA `ArrayBuffer`, size decided by the system (medium is commonly 480×640, not 720p). Allocate with `texImage2D` once, then `texSubImage2D`; never keep the buffer after the callback.
-- **takePhoto**: output size is device-dependent; Android returns JPG, iOS returns PNG. Request `quality: 'original'`, read real size via `wx.getImageInfo`, fall back to `'high'`. **[pending C-04]** for the output long-edge cap.
-- **Export**: `canvasToTempFilePath` is documented for `type="2d"` canvases only. Plan: offscreen WebGL → `readPixels` (flip Y) → 2D canvas `putImageData` → draw date stamp/border on the same 2D canvas → `canvasToTempFilePath({ fileType: 'jpg', quality: 0.92 })`. **[pending C-08]** spike in M2.
-- **Color**: treat everything as sRGB; there is no gamut API. **[pending C-07]**
-- **Storage**: user files + cache ≤ 200MB total; `setStorage` ≤ 1MB/key, 10MB total. **[pending C-14]**
-- **Fonts**: `wx.loadFontFace` accepts https or Data URL only; Canvas 2D needs `scopes: ['native']`. Preferred: draw seven-segment digits with paths. **[pending C-12]**
-- **Vibration**: `wx.vibrateShort` types are `heavy | medium | light` only. **[pending C-10]**
+- **takePhoto**: output size is device-dependent; Android returns JPG, iOS returns PNG. Request `quality: 'original'`, read real size via `wx.getImageInfo`, fall back to `'high'`. Output long edge = min(measured takePhoto long edge, tier cap 2048/3072/4096, GL limits) (decided: C-04).
+- **Export**: `canvasToTempFilePath` is documented for `type="2d"` canvases only. Plan: offscreen WebGL → `readPixels` (flip Y) → 2D canvas `putImageData` → draw date stamp/border on the same 2D canvas → `canvasToTempFilePath({ fileType: 'jpg', quality: 0.92 })`; first task of M2 is a real-device spike of this chain (decided: C-08).
+- **Color**: treat everything as sRGB; there is no gamut API. (decided: C-07)
+- **Storage**: user files + cache ≤ 200MB total; `setStorage` ≤ 1MB/key, 10MB total. (decided: C-14)
+- **Fonts**: `wx.loadFontFace` accepts https or Data URL only; Canvas 2D needs `scopes: ['native']`. Preferred: draw seven-segment digits with paths. (decided: C-12)
+- **Vibration**: `wx.vibrateShort` types are `heavy | medium | light` only. (decided: C-10)
 
 ## 2. Pipeline order
 
@@ -28,7 +28,7 @@ Composite order (CLAUDE.md §4, unchanged): **vignette → 3D LUT → halation �
 
 Implementation detail from research: the halation **highlight mask is extracted from the pre-LUT image** (LUTs often compress highlights, which makes post-LUT thresholds unstable); the blurred halo is still composited after the LUT.
 
-Random elements (light leak, darkroom per-shot variables, capture grain seed) are rolled **at capture time**. Preview shows the base look. **[pending C-23]**
+Random elements (light leak, darkroom per-shot variables, capture grain seed) are rolled **at capture time**. Preview shows the base look. (decided: C-23)
 
 ## 3. Pass plans
 
@@ -43,12 +43,12 @@ Random elements (light leak, darkroom per-shot variables, capture grain seed) ar
 3. Composite pass with a fresh grain seed and the rolled leak (texture, flip, offset, opacity) if `random() < leakProbability`.
 4. `readPixels` → 2D canvas → date stamp + border → JPG → `USER_DATA_PATH` → `ShotStore`.
 
-**Degrade rule [pending C-13]:** decide preview halation from render cost / dropped-frame ratio and the `wx.getDeviceBenchmarkInfo` tier, not from the camera's delivered fps.
+**Degrade rule (decided: C-13):** decide preview halation from render cost / dropped-frame ratio and the `wx.getDeviceBenchmarkInfo` tier, not from the camera's delivered fps.
 
 ## 4. LUT format and lookup
 
 - Build time: `.cube` (33³, R fastest, then G, then B) → raw binary `33*33*33*3 = 107,811` bytes, same ordering, values `round(v*255)`.
-- Runtime (`LutLoader`): unpack into a **198×198 RGBA texture of 6×6 tiles** (33 tiles used). Blue slice `s` goes to tile `(col = s % 6, row = floor(s / 6))`; inside a tile `x = r`, `y = g`. Upload with `UNPACK_FLIP_Y_WEBGL = false`. **[pending C-06]**
+- Runtime (`LutLoader`): unpack into a **198×198 RGBA texture of 6×6 tiles** (33 tiles used). Blue slice `s` goes to tile `(col = s % 6, row = floor(s / 6))`; inside a tile `x = r`, `y = g`. Upload with `UNPACK_FLIP_Y_WEBGL = false`. (decided: C-06)
 
 ```glsl
 // GLSL ES 1.0 — 33^3 LUT packed as 6x6 tiles (198x198).
@@ -98,7 +98,7 @@ gl_FragColor = vec4(c * m * vec3(1.0, 0.35, 0.08), 1.0);      // red-biased
 // composite (after LUT): col = 1.0 - (1.0 - col) * (1.0 - halo * uHalationStrength); // screen
 ```
 
-**Grain** (no static noise texture; needs highp — fallback **[pending C-15]**):
+**Grain** (no static noise texture; needs highp; devices without highp fall back to a per-frame randomly offset/flipped noise texture (decided: C-15)):
 ```glsl
 float hash12(vec2 p) { // Dave Hoskins, hash without sine
   vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -169,8 +169,8 @@ Merge rules (`CameraPack.ts`, unit-tested):
 
 - Free tier (sunny-fun / moonlight / m3-hp5 + daily trial shots) is always real.
 - Rewarded video: page-level singleton (create per page); grant 72h only when `onClose(res).isEnded`; error 1004 (no fill) needs a graceful fallback.
-- **No share-to-unlock or invite rewards** (WeChat inducement rules). **[pending C-01]**
-- Paid unlocks must use mini-program virtual payment on all platforms incl. iOS and need server-side signing. **[pending C-02, C-03]**
+- **No share-to-unlock or invite rewards** (WeChat inducement rules). (decided: C-01)
+- Paid unlocks must use mini-program virtual payment on all platforms incl. iOS and need server-side signing. (decided: C-02, C-03)
 
 ## 8. References
 

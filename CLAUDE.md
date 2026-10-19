@@ -2,7 +2,7 @@
 
 > 使用方法：在项目根目录新建 `CLAUDE.md` 并粘贴本文件全部内容（或直接把本文件作为首条消息发给 Claude Code），然后按里程碑逐段推进。占位符 `{{APP_NAME}}` 请先替换为产品名。
 >
-> **P0 研究反哺**：本文件中与研究结论冲突或需修正的规格，统一登记在 `docs/research/conflicts.md`（标注 `[待拍板]`）。人类拍板后再回写本文件对应条目，未拍板前以本文件原文为准、以 conflicts.md 为风险提示。
+> **P0 研究反哺（已拍板，2026-10-19）**：`docs/research/conflicts.md` 中 C-01～C-23 全部按推荐方案通过，已回写到本文件对应条目（v6）。研究依据见 `docs/research/01`–`05`。
 
 ---
 
@@ -20,7 +20,7 @@
 ## 一、产品定义
 
 - **产品名**：{{APP_NAME}}（占位，避开 NOMO/DAZZ/HUJI 等已注册商标）
-- **平台**：微信小程序（仅此一端），原生框架 + TypeScript，基础库最低版本 ≥ 2.30.0
+- **平台**：微信小程序（仅此一端），原生框架 + TypeScript，基础库最低版本 ≥ 3.0.0（隐私接口需 ≥ 2.32.3；在公众平台「基础库最低版本设置」中配置）
 - **相机阵容哲学**：**每款相机必须有真实原型（具体到机型 + 胶卷型号）**，如"徕卡 M3 + Ilford HP5"。产品显示名用原创中文昵称，真实原型写在 `inspiredBy` 字段并在详情页标注"致敬"——这是 NOMO/Dazz 的通行做法（指示性描述合法且降低沟通成本），但**产品名本身不得含商标词**（Kodak/Fuji/Polaroid/Leica/Contax/Portra/CineStill/Tri-X 等）
 - **目标用户**：18-30 岁，喜欢胶片质感但不想付真胶片成本（¥80-150/卷）的 Gen Z / 年轻女性，主要在小红书/微信生态传播
 - **语言**：代码与注释英文，UI 文案中文
@@ -31,16 +31,18 @@
 |---|---|
 | 框架 | 微信小程序**原生**（不用 Taro/uni-app——相机+WebGL 深度定制时原生可控性最好） |
 | 语言 | TypeScript（`miniprogram-api-typings`），`tsc` 编译到 `dist/`，微信开发者工具指向 `dist/` |
-| 相机 | `<camera>` 组件 + `cameraContext.onCameraFrame()`（CameraFrameListener，frame-size="medium"，约 720p@30fps） |
+| 相机 | `<camera>` 组件 + `cameraContext.onCameraFrame()`（CameraFrameListener，frame-size="medium"，实际约 480×640、由系统决定；M1 对比 medium/large 后定档） |
 | 实时渲染 | 全屏 `canvas type="webgl"`（**WebGL1 / GLSL ES 1.0**——小程序无 WebGL2 稳定保障），帧回调上传纹理渲染 |
-| 出片 | `takePhoto({quality:'high'})` 拿全分辨率原图 → 离屏 WebGL（`wx.createOffscreenCanvas({type:'webgl'})`）同一套 shader 全分辨率重渲染 → `wx.canvasToTempFilePath` → `wx.saveImageToPhotosAlbum` |
-| 字体 | 日期戳数码管字体：OFL 开源七段数码风格字体，`wx.loadFontFace` 加载 |
-| 状态存储 | `wx.setStorageSync`（当前相机、免费额度、解锁状态、设置） |
-| 构建/CI | `miniprogram-ci`（Linux 云端可跑，不依赖 Mac）：`build.sh` = lint + tsc + packNpm（如有）+ preview 生成预览二维码 |
-| 依赖 | 零 npm 依赖（保持构建简单）；单测仅 `vitest` 跑纯逻辑 |
+| 出片 | `takePhoto({quality:'original'})`（`wx.getImageInfo` 校验真实尺寸，失败/过小回退 `'high'`）→ 离屏 WebGL（`wx.createOffscreenCanvas({type:'webgl'})`）同一套 shader 重渲染 → `gl.readPixels` → 2D 画布（同画布绘制日期戳/边框）→ `wx.canvasToTempFilePath`（jpg）→ 小程序内相册；用户主动"存到手机"才 `wx.saveImageToPhotosAlbum` |
+| 日期戳 | Canvas 路径绘制七段数码管（零字体资产、零许可风险）；OFL 字体（`wx.loadFontFace` 仅支持 https/Data URL，需 `scopes:['native']`）仅作备选 |
+| 状态存储 | `wx.setStorageSync`（当前相机、免费额度、解锁状态、设置；单 key ≤ 1MB、总量 ≤ 10MB） |
+| 构建/CI | `miniprogram-ci`（Linux 云端可跑，不依赖 Mac）：`build.sh` = lint + tsc + vitest + 构建复制 + 包体积门禁 + preview 生成预览二维码（缺密钥或网络不可达时明确跳过并说明原因） |
+| 依赖 | 零**运行时** npm 依赖；devDependencies 仅 `typescript`、`miniprogram-api-typings`、`eslint`、`typescript-eslint`、`vitest`、`miniprogram-ci` |
 
 **小程序相机能力边界**（写代码时必须遵守，不要试图突破）：
-- `onCameraFrame` 上限约 30fps，帧数据为 RGBA ArrayBuffer
+- `onCameraFrame` 供帧率与帧尺寸由系统决定（约 ≤ 30fps，medium 多为 480×640），帧数据为 RGBA ArrayBuffer
+- `takePhoto` 输出分辨率由设备决定（社区实测 `high` 可低至 720×1280），Android 返回 JPG、iOS 返回 PNG
+- 本地用户文件 + 缓存文件合计 ≤ 200MB（`USER_DATA_PATH` 共用此配额）
 - 无 RAW、无手动白平衡/对焦点、无光圈模拟；`flash` 属性支持 auto/on/off/torch
 - 保存相册每次弹系统确认（`scope.writePhotosAlbum`，拒绝后引导 `wx.openSetting`）——因此产品交互设计为：拍完先进**小程序内相册**（用户数据目录 `wx.env.USER_DATA_PATH`），用户主动点"存到手机"才写系统相册
 - 页面栈保持浅：相机页、相册页、相机列表页、设置页共 4 页，相机页常驻
@@ -61,7 +63,7 @@
 │   ├── components/
 │   │   ├── viewfinder-skin/      # 参数化取景器皮肤（系列皮肤 + delta 覆写）
 │   │   ├── film-roll-strip/      # 底部胶卷条（换机）
-│   │   └── unlock-modal/         # 解锁弹层（广告/购买双通道）
+│   │   └── unlock-modal/         # 解锁弹层（今日限免 / 激励视频 / 虚拟支付）
 │   ├── styles/
 │   │   └── tokens.wxss            # ★ 设计令牌（第七节 7.1，M0 落地，全局唯一视觉来源）
 │   ├── core/
@@ -85,25 +87,26 @@
 │   │   │   ├── PackStore.ts      # 内置注册 + CDN 按需下载 + 本地缓存（LRU）
 │   │   │   └── AssetCache.ts     # LUT/漏光纹理下载、校验、用户目录管理
 │   │   ├── stamp/
-│   │   │   └── DateStamp.ts      # 2D canvas 日期戳绘制（数码管字体 + 橙色 #FF9E2C）
+│   │   │   └── DateStamp.ts      # 2D canvas 日期戳绘制（路径七段数码管 + 橙色 #FF9E2C）
 │   │   └── storage/
-│   │       ├── ShotStore.ts      # 拍摄记录（元数据 + 文件路径，不存像素）
-│   │       └── Entitlement.ts    # 解锁引擎：ad（激励视频）/ purchase（微信支付）双 Provider
+│   │       ├── ShotStore.ts      # 拍摄记录（元数据 + 文件路径，不存像素；相册配额管理）
+│   │       └── Entitlement.ts    # 解锁引擎：免费层/今日限免 + 激励视频 + 虚拟支付（默认关闭）
 │   └── assets/
 │       ├── luts/                  # 内置免费相机的二进制 LUT（其余走 CDN）
 │       ├── leaks/                 # 通用漏光纹理（CC0，控制在 ~200KB）
-│       └── fonts/                 # 日期戳字体（OFL）
-├── pack-tools/                    # Node 构建期工具（不上小程序）
+│       └── fonts/                 # 备选：OFL 日期戳字体（默认不用，日期戳走路径绘制）
+├── pack-tools/                    # Node 构建期工具（不上小程序，`node --experimental-strip-types` 直接运行）
 │   ├── cube2bin.ts                # .cube → 紧凑二进制 LUT（33³×3 字节 ≈ 107KB/款）
-│   └── gen-placeholder-luts.ts    # 49 款占位 LUT + 49 张统一风格样张批量生成（真实胶卷采样后替换）
+│   ├── luts-spectral/             # spectral_film_lut 离线导出的 .cube（约 26 款有胶卷依据，入库；Python 仅人工离线使用，不进 CI）
+│   └── gen-placeholder-luts.ts    # 其余款程序化占位 LUT + 49 张统一风格样张批量生成（真实胶卷采样后替换）
 └── tests/                         # vitest：pack 继承合并、LUT 解析、随机种子、额度逻辑
 ```
 
 **数据流（预览）**：
-`camera` 组件 → `onCameraFrame`(RGBA ArrayBuffer) → `texImage2D` 上传 → shader 链（LUT → grain+halation 合并 pass）→ WebGL canvas 全屏显示。**同一帧随机种子锁 333ms**（模拟"活"的颗粒），出片时重新随机。
+`camera` 组件 → `onCameraFrame`(RGBA ArrayBuffer) → 首帧 `texImage2D` 分配、之后 `texSubImage2D` 上传 → shader 链（LUT → grain+halation 合并 pass）→ WebGL canvas 全屏显示。**同一帧随机种子锁 333ms**（模拟"活"的颗粒），出片时重新随机。随机元素（漏光、暗房工艺变量、成片颗粒种子）在拍摄瞬间确定：预览展示"底片基调"，随机元素只在成片揭晓——这是"所见即所得"的有意例外（开盲盒）。
 
 **数据流（出片）**：
-`takePhoto` 全分辨率原图 → 离屏 WebGL 全链路（含完整 halation 多 pass）→ 与 2D canvas 合成日期戳/边框 → `canvasToTempFilePath` → 存入用户数据目录 + 记录 ShotStore → UI 播放过片动画。
+`takePhoto` 原图（original → 回退 high）→ 离屏 WebGL 全链路（含完整 halation 多 pass）→ `readPixels` → 2D 画布合成日期戳/边框 → `canvasToTempFilePath`（jpg 0.92）→ 存入用户数据目录 + 记录 ShotStore → UI 播放过片动画。
 
 **数据流（换相机）**：
 选中 pack → 若资源未缓存 → `wx.downloadFile`（带进度）→ 渲染管线按 pack 参数重建 → 皮肤组件按 ui 字段换装。目标换机 < 800ms（已缓存时 < 300ms）。
@@ -112,12 +115,12 @@
 
 **管线顺序固定**：暗角 → 3D LUT → halation → 颗粒 → 漏光 → 边框/日期戳（2D 合成）。
 
-- **3D LUT（WebGL1 无 3D 纹理）**：`.cube`（33³）构建期转二进制；运行时展开为 **4096×64 的 2D LUT 条带纹理**（B 通道分片行排布），shader 内双线性采样。色彩空间按 Display P3 处理，宽色域设备通过 `wx.getWindowInfo()` 检测。
-- **Halation（光晕）**：不是普通辉光。① 亮度阈值（≈0.85）提取高光掩码写入 FBO；② 掩码做 2 级高斯模糊（半径 ~8px 与 ~24px，FBO ping-pong 两 pass，出片按分辨率缩放）；③ 模糊结果**向红色偏移**（R 通道权重显著高于 G/B，参考 CineStill 800T 红晕）；④ screen 混合回原图。**性能降级开关**：预览帧率 < 24fps 时预览自动关 halation（仅出片保留），`FrameFeed` 负责检测。
-- **Grain（颗粒）**：**禁止静态噪点贴图**。GLSL hash 噪声 + 帧种子；颗粒强度与亮度相关（中间调最重，`sin` 形权重）；尺寸随分辨率缩放。pack 参数：`grainSize`, `grainIntensity`, `grainLumaWeight`。
-- **Light leak（漏光）**：CC0 预烘焙 PNG（橙/红/蓝紫），每次拍摄随机选 1 张 + 随机翻转/位置/透明度，`leakProbability` 控制出现概率（**随机性 = 开盲盒惊喜，HUJI 验证过的传播机制**）；screen 混合 + 径向边缘遮罩。
-- **Date stamp**：右下角橙色 LED 数码管风格（`#FF9E2C`，OFL 七段字体，`wx.loadFontFace`），格式 `yyyy/MM/dd` / `HH:mm`，**日期可自定义**（"告诉朋友你 20 年前来过"是 OldRoll 验证过的传播点）。
-- **性能预算**：预览（720p）shader 链 ≤ 20ms/帧（中端安卓机基准，微信开发者工具真机调试验证）；出片（4000px 长边全链）≤ 2.5s；冷启动到取景器 < 2s。
+- **3D LUT（WebGL1 无 3D 纹理）**：`.cube`（33³）构建期转二进制（布局无关）；运行时展开为 **198×198 的 2D 纹理（6×6 瓦片，每瓦片 33×33，B 通道选瓦片、瓦片内 x=R / y=G）**，shader 内瓦片内双线性 + 相邻两片 `mix`（查表代码见 `.claude/skills/film-pipeline`）。**全链路按 sRGB 处理**（小程序无色域检测接口，WebGL canvas 无 colorSpace 配置）。
+- **Halation（光晕）**：不是普通辉光。① 亮度软阈值（≈0.85，`smoothstep(t-0.1, t+0.1, luma)`）提取高光掩码写入低分辨率 FBO——**掩码从 LUT 之前的图像提取**（LUT 常压高光，之后取阈值不稳定），合成仍在 LUT 之后；② 掩码做 2 级高斯模糊（半径 ~8px 与 ~24px，可分离 FBO ping-pong，出片按分辨率缩放）；③ 模糊结果**向红色偏移**（权重约 `(1.0, 0.35, 0.08)`，参考 CineStill 800T 红晕）；④ screen 混合回原图。**性能降级开关**：按渲染耗时与丢帧率（相机供帧数 − 实际渲染数）判断，**不以相机供帧率判断**（供帧率由系统决定）；启动时用 `wx.getDeviceBenchmarkInfo` 档位初始化；超预算时预览自动关 halation（仅出片保留），`FrameFeed` 负责统计。
+- **Grain（颗粒）**：**禁止静态噪点贴图**。无 sin 的 GLSL hash（需片元 highp，启动时检测）+ 帧种子；颗粒强度与亮度相关（中间调最重，`sin` 形权重）；**颗粒尺寸按图像高度归一**，保证预览（~640px）与出片观感一致。无 highp 的设备降级为"每帧随机偏移/翻转的噪声纹理"（非静态，仍是活颗粒）。pack 参数：`grain.size`, `grain.intensity`, `grain.lumaWeight`。
+- **Light leak（漏光）**：CC0 预烘焙 PNG（橙/红/蓝紫）或程序化生成，每次拍摄随机选 1 张 + 随机翻转/位置/透明度，`lightLeak.probability` 控制出现概率（**随机性 = 开盲盒惊喜，HUJI 验证过的传播机制**）；screen 混合 + 径向边缘遮罩。
+- **Date stamp**：右下角橙色 LED 数码管风格（`#FF9E2C`，**Canvas 路径绘制七段数码管**），格式 `yyyy/MM/dd` / `HH:mm`，**日期可自定义**（"告诉朋友你 20 年前来过"是 OldRoll 验证过的传播点）。
+- **性能预算**：预览（相机帧约 480×640）shader 链 ≤ 20ms/帧（中端安卓机基准，真机调试验证）；出片长边 = `min(takePhoto 实测长边, 设备档位上限（低 2048 / 中 3072 / 高 4096）, GL 纹理与渲染缓冲上限)`，全链 ≤ 2.5s（按实测分辨率验收）；冷启动到取景器 < 2s。
 
 ## 五、CameraPack 系统：两层配置 + 资源按需下载
 
@@ -142,8 +145,9 @@
 ```
 
 **资源策略**（主包 2MB 硬限制）：
-- 主包只放：代码 + 3 款免费相机的 LUT + 通用漏光 + 字体 + UI（< 2MB）
-- 其余 46 款的 LUT/纹理/皮肤图放 **CDN**（`AssetCache` 下载到 `USER_DATA_PATH`，SHA256 校验，LRU 上限 50MB），首次选用时下载（带进度条与失败重试）
+- 主包只放：代码 + 3 款免费相机的 LUT + 通用漏光 + UI（< 2MB；`build.sh` 1.8MB 预警、2MB 失败）
+- 其余 46 款的 LUT/纹理/皮肤图放 **CDN**（`AssetCache` 下载到 `USER_DATA_PATH`，SHA256 校验，LRU 上限 50MB、按剩余空间动态收缩至最低 20MB），首次选用时下载（带进度条与失败重试）
+- **本地 200MB 总配额**（用户文件 + 缓存共享）：相册用量达 80% 时相册顶部轻提示"已拍 N 张，存到手机后可清理"
 - CDN 域名必须是 HTTPS 且已备案，在小程序后台配置 downloadFile 合法域名——**这是上线前置项**，写进 README checklist
 - 为运营上新预留：`PackStore` 支持远程 pack 清单（版本号 + 资源 URL），本地无此 id 即按需拉取
 
@@ -248,13 +252,15 @@
 
 上线即 49 款（对标 NOMO 库存规模），之后每两周上新 1 款（CDN 发 pack 即生效，无需发版），第一年冲 75+。上新队列：季节限定（春樱/夏花火/秋枫/冬雪，配 `seasonal` 标签）→ 联名位（`collab` 字段预留）→ 数据反馈加产。
 
-**占位 LUT 策略**：`gen-placeholder-luts.ts` 按 49 组参数矩阵（色温/通道增益/饱和度/对比曲线）程序化生成，保证区分度；真实胶卷采样 LUT 量产前替换（采样流程写入 README：每款原型拍 ColorChecker → 数字化标定 → .cube）。
+**占位 LUT 策略**：有胶卷依据的约 26 款（约 18 款精确 + 8 款近似，对照表见 `docs/research/03-film-emulation-oss.md`）用 spectral_film_lut（MIT，基于胶卷 datasheet 光谱模拟）离线导出 33³ .cube（sRGB in/out）入库；其余款由 `gen-placeholder-luts.ts` 按参数矩阵（色温/通道增益/饱和度/对比曲线）程序化生成，保证区分度；真实胶卷采样 LUT 量产前替换（采样流程写入 README：每款原型拍 ColorChecker → 数字化标定 → .cube）。
 
 ## 七、UI/UX 设计规格（顶流质感，逐条硬性执行）
 
 **总纲**：你看不到 NOMO/Dazz 的截图，因此本节把视觉规格**写死到具体值**——照做，禁止自由发挥偏离。设计哲学对标顶流胶片 App 的共识：**取景器拟物、全局壳极简、动效克制、内容即装饰**。工具感退后，"这是一台相机"的感觉在前。
 
 ### 7.1 设计令牌（`styles/tokens.wxss`，M0 就建立，全部页面只引用令牌）
+
+> WXSS 不支持 `:root`：令牌定义在 `page { … }` 上（CSS 变量可继承进自定义组件）；`--accent` 由页面根节点 `style="--accent: {{accent}}"` 动态注入。
 
 ```css
 /* 色彩 */
@@ -286,7 +292,7 @@
 - **布局**：全屏黑。顶部一行状态（左：胶卷计数 `03/36` **倒计数**、中：当前相机名（英文小字）、右：格式图标），底部胶卷条，左右两侧竖排微型按钮（闪光/翻转）——**一级可点元素总数 ≤ 5**
 - **取景框线**：随 pack 的 `aspectRatio` 实时变化（3:4 / 1:1 / 65:24 宽幅 letterbox），四角 L 形框线（1px，#F5F4F0 at 40%）+ 中心三分线（更淡 15%），切换相机时框线**先淡出再淡入**（200ms）
 - **快门键**：直径 72px 同心圆（外环 3px 描边 + 内圆填充 #F5F4F0），按下：scale(0.92) + `wx.vibrateShort({type:'heavy'})` + 全屏黑场一帧 80ms（模拟反光板）——**触觉+视觉双反馈，缺一不可**
-- **胶卷条（底部换机器）**：高 88px 磨砂条（`backdrop-filter: blur(20px)`，WebView 低版本降级为 `rgba(20,20,22,0.92)` 纯色，用 `wx.getSystemInfoSync` 能力检测封装成工具函数），横向 snap-scroll，卡片 64×64 圆角样张缩略 + 底部 6px 相机名；锁定的相机盖**半透明 + 右上角锁形角标**；当前选中卡上浮 4px + 2px accent 描边
+- **胶卷条（底部换机器）**：高 88px 磨砂条（默认 `rgba(20,20,22,0.72)` + `backdrop-filter: blur(20px)`；低档机或不支持的环境按平台与设备档位启发式切到 `rgba(20,20,22,0.92)` 纯色——`wx.getSystemInfoSync` 已于 2.20.1 废弃，改用 `getDeviceInfo` / `getAppBaseInfo` / `getDeviceBenchmarkInfo`，封装成工具函数），横向 snap-scroll，卡片 64×64 圆角样张缩略 + 底部 6px 相机名；锁定的相机盖**半透明 + 右上角锁形角标**；当前选中卡上浮 4px + 2px accent 描边
 - **换机动作**：胶卷条滚动停止 → 取景器黑场 120ms → 新 pack 参数生效 + 框线/皮肤淡入 → 状态栏相机名打字机式更新——**整个换机像真的装了一卷新胶卷**
 
 ### 7.3 相机库页（`rolls`，第二门面——"逛"的乐趣）
@@ -304,9 +310,9 @@
 
 ### 7.5 分享卡与解锁弹层
 
-- **分享卡**（`onShareAppMessage` 的 imageUrl）：**硬约束 5:4 比例（推荐 500×400），其他比例会被微信裁切**——canvas 按此规格绘制：出片 + 右下角小程序专属角标（相机名 + 产品 logo 水印，5% 透明度——不打扰成片）
+- **分享卡**（`onShareAppMessage` 的 imageUrl）：**硬约束 5:4 比例（推荐 500×400），其他比例会被微信裁切**——canvas 按此规格绘制：出片 + 右下角小程序专属角标（相机名 + 产品 logo 水印，5% 透明度——不打扰成片）。分享路径带 `?pack=<id>`，好友打开直达"同款相机"；**不给分享者任何奖励、界面不出现"分享得 xx"类文案**（诱导分享红线）
 - **留存抓手**：第 3 次拍摄完成后，出片页顶部轻提示条（非弹窗，不打断）"把这台相机放回桌面 · 添加到我的小程序"——小程序没有桌面图标的天然留存弱势，靠这个入口补
-- **解锁弹层**：底部抽屉（非居中弹窗），84px 大样图 + 标题"解锁全部 49 台" + 价值条目（无限拍摄/49 台全开/持续上新）+ 主按钮按当前 Provider 切换文案（冷启动期"邀请 1 位好友 · 两人各得 24h"/变现期"看一段视频 · 解锁 72 小时"）+ 次级"暂用免费 3 台"——**永远给退路，不劫持**
+- **解锁弹层**：底部抽屉（非居中弹窗），84px 大样图 + 标题"解锁全部 49 台" + 价值条目（无限拍摄/49 台全开/持续上新）+ 主按钮按当前阶段切换文案（冷启动期"今日限免：<相机名> · 免费拍"/变现期"看一段视频 · 解锁 72 小时"）+ 次级"暂用免费 3 台"——**永远给退路，不劫持**
 
 ### 7.6 全局质感清单（验收时逐条过）
 
@@ -316,26 +322,26 @@
 4. 文字禁用纯白 #FFF 与纯黑 #000（用暖白/柔黑，屏幕质感立刻"高级"）
 5. 图片一律有 0.5-1px 描边或阴影（裸图贴在深底上 = 廉价感之源）
 6. 骨架屏：样张位用 --bg-1 色块 + 呼吸透明度动画（1.2s 循环），禁止白屏等待
-7. `wx.vibrateShort` 三档语义：快门 heavy / 换机 light / 保存 success（type 参数）
+7. `wx.vibrateShort` 三档语义：快门 heavy / 换机 light / 保存 medium（type 仅支持 heavy / medium / light）
 8. 显影动画（拍立得系）：出片后照片从右下滑入 + 2.5s 亮度对比渐显（CSS filter keyframes：brightness 0.4→1, contrast 0.6→1.05, saturate 0.5→1）——**D 系列的核心仪式感**
 9. 过片动画（常规系）：拍完快门黑场 → 照片缩略从取景器"甩"到底部角落 300ms → 恢复
 
-## 八、变现：解锁引擎（三 Provider，配置切换）
+## 八、变现：解锁引擎（Provider 抽象，配置切换）
 
-小程序的变现约束与 App 不同，方案必须同时兼容冷启动期与变现期、两种主体：
+小程序的变现约束与 App 不同，方案必须同时兼容冷启动期与变现期：
 
-- **免费层（合规底线，任何时候真实可用）**：sunny-fun / moonlight / m3-hp5 三款永久免费（暖调/夜拍/黑白三个流量方向）+ 每天其他相机试拍 3 张。**微信《流量主运营规范》明令禁止"所有运营内容都只能通过观看激励视频广告才能解锁"的广告阻断模式**——免费层就是这个红线的保险，永不可削
-- **Provider A · 激励视频**（流量主开通后启用）：看 1 次激励视频 → 解锁全部相机 **72 小时**（OMO Roll 验证过的模式）；流量主开通条件：累计独立访客 **UV ≥ 500** 且无违规记录；广告位 `wx.createRewardedVideoAd`
-- **Provider B · 微信支付**（需企业/个体工商户主体）：单款买断 ¥6 / 全部解锁 ¥25（**仅 Android 可用**——iOS 小程序虚拟支付受苹果政策限制，**iOS 端必须隐藏支付入口自动落到其他 Provider**，这是合规硬要求）
-- **Provider C · 冷启动期解锁**（**上线初期 UV < 500、无广告库存时的必选项**，避免付费墙死锁）：邀请裂变——分享给好友（新用户）双方各得 24h 解锁，每邀请 1 人 +24h，上不封顶；实现为 `Entitlement` 的第三个 Provider，后台一个配置开关：`coldStart: true` 时启用 C、UV 达标后切回 A。**裂变优先于变现——冷启动阶段要的是传播量，不是广告费**
-- `Entitlement.ts` 抽象统一三个 Provider，`settings` 页提供切换配置；**不做订阅**（小程序订阅触达弱，买断+广告更顺）
-- 不做账号系统、不做云端用户数据
+- **免费层（合规底线，任何时候真实可用）**：sunny-fun / moonlight / m3-hp5 三款永久免费（暖调/夜拍/黑白三个流量方向）+ 每天其他相机试拍 3 张。"不能所有内容都只靠看广告解锁"是流量主合规的稳妥做法——免费层永不可削
+- **冷启动期（`coldStart: true`，UV < 500、无广告库存时）**：① **今日限免**——每天轮换 1 台付费相机免费开放（每日回访理由，零后端）；② 每日试拍额度 3 → 10 张；③ 分享卡"同款相机"深链（见 7.5）。**严禁任何"分享/邀请得解锁或奖励"机制**——微信运营规范把"分享后解锁功能""分享得奖励（含虚拟奖品）""邀请好友助力"列为诱导分享，最重可封禁。裂变靠内容本身
+- **Provider A · 激励视频**（流量主开通后启用，`coldStart: false`）：看 1 次激励视频 → 解锁全部相机 **72 小时**（OMO Roll 验证过的模式）。流量主开通条件：累计独立访客 **UV ≥ 500**（以公众平台后台显示为准）且无违规记录。`wx.createRewardedVideoAd` 在小程序端是**页面内单例**，每个页面各自创建；**仅 `onClose` 的 `isEnded === true` 时发放**；无合适广告（错误码 1004）时兜底"今日试拍 +3"
+- **Provider B · 小程序虚拟支付**（首版关闭，接口就绪）：2026-02-27 微信公告——小程序内虚拟商品（含解锁功能）须使用小程序虚拟支付（`wx.requestVirtualPayment`），**iOS 已开放**，2026-04-01 起全终端强制；普通 `wx.requestPayment` 不得用于虚拟商品。iOS/Android 都显示入口。签名（`paySig` / `signature`）必须服务端计算 → 上线时引入**微信云开发**云函数（天然拿到 openid，免自建登录）签名并记录权益。定价单款 ¥6 / 全部 ¥25（需计入 iOS 约 15%、Android 约 1% 通道费）；个人主体是否可开通以后台为准
+- `Entitlement.ts` 抽象统一免费层/今日限免、Provider A、Provider B，`settings` 页提供切换配置；**不做订阅**（小程序订阅触达弱，买断+广告更顺）
+- 首版不做账号系统与后端；虚拟支付上线时才引入云开发，且只存权益记录
 
 ## 九、合规硬性要求
 
 1. **权限**：`scope.camera`（camera 组件首次自动弹）、`scope.writePhotosAlbum`（保存时弹，拒绝后 `wx.openSetting` 引导）
-2. **隐私协议**：接入 `wx.requirePrivacyAuthorize` 与小程序隐私保护指引（2023.9 后强制）；**不采集任何数据**——相机帧不出设备、无网络上报，作为口碑卖点写进详情页
-3. **域名**：downloadFile 合法域名（CDN，HTTPS+已备案）；无其他网络请求
+2. **隐私协议**：接入 `wx.onNeedPrivacyAuthorization` / `wx.requirePrivacyAuthorize`（基础库 ≥ 2.32.3）与小程序隐私保护指引（2023.9 后强制）；隐私指引中声明**摄像头**与**相册（仅写入）**。我方代码不上报任何数据，对外表述为"**照片和取景画面只在你的手机里处理，不上传**"（广告组件由微信提供，不作"不采集任何数据"的绝对承诺），作为口碑卖点写进详情页
+3. **域名**：downloadFile 合法域名（CDN，HTTPS+已备案）；首版无其他网络请求（虚拟支付上线时增加云开发）
 4. **商标**：产品名与相机名均为原创；`inspiredBy` 中的商标词属指示性使用，详情页脚注"上述商标归各自权利人所有，本产品与其无关联"
 5. **类目**：工具-图片（无需特殊资质）；**ICP 备案**：小程序 2023.9 起新注册需备案（微信内一体化提交，比 App 双端备案简单得多，周期约 1-2 周）——写进上线 checklist，**不阻塞开发**
 6. 主体未定不影响开发：变现层用 Provider 抽象隔离，先按 Provider A 实现
@@ -346,9 +352,12 @@
 - **shader 逻辑对齐测试**：grain/halation 的 GLSL 与 TypeScript 参考实现（软光栅小图）输出统计特征（均值/方差/直方图区间）对比，防止改 shader 引入回归
 - 性能验收：微信开发者工具真机调试（iOS + 中端安卓各一台）预览不掉帧（< 24fps 自动降级生效）；出片 ≤ 2.5s；内存：不持有帧 ArrayBuffer 过夜（回调内用完即释放）
 - 代码规范：ESLint（禁 any、禁 console.log 上线构建）、文件头注释说明职责；提交 conventional commits
-- `build.sh` 一条命令：lint + tsc + vitest + miniprogram-ci preview 出预览二维码
+- `build.sh` 一条命令：lint + tsc + vitest + 构建复制 + 包体积门禁 + miniprogram-ci preview 出预览二维码。preview 段读取环境变量中的 AppID 与上传密钥（密钥绝不入库），缺密钥或网络不可达时**明确跳过并说明原因**，不得假装成功
+- 云端环境默认只跑到包体积门禁（本云端网络策略拦截微信域名）；preview 由人类本地执行 `./build.sh preview`，或在云环境放行微信域名并关闭公众平台上传 IP 白名单后于云端执行
 
 ## 十一、P0 预研阶段（先装技能、先学习，再开发——完成前禁止写业务代码）
+
+> **状态：已完成（2026-10-19）**。产出：`docs/research/`（5 篇笔记 + skills-notes + conflicts）、`.claude/skills/{wechat-miniprogram,shader-dev,vitest,film-pipeline}`。以下保留原始要求作为记录。
 
 ### 11.1 安装技能（Claude Code skills/plugin 机制）
 
@@ -386,22 +395,22 @@
 ## 十二、开发里程碑（严格串行，每个完成后停下汇报）
 
 **M0 · 骨架 + 设计系统**
-原生 TS 项目、tsc 构建流水线、`build.sh` 全链路跑通、miniprogram-ci preview 出二维码（appkey 用占位说明）、**`styles/tokens.wxss` 设计令牌全量落地**（7.1 节逐条）。验收：扫二维码在真机打开空白页 + 令牌文件与规范一致。
+原生 TS 项目、tsc 构建流水线、`build.sh` 全链路跑通、miniprogram-ci preview 出二维码（appkey 用占位说明；云端网络被拦截时由人类本地执行 `./build.sh preview`）、**`styles/tokens.wxss` 设计令牌全量落地**（7.1 节逐条）。验收：扫二维码在真机打开空白页 + 令牌文件与规范一致（vitest 自动校验）。
 
 **M1 · 相机 + 裸渲染**
 camera 组件 + FrameFeed + WebGL canvas 直出原始帧（无滤镜）+ 前后摄/闪光切换 + 权限流程。验收：真机 30fps 稳定预览，工具帧率面板数据记录在案。
 
 **M2 · 渲染管线（核心）**
-LutLoader（2D 打包）+ 全部 shader + Pipeline 编排 + takePhoto → 离屏全分辨率出片 → 保存链路。验收：sunny-fun 效果预览=出片、性能达标、降级开关工作。
+首个任务：出片导出链真机 spike（离屏 WebGL → readPixels → 2D 画布 → canvasToTempFilePath）。然后 LutLoader（6×6 瓦片打包）+ 全部 shader + Pipeline 编排 + takePhoto → 离屏出片 → 保存链路。验收：sunny-fun 效果预览=出片（随机元素除外）、性能达标、降级开关工作。
 
 **M3 · Pack 系统 + 首发三大系列（A/B/C 20 款）+ 取景器皮肤**
 SeriesProfile + delta 继承、AssetCache（CDN 下载/校验/LRU）、换机交互（胶卷条，按 7.2 节动效规格）、取景器皮肤系统（7.2 节全部细节：框线/计数/快门反馈）、20 款全部可拍。验收：换机达标、新增 pack 零代码改动、断网时已缓存相机可用、**取景器页对照 7.2/7.6 清单逐条过**。
 
 **M4 · 其余五大系列（D-H 29 款）+ 特殊机制**
-即时成像显影动画（7.6-8 规格曲线）、暗房随机工艺、supersampler 四连拍（连续 4 帧拼接）、pen-half 半格两拍一张、CCD 屏幕补光（全屏白 flash）、日期戳自定义。验收：49 款全部可拍，特殊机制逐项对照本文件验收。
+即时成像显影动画（7.6-8 规格曲线）、暗房随机工艺、supersampler 四连拍（连续 4 个 onCameraFrame 帧拼 2×2，不用 4 次 takePhoto）、pen-half 半格两拍一张、CCD 屏幕补光（全屏白 flash + 屏幕亮度拉满）、日期戳自定义。验收：49 款全部可拍，特殊机制逐项对照本文件验收。
 
 **M5 · 相机库 + 相册 + 解锁 + 分享**
-相机库页 + 详情页（7.3 节规格，含 pack-tools 批量生成 49 张统一风格样张）、Gallery（7.4 节规格含空状态）、Entitlement（Provider A 激励视频完整流程 + Provider B 代码就绪但默认关闭）、解锁抽屉（7.5）、onShareAppMessage 分享卡。验收：广告解锁 72h 全流程在真机走通、相机库页对照 7.3 清单逐条过。
+相机库页 + 详情页（7.3 节规格，含 pack-tools 批量生成 49 张统一风格样张）、Gallery（7.4 节规格含空状态与配额提示）、Entitlement（免费层/今日限免 + Provider A 激励视频完整流程 + 虚拟支付 Provider 接口就绪但默认关闭）、解锁抽屉（7.5）、onShareAppMessage 分享卡（同款相机深链）。验收：广告解锁 72h 全流程在真机走通、相机库页对照 7.3 清单逐条过。
 
 **M6 · 打磨与提审准备**
 全局质感清单（7.6 节 9 条）逐条 QA、过片动画、启动屏、图标、README（架构图、CDN 域名配置、胶卷采样标定流程、上架 checklist：类目/备案/隐私声明/流量主开通条件）。
@@ -417,7 +426,7 @@ SeriesProfile + delta 继承、AssetCache（CDN 下载/校验/LRU）、换机交
 6. 不确定的产品决策：给出建议 + 理由，标注 `[待拍板]`，继续推进不空等
 7. 小步提交（单次 diff ≤ ~500 行），conventional commits
 
-现在开始 P0（第十一节）：先装技能、做研究、写笔记，输出研究摘要与技能清单，等我确认后进 M0。
+P0 已完成并拍板（2026-10-19），从 M0 起按里程碑串行推进。
 
 ## 十四、人机分工与启动前置（此节写给人类协作者，Claude Code 读后明确边界）
 
@@ -436,10 +445,11 @@ Claude Code 每个里程碑交付的"需真机确认项清单"必须可直接执
 
 ### 14.2 人类需要提前准备的材料（不阻塞开发，但阻塞上线）
 
-1. 微信小程序 AppID（注册主体：个人可上线、可开流量主但无支付；企业/个体工商户才有 Provider B）
+1. 微信小程序 AppID（个人主体可上线、可开流量主；据 2026 年资料个人主体也可开通小程序虚拟支付（有月限额），以后台为准）；公众平台「基础库最低版本」设为 3.0.0
 2. 一个 HTTPS 已备案域名（CDN 用；静态资源托管在对象存储即可，月成本几元钱）
 3. 真机两台：iPhone + 中端安卓（性能验收基准机）
 4. 微信开发者工具（人类侧安装，用于最终提审上传；日常预览用 miniprogram-ci 二维码即可）
+5. 代码上传密钥（公众平台「开发 → 开发设置」下载）；若要在云端出预览码：云环境放行 `servicewechat.com` 等微信域名，并关闭上传 IP 白名单（云端出口 IP 不固定）
 
 ### 14.3 启动方式
 
@@ -447,4 +457,4 @@ Claude Code 每个里程碑交付的"需真机确认项清单"必须可直接执
 
 ---
 
-本提示词由市场调研支撑（见《调研报告.md》），版本 2026-10-19 v5。
+本提示词由市场调研支撑（见《调研报告.md》），版本 2026-10-19 v6（v5 + P0 研究结论回写）。
