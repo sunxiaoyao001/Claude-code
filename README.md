@@ -2,7 +2,34 @@
 
 ## {{APP_NAME}} · 胶片相机微信小程序
 
-项目规格见 [`CLAUDE.md`](CLAUDE.md)（产品名 `{{APP_NAME}}` 待定）。当前阶段：**P0 预研完成，等待拍板后进入 M0**。
+项目规格见 [`CLAUDE.md`](CLAUDE.md)（产品名 `{{APP_NAME}}` 待定）。当前阶段：**M0（骨架 + 设计系统）完成，等待真机确认后进入 M1**。
+
+### 开发与构建
+
+```bash
+npm ci                 # Node >= 22.12
+./build.sh             # lint → typecheck → test → build(dist/) → 包体积门禁 → preview（无密钥/网络不通时自动跳过并说明原因）
+./build.sh check       # 只跑到包体积门禁
+./build.sh preview     # 本地出预览码：缺密钥或网络失败即报错
+```
+
+| 环境变量 | 说明 |
+| --- | --- |
+| `MP_APPID` | 真实 AppID（`project.config.json` 里是开发者工具游客模式用的 `touristappid`） |
+| `MP_PRIVATE_KEY_PATH` / `MP_PRIVATE_KEY` | 代码上传密钥的文件路径 / 内容（公众平台「开发 → 开发设置」下载；**绝不入库**，`.gitignore` 已屏蔽 `*.key`） |
+
+- 目录：`miniprogram/` 是 TypeScript 源码，`dist/` 是构建产物（微信开发者工具与 miniprogram-ci 都指向它，`project.config.json` 的 `miniprogramRoot`）。
+- 预览码输出到 `.preview/qrcode.jpg`；只有该 AppID 的开发者/体验成员能扫码打开。
+- 设计令牌：`miniprogram/styles/tokens.wxss`；`tests/tokens.test.ts` 逐条校验 §7.1，并禁止页面 wxss 出现裸色值/px。
+
+### M0 真机确认清单（人类执行）
+
+1. 准备：拿到 AppID 与代码上传密钥；公众平台「开发设置」中关闭上传 IP 白名单（或加入本机出口 IP）；「基础库最低版本」设为 3.0.0。
+2. 本地执行：`MP_APPID=wx... MP_PRIVATE_KEY_PATH=./private.wx....key ./build.sh preview`。
+   - 预期：终端最后打印 `preview: QR code written to .../.preview/qrcode.jpg`，并列出 `__APP__` 包体积（应 < 10KB）。
+3. 用开发者/体验成员的微信扫 `.preview/qrcode.jpg`。
+   - 预期：全屏柔黑底（#0D0D0F，不是纯黑）、无系统导航栏，屏幕中央两行灰色小字 `FILM CAMERA · M0` 与 `SDK x.y.z`（大写、加字距，后者即基础库版本，应 ≥ 3.0.0）；页面不能上下拖动露白边。
+4. 不符合时请回传：终端完整输出、手机截图（含 SDK 那行）、机型 + 微信版本（我 → 设置 → 关于微信）。
 
 ### P0 研究产出（`docs/research/`）
 

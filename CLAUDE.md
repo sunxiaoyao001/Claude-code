@@ -37,7 +37,7 @@
 | 日期戳 | Canvas 路径绘制七段数码管（零字体资产、零许可风险）；OFL 字体（`wx.loadFontFace` 仅支持 https/Data URL，需 `scopes:['native']`）仅作备选 |
 | 状态存储 | `wx.setStorageSync`（当前相机、免费额度、解锁状态、设置；单 key ≤ 1MB、总量 ≤ 10MB） |
 | 构建/CI | `miniprogram-ci`（Linux 云端可跑，不依赖 Mac）：`build.sh` = lint + tsc + vitest + 构建复制 + 包体积门禁 + preview 生成预览二维码（缺密钥或网络不可达时明确跳过并说明原因） |
-| 依赖 | 零**运行时** npm 依赖；devDependencies 仅 `typescript`、`miniprogram-api-typings`、`eslint`、`typescript-eslint`、`vitest`、`miniprogram-ci` |
+| 依赖 | 零**运行时** npm 依赖；devDependencies 仅 `typescript`（锁 6.0.x：typescript-eslint 尚不支持 TS 7）、`miniprogram-api-typings`、`eslint`、`typescript-eslint`、`vitest`、`miniprogram-ci`、`@types/node`（仅类型，供测试） |
 
 **小程序相机能力边界**（写代码时必须遵守，不要试图突破）：
 - `onCameraFrame` 供帧率与帧尺寸由系统决定（约 ≤ 30fps，medium 多为 480×640），帧数据为 RGBA ArrayBuffer
