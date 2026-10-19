@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-command pipeline: lint -> typecheck -> test -> build -> size gate -> preview QR code.
+# One-command pipeline: lint -> typecheck -> test -> GPU shader check -> build -> size gate -> preview QR code.
 #
 #   ./build.sh           full pipeline; preview is skipped (with the reason) when credentials or
 #                        WeChat's servers are unavailable, e.g. in the cloud sandbox
@@ -31,6 +31,9 @@ npx tsc -p tsconfig.tools.json
 
 step "test"
 npx vitest run
+
+step "gl-check"
+node scripts/gl-check.mjs
 
 step "build"
 node scripts/build.mjs

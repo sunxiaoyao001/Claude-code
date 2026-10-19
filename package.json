@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.tools.json",
     "test": "vitest run",
+    "gl-check": "node scripts/gl-check.mjs",
     "build": "node scripts/build.mjs",
     "size": "node scripts/size-check.mjs",
     "preview": "node scripts/preview.mjs"
