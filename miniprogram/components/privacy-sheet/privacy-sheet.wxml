@@ -1,0 +1,16 @@
+<view wx:if="{{visible}}" class="scrim" catchtouchmove="noop">
+  <view class="sheet">
+    <text class="eyebrow latin-caps">Privacy</text>
+    <text class="title">开拍之前</text>
+    <text class="body">照片和取景画面只在你的手机里处理，不上传。使用相机前，请阅读并同意</text>
+    <text class="link" bindtap="onOpenContract">{{contractName || '《隐私保护指引》'}}</text>
+    <button
+      id="privacy-agree"
+      class="primary"
+      hover-class="primary-pressed"
+      open-type="agreePrivacyAuthorization"
+      bindagreeprivacyauthorization="onAgree"
+    >同意并继续</button>
+    <view class="secondary" hover-class="secondary-pressed" bindtap="onDisagree">暂不同意</view>
+  </view>
+</view>

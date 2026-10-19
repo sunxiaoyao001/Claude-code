@@ -1,0 +1,85 @@
+.scrim {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background-color: var(--scrim);
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-3) var(--sp-3) calc(var(--sp-3) + env(safe-area-inset-bottom));
+  background-color: var(--bg-1);
+  border-top: var(--hairline) solid var(--line);
+  border-radius: var(--radius-l) var(--radius-l) 0 0;
+}
+
+.eyebrow {
+  font-size: var(--fs-caption);
+  color: var(--text-1);
+}
+
+.title {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-title);
+  color: var(--text-0);
+}
+
+.body {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-1);
+}
+
+.link {
+  margin-top: var(--sp-0);
+  font-size: var(--fs-body);
+  color: var(--accent);
+}
+
+/* Doubled class beats the built-in `button:not([size=mini])` width/margins. */
+.sheet .primary {
+  width: 100%;
+  height: var(--cta-height);
+  margin: var(--sp-3) 0 0;
+  padding: 0;
+  border-radius: var(--radius-m);
+  background-color: var(--accent);
+  color: var(--bg-0);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: var(--cta-height);
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.sheet .primary::after {
+  border: none;
+}
+
+.sheet .primary-pressed {
+  transform: scale(var(--press-scale));
+}
+
+.secondary {
+  margin-top: var(--sp-1);
+  height: var(--cta-height);
+  border-radius: var(--radius-m);
+  font-size: var(--fs-body);
+  line-height: var(--cta-height);
+  text-align: center;
+  color: var(--text-1);
+  background-color: var(--bg-2);
+  transition: background-color var(--dur-micro) var(--ease-out), transform var(--dur-micro) var(--ease-out);
+}
+
+.secondary-pressed {
+  background-color: var(--line);
+  transform: scale(var(--press-scale));
+}
