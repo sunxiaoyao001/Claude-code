@@ -32,6 +32,8 @@
 
 ## M1 真机测试矩阵（人类执行，结果回填本文件）
 
+> 已在小程序内实现为测试面板：开发版/体验版长按顶部「RAW PREVIEW」打开，操作步骤见 README「M1 真机确认清单」。
+
 | 项 | 操作 | 记录 |
 |---|---|---|
 | frame-size | small / medium / large 各开 10s | `frame.width×height`、每秒回调次数 |

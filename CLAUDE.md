@@ -74,13 +74,13 @@
 │   │   │   ├── GLRenderer.ts     # WebGL1 封装：program/texture/FBO 管理
 │   │   │   ├── LutLoader.ts      # 二进制 LUT → 2D 打包纹理（WebGL1 无 3D 纹理！）
 │   │   │   ├── Pipeline.ts       # 管线编排（预览低配 / 出片全配）
-│   │   │   └── shaders/          # .frag 文件 + 运行时编译缓存
-│   │   │       ├── lut.frag
-│   │   │       ├── halation.frag # 阈值提取 + 双半径模糊（FBO ping-pong）+ 红移 screen
-│   │   │       ├── grain.frag    # hash 噪声 + 亮度加权
-│   │   │       ├── leak.frag     # 漏光纹理 screen 混合 + 边缘径向遮罩
-│   │   │       ├── vignette.frag
-│   │   │       └── composite.frag # 合并 pass（性能优化）
+│   │   │   └── shaders/          # GLSL 以 .ts 字符串模块存放（.frag/.glsl 不在代码包上传白名单；文件名不带额外点号）+ 运行时编译缓存
+│   │   │       ├── lutFrag.ts
+│   │   │       ├── halationFrag.ts # 阈值提取 + 双半径模糊（FBO ping-pong）+ 红移 screen
+│   │   │       ├── grainFrag.ts  # hash 噪声 + 亮度加权
+│   │   │       ├── leakFrag.ts   # 漏光纹理 screen 混合 + 边缘径向遮罩
+│   │   │       ├── vignetteFrag.ts
+│   │   │       └── compositeFrag.ts # 合并 pass（性能优化）
 │   │   ├── pack/
 │   │   │   ├── SeriesProfile.ts # 八份系列基础档案（常量）
 │   │   │   ├── CameraPack.ts     # pack 模型 + series delta 继承合并器
