@@ -1,23 +1,67 @@
-// 点题、生活里的三个例子、重复博弈的一整面墙、结尾
+// 点题、结论、生活里的三个例子、重复博弈的一整面墙、结尾
 import {BEAT, E16, E8, ORANGE_AT, ORANGE_PAUSE, OPP, ROUNDS, T, TFT} from '../score';
 import {C, collapse, FAMILY, fx, knifeLine, lerp, lin, RIGHT, snap, steps, track} from '../sys';
-import {SLAB} from './Matrix';
+import {COUPLE_H, SLAB} from './Matrix';
+import {Clock, Figure, hipOnGround, hipOnSeat, mixPose, Monitor, POSES, Rise, Rocket, Table, Tag} from './Picto';
 import {Reveal} from './Type';
 
-// ———————————————— 点题 ————————————————
+// ———————————————— 点题：灯光铺满纸面的那一拍 ————————————————
 export const TitleCard: React.FC<{t: number}> = ({t}) => {
-	if (t < T.title - E8 || t > T.cases[0]) return null;
-	const q = snap(t, T.cases[0] - E8, E8);
+	if (t < T.title - E8 || t > T.r3) return null;
+	const q = snap(t, T.r3 - E8, E8);
 	const p = (dt: number) => snap(t, T.title + dt, E16);
+	const bridge = (dt: number) => snap(t, T.stripIn + dt, E16);
 	return (
 		<g>
-			<Reveal text="这就是" x={fx(0)} y={300} size={34} weight={500} color={C.mute} p={p(E16)} q={q} />
+			<Reveal text="这就是博弈论里最有名的难题：" x={fx(0)} y={300} size={34} weight={500} color={C.mute} p={p(E16)} q={q} />
 			<Reveal text="囚徒" x={fx(0)} y={520} size={196} weight={800} color={C.ink} p={p(2 * E16)} q={q} optical />
 			<Reveal text="困境" x={fx(0) + 2 * 196 * 0.98 - 4} y={520} size={196} weight={800} color={C.ink} p={p(3 * E16)} q={q} />
 			<Reveal text="The Prisoner's Dilemma" x={fx(0)} y={584} size={30} weight={600} color={C.ink} p={p(BEAT + E16)} q={q} />
-			<Reveal text="个人理性" x={fx(0)} y={662} size={52} weight={800} color={C.ink} p={p(1 + E16)} q={q} optical />
-			<Reveal text="≠" x={fx(0) + 4 * 52 + 14} y={662} size={52} weight={800} color={C.ink} p={p(1 + 2 * E16)} q={q} />
-			<Reveal text="集体理性。" x={fx(0) + 4 * 52 + 70} y={662} size={52} weight={800} color={C.ink} p={p(1 + 3 * E16)} q={q} />
+			<Reveal text="先把条件，" x={fx(0)} y={662} size={52} weight={800} color={C.ink} p={bridge(0)} q={q} optical />
+			<Reveal text="画成一张表。" x={fx(0) + 5 * 52} y={662} size={52} weight={800} color={C.ink} p={bridge(E16)} q={q} />
+		</g>
+	);
+};
+
+// ———————————————— 结论：一个用小人写成的等式 ————————————————
+export const InsightCard: React.FC<{t: number}> = ({t}) => {
+	if (t < T.insight - E8 || t > T.cases[0]) return null;
+	const q = snap(t, T.cases[0] - E8, E8);
+	const p = (dt: number) => snap(t, T.insight + dt, E16);
+	const h = 124;
+	const rows = [
+		{g: 420, label: '各判 5 年', tin: T.insight + 0.5},
+		{g: 652, label: '各判 1 年', tin: T.insight + 1.0},
+	];
+	return (
+		<g>
+			<Reveal text="所以，" x={fx(0)} y={300} size={34} weight={500} color={C.mute} p={p(E16)} q={q} />
+			<Reveal text="个人理性" x={fx(0)} y={420} size={96} weight={800} color={C.ink} p={p(2 * E16)} q={q} optical />
+			<Reveal text="≠" x={fx(0)} y={536} size={96} weight={800} color={C.ink} p={p(3 * E16)} q={q} />
+			<Reveal text="集体理性。" x={fx(0)} y={652} size={96} weight={800} color={C.ink} p={p(4 * E16)} q={q} optical />
+			{rows.map((r, i) => {
+				const pin = snap(t, r.tin, E8);
+				const cx = 760;
+				return (
+					<g key={i}>
+						<Rise x={560} y={r.g - h - 30} w={RIGHT - 560} h={h + 30} p={pin} q={q}>
+							{i === 0 ? (
+								<>
+									<Figure x={cx - 92} y={hipOnGround(r.g, h)} h={h} pose="point" color={C.ink} />
+									<Figure x={cx + 92} y={hipOnGround(r.g, h)} h={h} dir={-1} pose="point" color={C.b} />
+								</>
+							) : (
+								<>
+									<Figure x={cx - 0.33 * h} y={hipOnGround(r.g, h)} h={h} pose="shake" color={C.ink} />
+									<Figure x={cx + 0.33 * h} y={hipOnGround(r.g, h)} h={h} dir={-1} pose="shake" color={C.b} />
+								</>
+							)}
+						</Rise>
+						<rect x={600} y={r.g} width={(RIGHT - 600) * lin(t, r.tin - E8, r.tin) * (1 - q)} height={1} fill={C.ink} />
+						<Reveal text={r.label} x={600} y={r.g + 30} size={22} weight={600} color={C.mute} p={snap(t, r.tin + E16, E16)} q={q} />
+					</g>
+				);
+			})}
 		</g>
 	);
 };
@@ -49,6 +93,48 @@ const MiniMatrix: React.FC<{x: number; y: number; t: number; t0: number}> = ({x,
 	);
 };
 
+// 每个例子一幅象形图（右侧 200 宽）
+const CasePicto: React.FC<{k: number; y: number; t: number}> = ({k, y, t}) => {
+	const g = y + 300;
+	const h = 140;
+	if (k === 0)
+		// 价格战：两家店各举一块价签
+		return (
+			<>
+				<Figure x={762} y={hipOnGround(g, h)} h={h} pose="holdUp" color={C.ink} />
+				<Tag x={742} y={g - h * 1.05 - 46} s={44} color={C.ink} paper={C.paper} />
+				<Figure x={882} y={hipOnGround(g, h)} h={h} dir={-1} pose="holdUp" color={C.b} />
+				<Tag x={846} y={g - h * 1.05 - 46} s={44} color={C.b} paper={C.paper} />
+			</>
+		);
+	if (k === 1)
+		// 内卷：深夜十一点，两个人都还在电脑前
+		return (
+			<>
+				<Clock x={822} y={g - 196} r={20} color={C.ink} hour={11} />
+				<Table x={772} y={g - 70} w={100} legH={70} color={C.ink} t={8} />
+				<Monitor x={772} y={g - 70 - 44} w={46} color={C.ink} paper={C.paper} />
+				<Monitor x={826} y={g - 70 - 44} w={46} color={C.b} paper={C.paper} dir={-1} />
+				<Figure x={742} y={hipOnSeat(g - 46, 118)} h={118} pose="typing" color={C.ink} />
+				<Figure x={902} y={hipOnSeat(g - 46, 118)} h={118} dir={-1} pose="typing" color={C.b} />
+			</>
+		);
+	// 军备竞赛：各自堆起导弹
+	const n = (lag: number) => Math.min(3, Math.max(0, Math.floor((t - T.cases[2] - 0.25 - lag) / E8) + 1));
+	return (
+		<>
+			{Array.from({length: n(0)}, (_, i) => (
+				<Rocket key={`a${i}`} x={772 + i * 26} ground={g} s={56} color={C.ink} />
+			))}
+			{Array.from({length: n(E16)}, (_, i) => (
+				<Rocket key={`b${i}`} x={872 - i * 26} ground={g} s={56} color={C.b} />
+			))}
+			<Figure x={728} y={hipOnGround(g, h)} h={h} pose="stand" color={C.ink} />
+			<Figure x={916} y={hipOnGround(g, h)} h={h} dir={-1} pose="stand" color={C.b} />
+		</>
+	);
+};
+
 export const Cases: React.FC<{t: number}> = ({t}) => {
 	if (t < T.cases[0] - E8 || t >= T.wallIn) return null;
 	// 页面从下往上擦过来，盖住之前的一切
@@ -72,6 +158,9 @@ export const Cases: React.FC<{t: number}> = ({t}) => {
 						<rect x={tx} y={y + 304} width={(RIGHT - 24 - tx) * snap(t, t0 + BEAT, E8)} height={1} fill={C.ink} />
 						<Reveal text={cs.note} x={tx} y={y + 334} size={19} weight={500} color={C.mute} p={snap(t, t0 + BEAT + E16, E16)} />
 						<Reveal text={`例 0${k + 1}`} x={tx} y={y + 52} size={19} weight={600} color={C.mute} p={snap(t, t0 + E16, E16)} />
+						<Rise x={700} y={y + 40} w={236} h={262} p={snap(t, t0 + 0.25, E8)}>
+							<CasePicto k={k} y={y} t={t} />
+						</Rise>
 					</g>
 				);
 			})}
@@ -189,10 +278,28 @@ export const EndingOrange: React.FC<{t: number}> = ({t}) => {
 	return (
 		<g>
 			<rect x={x} y={y} width={w} height={h} fill={C.signal} />
+			{/* 落回网格：读数压印在橙色里（墨字叠印在信号色上），旁边那格还在 */}
 			{onGrid && t < T.land + 1.5 ? (
-				<Reveal text="row 0.00 · on grid" x={SLAB.x + SLAB.w + 18} y={SLAB.y + 20} size={20} weight={600} color={C.signal} p={snap(t, T.land + E16, E16)} q={snap(t, T.land + 1.5, E8)} />
+				<Reveal text="row 0.00 · on grid" x={SLAB.x + 12} y={SLAB.y + 18} size={16} weight={700} color={C.ink} p={snap(t, T.land + E16, E16)} q={snap(t, T.land + 1.5, E8)} />
 			) : null}
+			{t >= T.coupleIn - E8 ? <Couple t={t} /> : null}
 			{t >= T.stop - E16 ? <Reveal text="合作" x={SLAB.x + SLAB.w + 18} y={SLAB.y + 22} size={28} weight={800} color={C.signal} p={snap(t, T.stop, E16)} /> : null}
 		</g>
+	);
+};
+
+// 橙色木板上的两个人：落定后站上去（捂着嘴），最后放大、走近、握手
+const Couple: React.FC<{t: number}> = ({t}) => {
+	const g = snap(t, T.grow, BEAT / 2);
+	const h = lerp(COUPLE_H, 170, g);
+	const cx = SLAB.x + SLAB.w / 2;
+	const gap = lerp(70, 0.33 * 170, g);
+	const sh = snap(t, T.shake, E8);
+	const pose = mixPose(POSES.silent, POSES.shake, sh);
+	return (
+		<Rise x={SLAB.x - 40} y={SLAB.y - 190} w={SLAB.w + 80} h={190} p={snap(t, T.coupleIn, E8)}>
+			<Figure x={cx - gap} y={hipOnGround(SLAB.y, h)} h={h} pose={pose} color={C.ink} />
+			<Figure x={cx + gap} y={hipOnGround(SLAB.y, h)} h={h} dir={-1} pose={pose} color={C.b} />
+		</Rise>
 	);
 };

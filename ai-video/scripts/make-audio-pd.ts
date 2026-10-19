@@ -1,6 +1,7 @@
 // 《囚徒困境》声音：node scripts/make-audio-pd.ts → public/audio/pd-mix.mp3
 // 画面和声音共用 src/pd/score.ts：每一次落位都是一声拟音，每一条规则加一件乐器。
 // 拟音是印刷车间的材料声，干、近、不加混响：铅字、裁纸刀、纸张、数字落位、毛毡、橡皮章。
+// 序幕里，脚步是纸拍，探照灯追一拍是一次纸滑，被罩住是盖章，开灯是木块。
 import {execFileSync} from 'node:child_process';
 import {rmSync} from 'node:fs';
 import {BAR, BEAT, DUR, E16, events, ORANGE_AT, ORANGE_PAUSE, ROUNDS, T, type Ev} from '../src/pd/score.ts';
@@ -211,36 +212,50 @@ const DORIAN = [69, 71, 72, 74, 76, 78, 79, 81, 83, 84, 86, 88];
 type Seg = [number, number]; // [开始, 结束)
 const on = (t: number, segs: Seg[]) => segs.some(([a, b]) => t >= a && t < b);
 const STOP = T.stop;
-// 0–4 只有镲和滴答；4 秒（拉远落定）鼓进；规则一加贝斯；规则二加木琴；规则三的钟琴来自画面；
-// 规则四加锯齿琶音；38–40 几乎无声；40 推进时全编制；点题只剩贝斯和旋律；
+// 序幕：追逐是四拍底鼓 + 十六分镲 + 八度贝斯（0–1.5）；被罩住时一切硬停两拍；
+// 灯亮后只剩审讯室的钟（每拍一声滴答）和一个低音；警察开口时木琴的八分音型进来，
+// "你会怎么选"时变成十六分、钟变成八分；11.5 留半小节空白；12 点题，乐队和主旋律一起进。
+// 之后：规则一加木琴，规则二加锯齿琶音；38–40 几乎无声；40 推进时全编制；结论只剩贝斯和旋律；
 // 例外独唱时（55.5–58）鼓全部撤掉；冠军出现时（58）鼓和旋律回来；78 秒强拍硬停。
+const CHASE: Seg = [0, T.caught];
+const ROOM_IN = T.copA - BEAT; // 警察起步
 const LAYER: Record<string, Seg[]> = {
 	hats: [
-		[0, 55.5],
+		[ROOM_IN, 11.5],
+		[12, 55.5],
 		[58, STOP],
 	],
+	hats16: [CHASE],
 	tick: [
-		[0, 4],
+		[T.lampA, T.choose],
 		[38, 40],
 	],
+	tick8: [[T.choose, 11.5]],
 	kick: [
-		[4, 38],
+		[12, 38],
 		[40, 55.5],
 		[58, 76],
 	],
+	kick4: [CHASE],
 	snare: [
-		[4, 38],
+		CHASE,
+		[12, 38],
 		[40, 44],
 		[48, 55.5],
 		[58, 76],
 	],
 	bass: [
-		[8, 38],
+		[12, 38],
 		[40, 54],
 		[58, STOP],
 	],
+	bassOct: [CHASE],
+	chaseArp: [CHASE],
+	bassLow: [[ROOM_IN, 11.5]],
+	ostinato: [[ROOM_IN, T.choose]],
+	ostinato16: [[T.choose, 11.5]],
 	marimba: [
-		[12, 38],
+		[16, 38],
 		[40, 44],
 		[48, STOP],
 	],
@@ -251,10 +266,12 @@ const LAYER: Record<string, Seg[]> = {
 		[60, 76],
 	],
 	lead: [
+		[12, 16],
 		[44, 48],
 		[58, 68],
 	],
 	pedal: [
+		[T.lampA, ROOM_IN],
 		[38, 40],
 		[55.5, 58],
 	],
@@ -283,11 +300,17 @@ const makeMix = (): Stereo => {
 		const inBar = b % 4;
 		if (on(t, LAYER.kick) && (inBar === 0 || inBar === 2)) addMono(drums, K, t, 0.36);
 		if (on(t + BEAT / 2, LAYER.kick) && inBar === 2) addMono(drums, K, t + BEAT / 2, 0.24);
+		if (on(t, LAYER.kick4)) addMono(drums, K, t, 0.32);
 		if (on(t, LAYER.snare) && (inBar === 1 || inBar === 3)) addMono(drums, SN, t, 0.36, -0.08);
-		if (on(t, LAYER.tick)) addMono(drums, TK, t, 0.22, 0.2);
+		if (on(t, LAYER.tick)) addMono(drums, TK, t, 0.24, 0.2);
 		for (const e of [0, 0.5]) {
 			const te = t + e * BEAT;
-			if (on(te, LAYER.hats)) addMono(drums, H, te, e ? 0.17 : 0.12, 0.25);
+			if (on(te, LAYER.tick8)) addMono(drums, TK, te, e ? 0.2 : 0.26, 0.2);
+			if (on(te, LAYER.hats)) addMono(drums, H, te, (e ? 0.17 : 0.12) * (te < 12 ? 0.7 : 1), 0.25);
+		}
+		for (const e of [0, 0.25, 0.5, 0.75]) {
+			const te = t + e * BEAT;
+			if (on(te, LAYER.hats16)) addMono(drums, H, te, e === 0.5 ? 0.2 : 0.13, 0.25);
 		}
 	}
 	// 贝斯：八分音符根音
@@ -295,7 +318,34 @@ const makeMix = (): Stereo => {
 		const t = k * (BEAT / 2);
 		if (on(t, LAYER.bass)) addMono(tonal, bassNote(mtof(chordAt(t).root), BEAT / 2 - 0.03), t, 0.12);
 	}
+	// 追逐：八度跳的贝斯；审讯室：每拍一个很轻的根音
+	for (let k = 0; k < STOP / (BEAT / 2); k++) {
+		const t = k * (BEAT / 2);
+		if (on(t, LAYER.bassOct)) addMono(tonal, bassNote(mtof(45 + (k % 2) * 12), BEAT / 2 - 0.03), t, 0.11);
+		if (on(t, LAYER.bassLow) && k % 2 === 0) addMono(tonal, bassNote(mtof(chordAt(t).root), BEAT - 0.06), t, 0.09);
+	}
 	for (const [a, b] of LAYER.pedal) addMono(tonal, bassNote(mtof(45), b - a), a, 0.12);
+	// 审讯室的木琴：八分音型（根、五、三、五），"你会怎么选"时加倍成十六分
+	const ost = [0, 2, 1, 2];
+	for (let k = 0; k < STOP / E16; k++) {
+		const t = k * E16;
+		const o8 = on(t, LAYER.ostinato) && k % 2 === 0;
+		const o16 = on(t, LAYER.ostinato16);
+		if (!o8 && !o16) continue;
+		const ch = chordAt(t);
+		const i = o16 ? k : k / 2;
+		addMono(tonal, marimba(mtof(ch.tones[ost[i % 4]] + 12)), t, o16 ? (k % 2 ? 0.09 : 0.13) : 0.13, i % 2 ? 0.25 : -0.25);
+	}
+	// 追逐：十六分的锯齿脉冲（八分上重音），给手机喇叭一点中频的"跑"
+	{
+		const ca = stereo(LEN);
+		for (let k = 0; k < STOP / E16; k++) {
+			const t = k * E16;
+			if (!on(t, LAYER.chaseArp)) continue;
+			addMono(ca, sawNote(mtof(k % 4 === 2 ? 64 : 57), E16), t, k % 2 ? 0.1 : 0.17, k % 2 ? 0.2 : -0.2);
+		}
+		mixInto(tonal, {L: sweepFilter(ca.L, 'lp', () => 2600, 0.8), R: sweepFilter(ca.R, 'lp', () => 2600, 0.8)});
+	}
 	// 木琴：十六分音符的多利亚音型
 	const pat = [0, 2, 1, 3, 2, 0, 3, 1];
 	for (let k = 0; k < STOP / E16; k++) {
