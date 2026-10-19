@@ -10,7 +10,8 @@
     "noUncheckedIndexedAccess": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "allowImportingTsExtensions": true
   },
-  "include": ["tests/**/*.ts", "vitest.config.mts"]
+  "include": ["tests/**/*.ts", "pack-tools/**/*.mts", "vitest.config.mts"]
 }

@@ -17,7 +17,7 @@ export default defineConfig(
   },
   {
     // Build tooling reports to the terminal by design.
-    files: ['scripts/**/*.mjs', 'pack-tools/**/*.ts'],
+    files: ['scripts/**/*.mjs', 'pack-tools/**/*.mts'],
     rules: {
       'no-console': 'off',
     },
