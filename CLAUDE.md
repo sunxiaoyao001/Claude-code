@@ -68,37 +68,45 @@
 │   │   └── tokens.wxss            # ★ 设计令牌（第七节 7.1，M0 落地，全局唯一视觉来源）
 │   ├── core/
 │   │   ├── camera/
-│   │   │   ├── FrameFeed.ts     # onCameraFrame 封装：启动/暂停/帧率统计/降级
-│   │   │   └── ShotCapture.ts    # takePhoto → 离屏全分辨率渲染 → 临时文件
+│   │   │   ├── FrameFeed.ts     # onCameraFrame 封装：启动/暂停/帧率统计（FrameStats）
+│   │   │   ├── PreviewGovernor.ts # 预览降级开关（按渲染耗时，带滞回）
+│   │   │   ├── viewTransform.ts  # 覆盖裁剪/旋转/镜像的 uv 矩阵
+│   │   │   ├── orientation.ts    # EXIF 方向 → 旋转/镜像
+│   │   │   ├── ShotCapture.ts    # takePhoto → 原生缩放 → 离屏全分辨率渲染 → 导出 → 临时文件
+│   │   │   ├── exportImage.ts    # readPixels 分条 → 2D 画布 → canvasToTempFilePath(jpg)
+│   │   │   └── exportSelfCheck.ts # 开发面板：LUT 精度 + 两条导出路径真机自检
 │   │   ├── gl/
-│   │   │   ├── GLRenderer.ts     # WebGL1 封装：program/texture/FBO 管理
-│   │   │   ├── LutLoader.ts      # 二进制 LUT → 2D 打包纹理（WebGL1 无 3D 纹理！）
+│   │   │   ├── GLRenderer.ts     # WebGL1 封装：program/texture/FBO 管理；LUT PNG 经 createImage 原生解码直接上传（无单独 LutLoader）
+│   │   │   ├── GLCaps.ts / webgl1.ts # 能力探测 / WebGL1 类型子集
 │   │   │   ├── Pipeline.ts       # 管线编排（预览低配 / 出片全配）
+│   │   │   ├── shotRandom.ts     # 每张随机量（颗粒/漏光/抖动），种子可复现
 │   │   │   └── shaders/          # GLSL 以 .ts 字符串模块存放（.frag/.glsl 不在代码包上传白名单；文件名不带额外点号）+ 运行时编译缓存
-│   │   │       ├── lutFrag.ts
-│   │   │       ├── halationFrag.ts # 阈值提取 + 双半径模糊（FBO ping-pong）+ 红移 screen
-│   │   │       ├── grainFrag.ts  # hash 噪声 + 亮度加权
-│   │   │       ├── leakFrag.ts   # 漏光纹理 screen 混合 + 边缘径向遮罩
-│   │   │       ├── vignetteFrag.ts
-│   │   │       └── compositeFrag.ts # 合并 pass（性能优化）
+│   │   │       ├── fullscreenVert.ts
+│   │   │       ├── extractFrag.ts # halation：LUT 前高光软阈值提取 + 红偏（1/4、1/8 分辨率）
+│   │   │       ├── blurFrag.ts   # 可分离高斯（9-tap 折成 5 次双线性采样，FBO ping-pong）
+│   │   │       ├── compositeFrag.ts # 合并 pass：暗角 → LUT → 光晕 screen → 颗粒 → 程序化漏光 → 抖动
+│   │   │       └── rawFrag.ts    # 原始画面（开发对比 / LUT 未就绪时）
 │   │   ├── pack/
 │   │   │   ├── SeriesProfile.ts # 八份系列基础档案（常量）
 │   │   │   ├── CameraPack.ts     # pack 模型 + series delta 继承合并器
 │   │   │   ├── PackStore.ts      # 内置注册 + CDN 按需下载 + 本地缓存（LRU）
 │   │   │   └── AssetCache.ts     # LUT/漏光纹理下载、校验、用户目录管理
 │   │   ├── stamp/
+│   │   │   ├── sevenSegment.ts   # 七段数码管几何
 │   │   │   └── DateStamp.ts      # 2D canvas 日期戳绘制（路径七段数码管 + 橙色 #FF9E2C）
 │   │   └── storage/
 │   │       ├── ShotStore.ts      # 拍摄记录（元数据 + 文件路径，不存像素；相册配额管理）
 │   │       └── Entitlement.ts    # 解锁引擎：免费层/今日限免 + 激励视频 + 虚拟支付（默认关闭）
 │   └── assets/
-│       ├── luts/                  # 内置免费相机的二进制 LUT（其余走 CDN）
-│       ├── leaks/                 # 通用漏光纹理（CC0，控制在 ~200KB）
+│       ├── luts/                  # 内置免费相机的 LUT：198×198 PNG（6×6 瓦片，每款约 8–15KB；其余走 CDN）
+│       ├── icons/                 # 控件 SVG
 │       └── fonts/                 # 备选：OFL 日期戳字体（默认不用，日期戳走路径绘制）
 ├── pack-tools/                    # Node 构建期工具（不上小程序，`node --experimental-strip-types` 直接运行）
-│   ├── cube2bin.ts                # .cube → 紧凑二进制 LUT（33³×3 字节 ≈ 107KB/款）
+│   ├── lib/                       # cube 读写、6×6 瓦片打包、零依赖 PNG 编解码、占位色彩模型
+│   ├── cube2png.mts               # .cube（33³）→ 瓦片 PNG。不用 .bin：PNG 一定在代码包白名单内、原生解码、deflate 后更小
 │   ├── luts-spectral/             # spectral_film_lut 离线导出的 .cube（约 26 款有胶卷依据，入库；Python 仅人工离线使用，不进 CI）
-│   └── gen-placeholder-luts.ts    # 其余款程序化占位 LUT + 49 张统一风格样张批量生成（真实胶卷采样后替换）
+│   └── gen-placeholder-luts.mts   # 其余款程序化占位 LUT + 49 张统一风格样张批量生成（真实胶卷采样后替换）
+├── scripts/gl-check.mjs           # GPU 对齐测试：无头 Chromium WebGL1 跑真实 shader，对比 TS 参考实现的统计特征
 └── tests/                         # vitest：pack 继承合并、LUT 解析、随机种子、额度逻辑
 ```
 
@@ -115,7 +123,7 @@
 
 **管线顺序固定**：暗角 → 3D LUT → halation → 颗粒 → 漏光 → 边框/日期戳（2D 合成）。
 
-- **3D LUT（WebGL1 无 3D 纹理）**：`.cube`（33³）构建期转二进制（布局无关）；运行时展开为 **198×198 的 2D 纹理（6×6 瓦片，每瓦片 33×33，B 通道选瓦片、瓦片内 x=R / y=G）**，shader 内瓦片内双线性 + 相邻两片 `mix`（查表代码见 `.claude/skills/film-pipeline`）。**全链路按 sRGB 处理**（小程序无色域检测接口，WebGL canvas 无 colorSpace 配置）。
+- **3D LUT（WebGL1 无 3D 纹理）**：`.cube`（33³）构建期打包成 **198×198 的 PNG（6×6 瓦片，每瓦片 33×33，B 通道选瓦片、瓦片内 x=R / y=G）**，运行时由平台原生解码直接作为纹理，shader 内瓦片内双线性 + 相邻两片 `mix`（查表代码见 `.claude/skills/film-pipeline`）。**全链路按 sRGB 处理**（小程序无色域检测接口，WebGL canvas 无 colorSpace 配置）。
 - **Halation（光晕）**：不是普通辉光。① 亮度软阈值（≈0.85，`smoothstep(t-0.1, t+0.1, luma)`）提取高光掩码写入低分辨率 FBO——**掩码从 LUT 之前的图像提取**（LUT 常压高光，之后取阈值不稳定），合成仍在 LUT 之后；② 掩码做 2 级高斯模糊（半径 ~8px 与 ~24px，可分离 FBO ping-pong，出片按分辨率缩放）；③ 模糊结果**向红色偏移**（权重约 `(1.0, 0.35, 0.08)`，参考 CineStill 800T 红晕）；④ screen 混合回原图。**性能降级开关**：按渲染耗时与丢帧率（相机供帧数 − 实际渲染数）判断，**不以相机供帧率判断**（供帧率由系统决定）；启动时用 `wx.getDeviceBenchmarkInfo` 档位初始化；超预算时预览自动关 halation（仅出片保留），`FrameFeed` 负责统计。
 - **Grain（颗粒）**：**禁止静态噪点贴图**。无 sin 的 GLSL hash（需片元 highp，启动时检测）+ 帧种子；颗粒强度与亮度相关（中间调最重，`sin` 形权重）；**颗粒尺寸按图像高度归一**，保证预览（~640px）与出片观感一致。无 highp 的设备降级为"每帧随机偏移/翻转的噪声纹理"（非静态，仍是活颗粒）。pack 参数：`grain.size`, `grain.intensity`, `grain.lumaWeight`。
 - **Light leak（漏光）**：CC0 预烘焙 PNG（橙/红/蓝紫）或程序化生成，每次拍摄随机选 1 张 + 随机翻转/位置/透明度，`lightLeak.probability` 控制出现概率（**随机性 = 开盲盒惊喜，HUJI 验证过的传播机制**）；screen 混合 + 径向边缘遮罩。
@@ -252,7 +260,7 @@
 
 上线即 49 款（对标 NOMO 库存规模），之后每两周上新 1 款（CDN 发 pack 即生效，无需发版），第一年冲 75+。上新队列：季节限定（春樱/夏花火/秋枫/冬雪，配 `seasonal` 标签）→ 联名位（`collab` 字段预留）→ 数据反馈加产。
 
-**占位 LUT 策略**：有胶卷依据的约 26 款（约 18 款精确 + 8 款近似，对照表见 `docs/research/03-film-emulation-oss.md`）用 spectral_film_lut（MIT，基于胶卷 datasheet 光谱模拟）离线导出 33³ .cube（sRGB in/out）入库；其余款由 `gen-placeholder-luts.ts` 按参数矩阵（色温/通道增益/饱和度/对比曲线）程序化生成，保证区分度；真实胶卷采样 LUT 量产前替换（采样流程写入 README：每款原型拍 ColorChecker → 数字化标定 → .cube）。
+**占位 LUT 策略**：有胶卷依据的约 26 款（约 18 款精确 + 8 款近似，对照表见 `docs/research/03-film-emulation-oss.md`）用 spectral_film_lut（MIT，基于胶卷 datasheet 光谱模拟）离线导出 33³ .cube（sRGB in/out）入库；其余款由 `gen-placeholder-luts.mts` 按参数矩阵（色温/通道增益/饱和度/对比曲线）程序化生成，保证区分度；真实胶卷采样 LUT 量产前替换（采样流程写入 README：每款原型拍 ColorChecker → 数字化标定 → .cube）。
 
 ## 七、UI/UX 设计规格（顶流质感，逐条硬性执行）
 
@@ -401,7 +409,7 @@
 camera 组件 + FrameFeed + WebGL canvas 直出原始帧（无滤镜）+ 前后摄/闪光切换 + 权限流程。验收：真机 30fps 稳定预览，工具帧率面板数据记录在案。
 
 **M2 · 渲染管线（核心）**
-首个任务：出片导出链真机 spike（离屏 WebGL → readPixels → 2D 画布 → canvasToTempFilePath）。然后 LutLoader（6×6 瓦片打包）+ 全部 shader + Pipeline 编排 + takePhoto → 离屏出片 → 保存链路。验收：sunny-fun 效果预览=出片（随机元素除外）、性能达标、降级开关工作。
+首个任务：出片导出链真机 spike（离屏 WebGL → readPixels → 2D 画布 → canvasToTempFilePath；已实现为开发面板「导出自检」）。然后 LUT 瓦片 PNG + 全部 shader + Pipeline 编排 + takePhoto → 离屏出片 → 保存链路。验收：sunny-fun 效果预览=出片（随机元素除外）、性能达标、降级开关工作。
 
 **M3 · Pack 系统 + 首发三大系列（A/B/C 20 款）+ 取景器皮肤**
 SeriesProfile + delta 继承、AssetCache（CDN 下载/校验/LRU）、换机交互（胶卷条，按 7.2 节动效规格）、取景器皮肤系统（7.2 节全部细节：框线/计数/快门反馈）、20 款全部可拍。验收：换机达标、新增 pack 零代码改动、断网时已缓存相机可用、**取景器页对照 7.2/7.6 清单逐条过**。

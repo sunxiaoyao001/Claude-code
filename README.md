@@ -2,13 +2,13 @@
 
 ## {{APP_NAME}} · 胶片相机微信小程序
 
-项目规格见 [`CLAUDE.md`](CLAUDE.md)（产品名 `{{APP_NAME}}` 待定）。当前阶段：**M1（相机 + WebGL 原始帧预览）完成，等待真机确认后进入 M2**。
+项目规格见 [`CLAUDE.md`](CLAUDE.md)（产品名 `{{APP_NAME}}` 待定）。当前阶段：**M2（渲染管线 + 出片链路，样板相机阳光罐头）完成，等待真机确认后进入 M3**。
 
 ### 开发与构建
 
 ```bash
 npm ci                 # Node >= 22.12
-./build.sh             # lint → typecheck → test → build(dist/) → 包体积门禁 → preview（无密钥/网络不通时自动跳过并说明原因）
+./build.sh             # lint → typecheck → test → GPU 对齐检查 → build(dist/) → 包体积门禁 → preview（无密钥/网络不通时自动跳过并说明原因）
 ./build.sh check       # 只跑到包体积门禁
 ./build.sh preview     # 本地出预览码：缺密钥或网络失败即报错
 ```
@@ -21,6 +21,10 @@ npm ci                 # Node >= 22.12
 - 目录：`miniprogram/` 是 TypeScript 源码，`dist/` 是构建产物（微信开发者工具与 miniprogram-ci 都指向它，`project.config.json` 的 `miniprogramRoot`）。
 - 预览码输出到 `.preview/qrcode.jpg`；只有该 AppID 的开发者/体验成员能扫码打开。
 - 设计令牌：`miniprogram/styles/tokens.wxss`；`tests/tokens.test.ts` 逐条校验 §7.1，并禁止页面 wxss 出现裸色值/px。
+- GPU 对齐检查（`npm run gl-check`）：在无头 Chromium 的 WebGL1 上跑真实 shader，与 TS 参考实现比对（LUT 精度、颗粒统计、光晕、漏光、预览 = 出片）；没有 Playwright/Chromium 时自动跳过。
+- LUT 工具（零依赖，Node ≥ 22）：
+  - `node --experimental-strip-types pack-tools/gen-placeholder-luts.mts` 重新生成内置占位 LUT（`miniprogram/assets/luts/*.png`）
+  - `node --experimental-strip-types pack-tools/cube2png.mts in.cube out.png` 把真实 33³ `.cube` 转成着色器读取的 6×6 瓦片 PNG
 
 ### M0 真机确认清单（人类执行）
 
@@ -72,6 +76,21 @@ npm ci                 # Node >= 22.12
 | 10 | 切到后台再回来 | 取景恢复，面板「累计供帧」继续增长 |
 
 回传：测试面板截图（3 种 frame-size 各一张、含拍照结果行）+ 机型 + 微信版本；有异常请附录屏。面板仅在开发版/体验版出现，正式版不显示（M6 前移除）。
+
+### M2 真机确认清单（人类执行）
+
+| # | 操作 | 预期 |
+| --- | --- | --- |
+| 1 | 打开相机 | 状态行下方是 3:4 画框（上下深色留边），画面偏暖、四角略暗、细颗粒每 1/3 秒跳动；测试面板「滤镜」行显示「阳光罐头」，点「原始画面」可对比 |
+| 2 | 测试面板点「导出自检」，等待结果 | 4 行：①LUT 精度 ≤3 ✓ ②导出 A ✓ ③导出 B（✓/✗ 都记录）④满尺寸行（渲染/读回/编码耗时 + 输出尺寸）——这是出片链路的真机 spike |
+| 3 | 按快门，连拍 3 张（每张等缩略图出现） | 重震动 + 一瞬黑场；1–3 秒后左下角出现缩略图；面板出现「出片 W×H · 总 X ms」与分步耗时，预期总耗时 ≤ 2.5s |
+| 4 | 点缩略图全屏查看 | 与取景器观感一致（暖调、暗角、颗粒），右下角橙色日期戳；多拍几张，约每 3 张有 1 张边缘漏光 |
+| 5 | 点「存到手机」 | 首次弹相册权限 → 允许后中震动 + 提示「已存到手机相册」；拒绝后再点会弹「需要相册权限」引导去设置 |
+| 6 | 切前摄拍一张 | 记录成片左右是否与取景一致 |
+| 7 | 中端安卓持续取景 30 秒 | 面板「预览光晕」若变成 off，记录当时的渲染耗时行 |
+| 8 | 横持手机拍一张（安卓重点） | 成片方向正确；面板「原图 … orientation」一行一起截图 |
+
+回传：自检 4 行 + 3 次出片耗时的面板截图、2–3 张存到相册的原图、机型 + 微信版本。
 
 ## 已安装的网站设计 Skills（`.claude/skills/`）
 

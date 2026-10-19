@@ -47,8 +47,10 @@ Random elements (light leak, darkroom per-shot variables, capture grain seed) ar
 
 ## 4. LUT format and lookup
 
-- Build time: `.cube` (33³, R fastest, then G, then B) → raw binary `33*33*33*3 = 107,811` bytes, same ordering, values `round(v*255)`.
-- Runtime (`LutLoader`): unpack into a **198×198 RGBA texture of 6×6 tiles** (33 tiles used). Blue slice `s` goes to tile `(col = s % 6, row = floor(s / 6))`; inside a tile `x = r`, `y = g`. Upload with `UNPACK_FLIP_Y_WEBGL = false`. (decided: C-06)
+- Build time (`pack-tools/`, run with `node --experimental-strip-types`): `.cube` (33³, R fastest, then G, then B) → `lib/lutTiles.mts` packs it into a **198×198 RGB PNG of 6×6 tiles** (33 used) → `lib/png.mts` encodes with Node's zlib (no colour chunks). `cube2png.mts` converts real LUTs; `gen-placeholder-luts.mts` generates the placeholder looks from `lib/looks.mts`.
+- Why PNG, not a raw `.bin`: PNG is certainly on the code-package upload whitelist (unlisted files work in DevTools but are silently dropped on upload), the platform decodes it natively, and deflate makes it 8–15 KB instead of 107 KB.
+- Runtime: `GLRenderer.loadImage('/assets/luts/<id>.png')` (the canvas's own `createImage()`) → `uploadImage()`. `UNPACK_FLIP_Y_WEBGL = false`, so PNG row 0 is v = 0. Blue slice `s` sits at tile `(col = s % 6, row = floor(s / 6))`; inside a tile `x = r`, `y = g`. (decided: C-06)
+- The dev panel's 导出自检 runs an identity LUT through the composite on the device and reports the max error, which also proves the platform decodes PNGs without colour management.
 
 ```glsl
 // GLSL ES 1.0 — 33^3 LUT packed as 6x6 tiles (198x198).
@@ -74,7 +76,7 @@ vec3 lut3d(sampler2D lut, vec3 c) {
 }
 ```
 
-Test against a TypeScript trilinear reference on a known `.cube` (identity cube must round-trip within 1/255).
+Covered by `tests/lutLookup.test.ts` (CPU port of this function vs the generating look, < 3/255) and `scripts/gl-check.mjs` (same on a real WebGL1 GPU, < 4/255).
 
 ## 5. Effect recipes
 
@@ -87,46 +89,19 @@ col *= mix(1.0 - uVignetteStrength, 1.0, v);
 ```
 Note: `smoothstep(e0, e1, x)` is undefined in GLSL when `e0 >= e1`; the reversed-edge form used in `shader-dev/techniques/camera-effects.md` must not be copied.
 
-**Halation** (defaults from Film-Standalone, MIT):
-```glsl
-// extract @1/4 res, input = pre-LUT image
-float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
-float m = smoothstep(uThreshold - 0.1, uThreshold + 0.1, l); // uThreshold ~0.85
-gl_FragColor = vec4(c * m * vec3(1.0, 0.35, 0.08), 1.0);      // red-biased
-// blur: separable 9-tap, weights 0.2270, 0.1945, 0.1216, 0.0540, 0.0162,
-//       step = uDir * uRadiusPx / uTexSize (radius scales with output size)
-// composite (after LUT): col = 1.0 - (1.0 - col) * (1.0 - halo * uHalationStrength); // screen
-```
+**Halation** (`extractFrag.ts` + `blurFrag.ts`, defaults after Film-Standalone, MIT):
+- Extract from the PRE-LUT source at 1/4 (and for capture also 1/8) resolution, 4 taps one source texel apart, mask `smoothstep(t-0.1, t+0.1, luma)` (t ≈ 0.85), tint `(1.0, 0.35, 0.08)`.
+- Blur H then V with the 9-tap kernel folded into 5 bilinear taps; `uStep = dir * (R / 4) / targetSize` where R = 8 px (small) or 24 px (wide) × `halation.radius` × frameHeight/1080, expressed in target pixels.
+- Composite: `halo = (small * w0 + wide * w1) * strength`, screen blend. Capture weights 0.6/0.4; preview uses the small chain only (1.0/0.0) and only while the governor allows it.
+- Reference numbers (gl-check, 1080px frame, 30px highlight, strength 1): rgb(32,11,2) 4 px outside, rgb(6,2,1) at 12 px. Looks that need a CineStill-style ring raise `strength` and `radius`.
 
-**Grain** (no static noise texture; needs highp; devices without highp fall back to a per-frame randomly offset/flipped noise texture (decided: C-15)):
-```glsl
-float hash12(vec2 p) { // Dave Hoskins, hash without sine
-  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
-  p3 += dot(p3, p3.yzx + 33.33);
-  return fract((p3.x + p3.y) * p3.z);
-}
-float grainNoise(vec2 px, float cell, float seed) { // value noise, seed in [0, 100)
-  vec2 q = px / cell + seed;
-  vec2 i = floor(q);
-  vec2 f = fract(q);
-  f = f * f * (3.0 - 2.0 * f);
-  float a = hash12(i);
-  float b = hash12(i + vec2(1.0, 0.0));
-  float c = hash12(i + vec2(0.0, 1.0));
-  float d = hash12(i + vec2(1.0, 1.0));
-  return mix(mix(a, b, f.x), mix(c, d, f.x), f.y) - 0.5;
-}
-// cell is relative to image height so preview (640px) and capture (3000px+) match
-float cell = max(uGrainSize * uImageHeight / 1080.0, 1.0);
-float n = grainNoise(gl_FragCoord.xy, cell, uSeed);
-float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
-float w = mix(1.0, sin(3.14159265 * lum), uGrainLumaWeight); // midtones heaviest
-col += n * uGrainIntensity * w;
-```
+**Grain** (sin-free hash value noise; needs highp, see `compositeFrag.ts`): position is `frame` (0..1 inside the output frame, y down) scaled by `aspect × 1080 / grain.size`, plus `seed × (13.1, 7.7)`. Being frame-relative, the viewfinder (≈640 px) and the capture (3000 px+) show the same grain structure. Weight `mix(1, sin(π·luma), lumaWeight)`. gl-check compares GPU mean/std with the TypeScript reference (Δmean < 0.75/255, std ±15%). Without highp the shader falls back to mediump and grain gets coarser (decided: C-15; a noise-texture fallback is not built yet).
 
-**Light leak**: CC0/procedural PNG, screen blend, radial edge mask `smoothstep(0.35, 0.95, length(vUv - 0.5) * 1.414)`; per-shot random choice, flip, offset, opacity.
+**Light leak** (procedural, no texture asset): `rollShot()` picks a side, a centre just outside the frame, radius 0.35–0.7 of the frame height, opacity within the look's range and a colour from amber / red-orange / violet. Shader: `exp(-2r²)` blob × edge weight, screen blend. Leaks only appear in captures.
 
-**Darkroom series (H)**: per-shot random hue shift ±15°, fog lift, contrast fade — all drawn from ranges in the pack, applied in the composite pass.
+**Dither**: ±0.5/255 hash noise last, hides banding from the 8-bit halo buffers.
+
+**Darkroom series (H)**: per-shot random hue shift ±15°, fog lift, contrast fade — all drawn from ranges in the pack (M4).
 
 ## 6. CameraPack schema and merge
 
@@ -137,16 +112,8 @@ type SeriesId =
   | 'jp-color' | 'street-bw' | 'ccd' | 'instant'
   | 'medium-format' | 'cine-slide' | 'toy' | 'darkroom'; // proposal, finalise in M3
 
-interface FilterParams {
-  lut: { id: string; intensity: number };
-  vignette: { strength: number; softness: number };
-  halation: { strength: number; threshold: number; radius: number };
-  grain: { size: number; intensity: number; lumaWeight: number; colored: boolean };
-  lightLeak: { probability: number; opacityMin: number; opacityMax: number };
-  frame: { aspectRatio: string; border: string };
-  dateStamp: { enabled: boolean };
-  darkroom?: { hueShiftDeg: number; fog: number; contrastFade: number };
-}
+// FilterParams: source of truth is miniprogram/core/pack/FilterParams.ts (with validateFilterParams()
+// ranges and the SUNNY_FUN reference look).
 
 interface CameraPack {
   id: string; name: string; tagline: string; series: SeriesId;
