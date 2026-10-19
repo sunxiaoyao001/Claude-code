@@ -8,6 +8,13 @@ export type GLProgramHandle = { readonly __brand: 'WebGLProgram' };
 export type GLBuffer = { readonly __brand: 'WebGLBuffer' };
 export type GLTexture = { readonly __brand: 'WebGLTexture' };
 export type GLUniformLocation = { readonly __brand: 'WebGLUniformLocation' };
+export type GLFramebuffer = { readonly __brand: 'WebGLFramebuffer' };
+
+/** Anything texImage2D accepts as a pixel source: a decoded Image from canvas.createImage(). */
+export interface GLImageSource {
+  readonly width: number;
+  readonly height: number;
+}
 
 export interface GLShaderPrecisionFormat {
   readonly rangeMin: number;
@@ -43,6 +50,9 @@ export interface WebGL1 {
   readonly RENDERER: number;
   readonly VENDOR: number;
   readonly VERSION: number;
+  readonly FRAMEBUFFER: number;
+  readonly COLOR_ATTACHMENT0: number;
+  readonly FRAMEBUFFER_COMPLETE: number;
 
   getParameter(pname: number): unknown;
   getShaderPrecisionFormat(shaderType: number, precisionType: number): GLShaderPrecisionFormat | null;
@@ -69,6 +79,9 @@ export interface WebGL1 {
 
   uniform1i(location: GLUniformLocation | null, x: number): void;
   uniform1f(location: GLUniformLocation | null, x: number): void;
+  uniform2f(location: GLUniformLocation | null, x: number, y: number): void;
+  uniform3f(location: GLUniformLocation | null, x: number, y: number, z: number): void;
+  uniform4f(location: GLUniformLocation | null, x: number, y: number, z: number, w: number): void;
   uniformMatrix2fv(location: GLUniformLocation | null, transpose: boolean, value: Float32Array): void;
 
   createBuffer(): GLBuffer | null;
@@ -87,11 +100,20 @@ export interface WebGL1 {
     target: number, level: number, internalformat: number, width: number, height: number,
     border: number, format: number, type: number, pixels: ArrayBufferView | null,
   ): void;
+  texImage2D(
+    target: number, level: number, internalformat: number, format: number, type: number, source: GLImageSource,
+  ): void;
   texSubImage2D(
     target: number, level: number, xoffset: number, yoffset: number, width: number, height: number,
     format: number, type: number, pixels: ArrayBufferView,
   ): void;
   deleteTexture(texture: GLTexture | null): void;
+
+  createFramebuffer(): GLFramebuffer | null;
+  bindFramebuffer(target: number, framebuffer: GLFramebuffer | null): void;
+  framebufferTexture2D(target: number, attachment: number, textarget: number, texture: GLTexture, level: number): void;
+  checkFramebufferStatus(target: number): number;
+  deleteFramebuffer(framebuffer: GLFramebuffer | null): void;
 
   viewport(x: number, y: number, width: number, height: number): void;
   clearColor(r: number, g: number, b: number, a: number): void;
