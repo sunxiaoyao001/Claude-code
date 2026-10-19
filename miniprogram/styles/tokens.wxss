@@ -1,0 +1,73 @@
+/*
+ * Design tokens: the only source of visual values (CLAUDE.md §7.1).
+ * WXSS has no :root, so tokens live on `page` and inherit into custom components.
+ * --accent is re-injected per camera pack via an inline style on the page root.
+ */
+page {
+  /* Colour (§7.1) */
+  --bg-0: #0D0D0F;
+  --bg-1: #141416;
+  --bg-2: #1C1C20;
+  --line: #26262A;
+  --text-0: #F5F4F0;
+  --text-1: #8E8E93;
+  --text-2: #5A5A5E;
+  --accent: #E8C88A;
+
+  /* Colour (§4, §7.2) */
+  --stamp: #FF9E2C;
+  --frame-corner: rgba(245, 244, 240, 0.4);
+  --frame-grid: rgba(245, 244, 240, 0.15);
+  --strip-bg: rgba(20, 20, 22, 0.72);
+  --strip-bg-solid: rgba(20, 20, 22, 0.92);
+  --strip-blur: 20px;
+
+  /* Type (§7.1): no Chinese webfont; latin accents = system font + caps + tracking */
+  --font-sans: -apple-system, "PingFang SC", "HarmonyOS Sans", "Source Han Sans SC", sans-serif;
+  --font-latin-display: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --tracking-display: 0.12em;
+  --fs-hero: 34px;
+  --fs-title: 22px;
+  --fs-body: 15px;
+  --fs-caption: 12px;
+
+  /* Space: 8pt grid with a 4px half step */
+  --sp-0: 4px;
+  --sp-1: 8px;
+  --sp-2: 16px;
+  --sp-3: 24px;
+  --sp-4: 32px;
+  --sp-5: 40px;
+  --sp-6: 48px;
+
+  /* Shape */
+  --radius-xs: 4px;
+  --radius-s: 6px;
+  --radius-m: 12px;
+  --radius-l: 20px;
+  --hairline: 0.5px;
+  --stroke: 1px;
+  --stroke-accent: 2px;
+
+  /* Component metrics (§7.2–§7.5) */
+  --shutter-size: 72px;
+  --shutter-ring: 3px;
+  --strip-height: 88px;
+  --strip-card: 64px;
+  --strip-card-lift: 4px;
+  --cta-height: 56px;
+  --unlock-thumb: 84px;
+  --series-dot: 10px;
+
+  /* Motion (§7.1, §7.2, §7.6) */
+  --dur-micro: 150ms;
+  --dur-base: 300ms;
+  --dur-develop: 2500ms;
+  --dur-frame-fade: 200ms;
+  --dur-swap-black: 120ms;
+  --dur-mirror-flash: 80ms;
+  --dur-skeleton: 1.2s;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --press-scale: 0.97;
+  --shutter-press-scale: 0.92;
+}

@@ -1,0 +1,15 @@
+@import "styles/tokens.wxss";
+
+page {
+  background-color: var(--bg-0);
+  color: var(--text-0);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+}
+
+/* Latin accent copy such as "FILM NO.07 / PORTRA 400" (§7.1). */
+.latin-caps {
+  font-family: var(--font-latin-display);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-display);
+}

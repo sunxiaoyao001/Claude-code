@@ -1,0 +1,23 @@
+{
+  "description": "{{APP_NAME}} film camera mini program. Sources live in miniprogram/ (TypeScript); tsc + scripts/build.mjs emit dist/, which is what WeChat DevTools and miniprogram-ci load.",
+  "projectname": "film-camera",
+  "appid": "touristappid",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "dist/",
+  "libVersion": "3.0.0",
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "uglifyFileName": false,
+    "ignoreUploadUnusedFiles": true,
+    "useCompilerPlugins": false
+  },
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  }
+}

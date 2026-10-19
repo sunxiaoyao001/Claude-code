@@ -1,0 +1,4 @@
+<view class="viewfinder">
+  <text class="caption latin-caps">Film camera · M0</text>
+  <text class="caption caption-sub latin-caps">SDK {{sdkVersion}}</text>
+</view>
