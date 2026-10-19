@@ -1,6 +1,6 @@
 <view class="page">
   <block wx:if="{{stage === 'live'}}">
-    <!-- Native camera underneath; the WebGL canvas on top shows the processed frames. -->
+    <!-- Native camera underneath; the WebGL canvas on top shows the film look live. -->
     <camera
       wx:if="{{cameraMounted}}"
       class="layer camera"
@@ -29,6 +29,28 @@
         <image class="icon" src="/assets/icons/flip.svg" />
       </view>
     </view>
+
+    <view class="bottom">
+      <view class="bottom-slot">
+        <image
+          wx:if="{{lastShotPath}}"
+          class="thumb"
+          src="{{lastShotPath}}"
+          mode="aspectFill"
+          hover-class="thumb-pressed"
+          bindtap="onOpenViewer"
+        />
+      </view>
+      <view
+        class="shutter {{capturing ? 'shutter-busy' : ''}}"
+        hover-class="{{capturing ? 'none' : 'shutter-pressed'}}"
+        hover-stay-time="80"
+        bindtap="onShutter"
+      >
+        <view class="shutter-core"></view>
+      </view>
+      <view class="bottom-slot"></view>
+    </view>
   </block>
 
   <view wx:elif="{{stage === 'privacy-declined'}}" class="notice">
@@ -50,7 +72,20 @@
   </view>
 
   <view class="status" style="top: {{statusTop}}px; height: {{statusHeight}}px;" bindlongpress="onToggleDevPanel">
-    <text class="status-title latin-caps">Raw preview</text>
+    <text class="status-title latin-caps">Sunny fun</text>
+  </view>
+
+  <!-- Export target for captures: canvasToTempFilePath is documented for type="2d" canvases. -->
+  <canvas id="export-2d" type="2d" class="export-canvas"></canvas>
+
+  <view wx:if="{{mirrorFlash}}" class="mirror-flash"></view>
+
+  <view wx:if="{{viewerVisible}}" class="viewer">
+    <image class="viewer-image" src="{{lastShotPath}}" mode="aspectFit" />
+    <view class="viewer-actions">
+      <view class="viewer-action viewer-secondary" hover-class="viewer-secondary-pressed" bindtap="onCloseViewer">关闭</view>
+      <view class="viewer-action viewer-primary" hover-class="viewer-primary-pressed" bindtap="onSaveToAlbum">存到手机</view>
+    </view>
   </view>
 
   <dev-panel wx:if="{{devVisible}}" model="{{dev}}" bindaction="onDevAction" />

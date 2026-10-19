@@ -38,11 +38,11 @@
   color: var(--text-1);
 }
 
-/* Side micro controls (§7.2), parked above where the shutter and film strip land in M3. */
+/* Side micro controls (§7.2), above the shutter row. */
 .side {
   position: absolute;
   z-index: 10;
-  bottom: calc(var(--strip-height) + var(--shutter-size) + var(--sp-4) + env(safe-area-inset-bottom));
+  bottom: calc(var(--sp-5) + var(--shutter-size) + var(--sp-3) + env(safe-area-inset-bottom));
 }
 
 .side-left {
@@ -116,5 +116,139 @@
 }
 
 .notice-action-pressed {
+  transform: scale(var(--press-scale));
+}
+
+/* Shutter row: last shot on the left, shutter centred (§7.2). The film strip joins in M3. */
+.bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--sp-5) + env(safe-area-inset-bottom));
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--sp-4);
+}
+
+.bottom-slot {
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+}
+
+.thumb {
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  border-radius: var(--radius-s);
+  border: var(--stroke) solid var(--line);
+  background-color: var(--bg-1);
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.thumb-pressed {
+  transform: scale(var(--press-scale));
+}
+
+.shutter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--shutter-size);
+  height: var(--shutter-size);
+  border-radius: 50%;
+  border: var(--shutter-ring) solid var(--text-0);
+  box-sizing: border-box;
+  transition: transform var(--dur-micro) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+}
+
+.shutter-core {
+  width: calc(100% - 2 * var(--shutter-inset));
+  height: calc(100% - 2 * var(--shutter-inset));
+  border-radius: 50%;
+  background-color: var(--text-0);
+}
+
+.shutter-pressed {
+  transform: scale(var(--shutter-press-scale));
+}
+
+.shutter-busy {
+  opacity: var(--disabled-opacity);
+}
+
+/* One dark frame when the shutter fires, like a mirror slapping up. */
+.mirror-flash {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  background-color: var(--bg-0);
+}
+
+/* Hidden export canvas: only its backing store matters. */
+.export-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--hairline);
+  height: var(--hairline);
+  opacity: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.viewer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-0);
+}
+
+.viewer-image {
+  flex: 1;
+  width: 100%;
+  margin-top: calc(var(--sp-6) * 2);
+}
+
+.viewer-actions {
+  display: flex;
+  padding: var(--sp-3) var(--sp-3) calc(var(--sp-3) + env(safe-area-inset-bottom));
+}
+
+.viewer-action {
+  flex: 1;
+  height: var(--cta-height);
+  border-radius: var(--radius-m);
+  line-height: var(--cta-height);
+  text-align: center;
+  font-size: var(--fs-body);
+  transition: background-color var(--dur-micro) var(--ease-out), transform var(--dur-micro) var(--ease-out);
+}
+
+.viewer-secondary {
+  margin-right: var(--sp-1);
+  color: var(--text-0);
+  background-color: var(--bg-2);
+}
+
+.viewer-secondary-pressed {
+  background-color: var(--line);
+  transform: scale(var(--press-scale));
+}
+
+.viewer-primary {
+  color: var(--bg-0);
+  background-color: var(--accent);
+}
+
+.viewer-primary-pressed {
   transform: scale(var(--press-scale));
 }

@@ -54,6 +54,7 @@ page {
   /* Component metrics (§7.2–§7.5) */
   --shutter-size: 72px;
   --shutter-ring: 3px;
+  --shutter-inset: 5px;
   --strip-height: 88px;
   --strip-card: 64px;
   --strip-card-lift: 4px;
@@ -62,6 +63,7 @@ page {
   --series-dot: 10px;
   --control-size: 44px;
   --icon-size: 22px;
+  --thumb-size: 48px;
 
   /* Motion (§7.1, §7.2, §7.6) */
   --dur-micro: 150ms;
