@@ -1,0 +1,37 @@
+<view class="panel" catchtouchmove="noop">
+  <view class="head">
+    <text class="head-title latin-caps">M1 test matrix</text>
+    <view class="chip" hover-class="chip-pressed" data-type="close" bindtap="onAction">关闭</view>
+  </view>
+
+  <text wx:for="{{model.lines}}" wx:key="*this" class="line">{{item}}</text>
+
+  <text class="label">frame-size（重挂相机）</text>
+  <view class="row">
+    <view wx:for="{{frameSizes}}" wx:key="*this"
+      class="chip {{model.settings.frameSize === item ? 'chip-on' : ''}}" hover-class="chip-pressed"
+      data-type="frameSize" data-value="{{item}}" bindtap="onAction">{{item}}</view>
+  </view>
+
+  <text class="label">resolution（重挂相机）</text>
+  <view class="row">
+    <view wx:for="{{resolutions}}" wx:key="*this"
+      class="chip {{model.settings.resolution === item ? 'chip-on' : ''}}" hover-class="chip-pressed"
+      data-type="resolution" data-value="{{item}}" bindtap="onAction">{{item}}</view>
+  </view>
+
+  <text class="label">预览</text>
+  <view class="row">
+    <view class="chip" hover-class="chip-pressed" data-type="rotate" bindtap="onAction">旋转 {{model.settings.rotation}}°</view>
+    <view class="chip {{model.settings.mirror ? 'chip-on' : ''}}" hover-class="chip-pressed" data-type="mirror" bindtap="onAction">镜像</view>
+    <view class="chip {{model.settings.grayscale ? 'chip-on' : ''}}" hover-class="chip-pressed" data-type="grayscale" bindtap="onAction">灰度</view>
+    <view class="chip {{model.settings.syncGpu ? 'chip-on' : ''}}" hover-class="chip-pressed" data-type="syncGpu" bindtap="onAction">GPU 计时</view>
+  </view>
+
+  <text class="label">takePhoto 实测</text>
+  <view class="row">
+    <view wx:for="{{qualities}}" wx:key="*this" class="chip" hover-class="chip-pressed"
+      data-type="photo" data-value="{{item}}" bindtap="onAction">{{item}}</view>
+  </view>
+  <text wx:for="{{model.photos}}" wx:key="index" class="line">{{item}}</text>
+</view>

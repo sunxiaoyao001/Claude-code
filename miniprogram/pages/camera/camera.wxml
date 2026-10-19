@@ -1,4 +1,64 @@
-<view class="viewfinder">
-  <text class="caption latin-caps">Film camera · M0</text>
-  <text class="caption caption-sub latin-caps">SDK {{sdkVersion}}</text>
+<view class="page">
+  <block wx:if="{{stage === 'live'}}">
+    <!-- Native camera underneath; the WebGL canvas on top shows the processed frames. -->
+    <camera
+      wx:if="{{cameraMounted}}"
+      class="layer camera"
+      mode="normal"
+      device-position="{{devicePosition}}"
+      flash="{{flash}}"
+      frame-size="{{frameSize}}"
+      resolution="{{resolution}}"
+      bindinitdone="onCameraInitDone"
+      binderror="onCameraError"
+      bindstop="onCameraStop"
+    ></camera>
+    <canvas wx:if="{{!glFailed}}" id="viewfinder-gl" type="webgl" class="layer gl"></canvas>
+
+    <view class="side side-left">
+      <view
+        class="control {{devicePosition === 'front' ? 'control-disabled' : ''}}"
+        hover-class="{{devicePosition === 'front' ? 'none' : 'control-pressed'}}"
+        bindtap="onToggleFlash"
+      >
+        <image class="icon" src="/assets/icons/flash-{{flash}}.svg" />
+      </view>
+    </view>
+    <view class="side side-right">
+      <view class="control" hover-class="control-pressed" bindtap="onFlip">
+        <image class="icon" src="/assets/icons/flip.svg" />
+      </view>
+    </view>
+  </block>
+
+  <view wx:elif="{{stage === 'privacy-declined'}}" class="notice">
+    <text class="notice-title">还差一步</text>
+    <text class="notice-body">同意隐私保护指引后才能打开相机。照片和取景画面只在你的手机里处理，不上传。</text>
+    <view class="notice-action" hover-class="notice-action-pressed" bindtap="onRetryPrivacy">查看并同意</view>
+  </view>
+
+  <view wx:elif="{{stage === 'camera-denied'}}" class="notice">
+    <text class="notice-title">需要相机权限</text>
+    <text class="notice-body">在设置里打开「摄像头」，回来就能取景。</text>
+    <view class="notice-action" hover-class="notice-action-pressed" bindtap="onOpenSetting">去设置开启</view>
+  </view>
+
+  <view wx:elif="{{stage === 'camera-error'}}" class="notice">
+    <text class="notice-title">相机没有启动</text>
+    <text class="notice-body">{{errorMessage || '请稍后再试'}}</text>
+    <view class="notice-action" hover-class="notice-action-pressed" bindtap="onRetryCamera">重新打开</view>
+  </view>
+
+  <view class="status" style="top: {{statusTop}}px; height: {{statusHeight}}px;" bindlongpress="onToggleDevPanel">
+    <text class="status-title latin-caps">Raw preview</text>
+  </view>
+
+  <dev-panel wx:if="{{devVisible}}" model="{{dev}}" bindaction="onDevAction" />
+  <privacy-sheet
+    visible="{{privacySheetVisible}}"
+    contract-name="{{privacyContractName}}"
+    bindagree="onPrivacyAgree"
+    binddisagree="onPrivacyDisagree"
+    bindopencontract="onOpenPrivacyContract"
+  />
 </view>

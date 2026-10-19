@@ -1,17 +1,120 @@
-.viewfinder {
+.page {
+  position: relative;
+  width: 100vw;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
   background-color: var(--bg-0);
 }
 
-.caption {
-  font-size: var(--fs-caption);
-  color: var(--text-2);
+.layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.caption-sub {
+.camera {
+  z-index: 0;
+}
+
+.gl {
+  z-index: 1;
+}
+
+/* Status row, vertically aligned with the capsule menu button (top/height set inline). */
+.status {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-title {
+  font-size: var(--fs-caption);
+  color: var(--text-1);
+}
+
+/* Side micro controls (§7.2), parked above where the shutter and film strip land in M3. */
+.side {
+  position: absolute;
+  z-index: 10;
+  bottom: calc(var(--strip-height) + var(--shutter-size) + var(--sp-4) + env(safe-area-inset-bottom));
+}
+
+.side-left {
+  left: var(--sp-2);
+}
+
+.side-right {
+  right: var(--sp-2);
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-size);
+  height: var(--control-size);
+  border-radius: 50%;
+  border: var(--hairline) solid var(--line);
+  background-color: var(--strip-bg);
+  transition: background-color var(--dur-micro) var(--ease-out), transform var(--dur-micro) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+}
+
+.control-pressed {
+  background-color: var(--line);
+  transform: scale(var(--press-scale));
+}
+
+.control-disabled {
+  opacity: var(--disabled-opacity);
+}
+
+.icon {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+.notice {
+  position: absolute;
+  left: var(--sp-4);
+  right: var(--sp-4);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.notice-title {
+  font-size: var(--fs-title);
+  color: var(--text-0);
+}
+
+.notice-body {
   margin-top: var(--sp-1);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-1);
+}
+
+.notice-action {
+  margin-top: var(--sp-3);
+  padding: 0 var(--sp-4);
+  height: var(--cta-height);
+  border-radius: var(--radius-m);
+  line-height: var(--cta-height);
+  font-size: var(--fs-body);
+  color: var(--bg-0);
+  background-color: var(--accent);
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.notice-action-pressed {
+  transform: scale(var(--press-scale));
 }

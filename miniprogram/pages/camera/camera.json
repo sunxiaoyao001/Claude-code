@@ -1,4 +1,7 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "privacy-sheet": "/components/privacy-sheet/privacy-sheet",
+    "dev-panel": "/components/dev-panel/dev-panel"
+  },
   "disableScroll": true
 }
