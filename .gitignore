@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+.preview/
+
+# miniprogram-ci upload keys must never be committed
+private.*.key
+*.key
+.env
+.env.*
