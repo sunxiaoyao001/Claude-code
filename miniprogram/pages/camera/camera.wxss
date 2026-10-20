@@ -38,28 +38,29 @@
   color: var(--text-1);
 }
 
-/* Controls (§7.2): side micro buttons above the shutter row, film strip at the bottom. */
+/* Controls (§7.2): shutter row above the film strip. */
 .controls {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 10;
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Side micro buttons ride the frame: inside its bottom corners, just above the L marks
+   (corner inset --sp-1 + arm --frame-arm + gap --sp-2 = --sp-5). --frame-* come from the page root. */
 .side {
   position: absolute;
-  bottom: 100%;
-  margin-bottom: var(--sp-2);
+  z-index: 10;
+  top: calc(var(--frame-bottom) - var(--sp-5) - var(--control-size));
 }
 
 .side-left {
-  left: var(--sp-2);
+  left: calc(var(--frame-x) + var(--sp-2));
 }
 
 .side-right {
-  right: var(--sp-2);
+  right: calc(var(--frame-x) + var(--sp-2));
 }
 
 .control {

@@ -1,17 +1,7 @@
 // Bottom film strip (CLAUDE.md §7.2). Presentation only: emits `select` with a pack id when a card is
 // tapped or when scrolling stops with a card nearest the centre; the page owns switching and haptics.
 // Snapping is done in JS because CSS scroll-snap inside scroll-view is not reliable across clients.
-
-export interface StripItem {
-  id: string;
-  name: string;
-  thumb: string;
-  locked: boolean;
-  /** First card of a series: gets a wider gap before it. */
-  seriesStart: boolean;
-  /** Download progress 0..1, or -1 when nothing is downloading. */
-  progress: number;
-}
+import type { StripItem } from '../../core/ui/stripModel';
 
 // Scrolling counts as stopped after this long without a scroll event.
 const SETTLE_MS = 140;

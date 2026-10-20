@@ -1,4 +1,4 @@
-<view class="page" style="--accent: {{accent}};">
+<view class="page" style="--accent: {{accent}}; --frame-x: {{frame.left}}px; --frame-bottom: {{frame.top + frame.height}}px;">
   <block wx:if="{{stage === 'live'}}">
     <!-- Native camera underneath; the WebGL canvas on top shows the film look live. -->
     <camera
@@ -28,22 +28,22 @@
       bindstatuslongpress="onToggleDevPanel"
     />
 
-    <view id="controls" class="controls">
-      <view class="side side-left">
-        <view
-          class="control {{devicePosition === 'front' ? 'control-disabled' : ''}}"
-          hover-class="{{devicePosition === 'front' ? 'none' : 'control-pressed'}}"
-          bindtap="onToggleFlash"
-        >
-          <image class="icon" src="/assets/icons/flash-{{flash}}.svg" />
-        </view>
+    <view class="side side-left">
+      <view
+        class="control {{devicePosition === 'front' ? 'control-disabled' : ''}}"
+        hover-class="{{devicePosition === 'front' ? 'none' : 'control-pressed'}}"
+        bindtap="onToggleFlash"
+      >
+        <image class="icon" src="/assets/icons/flash-{{flash}}.svg" />
       </view>
-      <view class="side side-right">
-        <view class="control" hover-class="control-pressed" bindtap="onFlip">
-          <image class="icon" src="/assets/icons/flip.svg" />
-        </view>
+    </view>
+    <view class="side side-right">
+      <view class="control" hover-class="control-pressed" bindtap="onFlip">
+        <image class="icon" src="/assets/icons/flip.svg" />
       </view>
+    </view>
 
+    <view id="controls" class="controls">
       <view class="shutter-row">
         <view class="shutter-slot">
           <image

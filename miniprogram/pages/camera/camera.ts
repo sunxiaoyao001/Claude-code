@@ -30,7 +30,7 @@ import { loadCurrentPack, saveCurrentPack } from '../../core/storage/cameraPrefs
 import { advanceRoll, formatCounter, loadRolls, rollOf, saveRolls, type RollTable } from '../../core/storage/RollCounter';
 import { albumBytes, saveShot } from '../../core/storage/ShotStore';
 import { typewrite } from '../../core/ui/typewriter';
-import type { StripItem } from '../../components/film-roll-strip/film-roll-strip';
+import { buildStripItems, type StripItem } from '../../core/ui/stripModel';
 import { buildDevLines, formatCapture, type DevModel, type DevSettings } from './devModel';
 
 type Stage = 'starting' | 'live' | 'privacy-declined' | 'camera-denied' | 'camera-error';
@@ -425,13 +425,8 @@ Page<CameraPageData, CameraPageCustom>({
 
   stripItems() {
     const { store } = this.runtime;
-    let series = '';
-    return store.list().map((pack) => {
-      const seriesStart = pack.series.id !== series;
-      series = pack.series.id;
-      // Entitlement (free tier, daily trial, unlocks) arrives in M5; until then the badge is display only.
-      return { id: pack.id, name: pack.name, thumb: store.thumbSource(pack), locked: !pack.free, seriesStart, progress: -1 };
-    });
+    // Entitlement (free tier, daily trial, unlocks) arrives in M5; until then the badge is display only.
+    return buildStripItems(store.list(), (pack) => store.thumbSource(pack), (pack) => !pack.free);
   },
 
   loadLut(pack, renderer) {

@@ -9,10 +9,11 @@
     bindscroll="onScroll"
   >
     <view class="strip-track">
+      <view class="strip-spacer"></view>
       <view
         wx:for="{{items}}"
         wx:key="id"
-        class="strip-item {{item.seriesStart && index > 0 ? 'strip-item--series' : ''}} {{item.id === activeId ? 'strip-item--active' : ''}}"
+        class="strip-item {{index === 0 ? 'strip-item--first' : item.seriesStart ? 'strip-item--series' : ''}} {{item.id === activeId ? 'strip-item--active' : ''}}"
         hover-class="strip-item--pressed"
         data-id="{{item.id}}"
         bindtap="onTap"
@@ -26,6 +27,7 @@
         </view>
         <text class="strip-name">{{item.name}}</text>
       </view>
+      <view class="strip-spacer"></view>
     </view>
   </scroll-view>
 </view>

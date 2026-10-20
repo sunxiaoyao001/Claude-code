@@ -8,6 +8,7 @@ import { buildCatalog, PackStore, parseManifest } from '../miniprogram/core/pack
 import { SERIES, SERIES_ORDER } from '../miniprogram/core/pack/SeriesProfile';
 import { validateFilterParams } from '../miniprogram/core/pack/FilterParams';
 import { advanceRoll, EXPOSURES, formatCounter, rollOf, type RollTable } from '../miniprogram/core/storage/RollCounter';
+import { buildStripItems } from '../miniprogram/core/ui/stripModel';
 import { typewrite } from '../miniprogram/core/ui/typewriter';
 
 const assets = join(__dirname, '..', 'miniprogram', 'assets');
@@ -152,6 +153,16 @@ describe('catalog and store', () => {
     expect(parseManifest(null)).toBeNull();
     expect(parseManifest({ version: '1', packs: [] })).toBeNull();
     expect(parseManifest({ version: 1, packs: {} })).toBeNull();
+  });
+});
+
+describe('strip model', () => {
+  it('marks series breaks and locks everything outside the free tier', () => {
+    const store = new PackStore(null);
+    const items = buildStripItems(store.list(), (pack) => store.thumbSource(pack), (pack) => !pack.free);
+    expect(items.filter((item) => item.seriesStart).map((item) => item.id)).toEqual(['sunny-fun', 'm3-hp5', 'ccd-casio']);
+    expect(items.filter((item) => !item.locked).map((item) => item.id)).toEqual(['sunny-fun', 'moonlight', 'm3-hp5']);
+    expect(items.every((item) => item.progress === -1 && item.thumb.startsWith('/assets/thumbs/'))).toBe(true);
   });
 });
 
