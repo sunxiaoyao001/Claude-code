@@ -4,10 +4,16 @@ import { resolveOrientation } from '../miniprogram/core/camera/orientation';
 import { captureLongEdgeLimit, tierFromBenchmark } from '../miniprogram/core/device/DeviceTier';
 import { captureSize } from '../miniprogram/core/gl/Pipeline';
 import { createRng, rollShot } from '../miniprogram/core/gl/shotRandom';
-import { parseAspect, SUNNY_FUN, validateFilterParams } from '../miniprogram/core/pack/FilterParams';
+import { BUILTIN_PACKS } from '../miniprogram/core/pack/builtinPacks';
+import { resolvePack } from '../miniprogram/core/pack/CameraPack';
+import { parseAspect, validateFilterParams } from '../miniprogram/core/pack/FilterParams';
+
+const sunny = BUILTIN_PACKS.find((def) => def.id === 'sunny-fun');
+const SUNNY_FUN = sunny ? resolvePack(sunny).pack?.filter : undefined;
+if (!SUNNY_FUN) throw new Error('sunny-fun must resolve');
 
 describe('FilterParams', () => {
-  it('ships a valid sunny-fun look', () => {
+  it('resolves sunny-fun to a valid look', () => {
     expect(validateFilterParams(SUNNY_FUN)).toEqual([]);
   });
 

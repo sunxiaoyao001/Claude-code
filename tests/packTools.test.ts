@@ -70,28 +70,42 @@ describe('placeholder looks', () => {
     }
   });
 
-  it('sunny-fun warms a neutral grey and keeps it in range', () => {
-    const [r, g, b] = applyLook(PLACEHOLDER_LOOKS['sunny-fun']!, [0.5, 0.5, 0.5]);
-    expect(r).toBeGreaterThan(b + 0.05);
-    expect(g).toBeGreaterThan(b);
-    for (const v of [r, g, b]) expect(v).toBeGreaterThanOrEqual(0);
+  it('ccd-canon warms and ccd-sony cools a neutral grey, staying in range', () => {
+    const [wr, , wb] = applyLook(PLACEHOLDER_LOOKS['ccd-canon']!, [0.5, 0.5, 0.5]);
+    const [cr, , cb] = applyLook(PLACEHOLDER_LOOKS['ccd-sony']!, [0.5, 0.5, 0.5]);
+    expect(wr).toBeGreaterThan(wb + 0.03);
+    expect(cb).toBeGreaterThan(cr + 0.03);
+    for (const v of [wr, wb, cr, cb]) expect(v).toBeGreaterThanOrEqual(0);
   });
 
-  it('m3-hp5 is monochrome', () => {
-    const [r, g, b] = applyLook(PLACEHOLDER_LOOKS['m3-hp5']!, [0.8, 0.3, 0.1]);
-    expect(Math.abs(r - g)).toBeLessThan(0.02);
-    expect(Math.abs(g - b)).toBeLessThan(0.02);
+  it('clip saturates highlights to white', () => {
+    const [r, g, b] = applyLook(PLACEHOLDER_LOOKS['ccd-sony']!, [0.95, 0.95, 0.95]);
+    expect(Math.min(r, g, b)).toBeGreaterThan(0.97);
   });
 });
 
 describe('shipped LUT assets', () => {
   const dir = join(__dirname, '..', 'miniprogram', 'assets', 'luts');
 
-  it.each(['identity', 'sunny-fun', 'moonlight', 'm3-hp5'])('%s.png matches the generator', (id) => {
+  it.each(Object.keys(PLACEHOLDER_LOOKS))('%s.png matches the generator', (id) => {
     const decoded = decodePngRgb(readFileSync(join(dir, `${id}.png`)));
     expect(decoded.width).toBe(198);
     const look = PLACEHOLDER_LOOKS[id]!;
     const expected = packTiles(buildCube(id, 33, (r, g, b) => applyLook(look, [r, g, b])));
     expect(Buffer.from(decoded.rgb).equals(Buffer.from(expected.rgb))).toBe(true);
+  });
+
+  // Datasheet LUTs from pack-tools/spectral (not reproducible in CI, so only their shape is checked).
+  it.each(['m3-hp5', 'street-gr', 'night-3200', 'silver-50', 'ql17-street', 'silk-xp2'])('%s.png is monochrome', (id) => {
+    const { rgb, width } = decodePngRgb(readFileSync(join(dir, `${id}.png`)));
+    expect(width).toBe(198);
+    let maxSpread = 0;
+    for (let i = 0; i < rgb.length; i += 3) {
+      const r = rgb[i] ?? 0;
+      const g = rgb[i + 1] ?? 0;
+      const b = rgb[i + 2] ?? 0;
+      maxSpread = Math.max(maxSpread, Math.abs(r - g), Math.abs(g - b));
+    }
+    expect(maxSpread).toBeLessThanOrEqual(2);
   });
 });

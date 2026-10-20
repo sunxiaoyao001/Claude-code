@@ -56,7 +56,7 @@ function randomColors(count: number, seed = 1): Array<[number, number, number]> 
 }
 
 describe('LUT lookup (shader port) against the generating look', () => {
-  it.each(['identity', 'sunny-fun', 'moonlight', 'm3-hp5'])('%s stays within 3/255', (id) => {
+  it.each(['identity', 'ccd-casio', 'ccd-canon', 'vhs-c'])('%s stays within 3/255', (id) => {
     const png = decodePngRgb(readFileSync(join(__dirname, '..', 'miniprogram', 'assets', 'luts', `${id}.png`)));
     const sample = sampler(png.rgb);
     const look = PLACEHOLDER_LOOKS[id]!;

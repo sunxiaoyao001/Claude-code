@@ -1,6 +1,6 @@
-// Parametric placeholder looks (CLAUDE.md §6): each built-in camera gets a distinct, plausible colour
-// response until datasheet-based (spectral_film_lut) or ColorChecker-calibrated LUTs replace it.
-// Operates on sRGB-encoded values, the same space the shaders feed into the LUT.
+// Parametric looks (CLAUDE.md §6) for cameras without film datasheet data: the CCD digicams now, and
+// later the series spectral_film_lut cannot model. Film cameras get datasheet LUTs from
+// pack-tools/spectral/. Operates on sRGB-encoded values, the same space the shaders feed into the LUT.
 
 type RGB = [number, number, number];
 
@@ -16,6 +16,8 @@ export interface LookParams {
   lift: number;
   /** Highlight shoulder: f(x) = x(1+r)/(1+rx), keeps 1 at 1 and lifts the midtones. */
   rolloff: number;
+  /** CCD-style hard clip: values above this level saturate to white (1 = off). */
+  clip?: number;
   shadowTint: RGB;
   highlightTint: RGB;
   /** Black & white channel mix; when set the look is monochrome. */
@@ -30,9 +32,9 @@ const dot = (a: RGB, b: RGB) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 
 export function applyLook(look: LookParams, input: RGB): RGB {
   let rgb: RGB = [
-    input[0] * (1 + 0.08 * look.temperature),
-    input[1] * (1 - 0.04 * look.tint),
-    input[2] * (1 - 0.1 * look.temperature),
+    input[0] * (1 + 0.12 * look.temperature),
+    input[1] * (1 - 0.05 * look.tint),
+    input[2] * (1 - 0.16 * look.temperature),
   ];
 
   if (look.mono) {
@@ -54,6 +56,11 @@ export function applyLook(look: LookParams, input: RGB): RGB {
   const highlightWeight = luma ** 2;
   rgb = rgb.map((c, i) => c + (look.shadowTint[i] ?? 0) * shadowWeight + (look.highlightTint[i] ?? 0) * highlightWeight) as RGB;
 
+  if (look.clip !== undefined && look.clip < 1) {
+    const clip = look.clip;
+    rgb = rgb.map((c) => c / clip) as RGB;
+  }
+
   rgb = rgb.map((c) => {
     const lifted = look.lift + (1 - look.lift) * clamp01(c);
     return (lifted * (1 + look.rolloff)) / (1 + look.rolloff * lifted);
@@ -70,19 +77,35 @@ const NEUTRAL: LookParams = {
 
 export const PLACEHOLDER_LOOKS: Record<string, LookParams> = {
   identity: NEUTRAL,
-  // Kodak FunSaver 800: warm yellow highlights, slightly cool shadows, punchy but not harsh.
-  'sunny-fun': {
-    temperature: 0.55, tint: -0.1, saturation: 1.08, contrast: 0.18, lift: 0.035, rolloff: 0.15,
-    shadowTint: [-0.01, 0, 0.02], highlightTint: [0.03, 0.015, -0.03],
+  // C · CCD 千禧: small sensors clip highlights hard and render colour with a digital bias.
+  // Casio Exilim EX-S500: cool, high-key, flash-white skin.
+  'ccd-casio': {
+    temperature: -0.7, tint: 0.08, saturation: 0.88, contrast: 0.1, lift: 0.03, rolloff: 0.45, clip: 0.88,
+    shadowTint: [-0.01, 0, 0.03], highlightTint: [-0.02, 0, 0.03],
   },
-  // Fujifilm Natura 1600 at night: bright, warm, gentle contrast, open shadows.
-  moonlight: {
-    temperature: 0.3, tint: 0, saturation: 0.98, contrast: 0.08, lift: 0.05, rolloff: 0.35,
+  // Sony Cyber-shot DSC-T10: blue cast, low dynamic range.
+  'ccd-sony': {
+    temperature: -0.95, tint: -0.05, saturation: 1.0, contrast: 0.3, lift: 0.01, rolloff: 0.05, clip: 0.85,
+    shadowTint: [-0.03, 0, 0.06], highlightTint: [-0.01, 0, 0.02],
+  },
+  // Canon Digital IXUS 860 IS: warm, friendly compact.
+  'ccd-canon': {
+    temperature: 0.45, tint: -0.05, saturation: 1.1, contrast: 0.18, lift: 0.015, rolloff: 0.12, clip: 0.92,
     shadowTint: [0.01, 0, -0.01], highlightTint: [0.02, 0.01, -0.02],
   },
-  // Leica M3 + Ilford HP5 Plus: panchromatic B&W, classic mid contrast, faint warm paper.
-  'm3-hp5': {
-    ...NEUTRAL, contrast: 0.25, lift: 0.02, rolloff: 0.05,
-    mono: [0.27, 0.63, 0.1], tone: [1, 0.99, 0.97],
+  // Fujifilm FinePix F40fd: the skin-tone favourite, soft highlights, slightly cool greens.
+  'ccd-fuji': {
+    temperature: -0.4, tint: -0.2, saturation: 0.95, contrast: 0.1, lift: 0.02, rolloff: 0.4, clip: 0.95,
+    shadowTint: [-0.01, 0.015, 0.02], highlightTint: [0.015, 0.005, -0.005],
+  },
+  // Nikon Coolpix SQ: toy-like vivid colour.
+  'ccd-nikon': {
+    temperature: 0.1, tint: 0.05, saturation: 1.35, contrast: 0.25, lift: 0.01, rolloff: 0.1, clip: 0.9,
+    shadowTint: [0, 0, 0.01], highlightTint: [0.01, 0, -0.01],
+  },
+  // Sony Handycam on VHS-C tape: washed-out chroma, lifted blacks, magenta drift.
+  'vhs-c': {
+    temperature: 0.15, tint: 0.18, saturation: 0.72, contrast: 0.05, lift: 0.07, rolloff: 0.25, clip: 0.94,
+    shadowTint: [0.01, -0.01, 0.03], highlightTint: [0.02, 0, -0.01],
   },
 };

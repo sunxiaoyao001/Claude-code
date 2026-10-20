@@ -19,6 +19,7 @@ const NEUTRAL: FilterParams = {
   lightLeak: { probability: 0, opacityMin: 0, opacityMax: 0 },
   frame: { aspectRatio: '3:4' },
   dateStamp: { enabled: false },
+  fx: { chromaticAberration: 0, scanlines: 0 },
 };
 const NO_RANDOM = { seed: 0, grainSeed: 0, ditherSeed: 0, leak: null };
 const TEST_SIZE = 192;

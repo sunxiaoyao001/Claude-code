@@ -1,5 +1,5 @@
-// Film look parameters of one camera (CLAUDE.md §4–§5). M3 resolves them from SeriesProfile + pack
-// delta; until then the built-in looks below are complete values.
+// Film look parameters of one camera (CLAUDE.md §4–§5), resolved from SeriesProfile + pack delta
+// (core/pack/CameraPack.ts). Every field is required after resolution.
 
 export interface FilterParams {
   lut: {
@@ -29,6 +29,12 @@ export interface FilterParams {
     aspectRatio: string;
   };
   dateStamp: { enabled: boolean };
+  fx: {
+    /** Lateral colour fringing towards the frame edge, as a fraction of the frame width (VHS, cheap optics). */
+    chromaticAberration: number;
+    /** Scanline darkening 0..1 (VHS). */
+    scanlines: number;
+  };
 }
 
 interface Range {
@@ -51,6 +57,8 @@ const RANGES: Range[] = [
   { path: 'lightLeak.probability', min: 0, max: 1, read: (p) => p.lightLeak.probability },
   { path: 'lightLeak.opacityMin', min: 0, max: 1, read: (p) => p.lightLeak.opacityMin },
   { path: 'lightLeak.opacityMax', min: 0, max: 1, read: (p) => p.lightLeak.opacityMax },
+  { path: 'fx.chromaticAberration', min: 0, max: 0.02, read: (p) => p.fx.chromaticAberration },
+  { path: 'fx.scanlines', min: 0, max: 1, read: (p) => p.fx.scanlines },
 ];
 
 /** Parses "w:h" into a width/height ratio, or NaN when malformed. */
@@ -75,18 +83,3 @@ export function validateFilterParams(params: FilterParams): string[] {
   if (Number.isNaN(parseAspect(params.frame.aspectRatio))) problems.push(`frame.aspectRatio "${params.frame.aspectRatio}" is not "w:h"`);
   return problems;
 }
-
-/**
- * 阳光罐头 · inspired by Kodak FunSaver (ISO 800 disposable): warm yellow cast, plastic-lens
- * vignette, visible 800-speed grain, occasional light leaks and the orange date stamp.
- * 3:4 matches the 4:3 phone sensor, so the output keeps the full captured resolution.
- */
-export const SUNNY_FUN: FilterParams = {
-  lut: { id: 'sunny-fun', intensity: 1 },
-  vignette: { strength: 0.32, softness: 0.45 },
-  halation: { strength: 0.18, threshold: 0.85, radius: 1 },
-  grain: { size: 1.6, intensity: 0.07, lumaWeight: 0.6, colored: false },
-  lightLeak: { probability: 0.35, opacityMin: 0.25, opacityMax: 0.55 },
-  frame: { aspectRatio: '3:4' },
-  dateStamp: { enabled: true },
-};
