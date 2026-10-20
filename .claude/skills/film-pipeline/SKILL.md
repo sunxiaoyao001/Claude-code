@@ -110,26 +110,31 @@ Pack JSON uses nested filter keys (as in the CLAUDE.md §5 example): `filter.gra
 ```ts
 type SeriesId =
   | 'jp-color' | 'street-bw' | 'ccd' | 'instant'
-  | 'medium-format' | 'cine-slide' | 'toy' | 'darkroom'; // proposal, finalise in M3
+  | 'medium-format' | 'cine-slide' | 'toy' | 'darkroom';
 
-// FilterParams: source of truth is miniprogram/core/pack/FilterParams.ts (with validateFilterParams()
-// ranges and the SUNNY_FUN reference look).
+// Sources of truth: core/pack/FilterParams.ts (params + validateFilterParams ranges, incl. fx.chromatic-
+// Aberration / fx.scanlines), core/pack/SeriesProfile.ts (complete bases), core/pack/CameraPack.ts
+// (PackDefinition, resolvePack), core/pack/builtinPacks.ts (shipped cameras).
 
-interface CameraPack {
-  id: string; name: string; tagline: string; series: SeriesId;
+interface PackDefinition {
+  id: string; name: string; latinName: string; tagline: string; series: SeriesId;
   inspiredBy: string;            // required: real camera + film/process
   free: boolean;
   tags?: string[];               // e.g. 'seasonal'
   collab?: string;
   filter?: DeepPartial<FilterParams>;
-  ui?: DeepPartial<UiParams>;    // shutterStyle, themeColor, skin overrides
-  assets?: { lut: string; sha256: string; bytes: number };
+  ui?: Partial<UiParams>;        // themeColor (#RRGGBB → --accent), shutterStyle
+  assets?: { lut?: RemoteAsset; thumb?: RemoteAsset }; // CDN packs only: { url, sha256, bytes }
 }
 ```
 
 Merge rules (`CameraPack.ts`, unit-tested):
 - `resolved = deepMerge(SeriesProfile[pack.series], pack)`; plain objects merge recursively, arrays and primitives **replace**.
 - Series profiles are complete; after merge, validate that every `FilterParams` leaf is a finite number/string in range, else reject the pack (never render a half-specified camera).
+- Never assign into a merge result: with no delta, `deepMerge` returns the shared series object itself (a regression test guards this — mutating it once leaked one pack's LUT id into its whole series).
+- `lut.id: ''` in a series means "the pack's own id"; built-in LUTs live at `/assets/luts/<id>.png`, thumbnails at `/assets/thumbs/<id>.jpg`.
+- Product names (`name`, `latinName`, `tagline`) are checked against a trademark word list; `inspiredBy` may name the real brands.
+- Remote packs: `PackStore.addRemote(manifest)` adds new ids only (built-ins are never replaced) and requires `assets.lut`; files go through `AssetCache` (SHA-256, retry ×3, LRU budget `cacheBudget(albumBytes)`).
 - Adding a camera = one CDN asset bundle + one registry entry; no code change.
 
 ## 7. Monetisation guardrails (affects `Entitlement.ts`)

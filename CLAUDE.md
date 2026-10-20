@@ -74,6 +74,7 @@
 │   │   │   ├── orientation.ts    # EXIF 方向 → 旋转/镜像
 │   │   │   ├── ShotCapture.ts    # takePhoto → 原生缩放 → 离屏全分辨率渲染 → 导出 → 临时文件
 │   │   │   ├── exportImage.ts    # readPixels 分条 → 2D 画布 → canvasToTempFilePath(jpg)
+│   │   │   ├── frameLayout.ts    # 画框位置：状态行与控件之间按 aspectRatio 适配居中；CSS 矩形 ↔ GL 视口
 │   │   │   └── exportSelfCheck.ts # 开发面板：LUT 精度 + 两条导出路径真机自检
 │   │   ├── gl/
 │   │   │   ├── GLRenderer.ts     # WebGL1 封装：program/texture/FBO 管理；LUT PNG 经 createImage 原生解码直接上传（无单独 LutLoader）
@@ -84,29 +85,43 @@
 │   │   │       ├── fullscreenVert.ts
 │   │   │       ├── extractFrag.ts # halation：LUT 前高光软阈值提取 + 红偏（1/4、1/8 分辨率）
 │   │   │       ├── blurFrag.ts   # 可分离高斯（9-tap 折成 5 次双线性采样，FBO ping-pong）
-│   │   │       ├── compositeFrag.ts # 合并 pass：暗角 → LUT → 光晕 screen → 颗粒 → 程序化漏光 → 抖动
+│   │   │       ├── compositeFrag.ts # 合并 pass：[色差] → 暗角 → LUT → 光晕 screen → 颗粒（可彩色）→ 程序化漏光 → 扫描线 → 抖动
 │   │   │       └── rawFrag.ts    # 原始画面（开发对比 / LUT 未就绪时）
 │   │   ├── pack/
+│   │   │   ├── FilterParams.ts   # 滤镜参数模型 + 取值范围校验
 │   │   │   ├── SeriesProfile.ts # 八份系列基础档案（常量）
-│   │   │   ├── CameraPack.ts     # pack 模型 + series delta 继承合并器
-│   │   │   ├── PackStore.ts      # 内置注册 + CDN 按需下载 + 本地缓存（LRU）
-│   │   │   └── AssetCache.ts     # LUT/漏光纹理下载、校验、用户目录管理
+│   │   │   ├── CameraPack.ts     # pack 模型 + series delta 继承合并器 + 商标词检查
+│   │   │   ├── builtinPacks.ts   # 代码包内置相机（M3：A/B/C 20 款）
+│   │   │   ├── PackStore.ts      # 内置注册 + 远程清单（downloadFile 拉取）+ 资源路径
+│   │   │   └── AssetCache.ts     # CDN 资源下载、SHA-256 校验、重试、LRU（50→20MB，与相册共享配额）
 │   │   ├── stamp/
 │   │   │   ├── sevenSegment.ts   # 七段数码管几何
 │   │   │   └── DateStamp.ts      # 2D canvas 日期戳绘制（路径七段数码管 + 橙色 #FF9E2C）
+│   │   ├── ui/                   # 纯视图逻辑：stripModel（胶卷条卡片）、typewriter（相机名打字机）
+│   │   ├── util/sha256.ts        # 纯 TS SHA-256（小程序无 SubtleCrypto）
+│   │   ├── config.ts             # CDN_BASE（空 = 只用内置相机，零网络请求）
 │   │   └── storage/
-│   │       ├── ShotStore.ts      # 拍摄记录（元数据 + 文件路径，不存像素；相册配额管理）
+│   │       ├── ShotStore.ts      # 拍摄记录（元数据 + 文件路径 + 卷号/张号，不存像素；相册配额管理）
+│   │       ├── RollCounter.ts    # 每台相机各自一卷 36 张，倒计数，拍完自动换新卷
+│   │       ├── cameraPrefs.ts    # 记住上次装的相机
 │   │       └── Entitlement.ts    # 解锁引擎：免费层/今日限免 + 激励视频 + 虚拟支付（默认关闭）
 │   └── assets/
-│       ├── luts/                  # 内置免费相机的 LUT：198×198 PNG（6×6 瓦片，每款约 8–15KB；其余走 CDN）
+│       ├── luts/                  # 内置相机 LUT：198×198 PNG（6×6 瓦片；光谱 LUT 每款约 35–42KB，程序化约 10–19KB）
+│       ├── thumbs/                # 胶卷条缩略图 192×192 JPG（render-samples 用真实管线渲染）
 │       ├── icons/                 # 控件 SVG
 │       └── fonts/                 # 备选：OFL 日期戳字体（默认不用，日期戳走路径绘制）
 ├── pack-tools/                    # Node 构建期工具（不上小程序，`node --experimental-strip-types` 直接运行）
 │   ├── lib/                       # cube 读写、6×6 瓦片打包、零依赖 PNG 编解码、占位色彩模型
 │   ├── cube2png.mts               # .cube（33³）→ 瓦片 PNG。不用 .bin：PNG 一定在代码包白名单内、原生解码、deflate 后更小
-│   ├── luts-spectral/             # spectral_film_lut 离线导出的 .cube（约 26 款有胶卷依据，入库；Python 仅人工离线使用，不进 CI）
-│   └── gen-placeholder-luts.mts   # 其余款程序化占位 LUT + 49 张统一风格样张批量生成（真实胶卷采样后替换）
-├── scripts/gl-check.mjs           # GPU 对齐测试：无头 Chromium WebGL1 跑真实 shader，对比 TS 参考实现的统计特征
+│   ├── spectral/gen_spectral_luts.py # spectral_film_lut 配方（胶卷 + 相纸 + 曝光/色温），离线导出 .cube 再经 cube2png 入库；
+│   │                              #   Python 仅人工离线使用，不进 CI；.cube 中间产物不入库（脚本可重现）
+│   ├── samples/                   # 样张源照片（CC0/公有领域，见其 README）
+│   └── gen-placeholder-luts.mts   # 无胶卷依据款（CCD/VHS 等）的程序化 LUT（真实采样后替换）
+├── scripts/
+│   ├── gl-check.mjs               # GPU 对齐测试：无头 Chromium WebGL1 跑真实 shader，对比 TS 参考实现的统计特征
+│   ├── render-samples.mjs         # 真实管线批量渲染：胶卷条缩略图 + 系列对比样张（M5 详情页样张同此工具）
+│   ├── ui-preview.mjs             # 无手机截图：真实 WXML/WXSS → HTML + 真实预览管线 + 模拟机身（状态栏/胶囊/安全区）
+│   └── lib/browser.mjs            # 以上三者共用的 Chromium/TS 转译服务
 └── tests/                         # vitest：pack 继承合并、LUT 解析、随机种子、额度逻辑
 ```
 
@@ -465,4 +480,4 @@ Claude Code 每个里程碑交付的"需真机确认项清单"必须可直接执
 
 ---
 
-本提示词由市场调研支撑（见《调研报告.md》），版本 2026-10-19 v6（v5 + P0 研究结论回写）。
+本提示词由市场调研支撑（见《调研报告.md》），版本 2026-10-20 v6.1（v6 + M3 架构落地回写）。
