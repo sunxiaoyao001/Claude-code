@@ -14,7 +14,9 @@
     "gl-check": "node scripts/gl-check.mjs",
     "build": "node scripts/build.mjs",
     "size": "node scripts/size-check.mjs",
-    "preview": "node scripts/preview.mjs"
+    "preview": "node scripts/preview.mjs",
+    "samples": "node scripts/render-samples.mjs",
+    "ui-preview": "node scripts/ui-preview.mjs"
   },
   "devDependencies": {
     "@types/node": "22.20.5",
