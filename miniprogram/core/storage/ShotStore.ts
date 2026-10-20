@@ -11,7 +11,14 @@ export interface ShotRecord {
   height: number;
   /** Seed of the per-shot random variables, so the shot can be re-rendered. */
   seed: number;
+  /** Roll number and 1-based frame on that roll (core/storage/RollCounter). */
+  roll: number;
+  frame: number;
+  bytes: number;
 }
+
+// Records from before sizes were stored count as a typical full-resolution JPEG.
+const ESTIMATED_SHOT_BYTES = 2 * 1024 * 1024;
 
 const STORAGE_KEY = 'shots.v1';
 
@@ -36,7 +43,12 @@ export function listShots(): ShotRecord[] {
   }
 }
 
-export function saveShot(tempFilePath: string, meta: Omit<ShotRecord, 'id' | 'path' | 'createdAt'>): Promise<ShotRecord> {
+/** Bytes the album occupies in USER_DATA_PATH, for the shared 200MB budget. */
+export function albumBytes(): number {
+  return listShots().reduce((sum, shot) => sum + (shot.bytes || ESTIMATED_SHOT_BYTES), 0);
+}
+
+export function saveShot(tempFilePath: string, meta: Omit<ShotRecord, 'id' | 'path' | 'createdAt' | 'bytes'>): Promise<ShotRecord> {
   const fs = wx.getFileSystemManager();
   ensureDir(fs, shotsDir());
   const createdAt = Date.now();
@@ -47,7 +59,13 @@ export function saveShot(tempFilePath: string, meta: Omit<ShotRecord, 'id' | 'pa
       tempFilePath,
       filePath,
       success: () => {
-        const record: ShotRecord = { id, path: filePath, createdAt, ...meta };
+        let bytes = ESTIMATED_SHOT_BYTES;
+        try {
+          bytes = (fs.statSync(filePath) as WechatMiniprogram.Stats).size;
+        } catch {
+          // Keep the estimate; the size only feeds the cache budget.
+        }
+        const record: ShotRecord = { id, path: filePath, createdAt, bytes, ...meta };
         wx.setStorageSync(STORAGE_KEY, [record, ...listShots()]);
         resolve(record);
       },
