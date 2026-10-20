@@ -1,0 +1,33 @@
+<view class="skin">
+  <view
+    class="skin-black {{black ? 'skin-black--on' : ''}}"
+    style="left: {{frame.left}}px; top: {{frame.top}}px; width: {{frame.width}}px; height: {{frame.height}}px;"
+  ></view>
+
+  <view
+    class="skin-frame {{linesHidden ? 'skin-frame--hidden' : ''}}"
+    style="left: {{frame.left}}px; top: {{frame.top}}px; width: {{frame.width}}px; height: {{frame.height}}px;"
+  >
+    <view class="skin-third skin-third--v1"></view>
+    <view class="skin-third skin-third--v2"></view>
+    <view class="skin-third skin-third--h1"></view>
+    <view class="skin-third skin-third--h2"></view>
+    <view class="skin-corner skin-corner--tl"></view>
+    <view class="skin-corner skin-corner--tr"></view>
+    <view class="skin-corner skin-corner--bl"></view>
+    <view class="skin-corner skin-corner--br"></view>
+  </view>
+
+  <view
+    class="skin-status"
+    style="top: {{statusTop}}px; height: {{statusHeight}}px; padding-right: {{statusRight}}px;"
+    bindlongpress="onStatusLongPress"
+  >
+    <text class="skin-counter latin-caps">{{counter}}</text>
+    <text class="skin-title latin-caps">{{title}}</text>
+    <view class="skin-format">
+      <view class="skin-format-box" style="width: {{glyph.width}}px; height: {{glyph.height}}px;"></view>
+      <text class="skin-format-label latin-caps">{{format}}</text>
+    </view>
+  </view>
+</view>

@@ -58,6 +58,10 @@ page {
   --strip-height: 88px;
   --strip-card: 64px;
   --strip-card-lift: 4px;
+  --strip-card-gap: 12px;
+  --strip-name-gap: 6px;
+  --strip-badge: 16px;
+  --frame-arm: 16px;
   --cta-height: 56px;
   --unlock-thumb: 84px;
   --series-dot: 10px;

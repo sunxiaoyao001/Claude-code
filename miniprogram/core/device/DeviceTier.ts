@@ -41,3 +41,13 @@ export function detectTier(): Promise<DeviceTier> {
     });
   });
 }
+
+/**
+ * Whether translucent bars may use backdrop-filter blur (§7.2). There is no feature query for it in
+ * WXSS, so this is a heuristic: low-tier phones and PC WeChat get the solid fallback. Platform comes
+ * from wx.getDeviceInfo() (wx.getSystemInfoSync is deprecated since 2.20.1).
+ */
+export function useFrostedGlass(tier: DeviceTier, platform: string): boolean {
+  if (tier === 'low') return false;
+  return platform === 'ios' || platform === 'android' || platform === 'devtools' || platform === 'ohos';
+}

@@ -1,0 +1,152 @@
+/* Viewfinder skin (§7.2): status row, L-shaped frame corners, thirds grid, swap black frame. */
+.skin {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.skin-black {
+  position: absolute;
+  background-color: var(--bg-0);
+  opacity: 0;
+  transition: opacity var(--dur-frame-fade) var(--ease-out);
+}
+
+/* Cut to black at once; only the way back fades. */
+.skin-black--on {
+  opacity: 1;
+  transition: none;
+}
+
+.skin-frame {
+  position: absolute;
+  opacity: 1;
+  transition: opacity var(--dur-frame-fade) var(--ease-out);
+}
+
+.skin-frame--hidden {
+  opacity: 0;
+  transition-duration: var(--dur-swap-black);
+}
+
+.skin-third {
+  position: absolute;
+  background-color: var(--frame-grid);
+}
+
+.skin-third--v1,
+.skin-third--v2 {
+  top: 0;
+  bottom: 0;
+  width: var(--hairline);
+}
+
+.skin-third--v1 {
+  left: 33.333%;
+}
+
+.skin-third--v2 {
+  left: 66.667%;
+}
+
+.skin-third--h1,
+.skin-third--h2 {
+  left: 0;
+  right: 0;
+  height: var(--hairline);
+}
+
+.skin-third--h1 {
+  top: 33.333%;
+}
+
+.skin-third--h2 {
+  top: 66.667%;
+}
+
+.skin-corner {
+  position: absolute;
+  width: var(--frame-arm);
+  height: var(--frame-arm);
+  border-style: solid;
+  border-color: var(--frame-corner);
+  border-width: 0;
+}
+
+.skin-corner--tl {
+  left: var(--sp-1);
+  top: var(--sp-1);
+  border-left-width: var(--stroke);
+  border-top-width: var(--stroke);
+}
+
+.skin-corner--tr {
+  right: var(--sp-1);
+  top: var(--sp-1);
+  border-right-width: var(--stroke);
+  border-top-width: var(--stroke);
+}
+
+.skin-corner--bl {
+  left: var(--sp-1);
+  bottom: var(--sp-1);
+  border-left-width: var(--stroke);
+  border-bottom-width: var(--stroke);
+}
+
+.skin-corner--br {
+  right: var(--sp-1);
+  bottom: var(--sp-1);
+  border-right-width: var(--stroke);
+  border-bottom-width: var(--stroke);
+}
+
+/* Status row next to the capsule button: frames left · camera name · format. */
+.skin-status {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: var(--sp-2);
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+.skin-counter {
+  min-width: var(--sp-6);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+.skin-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--fs-caption);
+  color: var(--text-0);
+  pointer-events: none;
+}
+
+.skin-format {
+  display: flex;
+  align-items: center;
+}
+
+.skin-format-box {
+  border: var(--stroke) solid var(--text-1);
+  border-radius: var(--hairline);
+}
+
+.skin-format-label {
+  margin-left: var(--sp-0);
+  font-size: var(--fs-caption);
+  color: var(--text-1);
+}

@@ -1,0 +1,31 @@
+<view class="strip {{solid ? 'strip--solid' : ''}}">
+  <scroll-view
+    class="strip-scroll"
+    scroll-x
+    enable-flex
+    show-scrollbar="{{false}}"
+    scroll-left="{{scrollLeft}}"
+    scroll-with-animation="{{animate}}"
+    bindscroll="onScroll"
+  >
+    <view class="strip-track">
+      <view
+        wx:for="{{items}}"
+        wx:key="id"
+        class="strip-item {{item.seriesStart && index > 0 ? 'strip-item--series' : ''}} {{item.id === activeId ? 'strip-item--active' : ''}}"
+        hover-class="strip-item--pressed"
+        data-id="{{item.id}}"
+        bindtap="onTap"
+      >
+        <view class="strip-card">
+          <image wx:if="{{item.thumb}}" class="strip-thumb" src="{{item.thumb}}" mode="aspectFill" />
+          <view wx:if="{{item.locked}}" class="strip-lock">
+            <image class="strip-lock-icon" src="/assets/icons/lock.svg" />
+          </view>
+          <view wx:if="{{item.progress >= 0}}" class="strip-progress" style="width: {{item.progress * 100}}%;"></view>
+        </view>
+        <text class="strip-name">{{item.name}}</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>
