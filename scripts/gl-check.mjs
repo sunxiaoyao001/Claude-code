@@ -3,79 +3,35 @@
 // Needs Playwright with a Chromium build; when unavailable it prints SKIPPED and exits 0, so the
 // pipeline still passes on machines without a browser. TypeScript is transpiled on the fly.
 import { readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { join } from 'node:path';
+import { launchChromium, openPage, ORIGIN, root } from './lib/browser.mjs';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const require = createRequire(import.meta.url);
-const ts = require('typescript');
-
-async function loadPlaywright() {
-  const candidates = ['playwright', process.env.PLAYWRIGHT_MODULE, '/opt/node-tools/node_modules/playwright/index.mjs'].filter(Boolean);
-  for (const candidate of candidates) {
-    try {
-      const specifier = candidate.startsWith('/') ? pathToFileURL(candidate).href : candidate;
-      return await import(specifier);
-    } catch {
-      // try the next location
-    }
-  }
-  return null;
-}
-
-function transpile(file) {
-  const output = ts.transpileModule(readFileSync(file, 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020, verbatimModuleSyntax: false },
-    fileName: file,
-  });
-  return output.outputText;
-}
-
-/** Maps a request path to a file and content type; extensionless imports resolve to .ts sources. */
-function resolveRequest(pathname) {
+const harness = (pathname) => {
   if (pathname === '/') return { body: '<!doctype html><html><body></body></html>', type: 'text/html' };
   if (pathname === '/harness.mjs') return { body: readFileSync(join(root, 'scripts', 'gl-check', 'harness.mjs'), 'utf8'), type: 'text/javascript' };
-  if (pathname.startsWith('/pack-tools/') && pathname.endsWith('.mts')) return { body: transpile(join(root, pathname)), type: 'text/javascript' };
-  if (pathname.startsWith('/assets/')) return { body: readFileSync(join(root, 'miniprogram', pathname)), type: 'image/png' };
-  if (pathname.startsWith('/core/')) return { body: transpile(join(root, 'miniprogram', `${pathname}.ts`)), type: 'text/javascript' };
   return null;
-}
+};
 
 const checks = [];
 function check(name, ok, detail) {
   checks.push({ name, ok, detail });
 }
 
-const playwright = await loadPlaywright();
-if (!playwright?.chromium) {
-  console.log('gl-check: SKIPPED, Playwright/Chromium not available (set PLAYWRIGHT_MODULE to its index.mjs)');
+const launched = await launchChromium();
+if (!launched.browser) {
+  console.log(`gl-check: SKIPPED, ${launched.skip}`);
   process.exit(0);
 }
-
-let browser;
-try {
-  browser = await playwright.chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-} catch (error) {
-  console.log(`gl-check: SKIPPED, Chromium failed to launch (${String(error.message ?? error).split('\n')[0]})`);
-  process.exit(0);
-}
+const { browser } = launched;
 
 try {
-  const page = await browser.newPage();
-  const pageErrors = [];
-  page.on('pageerror', (error) => pageErrors.push(error.message));
-  await page.route('http://gl.test/**', (route) => {
-    const resolved = resolveRequest(new URL(route.request().url()).pathname);
-    if (!resolved) return route.fulfill({ status: 404, body: 'not found' });
-    return route.fulfill({ status: 200, contentType: resolved.type, body: resolved.body });
-  });
-  await page.goto('http://gl.test/');
+  const { page, errors: pageErrors } = await openPage(browser, harness);
+  await page.goto(`${ORIGIN}/`);
   const r = await page.evaluate(async () => (await import('/harness.mjs')).run());
   if (pageErrors.length) throw new Error(pageErrors.join('\n'));
 
   check('identity LUT round trip ≤ 3/255', r.identityMaxError <= 3, `${r.identityMaxError}/255`);
-  check('sunny-fun LUT on GPU vs look function ≤ 4/255', r.sunnyLutMaxError <= 4, `${r.sunnyLutMaxError.toFixed(2)}/255`);
+  check('generated LUT on GPU vs look function ≤ 4/255', r.generatedLutMaxError <= 4, `${r.generatedLutMaxError.toFixed(2)}/255`);
   const meanDiff = Math.abs(r.grain.gpu.mean - r.grain.ref.mean) * 255;
   const stdRatio = r.grain.gpu.std / r.grain.ref.std;
   check('grain mean matches reference (≤ 0.75/255)', meanDiff <= 0.75, `Δmean ${meanDiff.toFixed(2)}/255`);
@@ -91,6 +47,17 @@ try {
   check('preview matches capture (vignette + LUT) ≤ 2/255 mean', r.previewVsCaptureMeanError <= 2, `${r.previewVsCaptureMeanError.toFixed(2)}/255`);
   const [lr, lg, lb] = r.leak.left;
   check('light leak warms the entering edge only', lr > r.leak.right[0] + 20 && lr > lb, `left rgb(${lr},${lg},${lb}) right rgb(${r.leak.right.join(',')})`);
+  const [cr, cg, cb] = r.chroma.edge;
+  // Line at 0.8 of a 1000px frame, aberration 0.01: red ≈ 3px inwards, blue ≈ 3px outwards.
+  check('chromatic aberration splits red in, blue out', cg - cr > 2 && cb - cg > 2, `centroids r ${cr.toFixed(1)} g ${cg.toFixed(1)} b ${cb.toFixed(1)}`);
+  const centreSpread = Math.max(...r.chroma.centre) - Math.min(...r.chroma.centre);
+  const offSpread = Math.max(...r.chroma.off) - Math.min(...r.chroma.off);
+  check('no aberration at the centre or when off', Math.min(...r.chroma.centre, ...r.chroma.off) > 0 && centreSpread < 0.5 && offSpread < 0.5, `centre spread ${centreSpread.toFixed(2)}px, off spread ${offSpread.toFixed(2)}px`);
+  const s = r.scanlines;
+  check('scanlines: ~320 per frame height, ~50% deep', Math.abs(s.minima - 320) <= 32 && s.max - s.min > 50, `${s.minima} minima, rows ${s.min}..${s.max}`);
+  check('no scanlines when strength is 0', s.offSpread <= 1, `spread ${s.offSpread}`);
+  const g = r.grainCorrelation;
+  check('coloured grain decorrelates channels', g.colored < 0.3 && g.mono > 0.95, `r/b correlation coloured ${g.colored.toFixed(2)}, mono ${g.mono.toFixed(2)}`);
 } catch (error) {
   check('harness ran', false, String(error.message ?? error));
 } finally {

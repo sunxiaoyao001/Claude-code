@@ -3,8 +3,11 @@
 import { GLRenderer } from '/core/gl/GLRenderer';
 import { Pipeline } from '/core/gl/Pipeline';
 import { computeViewTransform } from '/core/camera/viewTransform';
-import { SUNNY_FUN } from '/core/pack/FilterParams';
+import { BUILTIN_PACKS } from '/core/pack/builtinPacks';
+import { resolvePack } from '/core/pack/CameraPack';
 import { applyLook, PLACEHOLDER_LOOKS } from '/pack-tools/lib/looks.mts';
+
+const SUNNY_FUN = resolvePack(BUILTIN_PACKS.find((def) => def.id === 'sunny-fun')).pack.filter;
 
 const NEUTRAL = {
   lut: { id: 'identity', intensity: 1 },
@@ -14,6 +17,7 @@ const NEUTRAL = {
   lightLeak: { probability: 0, opacityMin: 0, opacityMax: 0 },
   frame: { aspectRatio: '3:4' },
   dateStamp: { enabled: false },
+  fx: { chromaticAberration: 0, scanlines: 0 },
 };
 const NO_RANDOM = { seed: 0, grainSeed: 0, ditherSeed: 0, leak: null };
 
@@ -101,19 +105,19 @@ export async function run() {
     results.identityMaxError = maxError;
   }
 
-  // 2. sunny-fun LUT on the GPU vs the look function it was generated from.
+  // 2. A generated LUT on the GPU vs the look function it was generated from.
   {
     const { renderer, pipeline } = makeRenderer(N, N);
-    pipeline.setLook({ ...NEUTRAL, lut: { id: 'sunny-fun', intensity: 1 } }, await lutTexture(renderer, 'sunny-fun'));
+    pipeline.setLook({ ...NEUTRAL, lut: { id: 'ccd-canon', intensity: 1 } }, await lutTexture(renderer, 'ccd-canon'));
     const { source, data } = makeSource(renderer, N, N, gradient(N));
     pipeline.renderCapture(source, transform(N, N, N, N), N, N, NO_RANDOM);
     const out = readTopDown(renderer, N, N);
     let maxError = 0;
     for (let i = 0; i < out.length; i += 4) {
-      const want = applyLook(PLACEHOLDER_LOOKS['sunny-fun'], [data[i] / 255, data[i + 1] / 255, data[i + 2] / 255]);
+      const want = applyLook(PLACEHOLDER_LOOKS['ccd-canon'], [data[i] / 255, data[i + 1] / 255, data[i + 2] / 255]);
       for (let c = 0; c < 3; c++) maxError = Math.max(maxError, Math.abs(out[i + c] - want[c] * 255));
     }
-    results.sunnyLutMaxError = maxError;
+    results.generatedLutMaxError = maxError;
   }
 
   // 3. Grain: GPU statistics vs the TypeScript reference on flat mid grey.
@@ -207,6 +211,64 @@ export async function run() {
     const out = readTopDown(renderer, S, S);
     const at = (x) => { const o = ((S / 2) * S + x) * 4; return [out[o], out[o + 1], out[o + 2]]; };
     results.leak = { left: at(4), right: at(S - 5) };
+  }
+
+  // 7. Chromatic aberration: a thin white line right of centre splits red inwards, blue outwards.
+  {
+    const S = 1000;
+    const { renderer, pipeline } = makeRenderer(S, S);
+    const lineAt = (fx) => (x) => (Math.abs((x + 0.5) / S - fx) < 0.004 ? [1, 1, 1] : [0, 0, 0]);
+    const centroids = async (ca, fx) => {
+      pipeline.setLook({ ...NEUTRAL, fx: { chromaticAberration: ca, scanlines: 0 } }, await lutTexture(renderer, 'identity'));
+      const { source } = makeSource(renderer, S, S, lineAt(fx));
+      pipeline.renderCapture(source, transform(S, S, S, S), S, S, NO_RANDOM);
+      const out = readTopDown(renderer, S, S);
+      const row = (S / 2) * S * 4;
+      return [0, 1, 2].map((ch) => {
+        let sum = 0; let weight = 0;
+        for (let x = 0; x < S; x++) { const v = out[row + x * 4 + ch]; sum += v * x; weight += v; }
+        return weight ? sum / weight : -1;
+      });
+    };
+    results.chroma = { edge: await centroids(0.01, 0.8), centre: await centroids(0.01, 0.5), off: await centroids(0, 0.8) };
+  }
+
+  // 8. Scanlines: periodic row darkening with a fixed count per frame height; none at strength 0.
+  {
+    const W = 64; const H = 1280;
+    const { renderer, pipeline } = makeRenderer(W, H);
+    const rows = async (strength) => {
+      pipeline.setLook({ ...NEUTRAL, fx: { chromaticAberration: 0, scanlines: strength } }, await lutTexture(renderer, 'identity'));
+      const { source } = makeSource(renderer, 4, 4, () => [0.6, 0.6, 0.6]);
+      pipeline.renderCapture(source, transform(4, 4, W, H), W, H, NO_RANDOM);
+      const out = readTopDown(renderer, W, H);
+      return Array.from({ length: H }, (_, y) => out[(y * W + W / 2) * 4]);
+    };
+    const on = await rows(1);
+    const off = await rows(0);
+    let minima = 0;
+    for (let y = 1; y < H - 1; y++) if (on[y] < on[y - 1] && on[y] <= on[y + 1]) minima++;
+    results.scanlines = { min: Math.min(...on), max: Math.max(...on), minima, offSpread: Math.max(...off) - Math.min(...off) };
+  }
+
+  // 9. Coloured grain decorrelates the channels; monochrome grain keeps them locked together.
+  {
+    const W = 256; const H = 256;
+    const { renderer, pipeline } = makeRenderer(W, H);
+    const correlation = async (colored) => {
+      pipeline.setLook({ ...NEUTRAL, grain: { size: 1.6, intensity: 0.12, lumaWeight: 0, colored } }, await lutTexture(renderer, 'identity'));
+      const { source } = makeSource(renderer, 4, 4, () => [0.5, 0.5, 0.5]);
+      pipeline.renderCapture(source, transform(4, 4, W, H), W, H, { ...NO_RANDOM, grainSeed: 3.3 });
+      const out = readTopDown(renderer, W, H);
+      const r = []; const b = [];
+      for (let i = 0; i < out.length; i += 4) { r.push(out[i]); b.push(out[i + 2]); }
+      const mr = r.reduce((s, v) => s + v, 0) / r.length;
+      const mb = b.reduce((s, v) => s + v, 0) / b.length;
+      let cov = 0; let vr = 0; let vb = 0;
+      for (let i = 0; i < r.length; i++) { cov += (r[i] - mr) * (b[i] - mb); vr += (r[i] - mr) ** 2; vb += (b[i] - mb) ** 2; }
+      return cov / Math.sqrt(vr * vb);
+    };
+    results.grainCorrelation = { colored: await correlation(true), mono: await correlation(false) };
   }
 
   return results;

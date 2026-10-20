@@ -22,7 +22,7 @@ const BACKGROUND: [number, number, number] = [13 / 255, 13 / 255, 15 / 255];
 
 const COMPOSITE_UNIFORMS = [
   'uFrame', 'uLut', 'uHalo', 'uHaloWide', 'uUvMatrix', 'uLutIntensity', 'uOutAspect', 'uVignette',
-  'uHalation', 'uGrain', 'uLeak', 'uLeakColor', 'uDitherSeed',
+  'uHalation', 'uGrain', 'uGrainColored', 'uFx', 'uLeak', 'uLeakColor', 'uDitherSeed',
 ];
 
 export interface SourceImage {
@@ -162,6 +162,8 @@ export class Pipeline {
       gl.uniform2f(u('uVignette'), params.vignette.strength, params.vignette.softness);
       gl.uniform3f(u('uHalation'), params.halation.strength, haloWeights[0], haloWeights[1]);
       gl.uniform4f(u('uGrain'), params.grain.size, params.grain.intensity, params.grain.lumaWeight, shot.grainSeed);
+      gl.uniform1f(u('uGrainColored'), params.grain.colored ? 1 : 0);
+      gl.uniform2f(u('uFx'), params.fx.chromaticAberration, params.fx.scanlines);
       gl.uniform4f(u('uLeak'), leak?.x ?? 0, leak?.y ?? 0, leak?.radius ?? 1, leak?.opacity ?? 0);
       gl.uniform3f(u('uLeakColor'), ...(leak?.color ?? [0, 0, 0]));
       gl.uniform1f(u('uDitherSeed'), shot.ditherSeed);

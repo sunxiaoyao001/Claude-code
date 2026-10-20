@@ -1,5 +1,5 @@
-// Final pass, fixed order (CLAUDE.md §4): vignette -> 3D LUT -> halation (screen) -> grain -> light leak
-// (screen) -> dither. Every position-dependent effect uses `frame` (0..1 inside the output frame, y down),
+// Final pass, fixed order (CLAUDE.md §4): [chromatic aberration on the fetch] -> vignette -> 3D LUT ->
+// halation (screen) -> grain -> light leak (screen) -> scanlines -> dither. Every position-dependent effect uses `frame` (0..1 inside the output frame, y down),
 // so the viewfinder and the full-resolution capture produce the same picture at any size.
 //
 // highp is needed by the grain hash and the LUT coordinates; GL_FRAGMENT_PRECISION_HIGH is defined by
@@ -20,6 +20,8 @@ uniform float uOutAspect;     // output width / height
 uniform vec2 uVignette;       // strength, softness
 uniform vec3 uHalation;       // strength, weight of uHalo, weight of uHaloWide
 uniform vec4 uGrain;          // size (px @1080), intensity, luma weight, seed
+uniform float uGrainColored;  // 1 = independent noise per channel (digital sensor noise)
+uniform vec2 uFx;             // chromatic aberration (fraction of the half-frame), scanline strength
 uniform vec4 uLeak;           // centre.xy in frame coords (may lie outside), radius, opacity
 uniform vec3 uLeakColor;
 uniform float uDitherSeed;
@@ -68,7 +70,18 @@ float valueNoise(vec2 q) {
 
 void main() {
   vec2 frame = vec2(vTarget.x, 1.0 - vTarget.y);
-  vec3 color = texture2D(uFrame, vUv).rgb;
+  vec3 color;
+  if (uFx.x > 0.0) {
+    // Lateral fringing: red and blue sampled at radially scaled positions. vUv - 0.5 is the frame-centred
+    // offset already carried through crop/rotation, so the scaling is radial in the output frame.
+    vec2 offset = vUv - 0.5;
+    color = vec3(
+      texture2D(uFrame, 0.5 + offset * (1.0 + uFx.x)).r,
+      texture2D(uFrame, vUv).g,
+      texture2D(uFrame, 0.5 + offset * (1.0 - uFx.x)).b);
+  } else {
+    color = texture2D(uFrame, vUv).rgb;
+  }
 
   // Vignette: aspect-corrected radial falloff, ~1.0 at the corners.
   vec2 centred = (frame - 0.5) * vec2(uOutAspect, 1.0);
@@ -83,7 +96,11 @@ void main() {
 
   // Grain: cells sized relative to the frame height; strongest in the midtones (sin-shaped weight).
   vec2 grainPos = vec2(frame.x * uOutAspect, frame.y) * (1080.0 / uGrain.x) + uGrain.w * vec2(13.1, 7.7);
-  float noise = valueNoise(grainPos) - 0.5;
+  vec3 noise = vec3(valueNoise(grainPos) - 0.5);
+  if (uGrainColored > 0.5) {
+    noise.g = valueNoise(grainPos + vec2(57.3, 21.9)) - 0.5;
+    noise.b = valueNoise(grainPos + vec2(-33.1, 91.7)) - 0.5;
+  }
   float luma = dot(color, vec3(0.2126, 0.7152, 0.0722));
   float weight = mix(1.0, sin(3.14159265 * clamp(luma, 0.0, 1.0)), uGrain.z);
   color += noise * uGrain.y * weight;
@@ -94,6 +111,10 @@ void main() {
   float edge = smoothstep(0.3, 0.9, length(frame - 0.5) * 1.414);
   vec3 leak = uLeakColor * exp(-2.0 * r * r) * mix(0.6, 1.0, edge) * uLeak.w;
   color = 1.0 - (1.0 - clamp(color, 0.0, 1.0)) * (1.0 - clamp(leak, 0.0, 1.0));
+
+  // Scanlines: a fixed count per frame height, so preview and capture show the same pattern.
+  float scan = 0.5 + 0.5 * cos(frame.y * 320.0 * 6.2831853);
+  color *= 1.0 - uFx.y * 0.5 * scan;
 
   // +-0.5/255 dither hides banding from the 8-bit halation buffers.
   color += (hash12(gl_FragCoord.xy + uDitherSeed) - 0.5) / 255.0;
