@@ -26,6 +26,8 @@ export interface DevEnvironment {
   /** 'on' | 'off' | 'locked off' */
   halation: string;
   lookReady: boolean;
+  /** Display name of the loaded camera. */
+  packName: string;
 }
 
 export interface DevModel {
@@ -49,7 +51,7 @@ export function buildDevLines(
     : caps
       ? `${caps.renderer || 'unknown GPU'} · maxTex ${caps.maxTextureSize} · maxRB ${caps.maxRenderbufferSize} · highp ${caps.fragmentHighp ? '有' : '无'}`
       : 'WebGL 初始化中';
-  const look = settings.raw ? '原始画面' : env.lookReady ? '阳光罐头' : 'LUT 加载中';
+  const look = settings.raw ? '原始画面' : env.lookReady ? env.packName : 'LUT 加载中';
 
   return [
     `帧 ${stats.frameWidth}×${stats.frameHeight} · 供帧 ${stats.deliveredFps} fps · 渲染 ${stats.renderedFps} fps · 丢 ${stats.droppedFps}`,

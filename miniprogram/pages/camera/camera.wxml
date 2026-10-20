@@ -1,4 +1,4 @@
-<view class="page">
+<view class="page" style="--accent: {{accent}};">
   <block wx:if="{{stage === 'live'}}">
     <!-- Native camera underneath; the WebGL canvas on top shows the film look live. -->
     <camera
@@ -15,41 +15,58 @@
     ></camera>
     <canvas wx:if="{{!glFailed}}" id="viewfinder-gl" type="webgl" class="layer gl"></canvas>
 
-    <view class="side side-left">
-      <view
-        class="control {{devicePosition === 'front' ? 'control-disabled' : ''}}"
-        hover-class="{{devicePosition === 'front' ? 'none' : 'control-pressed'}}"
-        bindtap="onToggleFlash"
-      >
-        <image class="icon" src="/assets/icons/flash-{{flash}}.svg" />
-      </view>
-    </view>
-    <view class="side side-right">
-      <view class="control" hover-class="control-pressed" bindtap="onFlip">
-        <image class="icon" src="/assets/icons/flip.svg" />
-      </view>
-    </view>
+    <viewfinder-skin
+      status-top="{{statusTop}}"
+      status-height="{{statusHeight}}"
+      status-right="{{statusRight}}"
+      frame="{{frame}}"
+      counter="{{counter}}"
+      title="{{title}}"
+      format="{{format}}"
+      black="{{swapBlack}}"
+      lines-hidden="{{linesHidden}}"
+      bindstatuslongpress="onToggleDevPanel"
+    />
 
-    <view class="bottom">
-      <view class="bottom-slot">
-        <image
-          wx:if="{{lastShotPath}}"
-          class="thumb"
-          src="{{lastShotPath}}"
-          mode="aspectFill"
-          hover-class="thumb-pressed"
-          bindtap="onOpenViewer"
-        />
+    <view id="controls" class="controls">
+      <view class="side side-left">
+        <view
+          class="control {{devicePosition === 'front' ? 'control-disabled' : ''}}"
+          hover-class="{{devicePosition === 'front' ? 'none' : 'control-pressed'}}"
+          bindtap="onToggleFlash"
+        >
+          <image class="icon" src="/assets/icons/flash-{{flash}}.svg" />
+        </view>
       </view>
-      <view
-        class="shutter {{capturing ? 'shutter-busy' : ''}}"
-        hover-class="{{capturing ? 'none' : 'shutter-pressed'}}"
-        hover-stay-time="80"
-        bindtap="onShutter"
-      >
-        <view class="shutter-core"></view>
+      <view class="side side-right">
+        <view class="control" hover-class="control-pressed" bindtap="onFlip">
+          <image class="icon" src="/assets/icons/flip.svg" />
+        </view>
       </view>
-      <view class="bottom-slot"></view>
+
+      <view class="shutter-row">
+        <view class="shutter-slot">
+          <image
+            wx:if="{{lastShotPath}}"
+            class="thumb"
+            src="{{lastShotPath}}"
+            mode="aspectFill"
+            hover-class="thumb-pressed"
+            bindtap="onOpenViewer"
+          />
+        </view>
+        <view
+          class="shutter {{capturing ? 'shutter-busy' : ''}}"
+          hover-class="{{capturing ? 'none' : 'shutter-pressed'}}"
+          hover-stay-time="80"
+          bindtap="onShutter"
+        >
+          <view class="shutter-core"></view>
+        </view>
+        <view class="shutter-slot"></view>
+      </view>
+
+      <film-roll-strip items="{{stripItems}}" active-id="{{packId}}" solid="{{stripSolid}}" bindselect="onSelectPack" />
     </view>
   </block>
 
@@ -71,8 +88,8 @@
     <view class="notice-action" hover-class="notice-action-pressed" bindtap="onRetryCamera">重新打开</view>
   </view>
 
-  <view class="status" style="top: {{statusTop}}px; height: {{statusHeight}}px;" bindlongpress="onToggleDevPanel">
-    <text class="status-title latin-caps">Sunny fun</text>
+  <view wx:if="{{stage !== 'live'}}" class="status" style="top: {{statusTop}}px; height: {{statusHeight}}px;" bindlongpress="onToggleDevPanel">
+    <text class="status-title latin-caps">{{title}}</text>
   </view>
 
   <!-- Export target for captures: canvasToTempFilePath is documented for type="2d" canvases. -->

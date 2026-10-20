@@ -38,11 +38,20 @@
   color: var(--text-1);
 }
 
-/* Side micro controls (§7.2), above the shutter row. */
+/* Controls (§7.2): side micro buttons above the shutter row, film strip at the bottom. */
+.controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 .side {
   position: absolute;
-  z-index: 10;
-  bottom: calc(var(--sp-5) + var(--shutter-size) + var(--sp-3) + env(safe-area-inset-bottom));
+  bottom: 100%;
+  margin-bottom: var(--sp-2);
 }
 
 .side-left {
@@ -119,20 +128,14 @@
   transform: scale(var(--press-scale));
 }
 
-/* Shutter row: last shot on the left, shutter centred (§7.2). The film strip joins in M3. */
-.bottom {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(var(--sp-5) + env(safe-area-inset-bottom));
-  z-index: 10;
+.shutter-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--sp-4);
+  padding: var(--sp-2) var(--sp-4);
 }
 
-.bottom-slot {
+.shutter-slot {
   width: var(--thumb-size);
   height: var(--thumb-size);
 }

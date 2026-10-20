@@ -1,6 +1,8 @@
 {
   "usingComponents": {
     "privacy-sheet": "/components/privacy-sheet/privacy-sheet",
+    "viewfinder-skin": "/components/viewfinder-skin/viewfinder-skin",
+    "film-roll-strip": "/components/film-roll-strip/film-roll-strip",
     "dev-panel": "/components/dev-panel/dev-panel"
   },
   "disableScroll": true

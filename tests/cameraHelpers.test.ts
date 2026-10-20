@@ -30,7 +30,7 @@ describe('photo probe formatting', () => {
 
 describe('dev panel lines', () => {
   const stats = { deliveredFps: 30, renderedFps: 29, droppedFps: 1, avgRenderMs: 3.25, maxRenderMs: 9, frameWidth: 480, frameHeight: 640, totalDelivered: 300, totalRendered: 298 };
-  const env = { sdkVersion: '3.17.0', platform: 'android', model: 'Pixel 7', canvasWidth: 2160, canvasHeight: 4680, pixelRatio: 2, glFailed: false, tier: 'high', halation: 'on', lookReady: true };
+  const env = { sdkVersion: '3.17.0', platform: 'android', model: 'Pixel 7', canvasWidth: 2160, canvasHeight: 4680, pixelRatio: 2, glFailed: false, tier: 'high', halation: 'on', lookReady: true, packName: '阳光罐头' };
   const settings = { frameSize: 'medium', resolution: 'high', rotation: 90, mirror: true, grayscale: false, syncGpu: true, raw: false };
 
   it('prints frame, timing and settings', () => {
