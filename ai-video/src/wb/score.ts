@@ -151,6 +151,8 @@ export const GRID = {rows: 5, cols: 6, secPerCell: 10};
 export const RINGS = [17, 48, 101, 152, 199, 247, 283];
 // 格子升起后播放头才走：42.5 → 48.0
 export const gridTime = (sec: number) => T.grid + 0.5 + (sec / 300) * (T.gridEnd - T.grid - 0.5);
+// 铃声落在格子变成白熊的那一帧上
+export const ringTime = (sec: number) => Math.ceil(gridTime(sec) * FPS - 1e-9) / FPS;
 
 // ———————— 原理：检查员每次打手电（落在拍上，后来变成八分）————————
 export const CHECKS: number[] = (() => {
@@ -197,7 +199,7 @@ export const events = (): Ev[] => {
 	add(T.rule + E8, 'snick', 0.8);
 	add(T.bell + E8, 'bell', 1);
 	add(T.grid, 'slap', 0.7);
-	for (const s of RINGS) add(gridTime(s), 'bell', 0.75);
+	for (const s of RINGS) add(ringTime(s), 'bell', 0.75);
 	add(T.rebound + E8, 'slide', 0.5, {dur: E8});
 	add(T.name + E8, 'stamp', 0.8);
 	// 原理：脑子暗下来；两个人走进来；举起想法卡；打手电（每次都有一声铃）
