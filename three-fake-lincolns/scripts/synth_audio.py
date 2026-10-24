@@ -87,34 +87,47 @@ def midi_hz(m):
 
 # ---------- instruments ----------
 
+PIANO_DIR = os.path.join(ROOT, "assets", "piano_src")
+# Salamander Grand Piano V3 (Alexander Holm, CC BY 3.0) is sampled in minor thirds.
+SAMPLE_NOTES = {"C": 0, "D#": 3, "F#": 6, "A": 9}
+_sample_cache = {}
+
+
+def _load_sample(name):
+    if name not in _sample_cache:
+        sr, x = wavfile.read(os.path.join(PIANO_DIR, f"{name}.wav"))
+        assert sr == SR, f"{name}: expected {SR} Hz"
+        _sample_cache[name] = x.astype(np.float64) / 32768.0
+    return _sample_cache[name]
+
+
+def _nearest_sample(midi):
+    best = None
+    for octave in range(2, 6):
+        for letter, offset in SAMPLE_NOTES.items():
+            m = 12 * (octave + 1) + offset
+            if best is None or abs(m - midi) < abs(best[1] - midi):
+                best = (f"{letter}{octave}", m)
+    return best
+
+
 def piano(midi, dur, vel=0.7):
-    """Additive piano: inharmonic partials, per-partial decay, hammer noise, 3 detuned strings."""
-    f0 = midi_hz(midi)
-    n = int((dur + 4.0) * SR)
-    t = np.arange(n) / SR
-    out = np.zeros(n)
-    B = 0.00035 * (1 + max(0, midi - 60) / 30)
-    base_decay = np.interp(midi, [36, 60, 96], [7.0, 4.0, 1.2])
-    for k in range(1, 18):
-        fk = k * f0 * np.sqrt(1 + B * k * k)
-        if fk > SR / 2 - 1000:
-            break
-        amp = (1 / k ** 1.15) * (0.6 + 0.4 * vel) ** (k * 0.35)
-        if fk > 2500:  # felt hammers: keep the top end dark
-            amp *= np.exp(-(fk - 2500) / 1800)
-        dk = base_decay / (1 + 0.55 * (k - 1))
-        for cents in (-0.6, 0.0, 0.7):
-            ph = rng.uniform(0, 2 * np.pi)
-            out += amp / 3 * np.sin(2 * np.pi * fk * 2 ** (cents / 1200) * t + ph) * np.exp(-t / dk)
-    # damper release after the held duration
-    rel = np.ones(n)
-    r0 = int(dur * SR)
-    rel[r0:] = np.exp(-np.arange(n - r0) / SR / 0.35)
-    out *= rel
-    hammer = bandpass(rng.standard_normal(int(0.03 * SR)), 800, min(9000, 6 * f0 + 2000)) * env_ad(int(0.03 * SR), 0.001, 0.008)
-    out[: len(hammer)] += hammer * 0.08 * vel
-    out[: int(0.004 * SR)] *= np.linspace(0, 1, int(0.004 * SR))
-    return out * vel
+    """Sampled grand piano: nearest Salamander sample, resampled by at most 1.5 semitones,
+    damper release after the held duration."""
+    base, base_midi = _nearest_sample(midi)
+    layer = "v11" if vel >= 0.6 else "v7"
+    x = _load_sample(base + layer)
+    ratio = 2 ** ((midi - base_midi) / 12)
+    n_out = int(min(len(x) / ratio, (dur + 3.0) * SR))
+    src_pos = np.arange(n_out) * ratio
+    i0 = np.floor(src_pos).astype(int)
+    frac = (src_pos - i0)[:, None]
+    i1 = np.minimum(i0 + 1, len(x) - 1)
+    y = x[i0] * (1 - frac) + x[i1] * frac
+    rel = np.ones(n_out)
+    r0 = min(n_out, int(dur * SR))
+    rel[r0:] = np.exp(-np.arange(n_out - r0) / SR / 0.3)
+    return y * rel[:, None] * (0.55 + 0.6 * vel)
 
 
 def pad(midis, dur, bright=1400):
@@ -213,7 +226,10 @@ def build_score(bpm, bars, fps, silence_frames):
         place("pad", pad(CHORDS[ch], bar, bright), t0, 0.55 if bar_no <= 3 else 0.45)
         # downbeat accents: the reveal (bar 4) and the ghost (bar 12)
         if bar_no in (4, 12):
-            place("piano", piano(ROOTS[ch], 3.0, 0.9), t0, 0.75, -0.1)
+            place("piano", piano(ROOTS[ch], 3.0, 0.95), t0, 0.9, -0.1)
+            place("piano", piano(ROOTS[ch] + 12, 3.0, 0.9), t0, 0.7, 0.1)
+            for m in CHORDS[ch]:
+                place("piano", piano(m + 12, 2.5, 0.75), t0, 0.35)
         if 4 <= bar_no <= 20:
             pattern = [0, 1, 3, 4, 6] if bar_no < 12 else [0, 1, 2, 3, 4, 5, 6, 7]
             tones = ARP[ch]
@@ -234,7 +250,7 @@ def build_score(bpm, bars, fps, silence_frames):
         if bar_no == 26:
             for k in (0, 2, 4, 6):
                 place("piano", piano(ARP[ch][k % 4], beat * 0.9, 0.42), t0 + k * beat / 2, 0.4)
-        if 13 <= bar_no <= 20 or 22 <= bar_no <= 26:
+        if 13 <= bar_no <= 20 or 21 <= bar_no <= 26:
             place("bass", bass(ROOTS[ch] - 12, bar * 0.95), t0, 0.5)
         if 8 <= bar_no <= 20:
             for q in (0, 2):
@@ -245,7 +261,7 @@ def build_score(bpm, bars, fps, silence_frames):
             for e in range(8):
                 place("perc", tick(0.3 if e % 2 else 0.45), t0 + e * beat / 2, 0.12, -0.3)
 
-    out = (mix["pad"] * 0.9 + mix["piano"] * 1.0 + mix["bass"] * 0.8 + mix["perc"] * 0.7)
+    out = (mix["pad"] * 0.9 + mix["piano"] * 2.4 + mix["bass"] * 0.35 + mix["perc"] * 0.45)
     out = add_reverb(out, wet=0.28, rt60=2.4)
     out = out[: int(total * SR)]
     # hard silence before the twist (after reverb, so no tail leaks through)

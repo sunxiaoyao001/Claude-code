@@ -13,3 +13,6 @@ public/sfx/*.wav
 # Raw archive downloads are kept locally; processed versions live in public/images
 assets/raw/
 public/dev/
+
+assets/salamander/
+assets/piano_src/*.wav

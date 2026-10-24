@@ -97,7 +97,7 @@
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "中高",
-    "上屏写法": "「奴隶制的头号辩护者」——对应 'the most important proslavery politician'"
+    "上屏写法": "下注选项「B 奴隶制的头号辩护者」；揭晓后「蓄奴派的身子」——对应 'the most important proslavery politician' / 'strict constitutional constructionist, state's rights advocate'"
   },
   {
     "id": "F06",
@@ -295,7 +295,7 @@
   },
   {
     "id": "F15",
-    "陈述": "胡迪尼生前和妻子贝丝约定了一句暗号「Rosabelle, believe」，Rosabelle 是贝丝当年唱的一首歌",
+    "陈述": "胡迪尼生前向妻子贝丝承诺：如果他先死，会设法从「那边」传回一句只有两人知道的暗号「Rosabelle, believe」（Rosabelle 是贝丝唱过的歌，刻在她的婚戒上），用来证明消息确实来自他",
     "来源": [
       {
         "url": "https://www.mentalfloss.com/article/70298/enduring-tradition-houdini-seance-halloween",
@@ -311,10 +311,16 @@
         "url": "https://en.wikipedia.org/wiki/Bess_Houdini",
         "类型": "权威二手",
         "摘录": "Rosabelle, believe"
+      },
+      {
+        "url": "https://www.summitdaily.com/news/rosabelle-believe/",
+        "类型": "二手",
+        "摘录": "Houdini promised Bess he would try to come back and communicate if he died first, and the code was meant to prove the message was really from him"
       }
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
-    "置信度": "高"
+    "置信度": "高",
+    "上屏写法": "「他和妻子约好：死后报暗号」；打字机打出 ROSABELLE, BELIEVE"
   },
   {
     "id": "F16",
@@ -357,7 +363,7 @@
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "高",
-    "上屏写法": "「最后一次，什么也没来」"
+    "上屏写法": "「最后那场，什么也没来」（指 1936 年最后一场降神会）"
   },
   {
     "id": "F18",
@@ -456,10 +462,29 @@
   },
   {
     "id": "F22",
-    "陈述": "下注题选项「A 一位总统」是诱饵选项，不是事实陈述",
+    "陈述": "下注题选项「A 另一位总统」是诱饵选项，不是事实陈述",
     "来源": [],
     "摘录方式": "—",
     "置信度": "—",
     "上屏写法": "只作为二选一的干扰项出现"
+  },
+  {
+    "id": "F23",
+    "陈述": "林肯在 1863 年 1 月 1 日颁布《解放奴隶宣言》（Emancipation Proclamation），因此常被称为「解放者」",
+    "来源": [
+      {
+        "url": "https://www.archives.gov/exhibits/featured-documents/emancipation-proclamation",
+        "类型": "一手（美国国家档案馆）",
+        "摘录": "President Abraham Lincoln issued the Emancipation Proclamation on January 1, 1863"
+      },
+      {
+        "url": "https://www.archives.gov/historical-docs/emancipation-proclamation",
+        "类型": "一手（美国国家档案馆）",
+        "摘录": "Emancipation Proclamation (1863)"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "「解放者的头，蓄奴派的身子」；档案签 EMANCIPATION PROCLAMATION · 1863"
   }
 ]
