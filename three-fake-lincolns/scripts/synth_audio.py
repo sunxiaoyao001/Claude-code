@@ -179,15 +179,16 @@ ARP = {  # piano arpeggio tones per chord
     "C": [48, 55, 64, 67], "G": [43, 55, 62, 67],
 }
 PROGRESSION = [
-    "Am", "Am", "F", "E",           # P1 1-4   pad only
-    "Am", "F", "Dm", "E",           # P2 5-8   piano enters
-    "Am", "C", "F", "E",            # P3 9-12
-    "Dm", "Am", "F", "E",           # P4 13-16 + bass, brush
-    "Am", "F", "Dm", "E",           # P5 17-20 then silence
-    "Am", "F", "C", "G", "E",       # P6 21-25 twist (5-bar phrase)
-    "Am", "F", "Am",                # P7 26-28 golden line, outro
+    "Am", "F", "E",                 # P1 1-3   cover, bet, title: pad only
+    "Am", "F", "Dm", "E",           # P2 4-7   reveal on bar 4: piano enters
+    "Am", "C", "F", "E",            # P3 8-11  the widow's ghost develops
+    "Am", "Dm", "F", "E",           # P4 12-15 ghost appears on bar 12; trial, darkroom
+    "Am", "F", "Dm", "F", "E",      # P5 16-20 Grant, the question, then silence
+    "Am", "F", "C", "E",            # P6 21-24 twist
+    "Am", "F", "Dm", "Am",          # P7 25-28 golden line, centenary, credits, loop
 ]
-GOLDEN = [69, 72, 76, 74, 72, 71, 69, 64]  # one note per character, on eighths
+GOLDEN_CHORDS = [[57, 64, 69, 72], [53, 60, 65, 69]]  # one chord per word group, beats 1 and 2
+GOLDEN_TAIL = [76, 74, 72, 69]  # eighths after the line has formed
 
 
 def build_score(bpm, bars, fps, silence_frames):
@@ -208,33 +209,37 @@ def build_score(bpm, bars, fps, silence_frames):
         ch = PROGRESSION[b % len(PROGRESSION)]
         t0 = b * bar
         bar_no = b + 1
-        # pad everywhere; darker in the hook, brighter at the golden line
-        bright = 900 if bar_no <= 4 else (2200 if bar_no == 26 else 1500)
-        place("pad", pad(CHORDS[ch], bar, bright), t0, 0.55 if bar_no <= 4 else 0.45)
-        if 5 <= bar_no <= 20 or bar_no >= 26:
-            # first heavy downbeat of the film = bar 5
-            if bar_no in (5, 26):
-                place("piano", piano(ROOTS[ch] - 12 + 12, 3.0, 0.9), t0, 0.7, -0.1)
-            pattern = [0, 1, 3, 4, 6] if bar_no < 13 else [0, 1, 2, 3, 4, 5, 6, 7]
+        bright = 900 if bar_no <= 3 else (2200 if bar_no == 25 else 1500)
+        place("pad", pad(CHORDS[ch], bar, bright), t0, 0.55 if bar_no <= 3 else 0.45)
+        # downbeat accents: the reveal (bar 4) and the ghost (bar 12)
+        if bar_no in (4, 12):
+            place("piano", piano(ROOTS[ch], 3.0, 0.9), t0, 0.75, -0.1)
+        if 4 <= bar_no <= 20:
+            pattern = [0, 1, 3, 4, 6] if bar_no < 12 else [0, 1, 2, 3, 4, 5, 6, 7]
             tones = ARP[ch]
-            if bar_no == 26:
-                for k, m in enumerate(GOLDEN):
-                    place("piano", piano(m, beat * 0.9, 0.62), t0 + k * beat / 2, 0.55, 0.1)
-            elif bar_no <= 20:
-                for k in pattern:
-                    m = tones[k % len(tones)]
-                    v = 0.42 if k % 2 else 0.5
-                    place("piano", piano(m, beat * 0.45, v), t0 + k * beat / 2, 0.45, 0.15 * ((k % 3) - 1))
-        if 21 <= bar_no <= 25:
+            for k in pattern:
+                m = tones[k % len(tones)]
+                v = 0.42 if k % 2 else 0.5
+                place("piano", piano(m, beat * 0.45, v), t0 + k * beat / 2, 0.45, 0.15 * ((k % 3) - 1))
+        if 21 <= bar_no <= 24:
             # twist: low octaves, one per half bar
             place("piano", piano(ROOTS[ch], bar * 0.48, 0.8), t0, 0.6)
             place("piano", piano(ROOTS[ch] + 12, bar * 0.45, 0.55), t0 + 2 * beat, 0.45)
+        if bar_no == 25:
+            for k, chord in enumerate(GOLDEN_CHORDS):
+                for m in chord:
+                    place("piano", piano(m, beat * 1.8, 0.6), t0 + k * beat, 0.4, 0.1)
+            for k, m in enumerate(GOLDEN_TAIL):
+                place("piano", piano(m, beat * 0.9, 0.5), t0 + 2 * beat + k * beat / 2, 0.4, -0.1)
+        if bar_no == 26:
+            for k in (0, 2, 4, 6):
+                place("piano", piano(ARP[ch][k % 4], beat * 0.9, 0.42), t0 + k * beat / 2, 0.4)
         if 13 <= bar_no <= 20 or 22 <= bar_no <= 26:
             place("bass", bass(ROOTS[ch] - 12, bar * 0.95), t0, 0.5)
-        if 9 <= bar_no <= 20:
+        if 8 <= bar_no <= 20:
             for q in (0, 2):
                 place("perc", pulse(0.5), t0 + q * beat, 0.5)
-        if 13 <= bar_no <= 20 or bar_no == 26:
+        if 13 <= bar_no <= 20 or bar_no == 25:
             for q in (1, 3):
                 place("perc", brush(0.5), t0 + q * beat, 0.35, 0.2)
             for e in range(8):

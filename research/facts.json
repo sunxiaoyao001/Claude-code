@@ -1,12 +1,12 @@
 [
   {
     "id": "F01",
-    "陈述": "LoC 藏的《Abraham Lincoln》美柔汀版画是合成像：林肯的头叠在 1852 年卡尔霍恩版画的身体和背景上；刻版者 William Pate，年代标为 [1865?]",
+    "陈述": "LoC 藏的《Abraham Lincoln》美柔汀版画是合成像：林肯的头叠在 1852 年卡尔霍恩版画的身体和背景上；刻版者 William Pate，年代标为 [1865?]；出版者 William Pate，纽约 Fulton 街 58 & 60 号",
     "来源": [
       {
         "url": "https://www.loc.gov/pictures/item/2003654314/",
         "类型": "一手",
-        "摘录": "Creator(s): Pate, William, engraver ... [1865?] ... Print is a composite ... No known restrictions on publication"
+        "摘录": "Creator(s): Pate, William, engraver ... [1865?] ... Print is a composite ... No known restrictions on publication ... Published by William Pate, 58 & 60 Fulton St., New York"
       },
       {
         "url": "https://www.bronxdoc.org/bronx-documentary-center/exhibits/altered-images/1865-2/",
@@ -21,7 +21,7 @@
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "高",
-    "上屏写法": "约 1865 / c.1865；称「版画」「肖像」，不称「照片」"
+    "上屏写法": "档案签「No.001 · c.1865 · NEW YORK」（纽约 = 出版地）；称「版画」「肖像」，不称「照片」"
   },
   {
     "id": "F02",
@@ -59,7 +59,8 @@
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "中高",
-    "复核方式": "拿到两张 LoC 高清件后直接读图（图本身就是一手证据）"
+    "复核方式": "拿到两张 LoC 高清件后直接读图（图本身就是一手证据）",
+    "上屏写法": "「桌上主张州权的字，也换了」——不声称逐词一一对应；拿到高清件读图确认后再考虑更具体的写法"
   },
   {
     "id": "F04",
@@ -336,7 +337,8 @@
       }
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
-    "置信度": "高"
+    "置信度": "高",
+    "备注": "计数器 1927→1936 由「1926 年去世 + 连续 10 年万圣节」推算（1927 为第一个忌日）"
   },
   {
     "id": "F17",
@@ -401,7 +403,7 @@
   },
   {
     "id": "F20",
-    "陈述": "胡迪尼以逃脱术表演闻名（锁链、手铐、水牢等）",
+    "陈述": "胡迪尼是以逃脱术闻名的魔术师（illusionist / escape artist），1874 年生于布达佩斯",
     "来源": [
       {
         "url": "https://www.loc.gov/item/96518776/",
@@ -417,10 +419,47 @@
         "url": "https://www.loc.gov/pictures/resource/ppmsca.40859/",
         "类型": "一手",
         "摘录": "[Houdini jumps from Harvard Bridge, Boston, Massachusetts] ... in chains and handcuffs"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Harry_Houdini",
+        "类型": "权威二手",
+        "摘录": "Hungarian-American escape artist, illusionist ... skeptic who set out to expose frauds"
       }
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "高",
-    "上屏写法": "「逃脱大师胡迪尼」"
+    "上屏写法": "「魔术师胡迪尼」"
+  },
+  {
+    "id": "F21",
+    "陈述": "卡尔霍恩是美国第 7 任副总统（1825–1832），也是第一位辞职的副总统",
+    "来源": [
+      {
+        "url": "https://en.wikipedia.org/wiki/John_C._Calhoun",
+        "类型": "权威二手",
+        "摘录": "7th vice president ... March 4, 1825 – December 28, 1832"
+      },
+      {
+        "url": "https://blogs.loc.gov/law/2017/12/today-in-history-resignation-of-vice-president-john-c-calhoun/",
+        "类型": "一手（LoC 法律图书馆）",
+        "摘录": "resignation of Vice President John C. Calhoun"
+      },
+      {
+        "url": "https://www.senate.gov/senators/FeaturedBios/Featured_Bio_Calhoun.htm",
+        "类型": "一手（美国参议院）",
+        "摘录": "Calhoun ... vice president"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "下注答案「B 一位副总统」；揭晓「副总统卡尔霍恩」"
+  },
+  {
+    "id": "F22",
+    "陈述": "下注题选项「A 一位总统」是诱饵选项，不是事实陈述",
+    "来源": [],
+    "摘录方式": "—",
+    "置信度": "—",
+    "上屏写法": "只作为二选一的干扰项出现"
   }
 ]
