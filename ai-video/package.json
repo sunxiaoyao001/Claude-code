@@ -9,10 +9,12 @@
     "render": "remotion render AIVideo out/ai-video.mp4",
     "render:nosubs": "remotion render AIVideoNoSubs out/ai-video-nosubs.mp4",
     "render:pd": "remotion render PrisonersDilemma out/prisoners-dilemma.mp4",
+    "render:wb": "remotion render WhiteBear out/white-bear.mp4",
     "still": "remotion still AIVideo out/still.png",
     "srt": "node scripts/export-srt.ts",
     "audio": "node scripts/make-audio.ts",
     "audio:pd": "node scripts/make-audio-pd.ts",
+    "audio:wb": "node scripts/make-audio-wb.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

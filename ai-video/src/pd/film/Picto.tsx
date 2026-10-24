@@ -28,6 +28,14 @@ export const POSES = {
 	surrender: {lean: -4, tilt: -8, aF: [145, 168], aB: [-145, -168], lF: [6, 0], lB: [-6, 0]},
 	// 领奖台上：双手举过头
 	cheer: {lean: 0, tilt: -6, aF: [150, 165], aB: [-150, -165], lF: [5, 0], lB: [-5, 0]},
+	// 《白熊效应》用到的：伏案写字、举起一张卡片、按铃、推开、坐在地上
+	write: {lean: 14, tilt: 14, aF: [62, 98], aB: [30, 74], lF: [88, 4], lB: [84, 0]},
+	writeB: {lean: 14, tilt: 14, aF: [58, 84], aB: [30, 74], lF: [88, 4], lB: [84, 0]},
+	holdCard: {lean: 0, tilt: -6, aF: [168, 176], aB: [-8, -3], lF: [5, 0], lB: [-5, 0]},
+	sitHands: {lean: 4, tilt: 4, aF: [56, 96], aB: [50, 92], lF: [88, 4], lB: [84, 0]},
+	pressBell: {lean: 12, tilt: 8, aF: [62, 132], aB: [40, 86], lF: [88, 4], lB: [84, 0]},
+	push: {lean: 16, tilt: 0, aF: [82, 86], aB: [76, 82], lF: [22, 4], lB: [-26, -8]},
+	sitFloor: {lean: 6, tilt: 6, aF: [36, 80], aB: [26, 70], lF: [86, 88], lB: [84, 90]},
 } satisfies Record<string, Pose>;
 export type PoseName = keyof typeof POSES;
 

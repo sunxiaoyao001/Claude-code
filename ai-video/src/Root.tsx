@@ -4,6 +4,8 @@ import {FPS, SCENES, TOTAL_FRAMES} from './script';
 import {SingleScene, Video} from './Video';
 import {Film} from './pd/film/Film';
 import {FPS as PD_FPS, FRAMES as PD_FRAMES} from './pd/score';
+import {WhiteBear} from './wb/film/Film';
+import {FPS as WB_FPS, FRAMES as WB_FRAMES} from './wb/score';
 
 export const RemotionRoot: React.FC = () => (
 	<>
@@ -14,6 +16,15 @@ export const RemotionRoot: React.FC = () => (
 			component={Film}
 			durationInFrames={PD_FRAMES}
 			fps={PD_FPS}
+			width={1080}
+			height={1920}
+			defaultProps={{music: true, musicVolume: 1}}
+		/>
+		<Composition
+			id="WhiteBear"
+			component={WhiteBear}
+			durationInFrames={WB_FRAMES}
+			fps={WB_FPS}
 			width={1080}
 			height={1920}
 			defaultProps={{music: true, musicVolume: 1}}
