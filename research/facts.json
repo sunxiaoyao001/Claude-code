@@ -21,7 +21,8 @@
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "高",
-    "上屏写法": "档案签「No.001 · c.1865 · NEW YORK」（纽约 = 出版地）；称「版画」「肖像」，不称「照片」"
+    "上屏写法": "档案签「No.001 · c.1865 · NEW YORK」（纽约 = 出版地）；称「版画」「肖像」，不称「照片」",
+    "读图核实": "2026-10-24 读图核实：用户从 LoC 下载并上传的 2003654314 版画（812×1024）上，可读到底部「Published by William Pate, 58 & 60 Fulton St. New York」"
   },
   {
     "id": "F02",
@@ -60,7 +61,8 @@
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "中高",
     "复核方式": "拿到两张 LoC 高清件后直接读图（图本身就是一手证据）",
-    "上屏写法": "「桌上主张州权的字，也换了」——不声称逐词一一对应；拿到高清件读图确认后再考虑更具体的写法"
+    "上屏写法": "「桌上主张州权的字，也换了」——不声称逐词一一对应；拿到高清件读图确认后再考虑更具体的写法",
+    "读图核实": "2026-10-24 读图核实：用户从 LoC 下载并上传的 2003654314 版画（812×1024）上，可读到桌上文件「CONSTITUTION」「UNION」「Proclamation of Freedom」（林肯版）；卡尔霍恩版待原图到手后核对"
   },
   {
     "id": "F04",
@@ -240,6 +242,11 @@
         "url": "https://www.metmuseum.org/art/collection/search/294786",
         "类型": "权威二手",
         "摘录": "same three-negative breakdown, all dated to 1864"
+      },
+      {
+        "url": "https://www.loc.gov/collections/civil-war-glass-negatives/articles-and-essays/solving-a-civil-war-photograph-mystery/",
+        "类型": "一手（LoC 专文）",
+        "摘录": "horse and man's body ... from McCook's negative (LC-B817-7204) ... background ... Confederate prisoners captured in the battle of Fisher's Hill"
       }
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
