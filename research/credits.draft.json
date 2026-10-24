@@ -1,0 +1,219 @@
+{
+  "images": [
+    {
+      "id": "IMG01",
+      "file": "public/images/lincoln_composite.jpg",
+      "标题": "Abraham Lincoln（合成美柔汀版画）",
+      "作者": "William Pate（刻版）",
+      "年份": "[1865?]",
+      "来源URL": "https://www.loc.gov/pictures/item/2003654314/",
+      "馆藏号": "LC-DIG-pga-02353",
+      "许可": "No known restrictions on publication（LoC）",
+      "原图分辨率": "用户上传中号 JPEG 812×1024（不够用）；待上传最大号 JPEG",
+      "用途": "封面、钩子、叠合对比、片尾循环帧",
+      "修改说明": "统一银盐调色；按 9:16 裁切"
+    },
+    {
+      "id": "IMG02",
+      "file": "public/images/calhoun_1852.jpg",
+      "标题": "John C. Calhoun",
+      "作者": "A.H. Ritchie 刻，T. Hicks 原画，据 Brady 银版像",
+      "年份": "1852",
+      "来源URL": "https://www.loc.gov/pictures/item/2003679757/",
+      "馆藏号": "LC-DIG-pga-02499",
+      "许可": "No known restrictions（预计，待核 LoC 页面）",
+      "原图分辨率": "待下载后用 getImageDimensions 核对",
+      "用途": "与 IMG01 等比叠合、擦除对比；放大桌上文件",
+      "修改说明": "统一调色；与 IMG01 做仿射对齐"
+    },
+    {
+      "id": "IMG03",
+      "file": "public/images/mumler_mary_lincoln.jpg",
+      "标题": "Mary Todd Lincoln with the 'spirit' of Abraham Lincoln",
+      "作者": "William H. Mumler",
+      "年份": "c.1872（有争议，见 F08）",
+      "来源URL": "https://commons.wikimedia.org/wiki/File:Mumler_(Lincoln).jpg",
+      "馆藏号": "原件：Lincoln Financial Foundation Collection",
+      "许可": "PD-US（Commons）",
+      "原图分辨率": "Commons 559×889（低清）；高清候选：Fisher Library（多伦多大学）https://fisherdigitus.library.utoronto.ca/document/7632（标公有领域），或 ACPL 数字馆藏",
+      "用途": "第 2 张假像；显影母题（鬼影最后浮现）；若拿到高清件，相纸占画面 ≥70% 宽",
+      "修改说明": "统一调色；若拿不到高清件，只作为桌上小相纸，不做 2.5× 放大"
+    },
+    {
+      "id": "IMG04",
+      "file": "public/images/grant_city_point.jpg",
+      "标题": "General Grant at City Point（合成）",
+      "作者": "Levin C. Handy",
+      "年份": "c.1902",
+      "来源URL": "https://www.loc.gov/item/2007681056/",
+      "馆藏号": "LC-DIG-ppmsca-15886",
+      "许可": "PD-US（1931 年前出版）；LoC 待核",
+      "原图分辨率": "Commons 副本 5139×3743",
+      "用途": "机制段：三张底片拼一张，红笔圈出头 / 马与身体 / 背景",
+      "修改说明": "统一调色；竖屏局部裁切"
+    },
+    {
+      "id": "IMG05",
+      "file": "public/images/houdini_lincoln_ghost.jpg",
+      "标题": "[Houdini and the ghost of Abraham Lincoln]（玻璃幻灯片）",
+      "作者": "Harry Houdini（制作）",
+      "年份": "1920–1930",
+      "来源URL": "https://www.loc.gov/pictures/item/96520658/",
+      "馆藏号": "LOT 7426",
+      "许可": "No known restrictions on publication（LoC）",
+      "原图分辨率": "待下载后用 getImageDimensions 核对",
+      "用途": "反转重拳：第 3 张假像；全片唯一一次色彩还原；分辨率预案见分镜 S12",
+      "修改说明": "平时统一调色；反转时回到原扫描色"
+    },
+    {
+      "id": "IMG06",
+      "file": "public/images/houdini_bess_mother.jpg",
+      "标题": "[Harry Houdini, with his wife Beatrice and mother Cecilia Steiner Weiss, full-length portrait]",
+      "作者": "不详（McManus-Young Collection）",
+      "年份": "约 1900s",
+      "来源URL": "https://www.loc.gov/item/96518779/",
+      "馆藏号": "LCCN 96518779",
+      "许可": "No known restrictions（预计，待核 LoC 页面）",
+      "原图分辨率": "Commons 副本存在；LoC 原档待下载后用 getImageDimensions 核对",
+      "用途": "暗号一句：认出贝丝本人（朱砂圈出）",
+      "修改说明": "统一调色"
+    },
+    {
+      "id": "IMG07",
+      "file": "public/images/houdini_death_clippings.jpg",
+      "标题": "[Two newspaper articles announcing Houdini's death on October 31, 1926]",
+      "作者": "San Francisco Chronicle / Long Beach Press-Telegram",
+      "年份": "1926",
+      "来源URL": "https://www.loc.gov/item/2018682515/",
+      "馆藏号": "LoC 2018682515",
+      "许可": "待核（1926 年美国出版物已进入公有领域；以 LoC 权利说明为准）",
+      "原图分辨率": "待下载后用 getImageDimensions 核对",
+      "用途": "文献复原：halftone 网点 + 局部高亮死讯",
+      "修改说明": "原件已是网点印刷：只做统一调色，不再加 halftone（避免摩尔纹）"
+    },
+    {
+      "id": "IMG08",
+      "file": "public/images/mumler_others_*.jpg",
+      "标题": "Mumler 其他灵异照片（Dow / Conant / unidentified）",
+      "作者": "William H. Mumler",
+      "年份": "1860s–1870s",
+      "来源URL": "https://commons.wikimedia.org/wiki/Category:William_H._Mumler",
+      "馆藏号": "多为 American Museum of Photography 藏品扫描",
+      "许可": "PD-US（Commons，逐张待核）",
+      "原图分辨率": "待下载后用 getImageDimensions 核对",
+      "用途": "名片照托盘（S06）、灵异照片目录（S08，依次圈出鬼影）；出处签按每张的 Commons 来源写",
+      "修改说明": "统一调色"
+    },
+    {
+      "id": "IMG10",
+      "file": "public/images/grant_head_coldharbor.jpg",
+      "标题": "Grant at Cold Harbor headquarters（格兰特合成像的头部来源）",
+      "作者": "Brady studio",
+      "年份": "1864",
+      "来源URL": "https://www.loc.gov/item/2018667429/",
+      "馆藏号": "LC-B8175-2",
+      "许可": "PD（1864）；LoC 待核",
+      "原图分辨率": "待下载后用 getImageDimensions 核对",
+      "用途": "S10 三张原始底片之一",
+      "修改说明": "负片反相 + 统一调色"
+    },
+    {
+      "id": "IMG11",
+      "file": "public/images/mccook_horse.jpg",
+      "标题": "Maj. Gen. Alexander McD. McCook（马和身体的来源）",
+      "作者": "Brady studio",
+      "年份": "1864",
+      "来源URL": "https://www.loc.gov/item/2018667065/",
+      "馆藏号": "LC-B817-7204",
+      "许可": "PD；LoC 待核",
+      "原图分辨率": "待下载后用 getImageDimensions 核对",
+      "用途": "S10 三张原始底片之一",
+      "修改说明": "负片反相 + 统一调色"
+    },
+    {
+      "id": "IMG12",
+      "file": "public/images/fishers_hill_prisoners.jpg",
+      "标题": "Confederate prisoners captured at Fisher's Hill（背景来源）",
+      "作者": "不详",
+      "年份": "1864",
+      "来源URL": "https://www.loc.gov/item/2007684716/",
+      "馆藏号": "LOT 4181",
+      "许可": "PD；LoC 待核",
+      "原图分辨率": "待下载后用 getImageDimensions 核对",
+      "用途": "S10 三张原始底片之一",
+      "修改说明": "负片反相 + 统一调色"
+    },
+    {
+      "id": "IMG13",
+      "file": "public/images/met_berger_lincoln_1864.jpg",
+      "标题": "Abraham Lincoln",
+      "作者": "Anthony Berger（Brady & Co.）",
+      "年份": "1864-02-09",
+      "来源URL": "https://www.metmuseum.org/art/collection/search/285876",
+      "馆藏号": "The Met 285876（Gilman Collection, 2005）",
+      "许可": "CC0（The Met Open Access，已从 Met 官方公开数据集下载）",
+      "原图分辨率": "1201×2000（已实测）",
+      "用途": "S09 双重曝光示意的「鬼影」负片（标「示意」）",
+      "修改说明": "负片反相、降低密度作淡影"
+    },
+    {
+      "id": "IMG14",
+      "file": "public/images/sitter_portrait.jpg",
+      "标题": "示意用的 19 世纪肖像（待定，需公有领域）",
+      "作者": "待定",
+      "年份": "1860s",
+      "来源URL": "待找（LoC / Commons）",
+      "馆藏号": "—",
+      "许可": "须 PD / CC0",
+      "原图分辨率": "待下载后用 getImageDimensions 核对",
+      "用途": "S09 双重曝光示意的肖像负片",
+      "修改说明": "负片反相"
+    }
+  ],
+  "sfx": [
+    {
+      "file": "public/sfx/*.wav",
+      "标题": "全部音效（纸张、打字机、印章、快门、放大镜、放映机、显影液、红笔、档案签、sub hit、房间底噪）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "许可": "原创",
+      "修改说明": "峰值偏移见 public/sfx/manifest.json"
+    }
+  ],
+  "music": [
+    {
+      "file": "public/music/score.wav",
+      "标题": "Three Fake Lincolns — score",
+      "作者": "本项目原创（scripts/synth_audio.py：numpy 合成 pad / 低音 / 打击 + 采样钢琴）",
+      "许可": "原创",
+      "修改说明": "75 BPM × 28 小节，A 小调"
+    },
+    {
+      "file": "assets/piano_src/*.wav",
+      "标题": "Salamander Grand Piano V3（30 个采样：C2–F#5，力度层 v7 / v11）",
+      "作者": "Alexander Holm（sfz 重映射：sfzinstruments）",
+      "来源URL": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+      "许可": "CC BY 3.0",
+      "修改说明": "FLAC 转 WAV；按音高重采样（≤ ±1.5 半音）；加制音器释放"
+    }
+  ],
+  "fonts": [
+    {
+      "name": "Noto Serif SC 900 / Noto Sans SC 500·700",
+      "作者": "Google / Adobe（notofonts/noto-cjk）",
+      "许可": "SIL OFL 1.1",
+      "修改说明": "按片中用字截子集为 woff2"
+    },
+    {
+      "name": "EB Garamond Italic 400",
+      "作者": "The EB Garamond Project Authors",
+      "许可": "SIL OFL 1.1",
+      "修改说明": "Google Fonts latin 子集"
+    },
+    {
+      "name": "IBM Plex Mono 400 / 500",
+      "作者": "IBM Corp.",
+      "许可": "SIL OFL 1.1",
+      "修改说明": "Google Fonts latin 子集"
+    }
+  ]
+}

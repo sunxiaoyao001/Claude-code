@@ -1,0 +1,233 @@
+"""Single editable source for the script draft; writes research/script.md.
+
+Frames are at 30 fps. BPM 75 -> beat 24 f, bar 96 f, eighth 12 f, sixteenth 6 f, eighth triplet 8 f.
+"""
+import re
+import sys
+
+FPS = 30
+BPM = 75
+BEAT = FPS * 60 // BPM  # 24
+BAR = BEAT * 4  # 96
+BARS = 28
+TOTAL = BAR * BARS  # 2688
+
+# Subtitle legibility: text is readable 6 f into the 12 f entrance and stops being readable when
+# the 7 f exit starts. Rows marked "static" (cover, loop return) have no entrance animation.
+ENTER_UNREADABLE = 6
+EXIT = 7
+
+# (start, end, zh, en, visual, images, motion, sfx, facts, cut, static)
+#   cut: this row starts a new shot (must land on a 48 f half-bar)
+#   static: subtitle is already in place (frame 0 cover and the loop return)
+LINES = [
+    # P1 · bars 1-3 · cover, bet, title
+    (0, 96, "这张林肯像，身子是*借*的", "Lincoln's head. Someone else's body.",
+     "【封面】两张带白边的相纸并排、只重叠 1 栏：林肯合成像在第 1–6 栏，1852 卡尔霍恩原版画在第 6–11 栏（右缘 x ≤ 923），上下错开 5%，两具身体从肩到脚完整可比；卡尔霍恩的头被一张米色档案签盖住，签上朱砂 Plex Mono「?」。36 帧起朱砂 Underline 沿林肯脖颈画一笔（12 f）。封面字幕 72 px。出处签 LIBRARY OF CONGRESS · CA. 1865 / 1852",
+     "IMG01, IMG02", "镜头呼吸：每秒缓推 1%；第 0 帧字幕已在位", "房间底噪；红笔划纸声 @36", "F01, F02", True, True),
+    (96, 192, "猜猜，跟*谁*借的", "Guess whose body it is",
+     "两张相纸上移并缩小到 y 10%–45%；两张档案签落在 y 48%–60%：「A 另一位总统」@108、「B 奴隶制的头号辩护者」@120；144 / 160 / 176 帧倒计时 03 · 02 · 01（四分三连音，16 f 一跳，共 1.6 秒）", "IMG01, IMG02",
+     "相纸 spring 上移缩小；档案签 spring 落位", "档案签落纸声 ×2；倒计时打字机 ×3", "F05, F22", True, False),
+    (192, 288, "", "",
+     "标题卡：「林肯的 / 3 张假像」两行，Serif 900 128 px，192 帧按词组遮罩上升；240 帧（第 3 拍）朱砂方印盖下；英文 Three Fake Lincolns；档案签 ARCHIVE No.001 · CA. 1865 · NEW YORK", "",
+     "标题上升 12 f；印章 6 f 压入 + 10 f 墨晕；288 帧标题纸被抽走（盖下即切）", "纸张点击 @192；印章声 @240", "F01", True, False),
+    # P2 · bars 4-7 · fake No.1: the borrowed body
+    (288, 384, "答案是 B：*卡尔霍恩*", "It's B: John C. Calhoun",
+     "盖头的档案签被抽走，露出卡尔霍恩的脸；两张相纸滑动对位，朱砂竖向擦除线扫过：除了头，完全重合；相纸上的档案签 JOHN C. CALHOUN / VICE PRESIDENT · 1825–1832", "IMG01, IMG02",
+     "抽签 bezier 18 f；对位 spring；擦除线 24 f，落在第 4 小节重拍（全片第一个高潮，钢琴进入）", "纸张摩擦 + 关键词印章声 @288", "F02, F05, F21", True, False),
+    (384, 480, "他说奴隶制是「*积极的善*」", "He called slavery “a positive good”",
+     "从身体推到卡尔霍恩的脸（match cut）；出处签 JOHN C. CALHOUN · 1782–1850", "IMG02",
+     "推近 4%，bezier 36 f", "纸张点击", "F04, F06", True, False),
+    (480, 576, "*解放者*的头，蓄奴派的身子", "The Emancipator's head on a pro-slavery body",
+     "两张相纸重新并排，朱砂 Circle 分别圈住两张脸：左边林肯（档案签 EMANCIPATION PROCLAMATION · 1863），右边卡尔霍恩", "IMG01, IMG02",
+     "两个 Circle 先后落在 480 / 504", "红笔划纸声 ×2", "F05, F23", True, False),
+    (576, 672, "桌上主张*州权*的字，也换了", "Even the states'-rights papers were rewritten",
+     "放大镜移到桌上文件，框内 2.5×，先看卡尔霍恩版，再滑到林肯版；朱砂 Box 框住被改的文件。读不清字时只框文件区域", "IMG02, IMG01",
+     "Loupe 位移 18 f；Box progress 20 f", "放大镜机械声；红笔划纸声", "F03", True, False),
+    # P3 · bars 8-11 · fake No.2: the widow's ghost
+    (672, 744, "这只是第 *1* 张", "That was only the first",
+     "Mumler 的灵异名片照（CDV）依次滑入桌面；档案签 ARCHIVE No.002 · CA. 1872 · BOSTON", "IMG08",
+     "名片照落在八分音符", "名片照落纸声 ×3（音高随机）", "F08, F09", True, False),
+    (744, 840, "第 2 张，主角是林肯的*遗孀*", "The second stars Lincoln's widow",
+     "744 起抽出其中一张；768（半小节）推进切入显影盘：一张空白相纸", "IMG03",
+     "抽出 → 推进 match cut 20 f", "相纸滑动；显影液轻响", "F07", False, False),
+    (840, 936, "她报*假名*，摄影师说没认出", "She gave a false name; he said he didn't know her",
+     "显影：最深的影调先浮现——黑裙、椅子、她的脸", "IMG03",
+     "levels 白点随帧上升（显影曲线）", "液体轻响（低）", "F09", False, False),
+    (936, 1056, "照片*印*出来了", "The print came up",
+     "显影后段：中灰调出来，画面看起来已经完整", "IMG03",
+     "显影曲线第二段；镜头呼吸", "液体 + 极轻低频 swell", "F07", False, False),
+    # P4 · bars 12-15 · the ghost, then the mechanism
+    (1056, 1200, "他，就站在她*身后*", "And there he was, right behind her",
+     "【第 12 小节重拍，乐句第一拍】最淡的灰调最后浮现：她身后的「林肯」；朱砂 Circle 圈住鬼影。分辨率预案见分镜 S07", "IMG03",
+     "显影曲线最后 12 f 收尾；Circle progress 24 f；之后缓推", "低频 swell 收束；红笔划纸声", "F07, F11", True, False),
+    (1200, 1296, "摄影师吃过官司，还*赢*了", "He was tried for fraud, and walked free",
+     "Mumler 名片照 + 打字机日期戳 NEW YORK · APRIL 1869", "IMG08",
+     "日期戳逐字打出，每字 2 f", "打字机 ×18", "F10", True, False),
+    (1296, 1392, "怎么做的，至今说*不清*", "How he did it is still unclear",
+     "Mumler 的几张灵异名片照排成一排，朱砂 Circle 依次圈住每张里的鬼影（落在八分音符）", "IMG08",
+     "Circle 每张 12 f，依次", "红笔划纸声 ×4", "F11", True, False),
+    (1392, 1488, "可在暗房里，造假*不难*", "But in a darkroom, faking is easy",
+     "转到看片灯桌（暗纸底色上一块米白平面光，不用 glow）；两张负片入画；右下角固定标「示意」", "IMG13",
+     "负片 spring 落位", "放映机风扇底噪起", "F10, F11", True, False),
+    (1488, 1584, "1 块底片曝光 *2* 次", "One plate, two exposures",
+     "示意：一张肖像负片与 Berger 1864 年林肯照的负片沿 x 轴相向滑动重合，叠加区显出「鬼影」；「示意」角标；出处签 THE MET · 1864（CC0）", "IMG13, IMG14",
+     "两片相向滑动 bezier 32 f", "快门 ×2（@1488、@1536，落在拍点）", "F11", True, False),
+    # P5 · bars 16-20 · Grant composite, the question, silence
+    (1584, 1680, "或者 *3* 张底片，拼成 1 位将军", "Or three negatives, one general",
+     "LoC 的三张原始底片（格兰特头像 LC-B8175-2、麦库克 LC-B817-7204、费希尔山战俘 LOT 4181）依次滑入，合成后显影成《General Grant at City Point》；档案签 EXHIBIT · CA. 1902 · L.C. HANDY", "IMG10, IMG11, IMG12, IMG04",
+     "三张底片落在拍点；合成显影 24 f", "快门 ×3", "F12", True, False),
+    (1680, 1776, "头是*格兰特*，其余都不是", "Only the head is Grant's",
+     "三处标注，中文 Sans 36 px + 英文 Plex 24 px：Circle 圈头「头 · 格兰特」@1680；Box 框马和身体「马和身子 · 麦库克」@1704；Underline 划背景「背景 · 南军战俘」@1728", "IMG04",
+     "镜头随标注推近、横移、拉远", "红笔划纸声 ×3", "F12", True, False),
+    (1776, 1905, "那第 3 张*林肯*呢", "So who made the third Lincoln?",
+     "林肯合成像和 Mumler 相纸滑到左侧并排，第三个位置空着，只有一张档案签 No.003 ?；1824 一只玻璃幻灯片盒推入画面", "IMG01, IMG03",
+     "相纸滑动；空位推近；幻灯片盒 bezier 推入 30 f", "纸张点击；幻灯片盒摩擦", "", True, False),
+    (1905, 1920, "", "",
+     "全片静默 0.5 秒（只留房间底噪）；镜头继续呼吸", "",
+     "—", "音乐静默", "", False, False),
+    # P6 · bars 21-24 · the twist (the one heavy punch)
+    (1920, 2016, "第 3 张，是*胡迪尼*造来打假的", "The third: Houdini made it, to expose the fakes",
+     "【全片唯一重拳】放映机光斑从小取景框扩张：胡迪尼与「林肯鬼魂」玻璃幻灯片，还原扫描原色（预案见分镜 S12）；1968 起两张负片轮廓叠回幻灯片，标签 DOUBLE EXPOSURE，回扣 S09；档案签 No.003 · 1920S · H. HOUDINI；出处签 LIBRARY OF CONGRESS · 1920–1930", "IMG05",
+     "取景框扩张 20 f；色彩还原 18 f", "放映机咔嗒 + sub hit（峰值对齐 1920）", "F13", True, False),
+    (2016, 2112, "他和妻子约好：死后报*暗号*", "He promised his wife a code from beyond",
+     "LoC 照片：胡迪尼与妻子贝丝、母亲合影，朱砂 Circle 圈住贝丝；前景米色档案签打字机打出 ROSABELLE, BELIEVE（2028 起每字 2 f，2062 打完，停到 2112）", "IMG06",
+     "打字机每字 2 f", "打字机 ×17（音高随机 ±1 半音）", "F15", True, False),
+    (2112, 2208, "她办了 *10* 年万圣节降神会", "She held a séance every Halloween for 10 years",
+     "1926 年报道他死讯的剪报（原件已是网点印刷，只做统一调色，不再加 halftone），出处签 LIBRARY OF CONGRESS · 1926；Plex Mono 56 px 计数器 1927 → 1936，每个八分三连音（8 f）一跳，2120 起，2192 停在 1936", "IMG07",
+     "计数器 8 f 一跳", "极轻打字机点击 ×10", "F14, F16", True, False),
+    (2208, 2304, "最后那场，什么也*没来*", "At the last one, nothing came",
+     "计数器停在 1936；剪报像过度曝光一样慢慢变白（显影曲线反向）", "IMG07",
+     "密度曲线反向 96 f", "钢琴单音延音", "F17", True, False),
+    # P7 · bars 25-28 · golden line, centenary, interaction, loop
+    (2304, 2448, "骗你的，是你*想相信*", "What fools you is wanting to believe",
+     "【金句，全片最大字号 150 px】三张假像排成接触印样作暗背景；「骗你的，」落在 2304（乐句第一拍），「是你想相信」落在 2328（下一拍），2340 前成形，停到 2441", "IMG01, IMG03, IMG05",
+     "两个词组各自遮罩下落 12 f", "sub hit（低）@2304；全编制", "", True, False),
+    (2448, 2544, "今年万圣节，他走了 *100* 年", "This Halloween: 100 years since he died",
+     "接触印样里胡迪尼那一格推近；档案签打字机打出 1926 — 2026", "IMG05",
+     "推近 6%", "打字机 ×11", "F14, F19", True, False),
+    (2544, 2616, "最近哪张图*骗*过你", "What's the last picture that fooled you?",
+     "2544 相纸翻面（12 f），背面就是署名卡：全部图片、音效、配乐与字体出处（Plex Mono 24 px，档案签样式），完整停留 2556–2604（1.6 秒）；2604 起相纸翻回正面、镜头拉回封面构图，2616 到位", "",
+     "翻面 12 f；翻回 + 拉回 12 f（同一个连续镜头）", "相纸翻面声 ×2", "", True, False),
+    (2616, 2688, "这张林肯像，身子是*借*的", "Lincoln's head. Someone else's body.",
+     "封面构图（循环帧）：字幕直接在位（72 px）；镜头从第 0 帧的 97% 推到 100%，与 S01 的推速接上，最后一帧与第 0 帧完全一致", "IMG01, IMG02",
+     "镜头 0.97 → 1.00", "房间底噪", "F01, F02", False, True),
+]
+
+HOOKS = [
+    ("1 · 双像证据（当前采用）", "这张林肯像，身子是借的",
+     "两张相纸错位叠放：两具一模一样的身体，下层的头被写着「?」的档案签盖住"),
+    ("2 · 单张断言", "这张林肯像，只有头是林肯的",
+     "只有林肯合成像一张相纸；2.8 秒时放大镜移到脖颈"),
+    ("3 · 直接下注", "这具身体，不是林肯的",
+     "只有林肯合成像一张相纸；第 2 秒直接弹出 A / B 选项"),
+]
+
+SECTIONS = [
+    ("P1", 1, 3, "冷开场（双像证据）→ 下注 → 标题卡", "只有 pad（小调，暗）"),
+    ("P2", 4, 7, "证据链 · 第 1 张：借来的身体", "第 4 小节重拍钢琴进入 = 揭晓 = 全片第一个高潮"),
+    ("P3", 8, 11, "证据链 · 第 2 张：遗孀身后的鬼（显影）", "钢琴 + 轻脉冲"),
+    ("P4", 12, 15, "鬼影浮现 → 机制 · 审判与双重曝光", "第 12 小节重拍 = 鬼影浮现；加低音、刷子"),
+    ("P5", 16, 20, "机制 · 格兰特三拼 → 第 3 张？→ 静默（5 小节扩展乐句）", "1905–1920 帧全静默 0.5 秒"),
+    ("P6", 21, 24, "反转 · 胡迪尼（每句 1 小节）", "重拳：sub hit + 色彩还原；低音八度"),
+    ("P7", 25, 28, "金句 → 100 年 → 互动 + 署名 → 循环", "全编制 → 回落到 pad 尾音"),
+]
+
+
+def tc(frame):
+    s, f = divmod(frame, FPS)
+    m, s = divmod(s, 60)
+    return f"{m:02d}:{s:02d}.{f:02d}"
+
+
+def plain(s):
+    return s.replace("*", "")
+
+
+def zh_len(s):
+    return len(re.sub(r"[\s「」*]", "", s))
+
+
+def min_frames(n):
+    return max(1.2, 0.6 + n * 0.16) * FPS
+
+
+def readable_frames(a, b, static, is_last):
+    unreadable = (0 if static else ENTER_UNREADABLE) + (0 if is_last else EXIT)
+    return b - a - unreadable
+
+
+def check():
+    errors = []
+    prev_end = 0
+    for i, (a, b, zh, en, vis, img, mot, sfx, fid, cut, static) in enumerate(LINES):
+        if a != prev_end:
+            errors.append(f"row {i + 1}: starts at {a}, previous ended at {prev_end}")
+        prev_end = b
+        if cut and a % (BEAT * 2):
+            errors.append(f"row {i + 1}: shot cut at {a} is not on a half-bar (48 f)")
+        if zh:
+            if a % BEAT:
+                errors.append(f"row {i + 1}: subtitle starts at {a}, not on a beat")
+            n = zh_len(zh)
+            if n > 14:
+                errors.append(f"row {i + 1}: {n} chars > 14: {plain(zh)}")
+            if plain(zh).endswith("。"):
+                errors.append(f"row {i + 1}: ends with a full stop")
+            if re.search(r"[一二两三四五六七八九十百千]\s*[次张块年个位句颗]", plain(zh)):
+                errors.append(f"row {i + 1}: use Arabic numerals: {plain(zh)}")
+            if zh.count("*") not in (0, 2):
+                errors.append(f"row {i + 1}: more than one keyword")
+            r = readable_frames(a, b, static, i == len(LINES) - 1)
+            if r < min_frames(n) - 1e-6:
+                errors.append(f"row {i + 1}: readable {r}f < min {min_frames(n):.1f}f ({n} chars): {plain(zh)}")
+    if prev_end != TOTAL:
+        errors.append(f"timeline ends at {prev_end}, expected {TOTAL}")
+    return errors
+
+
+def render():
+    out = []
+    out.append("# 剧本：林肯的 3 张假像（Three Fake Lincolns）\n")
+    out.append(f"- 总时长 **{TOTAL / FPS:.1f} 秒** = {TOTAL} 帧 @ {FPS} fps")
+    out.append(f"- 节拍网格：{BPM} BPM，4/4；拍 = {BEAT} f，小节 = {BAR} f，八分 = 12 f，十六分 = 6 f，八分三连音 = 8 f；共 {BARS} 小节")
+    out.append("- 画幅 9:16，1080×1920；中文主字幕 + 英文斜体副字幕；无配音")
+    out.append("- 规则：字幕起点全部在拍上；镜头切换全部在半小节（48 f）上；数字用阿拉伯数字；每句 1 个朱砂关键词（表中加粗）")
+    out.append(f"- 停留检查：可读时长 = 在屏时长 − 入场 {ENTER_UNREADABLE} f（入场 12 f，过半即可读）− 出场 {EXIT} f；须 ≥ max(1.2 s, 0.6 s + 字数 × 0.16 s)。封面和循环帧没有入场动画\n")
+    out.append("## 乐句与叙事弧\n")
+    out.append("| 乐句 | 小节 | 帧 | 时间 | 占比 | 段落 | 配乐 |")
+    out.append("|---|---|---|---|---|---|---|")
+    for name, b0, b1, what, music in SECTIONS:
+        f0, f1 = (b0 - 1) * BAR, b1 * BAR
+        out.append(f"| {name} | {b0}–{b1} | {f0}–{f1} | {tc(f0)}–{tc(f1)} | "
+                   f"{f0 / TOTAL:.1%}–{f1 / TOTAL:.1%} | {what} | {music} |")
+    out.append("\n关键节点：揭晓 288 f（10.7%）· 鬼影 1056 f（39.3%）· 反转 1920 f（71.4%）· 金句 2304 f（85.7%）· 全部在乐句第一拍。\n")
+    out.append("## 前 3 秒 · 钩子版本\n")
+    out.append("| 版本 | 第 0 帧字幕 | 第 0 帧画面 |")
+    out.append("|---|---|---|")
+    for h in HOOKS:
+        out.append(f"| {h[0]} | {h[1]} | {h[2]} |")
+    out.append("\n## 逐句表\n")
+    out.append("| # | 时间码 | 帧 | 中文字幕 | 英文副字幕 | 画面 | 图片ID | 运动 | 音效 | 事实ID |")
+    out.append("|---|---|---|---|---|---|---|---|---|---|")
+    for i, (a, b, zh, en, vis, img, mot, sfx, fid, cut, static) in enumerate(LINES, 1):
+        if zh:
+            r = readable_frames(a, b, static, i == len(LINES))
+            z = re.sub(r"\*(.+?)\*", r"**\1**", zh) + f"（{zh_len(zh)} 字，可读 {r / FPS:.2f} s）"
+        else:
+            z = "—"
+        mark = "✂ " if cut else ""
+        out.append(f"| {i:02d} | {mark}{tc(a)}–{tc(b)} | {a}–{b} | {z} | {('*' + en + '*') if en else '—'} | "
+                   f"{vis} | {img or '—'} | {mot} | {sfx} | {fid or '—'} |")
+    out.append("\n✂ = 镜头切换（落在半小节）。")
+    return "\n".join(out) + "\n"
+
+
+if __name__ == "__main__":
+    errs = check()
+    for e in errs:
+        print("ERROR", e)
+    if errs:
+        sys.exit(1)
+    open(sys.argv[1], "w").write(render())
+    print("ok", len(LINES), "rows,", TOTAL, "frames")

@@ -1,0 +1,123 @@
+{
+  "stamp": {
+    "file": "sfx/stamp.wav",
+    "durationSec": 0.6,
+    "peakOffsetFrames": 0.15
+  },
+  "shutter": {
+    "file": "sfx/shutter.wav",
+    "durationSec": 0.35,
+    "peakOffsetFrames": 0.13
+  },
+  "paper_slide": {
+    "file": "sfx/paper_slide.wav",
+    "durationSec": 0.55,
+    "peakOffsetFrames": 7.14
+  },
+  "page_turn": {
+    "file": "sfx/page_turn.wav",
+    "durationSec": 0.7,
+    "peakOffsetFrames": 7.14
+  },
+  "loupe": {
+    "file": "sfx/loupe.wav",
+    "durationSec": 0.3,
+    "peakOffsetFrames": 6.61
+  },
+  "projector_click": {
+    "file": "sfx/projector_click.wav",
+    "durationSec": 1.2,
+    "peakOffsetFrames": 0.06
+  },
+  "liquid": {
+    "file": "sfx/liquid.wav",
+    "durationSec": 1.4,
+    "peakOffsetFrames": 25.96
+  },
+  "pen": {
+    "file": "sfx/pen.wav",
+    "durationSec": 0.45,
+    "peakOffsetFrames": 10.79
+  },
+  "tag_drop": {
+    "file": "sfx/tag_drop.wav",
+    "durationSec": 0.3,
+    "peakOffsetFrames": 0.06
+  },
+  "sub_hit": {
+    "file": "sfx/sub_hit.wav",
+    "durationSec": 2.2,
+    "peakOffsetFrames": 0.37
+  },
+  "sub_hit_low": {
+    "file": "sfx/sub_hit_low.wav",
+    "durationSec": 1.6,
+    "peakOffsetFrames": 0.25
+  },
+  "flip": {
+    "file": "sfx/flip.wav",
+    "durationSec": 0.6,
+    "peakOffsetFrames": 4.69
+  },
+  "paper_tick_0": {
+    "file": "sfx/paper_tick_0.wav",
+    "durationSec": 0.09,
+    "peakOffsetFrames": 0.03
+  },
+  "typewriter_0": {
+    "file": "sfx/typewriter_0.wav",
+    "durationSec": 0.14,
+    "peakOffsetFrames": 0.03
+  },
+  "paper_tick_1": {
+    "file": "sfx/paper_tick_1.wav",
+    "durationSec": 0.09,
+    "peakOffsetFrames": 0.24
+  },
+  "typewriter_1": {
+    "file": "sfx/typewriter_1.wav",
+    "durationSec": 0.14,
+    "peakOffsetFrames": 0.03
+  },
+  "paper_tick_2": {
+    "file": "sfx/paper_tick_2.wav",
+    "durationSec": 0.09,
+    "peakOffsetFrames": 0.13
+  },
+  "typewriter_2": {
+    "file": "sfx/typewriter_2.wav",
+    "durationSec": 0.14,
+    "peakOffsetFrames": 0.02
+  },
+  "paper_tick_3": {
+    "file": "sfx/paper_tick_3.wav",
+    "durationSec": 0.09,
+    "peakOffsetFrames": 0.07
+  },
+  "typewriter_3": {
+    "file": "sfx/typewriter_3.wav",
+    "durationSec": 0.14,
+    "peakOffsetFrames": 0.02
+  },
+  "paper_tick_4": {
+    "file": "sfx/paper_tick_4.wav",
+    "durationSec": 0.09,
+    "peakOffsetFrames": 0.02
+  },
+  "typewriter_4": {
+    "file": "sfx/typewriter_4.wav",
+    "durationSec": 0.14,
+    "peakOffsetFrames": 0.02
+  },
+  "room_tone": {
+    "file": "sfx/room_tone.wav",
+    "durationSec": 90.6,
+    "peakOffsetFrames": 123.65
+  },
+  "_score": {
+    "file": "music/score.wav",
+    "bpm": 75,
+    "bars": 28,
+    "durationSec": 89.6
+  }
+}
