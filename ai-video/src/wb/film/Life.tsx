@@ -1,205 +1,183 @@
-// 04 生活里（失眠、忘不掉的人、甜食）· 05 办法（找替身、别赶它走）· 尾声（它自己走了）
+// 04 生活里（90–102 秒，还是夜）：三个夜里的小场景，各有一束光——月光照在床上、路灯照着长凳、冰箱的灯照着人；
+// 光一亮，脑子里就冒出那个"白熊"（一只钟、一个人、一块蛋糕）。最后一个侧脸：里面那个检查的工人一直开着手电。
 import {Figure, hipOnGround, hipOnSeat, mixPose, POSES} from '../../pd/film/Picto';
 import {E16, E32, E8, T} from '../score';
-import {C, fx, lerp, lin, SHEET, snap, steps} from '../sys';
-import {Act, CX, CY, Floor, GROUND, Pop} from './Act';
-import {BearModule, stepsAt} from './Bear';
+import {C, FAMILY, lin, snap} from '../sys';
+import {BearModule, type Icon, stepsAt} from './Bear';
+import {Knife, type Pt, pts, Slit} from './Kit';
 import {Reveal} from './Type';
 
-const IN = 0.375;
-const H = 250;
+const FLOOR = 1440;
+// 夜：一大块，中间挖掉一束光（多边形）
+const nightHole = (poly: Pt[]) => `M -40 600 H 1120 V 1600 H -40 Z M ${poly.map((p) => p.join(' ')).join(' L ')} Z`;
+const shrinkPoly = (poly: Pt[], k: number, [ox, oy]: Pt): Pt[] => poly.map(([x, y]) => [ox + (x - ox) * k, oy + (y - oy) * k]);
 
-// 白熊方块从下方裁切升起（它是"冒出来"的念头）
-const Thought: React.FC<{t: number; t0: number; x: number; y: number; s: number; icon: 'bear' | 'clock' | 'person' | 'cake'}> = ({t, t0, x, y, s, icon}) => (
-	<Pop x={x - 4} y={y - 4} w={s + 8} h={s + 8} p={snap(t, t0, E32)}>
-		<BearModule x={x} y={y} s={s} t={t} icon={icon} />
-	</Pop>
+// 冒出来的念头：一只方块从中线打开
+const Thought: React.FC<{t: number; t0: number; x: number; y: number; s: number; icon: Icon}> = ({t, t0, x, y, s, icon}) => (
+	<Slit x={x} y={y} w={s} h={s} t={t} t0={t0} d={E32} line={C.paper}>
+		<BearModule x={x} y={y} s={s} t={t} icon={icon} step={stepsAt(t, t0, E8)} />
+	</Slit>
 );
-
-// ———— 失眠：床上的人每拍翻一次身；窗外一弯月亮；脑子里是一只钟 ————
-export const Sleep: React.FC<{t: number}> = ({t}) => {
-	// 翻来覆去：每拍在伸直和蜷起之间换一次
-	const k = Math.floor(t - T.sleep);
-	const curl = snap(t, T.sleep + k, E16);
-	const pose = k % 2 ? mixPose(POSES.slump, POSES.stand, curl) : mixPose(POSES.stand, POSES.slump, curl);
-	return (
-		<Act t={t} tin={T.sleep + IN} tout={T.person}>
-			<Floor />
-			{/* 床 */}
-			<rect x={290} y={1268} width={14} height={GROUND - 1268} fill={C.ink} />
-			<rect x={760} y={1312} width={14} height={GROUND - 1312} fill={C.ink} />
-			<rect x={304} y={1330} width={456} height={14} fill={C.ink} />
-			<rect x={312} y={1300} width={84} height={26} fill={C.ink} />
-			{/* 躺着的人（转 90°，头枕在枕头上） */}
-			<g transform={`rotate(-90 ${500} ${1290})`}>
-				<Figure x={500} y={1290} h={H} pose={pose} color={C.ink} />
-			</g>
-			<rect x={452} y={1282} width={300} height={44} fill={C.voice2} />
-			{/* 窗和月亮 */}
-			<rect x={700} y={828} width={170} height={170} fill="none" stroke={C.ink} strokeWidth={6} />
-			<circle cx={792} cy={900} r={40} fill={C.ink} />
-			<circle cx={810} cy={888} r={36} fill={C.paper} />
-			<Thought t={t} t0={T.sleep + E8 + E16} x={300} y={880} s={170} icon="clock" />
-		</Act>
-	);
-};
-
-// ———— 忘不掉一个人：坐在长凳上的人，脑子里是另一个人 ————
-export const Person: React.FC<{t: number}> = ({t}) => (
-	<Act t={t} tin={T.person + IN} tout={T.cake}>
-		<Floor />
-		<rect x={250} y={1300} width={260} height={14} fill={C.ink} />
-		<rect x={268} y={1314} width={12} height={GROUND - 1314} fill={C.ink} />
-		<rect x={480} y={1314} width={12} height={GROUND - 1314} fill={C.ink} />
-		<Figure x={380} y={hipOnSeat(1300, H)} h={H} pose="slump" color={C.ink} />
-		<Thought t={t} t0={T.person + E8 + E16} x={500} y={850} s={190} icon="person" />
-	</Act>
-);
-
-// ———— 别吃甜的：捂着嘴的人，脑子里是一块蛋糕 ————
-export const Cake: React.FC<{t: number}> = ({t}) => (
-	<Act t={t} tin={T.cake + IN} tout={T.notYou}>
-		<Floor />
-		<Figure x={360} y={hipOnGround(GROUND, H + 30)} h={H + 30} pose="silent" color={C.ink} />
-		<Thought t={t} t0={T.cake + E8 + E16} x={500} y={850} s={190} icon="cake" />
-	</Act>
-);
-
-// ———— 这是大脑的设计：一个侧脸的轮廓（沿长度画出来），白熊在里面 ————
-const HEAD =
-	'M 330 1420 L 330 1290 C 260 1250 236 1150 250 1060 C 270 920 380 840 510 840 C 650 840 740 930 748 1040 ' +
-	'C 752 1080 760 1100 790 1150 C 800 1166 790 1178 768 1180 L 760 1182 C 766 1210 760 1226 744 1230 ' +
-	'C 752 1250 748 1270 726 1276 C 700 1282 680 1290 676 1330 L 676 1420';
-export const Head: React.FC<{t: number}> = ({t}) => {
-	const per = 2400;
-	const draw = lin(t, T.notYou + IN, T.notYou + IN + 1);
-	return (
-		<Act t={t} tin={T.notYou + IN} tout={T.how}>
-			<path d={HEAD} fill="none" stroke={C.ink} strokeWidth={6} strokeLinejoin="round" strokeDasharray={per} strokeDashoffset={per * (1 - draw)} />
-			<Thought t={t} t0={T.notYou + 1.5} x={410} y={960} s={180} icon="bear" />
-			<Reveal text="一直开着的监控" x={392} y={1196} size={22} weight={600} color={C.mute} p={snap(t, T.notYou + 1.5 + E16, E16)} />
-		</Act>
-	);
-};
-
-// ———— 办法一：给白熊找个替身（一辆小汽车，墨色）————
-const Car: React.FC<{x: number; y: number}> = ({x, y}) => (
-	<g fill={C.ink}>
-		<rect x={x} y={y - 72} width={240} height={46} />
-		<path d={`M ${x + 46} ${y - 72} L ${x + 76} ${y - 116} L ${x + 168} ${y - 116} L ${x + 200} ${y - 72} Z`} />
-		<rect x={x + 88} y={y - 106} width={34} height={26} fill={C.paper} />
-		<rect x={x + 130} y={y - 106} width={36} height={26} fill={C.paper} />
-		<circle cx={x + 58} cy={y - 24} r={24} />
-		<circle cx={x + 182} cy={y - 24} r={24} />
-		<circle cx={x + 58} cy={y - 24} r={9} fill={C.paper} />
-		<circle cx={x + 182} cy={y - 24} r={9} fill={C.paper} />
+// 念头和人之间的三个小点
+const Dots: React.FC<{t: number; t0: number; from: Pt; to: Pt}> = ({t, t0, from, to}) => (
+	<g fill={C.paper}>
+		{[0, 1, 2].map((i) => {
+			const u = (i + 1) / 4;
+			return <circle key={i} cx={from[0] + (to[0] - from[0]) * u} cy={from[1] + (to[1] - from[1]) * u} r={(5 + i * 2.5) * snap(t, t0 + i * E32 * 0.5, E32)} />;
+		})}
 	</g>
 );
 
-export const Method1: React.FC<{t: number}> = ({t}) => {
-	// 汽车三步开到中间（每步一个八分音符）；白熊缩小，退到角落
-	const drive = steps(t, T.car + E8 - E8, T.car + E8 + 2 * E8, 3);
-	const carX = lerp(640, 400, drive);
-	const shrink = snap(t, T.car + 2, E8);
-	const bs = lerp(190, 84, shrink);
-	const bx = lerp(470, 820, shrink);
-	const by = lerp(880, 800, shrink);
+// ———— 失眠：月光照在床上；床头的钟一拍跳一大截；人每拍翻一次身 ————
+const MOON_LIGHT: Pt[] = [
+	[700, 830],
+	[900, 830],
+	[760, FLOOR],
+	[380, FLOOR],
+];
+export const Sleep: React.FC<{t: number}> = ({t}) => {
+	if (t < T.sleep + E16 || t >= T.person + E16) return null;
+	const on = snap(t, T.sleep + E16 + E16, E16);
+	const k = Math.max(0, Math.floor(t - T.sleep));
+	const curl = snap(t, T.sleep + k + E8, E16);
+	const pose = k % 2 ? mixPose(POSES.slump, POSES.stand, curl) : mixPose(POSES.stand, POSES.slump, curl);
+	const mins = [14, 37, 58, 59][Math.min(3, k)];
+	const hour = k >= 3 ? 3 : 2;
 	return (
-		<Act t={t} tin={T.how + IN} tout={T.smaller}>
-			<Floor />
-			<Figure x={230} y={hipOnGround(GROUND, H)} h={H} pose={t < T.method1 ? 'think' : 'stand'} color={C.ink} />
-			<BearModule x={bx} y={by} s={bs} t={t} />
-			{t >= T.method1 ? (
-				<Pop x={360} y={1260} w={560} h={150} p={snap(t, T.method1 + E8 + E16, E16)}>
-					<Car x={carX} y={GROUND} />
-				</Pop>
-			) : null}
-		</Act>
+		<Knife t={t} tk={T.person} mid={1150} line={C.paper}>
+			<polygon points={pts(shrinkPoly(MOON_LIGHT, on, [800, 830]))} fill={C.page} />
+			{/* 床、枕头、被子、躺着的人（墨色，只有光里看得见轮廓）*/}
+			<g>
+				<rect x={196} y={1236} width={16} height={FLOOR - 1236} fill={C.ink} />
+				<rect x={212} y={1330} width={560} height={16} fill={C.ink} />
+				<rect x={756} y={1346} width={16} height={FLOOR - 1346} fill={C.ink} />
+				<rect x={222} y={1296} width={96} height={30} fill={C.ink} />
+				<g transform={`rotate(-90 ${430} ${1300})`}>
+					<Figure x={430} y={1300} h={250} pose={pose} color={C.ink} />
+				</g>
+				<rect x={384} y={1290} width={370} height={40} fill={C.ink} />
+			</g>
+			<path d={nightHole(shrinkPoly(MOON_LIGHT, on, [800, 830]))} fill={C.night} fillRule="evenodd" />
+			{/* 白线：床的轮廓（在暗处也看得见）*/}
+			<g fill={C.paper}>
+				<rect x={196} y={1236} width={4} height={FLOOR - 1236} />
+				<rect x={196} y={1236} width={16} height={4} />
+				<rect x={212} y={1342} width={560} height={4} />
+				<rect x={768} y={1346} width={4} height={FLOOR - 1346} />
+			</g>
+			<rect x={72} y={FLOOR} width={936} height={2} fill="#3A3F48" />
+			{/* 窗和月亮 */}
+			<rect x={700} y={710} width={200} height={120} fill="none" stroke={C.paper} strokeWidth={5} />
+			<rect x={798} y={710} width={4} height={120} fill={C.paper} />
+			<circle cx={750} cy={770} r={30} fill={C.paper} />
+			<circle cx={764} cy={760} r={27} fill={C.night} />
+			{/* 床头柜上的电子钟：一拍就过去二十分钟 */}
+			<rect x={850} y={1300} width={150} height={FLOOR - 1300} fill="none" stroke={C.paper} strokeWidth={4} />
+			<rect x={860} y={1242} width={130} height={58} fill="#2A2E35" />
+			<text x={925} y={1284} textAnchor="middle" fontFamily={FAMILY} fontSize={34} fontWeight={700} fill={C.paper} style={{fontVariantNumeric: 'tabular-nums'}}>
+				{`0${hour}:${String(mins).padStart(2, '0')}`}
+			</text>
+			<Dots t={t} t0={T.sleep + E8} from={[330, 1240]} to={[300, 1060]} />
+			<Thought t={t} t0={T.sleep + E8 + E16} x={190} y={850} s={190} icon="clock" />
+		</Knife>
 	);
 };
 
-// 反弹变小（示意）：硬压 vs 找替身
-const N_HARD = 16;
-const N_SUB = 11;
-export const Smaller: React.FC<{t: number}> = ({t}) => {
-	const s = 36;
-	const g = 6;
-	const rows = [
-		{y: 960, n: N_HARD, label: '硬压之后：'},
-		{y: 1170, n: N_SUB, label: '找了替身之后：'},
+// ———— 忘不掉一个人：路灯下的长凳，一个人坐着 ————
+const LAMP_X = 700;
+const LAMP_LIGHT: Pt[] = [
+	[LAMP_X - 46, 812],
+	[LAMP_X + 46, 812],
+	[LAMP_X + 250, FLOOR],
+	[LAMP_X - 250, FLOOR],
+];
+export const Person: React.FC<{t: number}> = ({t}) => {
+	if (t < T.person + E16 || t >= T.cake + E16) return null;
+	const on = snap(t, T.person + E16 + E16, E16);
+	const light = LAMP_LIGHT.map(([x, y]) => [x, 812 + (y - 812) * on] as Pt);
+	return (
+		<Knife t={t} tk={T.cake} mid={1150} line={C.paper}>
+			<polygon points={pts(light)} fill={C.page} />
+			<g fill={C.ink}>
+				<rect x={560} y={1330} width={300} height={14} />
+				<rect x={574} y={1344} width={12} height={FLOOR - 1344} />
+				<rect x={834} y={1344} width={12} height={FLOOR - 1344} />
+				<rect x={560} y={1240} width={12} height={90} />
+			</g>
+			<Figure x={680} y={hipOnSeat(1330, 270)} h={270} pose={{...POSES.slump, tilt: 30}} color={C.ink} />
+			<path d={nightHole(light)} fill={C.night} fillRule="evenodd" />
+			{/* 路灯：白线 */}
+			<rect x={LAMP_X - 4} y={760} width={8} height={FLOOR - 760} fill={C.paper} />
+			<path d={`M ${LAMP_X - 50} 812 L ${LAMP_X + 50} 812 L ${LAMP_X + 30} 776 L ${LAMP_X - 30} 776 Z`} fill={C.paper} />
+			<rect x={72} y={FLOOR} width={936} height={2} fill="#3A3F48" />
+			<Dots t={t} t0={T.person + E8} from={[640, 1150]} to={[420, 1000]} />
+			<Thought t={t} t0={T.person + E8 + E16} x={190} y={820} s={190} icon="person" />
+		</Knife>
+	);
+};
+
+// ———— 别吃了：半夜打开冰箱，冰箱的光照着人 ————
+const FRIDGE = {x: 600, y: 940, w: 230, h: FLOOR - 940};
+export const Cake: React.FC<{t: number}> = ({t}) => {
+	if (t < T.cake + E16 || t >= T.notYou + E16) return null;
+	const open = snap(t, T.cake + E16 + E16, E16);
+	const light: Pt[] = [
+		[FRIDGE.x, FRIDGE.y + 20],
+		[FRIDGE.x, FLOOR],
+		[FRIDGE.x - 520 * open, FLOOR],
+		[FRIDGE.x - 40 * open, FRIDGE.y + 20],
 	];
 	return (
-		<Act t={t} tin={T.smaller + IN} tout={T.method2}>
-			{rows.map((row, i) => (
-				<g key={i}>
-					<Reveal text={row.label} x={168} y={row.y - 22} size={26} weight={700} color={C.ink} p={snap(t, T.smaller + IN + i * E16, E16)} />
-					{Array.from({length: row.n}, (_, k) => (t >= T.smaller + IN + E16 + k * E32 ? <BearModule key={k} x={168 + k * (s + g)} y={row.y} s={s} t={t} /> : null))}
-				</g>
+		<Knife t={t} tk={T.notYou} mid={1150} line={C.paper}>
+			<polygon points={pts(light)} fill={C.page} />
+			<Figure x={360} y={hipOnGround(FLOOR, 330)} h={330} pose={POSES.silent} color={C.ink} />
+			<path d={nightHole(light)} fill={C.night} fillRule="evenodd" />
+			{/* 冰箱：开着的门，里面的格子 */}
+			<rect x={FRIDGE.x} y={FRIDGE.y} width={FRIDGE.w} height={FRIDGE.h} fill={C.page} />
+			<rect x={FRIDGE.x} y={FRIDGE.y} width={FRIDGE.w} height={FRIDGE.h} fill="none" stroke={C.paper} strokeWidth={6} />
+			{[0.3, 0.55, 0.8].map((u) => (
+				<rect key={u} x={FRIDGE.x + 12} y={FRIDGE.y + FRIDGE.h * u} width={FRIDGE.w - 24} height={4} fill="#8A9099" />
 			))}
-			<Reveal text="■ = 想起一次白熊（示意）" x={168} y={1420} size={20} weight={500} color={C.mute} p={snap(t, T.smaller + 1, E16)} />
-		</Act>
+			<path
+				d={`M ${FRIDGE.x + FRIDGE.w} ${FRIDGE.y} L ${FRIDGE.x + FRIDGE.w + 150 * open} ${FRIDGE.y + 40 * open} L ${FRIDGE.x + FRIDGE.w + 150 * open} ${FLOOR - 40 * open} L ${FRIDGE.x + FRIDGE.w} ${FLOOR} Z`}
+				fill={C.night}
+				stroke={C.paper}
+				strokeWidth={5}
+			/>
+			<rect x={72} y={FLOOR} width={936} height={2} fill="#3A3F48" />
+			<Dots t={t} t0={T.cake + E8} from={[340, 1100]} to={[290, 960]} />
+			<Thought t={t} t0={T.cake + E8 + E16} x={150} y={760} s={190} icon="cake" />
+		</Knife>
 	);
 };
 
-// ———— 办法二：别赶它走。推开 → 它又回来 → 不推了，它落回网格，趴下 ————
-export const Method2: React.FC<{t: number}> = ({t}) => {
-	const t0 = T.method2;
-	// 推：例外的运动（线性、不吸附）
-	const away = lin(t, t0 + IN + 0.25, t0 + IN + 0.75);
-	const back = lin(t, t0 + 1.25, t0 + 1.75);
-	const loose = 470 + 200 * away - 170 * back;
-	const settle = snap(t, t0 + 2, E16);
-	const gx = fx(2) + 24;
-	const x = lerp(loose, gx, settle);
-	const pushing = t < t0 + 1.75;
-	const pose = pushing ? POSES.push : mixPose(POSES.stand, POSES.sitFloor, snap(t, T.stay + E8, E16));
-	const sitY = lerp(hipOnGround(GROUND, H), GROUND - 0.04 * H, snap(t, T.stay + E8, E16));
-	const rest = snap(t, T.stay + E8, E8);
-	return (
-		<Act t={t} tin={t0 + IN} tout={T.now}>
-			<Floor />
-			<Figure x={240} y={sitY} h={H} pose={pose} color={C.ink} />
-			<BearModule x={x} y={GROUND - 190 - 8} s={190} t={t} rest={rest} />
-			{settle > 0 && t < T.stay ? (
-				<Reveal text="on grid" x={gx} y={GROUND - 190 - 24} size={20} weight={600} color={C.signal} p={settle} q={snap(t, T.stay, E16)} />
-			) : null}
-		</Act>
-	);
-};
-
-// ———— 尾声：它趴着；站起来；一步一步走出画面（线性离开，网格在它身后合上）————
-export const Ending: React.FC<{t: number}> = ({t}) => {
-	const s = 300;
-	const y = CY - s / 2 - 20;
-	const rest = 1 - snap(t, T.leave + E8, E8);
-	const out = lin(t, T.leave + 1, T.golden);
-	const x = lerp(CX - s / 2, SHEET.x1 + 200, out);
-	const step = t >= T.leave + 1 ? stepsAt(t, T.leave + 1, E8) : 0;
-	const grid = lin(t, T.golden, T.golden + 1);
+// ———— 这是大脑的设计：一个侧脸（沿长度画出来），里面那个检查的工人一直打着手电 ————
+const HEAD =
+	'M 330 1480 L 330 1330 C 250 1286 222 1170 238 1066 C 262 908 388 816 538 816 C 700 816 802 922 812 1048 ' +
+	'C 816 1094 826 1118 860 1176 C 872 1194 860 1208 834 1210 L 826 1212 C 832 1244 826 1262 808 1266 ' +
+	'C 818 1290 812 1312 788 1318 C 758 1326 734 1334 730 1380 L 730 1480';
+export const Head: React.FC<{t: number}> = ({t}) => {
+	if (t < T.notYou + E16 || t >= T.how) return null;
+	const per = 2600;
+	const draw = lin(t, T.notYou + E16, T.notYou + 1);
+	const on = snap(t, T.notYou + 1 + E8, E16);
+	const tip: Pt = [606, 1112];
+	const to: Pt = [430, 960];
+	const beam: Pt[] = [
+		[tip[0], tip[1] - 5],
+		[tip[0], tip[1] + 5],
+		[to[0] - 30 * on, to[1] + 90 * on],
+		[to[0] - 30 * on, to[1] - 90 * on],
+	];
 	return (
 		<g>
-			<Act t={t} tin={T.now + IN} tout={999} outside={null}>
-				{/* 空网格：它走后，6 栏在纸上画出来 */}
-				{Array.from({length: 7}, (_, i) => {
-					const gx = SHEET.x0 + 24 + i * ((SHEET.x1 - SHEET.x0 - 48) / 6);
-					return <rect key={i} x={gx} y={SHEET.y0 + 24} width={1} height={(SHEET.y1 - SHEET.y0 - 48) * lin(grid, i / 9, i / 9 + 0.4)} fill={C.gridPaper} />;
-				})}
-			</Act>
-			{t >= T.now + IN - E16 && out < 1 ? (
-				<Pop x={SHEET.x0} y={y - 4} w={1080 - SHEET.x0} h={s + 8} p={snap(t, T.now + IN, E16)}>
-					<BearModule x={x} y={y} s={s} t={t} rest={rest} step={step} />
-				</Pop>
-			) : null}
-			{/* 参考 */}
-			<rect x={fx(0)} y={1300} width={(SHEET.x1 - 24 - fx(0)) * lin(t, T.golden + E8, T.golden + 1)} height={1} fill={C.ink} />
-			{[
-				'参考：陀思妥耶夫斯基《冬天记的夏天印象》，1863',
-				'Wegner, Schneider, Carter & White, JPSP, 1987',
-				'Wegner, Psychological Review, 1994 · American Psychologist, 2011',
-				'后续研究：这个效应确实存在，但强度因人、因情境而异。图中数据为示意。',
-			].map((line, i) => (
-				<Reveal key={i} text={line} x={fx(0) + 24} y={1340 + i * 30} size={19} weight={500} color={i === 3 ? C.mute : C.ink} p={snap(t, T.golden + 1 + i * E16, E16)} />
-			))}
+			<path d={HEAD} fill="none" stroke={C.paper} strokeWidth={6} strokeLinejoin="round" strokeDasharray={per} strokeDashoffset={per * (1 - draw)} />
+			{on > 0 ? <polygon points={pts(beam)} fill={C.page} /> : null}
+			{t >= T.notYou + 1 ? <Figure x={640} y={hipOnGround(1200, 150)} h={150} dir={-1} pose={{lean: 4, tilt: -4, aF: [90, 92], aB: [-8, -3], lF: [5, 0], lB: [-5, 0]}} color={C.paper} /> : null}
+			{t >= T.notYou + 1 ? <rect x={tip[0]} y={tip[1] - 6} width={16} height={12} fill={C.paper} /> : null}
+			{t >= T.notYou + 1 ? <rect x={540} y={1200} width={180} height={3} fill="#5C626C" /> : null}
+			<Thought t={t} t0={T.notYou + 1 + E8 + E16} x={300} y={890} s={140} icon="bear" />
+			<Reveal text="监控，一直开着" x={238} y={1540} size={24} weight={700} color={C.paper} p={snap(t, T.notYou + 2, E16)} />
 		</g>
 	);
 };

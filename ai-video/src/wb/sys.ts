@@ -1,6 +1,6 @@
 // 《白熊效应》视觉系统：冷灰的纸、墨、两档浅灰、一个信号色（群青）。
 // 群青只给一样东西：那只白熊——一块群青方块，白熊从里面镂空出来。
-import {E16} from './score';
+import {E16, ease, groundAt} from './score';
 
 export const W = 1080;
 export const H = 1920;
@@ -21,6 +21,15 @@ export const C = {
 
 export const FAMILY = '"Inter Tight", "Noto Sans SC", sans-serif';
 
+// 三种底：纸（墨字）、夜（纸色字）、群青（纸色字）
+export const THEMES = {
+	page: {bg: C.page, ink: C.ink, lead: C.mute, rule: C.ink, faint: C.gridPage},
+	night: {bg: C.night, ink: C.paper, lead: '#8A9099', rule: '#5C626C', faint: '#22262D'},
+	blue: {bg: C.signal, ink: C.paper, lead: '#C7D0FF', rule: '#AEBBFF', faint: '#3553FF'},
+};
+export type Theme = (typeof THEMES)['page'];
+export const themeAt = (t: number): Theme => THEMES[groundAt(t)];
+
 // 画面网格：6 栏 × 124，栏距 24，左边距 72（右侧留 144 给抖音的按钮），基线 24
 export const FM = 72;
 export const FG = 24;
@@ -37,26 +46,7 @@ export const clamp = (x: number, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 export const seg = (t: number, a: number, b: number) => clamp((t - a) / (b - a));
 
-const cubicBezier = (x1: number, y1: number, x2: number, y2: number) => {
-	const bx = (u: number) => 3 * (1 - u) * (1 - u) * u * x1 + 3 * (1 - u) * u * u * x2 + u * u * u;
-	const by = (u: number) => 3 * (1 - u) * (1 - u) * u * y1 + 3 * (1 - u) * u * u * y2 + u * u * u;
-	return (t: number) => {
-		if (t <= 0) return 0;
-		if (t >= 1) return 1;
-		let lo = 0;
-		let hi = 1;
-		let u = t;
-		for (let i = 0; i < 30; i++) {
-			const x = bx(u);
-			if (Math.abs(x - t) < 1e-6) break;
-			if (x < t) lo = u;
-			else hi = u;
-			u = (lo + hi) / 2;
-		}
-		return by(u);
-	};
-};
-export const E = cubicBezier(0.7, 0, 0.2, 1);
+export const E = ease;
 
 // 吸附：t1 时刻落位，提前 d 秒起步（默认一个十六分 = 0.25 秒）
 export const snap = (t: number, t1: number, d = E16) => E(seg(t, t1 - d, t1));

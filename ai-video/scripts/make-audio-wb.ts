@@ -137,6 +137,27 @@ const tickS = () => {
 	return out;
 };
 
+// 钟琴的一下：五声音阶上按序号取音，越往后越高（白熊越冒越多时是一串亮晶晶的上行）
+const PENT = [0, 2, 4, 7, 9];
+const tink = (note = 0) => {
+	const f = mtof(84 + PENT[note % 5] + 12 * (Math.floor(note / 5) % 2));
+	const out = mono(0.5);
+	for (let i = 0; i < out.length; i++) {
+		const t = i / SR;
+		out[i] = (Math.sin(TAU * f * t) + 0.3 * Math.sin(TAU * f * 2.76 * t) * Math.exp(-t * 18)) * env(t, 0.0008, 0.16);
+	}
+	return out;
+};
+// 呼：一段噪声，带通的中心频率先升后降（镜头扎进去、东西飞过去）
+const whoosh = (dur: number) => {
+	const len = dur + 0.15;
+	const src = mono(len);
+	for (let i = 0; i < src.length; i++) src[i] = noise();
+	const f = sweepFilter(src, 'bp', (t) => 350 + 2600 * Math.pow(Math.sin((Math.PI * Math.min(t, len)) / len), 2), 0.8);
+	for (let i = 0; i < f.length; i++) f[i] *= Math.pow(Math.sin(Math.PI * Math.pow(i / f.length, 0.7)), 2) * 0.7;
+	return f;
+};
+
 // ———————————————— 乐器 ————————————————
 const kick = () => {
 	const out = mono(0.4);
@@ -321,8 +342,10 @@ const makeMix = (): Stereo => {
 		stamp: () => stamp(),
 		bell: () => bell(),
 		tick: () => tickS(),
+		tink: (e) => tink(e.note ?? 0),
+		whoosh: (e) => whoosh(e.dur ?? 0.5),
 	};
-	const LEVEL: Record<Ev['kind'], number> = {clack: 0.45, tss: 0.35, snick: 0.55, slap: 0.5, slide: 0.4, thunk: 0.6, snap: 0.45, thump: 0.8, stamp: 0.75, bell: 0.32, tick: 0.55};
+	const LEVEL: Record<Ev['kind'], number> = {clack: 0.45, tss: 0.35, snick: 0.55, slap: 0.5, slide: 0.4, thunk: 0.6, snap: 0.45, thump: 0.8, stamp: 0.75, bell: 0.32, tick: 0.55, tink: 0.3, whoosh: 0.45};
 	// 铃单独走一条带一点空间的总线，其余拟音全干
 	const bells = stereo(LEN);
 	events().forEach((e, i) => {

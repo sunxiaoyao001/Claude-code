@@ -1,5 +1,5 @@
 import {chunks, chunkTime, E16, type Line} from '../score';
-import {C, FAMILY, FM, leftBearing, snap, textWidth, tracking} from '../sys';
+import {FAMILY, FM, leftBearing, snap, textWidth, themeAt, tracking} from '../sys';
 
 // 一段文字从基线下方的裁切框里升起（p: 0→1），离场时向上翻走（q: 0→1）
 export const Reveal: React.FC<{
@@ -48,6 +48,8 @@ const KIND = {
 export const Statement: React.FC<{line: Line; t: number}> = ({line, t}) => {
 	if (t < line.t0 - E16 || t > line.t1 + E16) return null;
 	const k = KIND[line.kind ?? 'page'];
+	// 颜色跟着这一屏的底走（纸 / 夜 / 群青）
+	const th = themeAt(Math.min(line.t1 - 0.01, Math.max(line.t0, t)));
 	const q = snap(t, line.t1, E16);
 	const out: React.ReactNode[] = [];
 	let i = 0;
@@ -55,7 +57,7 @@ export const Statement: React.FC<{line: Line; t: number}> = ({line, t}) => {
 	const lead = chunks(line.lead);
 	lead.forEach((c, j) => {
 		if (j > 0) cx += gapBetween(lead[j - 1], c, k.lead.size);
-		out.push(<Reveal key={`l${i}`} text={c} x={cx} y={k.lead.y} size={k.lead.size} weight={500} color={C.mute} p={snap(t, chunkTime(line, i), E16)} q={q} />);
+		out.push(<Reveal key={`l${i}`} text={c} x={cx} y={k.lead.y} size={k.lead.size} weight={500} color={th.lead} p={snap(t, chunkTime(line, i), E16)} q={q} />);
 		cx += textWidth(c, k.lead.size, 500);
 		i++;
 	});
@@ -72,7 +74,7 @@ export const Statement: React.FC<{line: Line; t: number}> = ({line, t}) => {
 					y={k.bold.y + r * k.bold.lh}
 					size={k.bold.size}
 					weight={800}
-					color={C.ink}
+					color={th.ink}
 					p={snap(t, chunkTime(line, i), E16)}
 					q={q}
 					optical={j === 0}
