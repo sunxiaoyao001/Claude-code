@@ -49,6 +49,10 @@ type Props = {
   readonly develop?: number;
   readonly colorRestore?: number;
   readonly lift?: number;
+  // Image layers (overlays, second exposures): clipped to the print's window.
+  readonly layers?: React.ReactNode;
+  // Annotations (pen marks): positioned in window pixels but never clipped, so a circle near the
+  // edge of a photo stays whole.
   readonly children?: React.ReactNode;
   readonly style?: React.CSSProperties;
 };
@@ -67,6 +71,7 @@ export const PhotoPrint: React.FC<Props> = ({
   develop = 1,
   colorRestore = 0,
   lift = 0,
+  layers,
   children,
   style,
 }) => {
@@ -90,17 +95,20 @@ export const PhotoPrint: React.FC<Props> = ({
         ...style,
       }}
     >
-      <div style={{ position: "relative", width, height, overflow: "hidden", backgroundColor: COLORS.printWhite }}>
-        <CanvasImage
-          src={staticFile(src)}
-          width={Math.round(imgW * scale)}
-          height={Math.round(imgH * scale)}
-          fit="fill"
-          style={{ position: "absolute", left: -crop.x0 * imgW * scale, top: -crop.y0 * imgH * scale }}
-          effects={photoGrade({ frame, develop, colorRestore })}
-        />
-        <PrintContext.Provider value={geometry}>{children}</PrintContext.Provider>
-      </div>
+      <PrintContext.Provider value={geometry}>
+        <div style={{ position: "relative", width, height, overflow: "hidden", backgroundColor: COLORS.printWhite }}>
+          <CanvasImage
+            src={staticFile(src)}
+            width={Math.round(imgW * scale)}
+            height={Math.round(imgH * scale)}
+            fit="fill"
+            style={{ position: "absolute", left: -crop.x0 * imgW * scale, top: -crop.y0 * imgH * scale }}
+            effects={photoGrade({ frame, develop, colorRestore })}
+          />
+          {layers}
+        </div>
+        {children ? <div style={{ position: "absolute", left: border, top: border, width, height }}>{children}</div> : null}
+      </PrintContext.Provider>
     </div>
   );
 };

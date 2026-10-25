@@ -22,9 +22,9 @@ export type Line = {
   readonly facts: readonly string[];
 };
 
-// Subtitles. The golden line (2304–2448) is not here: it has its own component.
+// Subtitles. The golden line (2400–2544) is not here: it has its own component.
 export const LINES: readonly Line[] = [
-  { from: 0, to: 96, zh: "这张林肯像，身子是*借*的", en: "Lincoln's head. Someone else's body", isStatic: true, size: 72, facts: ["F01", "F02"] },
+  { from: 0, to: 96, zh: "林肯的头，*借*来的身子", en: "Lincoln's head. A borrowed body.", isStatic: true, size: 72, facts: ["F01", "F02"] },
   { from: 96, to: 192, zh: "猜猜，跟*谁*借的", en: "Guess whose body it is", facts: ["F05", "F22"] },
   { from: 288, to: 384, zh: "答案是 B：*卡尔霍恩*", en: "It's B: John C. Calhoun", facts: ["F02", "F05", "F21"] },
   { from: 384, to: 480, zh: "他说奴隶制不是恶，是*善*", en: "He said slavery wasn't an evil, but a good", facts: ["F04", "F06"] },
@@ -33,33 +33,33 @@ export const LINES: readonly Line[] = [
   { from: 672, to: 744, zh: "这只是第 *1* 张", en: "That was only the first", facts: [] },
   { from: 744, to: 840, zh: "第 2 张，主角是林肯的*遗孀*", en: "The second stars Lincoln's widow", facts: ["F07"] },
   { from: 840, to: 936, zh: "她报*假名*，摄影师说没认出", en: "She gave a false name; he said he didn't know her", facts: ["F09"] },
-  { from: 936, to: 1056, zh: "照片*印*出来了", en: "The print came up", facts: ["F07"] },
+  { from: 936, to: 1056, zh: "一双手，搭在她*肩*上", en: "A pair of hands on her shoulders", facts: ["F07"] },
   { from: 1056, to: 1200, zh: "他，就站在她*身后*", en: "And there he was, right behind her", facts: ["F07", "F11"] },
-  { from: 1200, to: 1296, zh: "他被控诈骗，法官*放*了他", en: "Charged with fraud. The judge let him go", facts: ["F10"] },
+  { from: 1200, to: 1296, zh: "摄影师曾被控诈骗，法官*放*人", en: "The photographer was once tried for fraud. The judge let him go", facts: ["F10"] },
   { from: 1296, to: 1392, zh: "怎么做的，至今说*不清*", en: "How he did it is still unclear", facts: ["F11"] },
-  { from: 1392, to: 1488, zh: "可在暗房里，造假*不难*", en: "But in a darkroom, faking is easy", facts: ["F10", "F11"] },
-  { from: 1488, to: 1584, zh: "1 块底片曝光 *2* 次", en: "One plate, two exposures", facts: ["F11"] },
-  { from: 1584, to: 1680, zh: "或者把 *3* 张底片拼成 1 张", en: "Or three negatives printed as one", facts: ["F12"] },
+  { from: 1392, to: 1488, zh: "鬼影的常见造法：*双重曝光*", en: "The usual trick for ghosts: double exposure", facts: ["F11"] },
+  { from: 1488, to: 1584, zh: "底片不换，再曝光 *1* 次", en: "Same plate, one more exposure", facts: ["F11"] },
+  { from: 1584, to: 1680, zh: "另一种造假：*3* 张照片拼 1 张", en: "Another kind of fake: three photos printed as one", facts: ["F12"] },
   { from: 1680, to: 1776, zh: "头是*格兰特*，其余都不是", en: "Only the head is Grant's", facts: ["F12"] },
   { from: 1776, to: 1905, zh: "那第 3 张*林肯*呢", en: "So who made the third Lincoln?", facts: [] },
-  { from: 1920, to: 2016, zh: "第 3 张，*魔术师*造来打假", en: "A magician faked the third, to expose the fakers", facts: ["F13", "F20"] },
+  { from: 1920, to: 2016, zh: "第 3 张，是*魔术师*做来打假的", en: "The third was made by a magician, to expose the fakers", facts: ["F13", "F20"] },
   { from: 2016, to: 2112, zh: "胡迪尼约妻子：死后报*暗号*", en: "Houdini promised his wife a code from beyond", facts: ["F15"] },
-  { from: 2112, to: 2208, zh: "她办了 *10* 年万圣节降神会", en: "She held a séance every Halloween for 10 years", facts: ["F14", "F16"] },
+  { from: 2112, to: 2208, zh: "他死在*万圣节*，她招魂 10 年", en: "He died on Halloween. She held séances for 10 years", facts: ["F14", "F16"] },
   { from: 2208, to: 2304, zh: "最后那场，什么也*没来*", en: "At the last one, nothing came", facts: ["F17"] },
-  { from: 2448, to: 2544, zh: "今年万圣节，他走了 *100* 年", en: "This Halloween: 100 years since he died", facts: ["F14", "F19"] },
+  { from: 2304, to: 2400, zh: "今年万圣节，他走了 *100* 年", en: "This Halloween marks 100 years since he died", facts: ["F14", "F19"] },
   { from: 2544, to: 2616, zh: "最近哪张图*骗*过你", en: "What's the last picture that fooled you?", facts: [] },
-  { from: 2616, to: 2688, zh: "这张林肯像，身子是*借*的", en: "Lincoln's head. Someone else's body", isStatic: true, size: 72, facts: ["F01", "F02"] },
+  { from: 2616, to: 2688, zh: "林肯的头，*借*来的身子", en: "Lincoln's head. A borrowed body.", isStatic: true, size: 72, facts: ["F01", "F02"] },
 ];
 
 export const GOLDEN = {
-  from: 2304,
-  to: 2448,
+  from: 2400,
+  to: 2544,
   groups: [
-    { at: 2304, text: "骗你的，", keyword: false },
-    { at: 2328, text: "是你", keyword: false },
-    { at: 2328, text: "想相信", keyword: true },
+    { at: 2400, text: "骗你的，", keyword: false },
+    { at: 2424, text: "是你", keyword: false },
+    { at: 2424, text: "想相信", keyword: true },
   ],
-  en: "What fools you is wanting to believe",
+  en: "It's wanting to believe that fools you",
 } as const;
 
 // Scene boundaries (the moment each scene becomes visible). Content-driven transitions overlap
@@ -74,10 +74,13 @@ export const SCENES = {
   twist: { from: 1920, to: 2016 },
   code: { from: 2016, to: 2112 },
   seances: { from: 2112, to: 2304 },
-  golden: { from: 2304, to: 2448 },
-  centenary: { from: 2448, to: 2544 },
+  centenary: { from: 2304, to: 2400 },
+  golden: { from: 2400, to: 2544 },
   outro: { from: 2544, to: 2688 },
 } as const;
+
+// Bottom progress: one slot per fake (the chapter tags No.001 / No.002 / No.003).
+export const CHAPTERS = { bounds: [0, 672, 1776, BASE_TOTAL], labels: ["No.001", "No.002", "No.003"] } as const;
 
 // The 0.5 s of musical silence before the twist.
 export const SILENCE = { from: 1905, to: 1920 } as const;
@@ -88,9 +91,21 @@ export const ARCHIVE_TAGS = [
   { from: 1584, text: "EXHIBIT · CA. 1902 · L.C. HANDY" },
   { from: 1776, text: "ARCHIVE No.003 · ?" },
   { from: 1920, text: "ARCHIVE No.003 · 1920S" },
-  { from: 2448, text: "1926 — 2026" },
+  { from: 2400, text: "ARCHIVE No.001 — No.003" },
   { from: 2616, text: "ARCHIVE No.001 · CA. 1865 · NEW YORK" },
 ] as const;
+
+// Typed text on screen: one character every `every` frames from `from`. The keystroke sounds
+// below are derived from these, so picture and sound cannot drift apart.
+export type Typed = { readonly from: number; readonly every: number; readonly text: string };
+export const TYPED = {
+  trialStamp: { from: 1206, every: 2, text: "NEW YORK · APRIL 1869" },
+  code: { from: 2028, every: 2, text: "ROSABELLE, BELIEVE" },
+  centenary: { from: 2316, every: 3, text: "1926 — 2026" },
+} as const satisfies Record<string, Typed>;
+
+// Halloween séance counter: one year per eighth-note triplet, landing on 1936 at 2192.
+export const SEANCE_COUNTER = { from: 2120, every: 8, first: 1927, last: 1936 } as const;
 
 export type SfxName =
   | "stamp"
@@ -115,9 +130,13 @@ export type SfxEvent = { readonly at: number; readonly sound: SfxName; readonly 
 const typewriterRun = (from: number, count: number, every: number, gainDb = -30): SfxEvent[] =>
   Array.from({ length: count }, (_, i) => ({ at: from + i * every, sound: "typewriter" as const, gainDb }));
 
+// One keystroke per visible character (the space bar is silent).
+const typedSfx = (x: Typed, gainDb: number): SfxEvent[] =>
+  [...x.text].flatMap((ch, i) => (ch === " " ? [] : [{ at: x.from + i * x.every, sound: "typewriter" as const, gainDb }]));
+
 export const SFX: readonly SfxEvent[] = [
   // cover, bet, title
-  { at: 36, sound: "pen", gainDb: -26 },
+  { at: 12, sound: "pen", gainDb: -26 },
   { at: 108, sound: "tag_drop", gainDb: -24 },
   { at: 120, sound: "tag_drop", gainDb: -24 },
   ...typewriterRun(144, 3, 16, -26),
@@ -125,8 +144,12 @@ export const SFX: readonly SfxEvent[] = [
   { at: 240, sound: "stamp", gainDb: -18 },
   // fake No.1
   { at: 288, sound: "paper_slide", gainDb: -22 },
-  { at: 288, sound: "pen", gainDb: -28 },
   { at: 330, sound: "paper_slide", gainDb: -26 },
+  // blink comparator: one hard switch per eighth note
+  { at: 342, sound: "paper_tick", gainDb: -22 },
+  { at: 354, sound: "paper_tick", gainDb: -22 },
+  { at: 366, sound: "paper_tick", gainDb: -22 },
+  { at: 378, sound: "paper_tick", gainDb: -22 },
   { at: 432, sound: "tag_drop", gainDb: -28 },
   { at: 480, sound: "pen", gainDb: -26 },
   { at: 504, sound: "pen", gainDb: -26 },
@@ -140,15 +163,23 @@ export const SFX: readonly SfxEvent[] = [
   { at: 744, sound: "paper_slide", gainDb: -26 },
   { at: 768, sound: "liquid", gainDb: -28 },
   { at: 936, sound: "liquid", gainDb: -32 },
+  { at: 960, sound: "pen", gainDb: -28 },
+  { at: 972, sound: "pen", gainDb: -28 },
   { at: 1056, sound: "sub_hit_low", gainDb: -24 },
   { at: 1056, sound: "pen", gainDb: -26 },
+  { at: 1152, sound: "liquid", gainDb: -34 },
+  { at: 1176, sound: "paper_slide", gainDb: -28 },
   // trial, mystery
-  ...typewriterRun(1206, 18, 2, -32),
-  { at: 1296, sound: "pen", gainDb: -28 },
+  ...typedSfx(TYPED.trialStamp, -32),
+  { at: 1296, sound: "tag_drop", gainDb: -30 },
+  { at: 1300, sound: "tag_drop", gainDb: -30 },
+  { at: 1304, sound: "tag_drop", gainDb: -30 },
   { at: 1308, sound: "pen", gainDb: -28 },
   { at: 1320, sound: "pen", gainDb: -28 },
+  { at: 1332, sound: "pen", gainDb: -28 },
   // darkroom
   { at: 1392, sound: "paper_slide", gainDb: -26 },
+  { at: 1440, sound: "paper_slide", gainDb: -30 },
   { at: 1488, sound: "shutter", gainDb: -20 },
   { at: 1536, sound: "shutter", gainDb: -20 },
   // Grant
@@ -168,13 +199,14 @@ export const SFX: readonly SfxEvent[] = [
   { at: 1968, sound: "pen", gainDb: -26 },
   // code, séances
   { at: 2016, sound: "paper_slide", gainDb: -26 },
-  { at: 2040, sound: "pen", gainDb: -28 },
-  ...typewriterRun(2028, 17, 2, -30),
+  ...typedSfx(TYPED.code, -30),
   { at: 2112, sound: "page_turn", gainDb: -24 },
-  ...typewriterRun(2120, 10, 8, -34),
-  // golden line, centenary, outro
-  { at: 2304, sound: "sub_hit_low", gainDb: -16 },
-  ...typewriterRun(2460, 11, 3, -32),
+  { at: 2208, sound: "paper_slide", gainDb: -28 },
+  ...typewriterRun(SEANCE_COUNTER.from, SEANCE_COUNTER.last - SEANCE_COUNTER.first + 1, SEANCE_COUNTER.every, -34),
+  // centenary, golden line, outro
+  { at: 2304, sound: "paper_slide", gainDb: -26 },
+  ...typedSfx(TYPED.centenary, -32),
+  { at: 2400, sound: "sub_hit_low", gainDb: -16 },
   { at: 2544, sound: "flip", gainDb: -24 },
   { at: 2604, sound: "flip", gainDb: -26 },
 ];

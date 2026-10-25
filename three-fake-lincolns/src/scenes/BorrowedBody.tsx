@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, interpolate, Sequence, useCurrentFrame } from "remotion";
+import { AbsoluteFill, interpolate, Sequence, useCurrentFrame, useVideoConfig } from "remotion";
 import { CALHOUN_TO_LINCOLN, fitWidth, IMG, lincolnRectToCalhoun, region } from "../assets";
 import { Breath } from "../components/Breath";
 import { AlignedCalhoun, DifferenceOverlay } from "../components/Overlays";
@@ -38,12 +38,45 @@ const NECK_TL = win(NECK[0], NECK[1]);
 const NECK_BR = win(NECK[2], NECK[3]);
 const blobs = CALHOUN_TO_LINCOLN.differenceBlobs;
 
-const LincolnPrint: React.FC<{ readonly left: number; readonly top: number; readonly tilt: number; readonly lift?: number; readonly children?: React.ReactNode }> = (p) => (
+type PrintPlacement = { readonly left: number; readonly top: number; readonly tilt: number; readonly lift?: number; readonly layers?: React.ReactNode; readonly children?: React.ReactNode };
+const LincolnPrint: React.FC<PrintPlacement> = (p) => (
   <PhotoPrint src={IMG.lincolnComposite.file} imgW={IMG.lincolnComposite.width} imgH={IMG.lincolnComposite.height} width={PRINT_W} crop={rectToCrop(L_CROP)} border={BORDER} {...p} />
 );
-const CalhounPrint: React.FC<{ readonly left: number; readonly top: number; readonly tilt: number; readonly lift?: number; readonly children?: React.ReactNode }> = (p) => (
+const CalhounPrint: React.FC<PrintPlacement> = (p) => (
   <PhotoPrint src={IMG.calhoun1852.file} imgW={IMG.calhoun1852.width} imgH={IMG.calhoun1852.height} width={PRINT_W} crop={rectToCrop(C_CROP)} border={BORDER} {...p} />
 );
+
+// The "?" tag sways a little from frame 0 (period 3.2 s divides the 89.6 s cut, so the loop is seamless).
+const useTagSway = (phase: number) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  return 1.6 * Math.sin((2 * Math.PI * (frame + phase)) / fps / 3.2);
+};
+
+// The cover: both prints, the lender's head under a "?" tag. Also the loop's last shot (Outro).
+export const CoverPrints: React.FC<{ readonly phase?: number; readonly captionOpacity?: number; readonly lincolnMarks?: React.ReactNode }> = ({
+  phase = 0,
+  captionOpacity = 1,
+  lincolnMarks,
+}) => {
+  const sway = useTagSway(phase);
+  return (
+    <>
+      <LincolnPrint {...COVER.lincoln}>{lincolnMarks}</LincolnPrint>
+      <CalhounPrint {...COVER.calhoun} />
+      <ManilaTag
+        left={COVER.calhoun.left + BORDER + HEAD_C.x - 58}
+        top={COVER.calhoun.top + BORDER + HEAD_C.y - 46}
+        height={92}
+        tilt={4 + sway}
+        style={{ paddingLeft: 40, paddingRight: 30, transformOrigin: "20px 50%" }}
+      >
+        <MonoText size={TYPE.subtitleZh} color={COLORS.vermilion}>?</MonoText>
+      </ManilaTag>
+      <SourceCaption text="LIBRARY OF CONGRESS · CA. 1865 / 1852" left={COVER.lincoln.left} top={COVER.calhoun.top + OUTER_H + 24} opacity={captionOpacity} />
+    </>
+  );
+};
 
 const optionStyle: React.CSSProperties = { fontFamily: FONTS.serifZh, fontWeight: 900, fontSize: TYPE.subtitleZh, color: COLORS.ink, marginLeft: 18 };
 
@@ -61,15 +94,12 @@ const CoverBetTitle: React.FC = () => {
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{ transformOrigin: `${COVER.lincoln.left}px ${COVER.lincoln.top}px`, scale: groupScale, translate: `0 ${-36 * group}px` }}>
-        <LincolnPrint {...COVER.lincoln}>
-          <PenMark kind="underline" left={NECK_TL.x - 6} top={NECK_TL.y} width={NECK_BR.x - NECK_TL.x + 12} height={NECK_BR.y - NECK_TL.y} from={t(36)} durationInFrames={12} />
-        </LincolnPrint>
-        <CalhounPrint {...COVER.calhoun} />
-        {/* The "?" tag hides the lender's head. */}
-        <ManilaTag left={COVER.calhoun.left + BORDER + HEAD_C.x - 58} top={COVER.calhoun.top + BORDER + HEAD_C.y - 46} height={92} tilt={4} style={{ paddingLeft: 40, paddingRight: 30 }}>
-          <MonoText size={TYPE.subtitleZh} color={COLORS.vermilion}>?</MonoText>
-        </ManilaTag>
-        <SourceCaption text="LIBRARY OF CONGRESS · CA. 1865 / 1852" left={COVER.lincoln.left} top={COVER.calhoun.top + OUTER_H + 24} opacity={1 - group} />
+        <CoverPrints
+          captionOpacity={1 - group}
+          lincolnMarks={
+            <PenMark kind="underline" left={NECK_TL.x - 6} top={NECK_TL.y} width={NECK_BR.x - NECK_TL.x + 12} height={NECK_BR.y - NECK_TL.y} from={t(12)} durationInFrames={12} />
+          }
+        />
       </AbsoluteFill>
       {/* The bet: two symmetric options, then a quarter-note-triplet countdown. */}
       <ManilaTag left={153 - 600 * tagIn(108)} top={840} height={92} tilt={-1}>
@@ -118,12 +148,14 @@ const Reveal: React.FC = () => {
   const frame = useCurrentFrame();
   const t = useTime();
   const spring = { ...CLAMP, easing: EASE.spring };
-  const ease = { ...CLAMP, easing: EASE.inOut };
   // Local frame 0 = 288.
   const back = interpolate(frame, [0, t(24)], [0, 1], spring);
   const align = interpolate(frame, [t(18), t(42)], [0, 1], spring);
   const aligned = frame >= t(42);
-  const line = interpolate(frame, [t(42), t(66), t(90)], [0.02, 0.96, (HEAD_C.x / PRINT_W) as number], ease);
+  // Blink comparator: the registered prints swap with a hard cut every eighth note. Only the head
+  // and the papers jump; everything else stays still, which reads even at phone size.
+  const swaps = [54, 66, 78, 90].filter((f) => frame >= t(f)).length;
+  const showCalhoun = aligned && swaps % 2 === 0;
   const lerp = (a: number, b: number, p: number) => a + (b - a) * p;
   const lincolnPos = { left: lerp(COVER.lincoln.left, ALIGNED.left, back), top: lerp(COVER.lincoln.top, ALIGNED.top, back), tilt: lerp(COVER.lincoln.tilt, ALIGNED.tilt, back) };
   const calhounPos = { left: lerp(COVER.calhoun.left, ALIGNED.left, align), top: lerp(COVER.calhoun.top, ALIGNED.top, align), tilt: lerp(COVER.calhoun.tilt, ALIGNED.tilt, align) };
@@ -132,14 +164,13 @@ const Reveal: React.FC = () => {
   const optionsOut = interpolate(frame, [12, 24], [0, 1], { ...CLAMP, easing: EASE.inOut });
   return (
     <AbsoluteFill>
-      <LincolnPrint {...lincolnPos}>
-        {aligned ? (
-          <>
-            <AlignedCalhoun revealFromX={line} />
-            <div style={{ position: "absolute", left: line * PRINT_W - 1.5, top: 0, width: 3, height: PRINT_H, backgroundColor: COLORS.vermilion }} />
-          </>
-        ) : null}
-      </LincolnPrint>
+      <LincolnPrint {...lincolnPos} layers={showCalhoun ? <AlignedCalhoun revealFromX={0} /> : null} />
+      {aligned ? (
+        <div style={{ position: "absolute", left: ALIGNED.left + OUTER_W + 18, top: ALIGNED.top + 40, display: "flex", flexDirection: "column", gap: 10 }}>
+          <MonoText color={showCalhoun ? COLORS.silver : COLORS.printWhite} style={{ opacity: showCalhoun ? 0.5 : 1 }}>CA. 1865</MonoText>
+          <MonoText color={showCalhoun ? COLORS.printWhite : COLORS.silver} style={{ opacity: showCalhoun ? 1 : 0.5 }}>1852</MonoText>
+        </div>
+      ) : null}
       {!aligned ? <CalhounPrint {...calhounPos} lift={Math.sin(Math.PI * align) * 0.6} /> : null}
       {/* The "?" tag is lifted off the lender's face. */}
       <ManilaTag
@@ -172,7 +203,7 @@ const Reveal: React.FC = () => {
       <Sequence from={t(78)} layout="none">
         <ManilaTag left={ALIGNED.left + 40} top={ALIGNED.top + OUTER_H + 26} height={96} tilt={1.5} style={{ flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: 6 }}>
           <MonoText size={TYPE.label}>JOHN C. CALHOUN</MonoText>
-          <MonoText size={TYPE.label} color={COLORS.silver} style={{ color: "#5b564f" }}>VICE PRESIDENT · 1825–1832</MonoText>
+          <MonoText size={TYPE.label} style={{ opacity: 0.7 }}>VICE PRESIDENT · 1825–1832</MonoText>
         </ManilaTag>
       </Sequence>
     </AbsoluteFill>
@@ -195,6 +226,19 @@ const Lender: React.FC = () => {
   );
 };
 
+const PencilNote: React.FC<{ readonly text: string; readonly left: number; readonly top: number; readonly from: number; readonly tilt: number }> = ({ text, left, top, from, tilt }) => {
+  const frame = useCurrentFrame();
+  if (frame < from) return null;
+  return (
+    <div style={{ position: "absolute", left, top, rotate: `${tilt}deg` }}>
+      <MonoText color={COLORS.vermilion} style={{ fontWeight: 500 }}>
+        {text}
+      </MonoText>
+      <PenMark kind="underline" left={0} top={0} width={Math.round(text.length * 17.3)} height={34} from={from + 4} durationInFrames={10} seed={17} />
+    </div>
+  );
+};
+
 // ---- 480–576: the irony -------------------------------------------------------------------------
 const Irony: React.FC = () => {
   const t = useTime();
@@ -207,14 +251,9 @@ const Irony: React.FC = () => {
       <CalhounPrint {...COVER.calhoun}>
         <PenMark kind="circle" {...faceBox} from={t(24)} durationInFrames={18} seed={9} />
       </CalhounPrint>
-      <ManilaTag left={COVER.lincoln.left} top={COVER.lincoln.top - 74} height={56} tilt={-1}>
-        <MonoText size={TYPE.label}>EMANCIPATION PROCLAMATION · 1863</MonoText>
-      </ManilaTag>
-      <Sequence from={t(24)} layout="none">
-        <ManilaTag left={COVER.calhoun.left + 60} top={COVER.calhoun.top + OUTER_H + 18} height={56} tilt={1}>
-          <MonoText size={TYPE.label}>“A POSITIVE GOOD” · 1837</MonoText>
-        </ManilaTag>
-      </Sequence>
+      {/* Context notes in vermilion pencil, so they never read as the prints' own dates. */}
+      <PencilNote text="EMANCIPATION PROCLAMATION · 1863" left={COVER.lincoln.left + 6} top={COVER.lincoln.top - 58} from={0} tilt={-1.2} />
+      <PencilNote text="“A POSITIVE GOOD” · 1837" left={COVER.calhoun.left + 40} top={COVER.calhoun.top + OUTER_H + 22} from={t(24)} tilt={1} />
     </AbsoluteFill>
   );
 };

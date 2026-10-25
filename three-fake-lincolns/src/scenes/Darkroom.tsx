@@ -1,0 +1,132 @@
+import React from "react";
+import { AbsoluteFill, CanvasImage, interpolate, staticFile, useCurrentFrame } from "remotion";
+import { fitWidth, IMG, region } from "../assets";
+import { Breath, BREATH_MAX_ZOOM } from "../components/Breath";
+import { PhotoPrint, rectToCrop, usePrint } from "../components/PhotoPrint";
+import { MonoText } from "../components/Props";
+import { IllustrativeMark, SourceCaption } from "../components/SeriesChrome";
+import { photoGrade } from "../grade";
+import { useTime } from "../time";
+import { SCENES } from "../timeline";
+import { CLAMP, COLORS, EASE, SAFE } from "../theme";
+
+// Scene-local frames: 0 = 1392. A schematic of double exposure with an unrelated, anonymous sitter
+// (The Met, CC0). It shows the general technique only, not how Mumler worked (F11).
+const BASE = SCENES.darkroom.from;
+// The Met scan is large (2400 px here), so this is the one plate that can fill most of the width.
+const PORTRAIT = region("metSitter", "bust");
+const PLATE_W = Math.floor(fitWidth("metSitter", PORTRAIT, 600, BREATH_MAX_ZOOM));
+const PLATE_H = Math.round((PLATE_W * (PORTRAIT[3] - PORTRAIT[1]) * IMG.metSitter.height) / ((PORTRAIT[2] - PORTRAIT[0]) * IMG.metSitter.width));
+const FRAME = 26; // plate holder rails
+const HOLDER_W = PLATE_W + FRAME * 2;
+const HOLDER_H = PLATE_H + FRAME * 2;
+const TABLE_W = HOLDER_W + 180;
+const TABLE_H = HOLDER_H + 130;
+const TABLE_LEFT = Math.round((SAFE.margin + SAFE.right) / 2 - TABLE_W / 2);
+const TABLE_TOP = 240;
+const HOLDER_LEFT = TABLE_LEFT + (TABLE_W - HOLDER_W) / 2;
+const HOLDER_TOP = TABLE_TOP + (TABLE_H - HOLDER_H) / 2;
+
+// Exposure times inside the scene (base frames from the scene start): 1488 and 1536.
+const EXPOSURE_1 = 96;
+const EXPOSURE_2 = 144;
+
+// The second exposure: the same sitter, shifted and fainter, feathered so only the figure shows.
+const SecondExposure: React.FC<{ readonly amount: number }> = ({ amount }) => {
+  const frame = useCurrentFrame();
+  const g = usePrint();
+  const w = Math.round(g.imgW * g.scale);
+  const h = Math.round(g.imgH * g.scale);
+  const dx = -0.24 * PLATE_W;
+  const dy = -0.04 * PLATE_H;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: -g.crop.x0 * g.imgW * g.scale + dx,
+        top: -g.crop.y0 * g.imgH * g.scale + dy,
+        width: w,
+        height: h,
+        opacity: 0.42 * amount,
+        maskImage: "radial-gradient(ellipse 22% 34% at 53% 42%, black 55%, transparent 100%)",
+      }}
+    >
+      <CanvasImage src={staticFile(g.src)} width={w} height={h} fit="fill" effects={photoGrade({ frame })} />
+    </div>
+  );
+};
+
+const ExposureLabel: React.FC<{ readonly n: number; readonly at: number; readonly top: number }> = ({ n, at, top }) => {
+  const frame = useCurrentFrame();
+  const p = interpolate(frame, [at, at + 8], [0, 1], { ...CLAMP, easing: EASE.out });
+  return (
+    <div style={{ position: "absolute", left: TABLE_LEFT, top, opacity: p, translate: `${(1 - p) * -12}px 0`, display: "flex", alignItems: "center", gap: 14 }}>
+      <div style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.vermilion }} />
+      <MonoText color={COLORS.printWhite}>{`EXPOSURE ${n}`}</MonoText>
+    </div>
+  );
+};
+
+export const Darkroom: React.FC = () => {
+  const frame = useCurrentFrame();
+  const t = useTime();
+  const inP = interpolate(frame, [0, t(20)], [0, 1], { ...CLAMP, easing: EASE.spring });
+  // The dark slide is drawn out of the holder before the first exposure.
+  const slide = interpolate(frame, [t(48), t(76)], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  // Each shutter lands on its beat: the latent image comes up, then the faint "ghost".
+  const develop = interpolate(frame, [t(EXPOSURE_1), t(EXPOSURE_1) + 18], [0, 1], { ...CLAMP, easing: EASE.out });
+  const ghost = interpolate(frame, [t(EXPOSURE_2), t(EXPOSURE_2) + 14], [0, 1], { ...CLAMP, easing: EASE.out });
+  const rise = (1 - inP) * 1100;
+  return (
+    <AbsoluteFill>
+      <Breath phase={t(BASE)}>
+        {/* Viewing table: a flat field of warm light, no glow. */}
+        <div style={{ position: "absolute", left: TABLE_LEFT, top: TABLE_TOP, width: TABLE_W, height: TABLE_H, backgroundColor: COLORS.highlightWarm, opacity: 0.16 }} />
+        <div style={{ position: "absolute", left: 0, top: rise, width: 1080, height: 1920 }}>
+          <div
+            style={{
+              position: "absolute",
+              left: HOLDER_LEFT,
+              top: HOLDER_TOP,
+              width: HOLDER_W,
+              height: HOLDER_H,
+              backgroundColor: COLORS.ink,
+              boxShadow: "inset 0 0 0 2px #2a2926, 0 18px 40px rgba(0,0,0,0.55)",
+            }}
+          />
+          <PhotoPrint
+            src={IMG.metSitter.file}
+            imgW={IMG.metSitter.width}
+            imgH={IMG.metSitter.height}
+            width={PLATE_W}
+            crop={rectToCrop(PORTRAIT)}
+            left={HOLDER_LEFT + FRAME}
+            top={HOLDER_TOP + FRAME}
+            border={0}
+            develop={develop}
+            style={{ boxShadow: "none" }}
+            layers={<SecondExposure amount={ghost} />}
+          />
+          {/* Dark slide, pulled straight up out of the holder. */}
+          <div
+            style={{
+              position: "absolute",
+              left: HOLDER_LEFT + FRAME - 6,
+              top: HOLDER_TOP + FRAME - 6 - slide * (HOLDER_H + 700),
+              width: PLATE_W + 12,
+              height: PLATE_H + 12,
+              backgroundColor: "#121214",
+              boxShadow: "inset 0 0 0 2px #2a2926",
+            }}
+          >
+            <div style={{ position: "absolute", left: "50%", top: 14, width: 120, height: 10, marginLeft: -60, borderRadius: 5, backgroundColor: "#2a2926" }} />
+          </div>
+        </div>
+        <ExposureLabel n={1} at={t(EXPOSURE_1)} top={TABLE_TOP + TABLE_H + 26} />
+        <ExposureLabel n={2} at={t(EXPOSURE_2)} top={TABLE_TOP + TABLE_H + 66} />
+        <SourceCaption text="THE MET 287722 · CC0 · SITTER UNRELATED" left={TABLE_LEFT} top={TABLE_TOP + TABLE_H + 112} />
+      </Breath>
+      <IllustrativeMark />
+    </AbsoluteFill>
+  );
+};

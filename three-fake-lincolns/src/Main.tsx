@@ -3,15 +3,23 @@ import { AbsoluteFill, Sequence, Track, useVideoConfig } from "remotion";
 import "./fonts";
 import { Desk } from "./components/Desk";
 import { InkFilter } from "./components/Props";
-import { ArchiveTag, ProgressTicks, Watermark } from "./components/SeriesChrome";
+import { ArchiveProgress, ArchiveTag, Watermark } from "./components/SeriesChrome";
 import { Subtitle } from "./components/Subtitle";
 import type { MainProps } from "./schema";
 import { BorrowedBody } from "./scenes/BorrowedBody";
+import { Centenary } from "./scenes/Centenary";
+import { Code } from "./scenes/Code";
+import { Darkroom } from "./scenes/Darkroom";
 import { Golden } from "./scenes/Golden";
+import { Grant } from "./scenes/Grant";
+import { Outro } from "./scenes/Outro";
+import { Question } from "./scenes/Question";
+import { Seances } from "./scenes/Seances";
+import { Trial } from "./scenes/Trial";
 import { Twist } from "./scenes/Twist";
 import { WidowGhost } from "./scenes/WidowGhost";
 import { TimeScale, useTime } from "./time";
-import { ARCHIVE_TAGS, BARS, BASE_TOTAL, LINES, SCENES } from "./timeline";
+import { ARCHIVE_TAGS, BASE_TOTAL, CHAPTERS, LINES, SCENES } from "./timeline";
 
 const Subtitles: React.FC = () => {
   const t = useTime();
@@ -28,21 +36,28 @@ const Subtitles: React.FC = () => {
 
 const Chrome: React.FC<{ readonly watermark: string }> = ({ watermark }) => {
   const t = useTime();
-  const { durationInFrames } = useVideoConfig();
   return (
     <>
       <Watermark handle={watermark} />
       <ArchiveTag entries={ARCHIVE_TAGS.map((e) => ({ from: t(e.from), text: e.text }))} />
-      <ProgressTicks bars={BARS} barFrames={durationInFrames / BARS} />
+      <ArchiveProgress bounds={CHAPTERS.bounds.map(t)} labels={CHAPTERS.labels} />
     </>
   );
 };
 
-const SCENE_COMPONENTS: Partial<Record<keyof typeof SCENES, { name: string; Component: React.FC }>> = {
+const SCENE_COMPONENTS: Record<keyof typeof SCENES, { name: string; Component: React.FC }> = {
   borrowedBody: { name: "Borrowed body", Component: BorrowedBody },
   widowGhost: { name: "The widow's ghost", Component: WidowGhost },
+  trial: { name: "Trial", Component: Trial },
+  darkroom: { name: "Darkroom (illustrative)", Component: Darkroom },
+  grant: { name: "Grant composite", Component: Grant },
+  question: { name: "The third?", Component: Question },
   twist: { name: "Twist", Component: Twist },
+  code: { name: "The code", Component: Code },
+  seances: { name: "Séances", Component: Seances },
+  centenary: { name: "Centenary", Component: Centenary },
   golden: { name: "Golden line", Component: Golden },
+  outro: { name: "Credits and loop", Component: Outro },
 };
 
 const Scenes: React.FC = () => {
@@ -51,7 +66,6 @@ const Scenes: React.FC = () => {
     <Track name="Scenes">
       {(Object.keys(SCENE_COMPONENTS) as (keyof typeof SCENES)[]).map((key) => {
         const entry = SCENE_COMPONENTS[key];
-        if (!entry) return null;
         const s = SCENES[key];
         return (
           <Sequence key={key} name={entry.name} from={t(s.from)} durationInFrames={t(s.to) - t(s.from)}>

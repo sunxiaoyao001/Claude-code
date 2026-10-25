@@ -1,6 +1,8 @@
 import { Box, Circle, Underline } from "@remotion/rough-notation";
 import React from "react";
 import { interpolate, useCurrentFrame } from "remotion";
+import { useTime } from "../time";
+import type { Typed } from "../timeline";
 import { CLAMP, COLORS, EASE, FONTS, TYPE } from "../theme";
 
 // Manila archive tag. Colour is the palette's warm highlight, not a new hue.
@@ -151,3 +153,31 @@ export const MonoText: React.FC<{ readonly children: React.ReactNode; readonly s
     {children}
   </span>
 );
+
+// How many characters of a typed line are visible, inside a scene that starts at base frame `sceneFrom`.
+// Uses the same frame mapping as the keystroke sounds (timeline.ts), so each sound lands on its character.
+export const useTypedCount = (typed: Typed, sceneFrom: number) => {
+  const frame = useCurrentFrame();
+  const t = useTime();
+  let count = 0;
+  for (let i = 0; i < typed.text.length; i++) {
+    if (t(typed.from + i * typed.every) - t(sceneFrom) <= frame) count = i + 1;
+  }
+  return count;
+};
+
+// Typewriter text that keeps its final width from the start, so the tag around it never grows.
+export const TypedMono: React.FC<{ readonly typed: Typed; readonly sceneFrom: number; readonly size?: number; readonly color?: string }> = ({
+  typed,
+  sceneFrom,
+  size = TYPE.label,
+  color = COLORS.ink,
+}) => {
+  const count = useTypedCount(typed, sceneFrom);
+  return (
+    <MonoText size={size} color={color} style={{ whiteSpace: "pre" }}>
+      {typed.text.slice(0, count)}
+      <span style={{ color: "transparent" }}>{typed.text.slice(count)}</span>
+    </MonoText>
+  );
+};

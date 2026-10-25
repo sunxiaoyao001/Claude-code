@@ -24,7 +24,7 @@ MAX_EDGE = 2400
 SOURCES = {
     "lincolnComposite": ("uploads/IMG01_lincoln_composite__loc-2003654314.jpg", "lincoln_composite.jpg", "LIBRARY OF CONGRESS · CA. 1865"),
     "calhoun1852": ("uploads/IMG02_calhoun_1852__loc-2003679757.jpg", "calhoun_1852.jpg", "LIBRARY OF CONGRESS · 1852"),
-    "maryLincolnGhost": ("uploads/IMG03_mumler_mary_lincoln__commons-Mumler_Lincoln.jpg", "mumler_mary_lincoln.jpg", "W. H. MUMLER · CA. 1872"),
+    "maryLincolnGhost": ("uploads/IMG03_mumler_mary_lincoln__commons-Mumler_Lincoln.jpg", "mumler_mary_lincoln.jpg", "LINCOLN FINANCIAL FOUNDATION COLL. · CA. 1872"),
     "grantCityPoint": ("uploads/IMG04_grant_city_point__loc-2007681056.jpg", "grant_city_point.jpg", "LIBRARY OF CONGRESS · 1902"),
     "houdiniLincolnGhost": ("uploads/IMG05_houdini_lincoln_ghost__loc-96520658.jpg", "houdini_lincoln_ghost.jpg", "LIBRARY OF CONGRESS · 1920–1930"),
     "houdiniFamily": ("uploads/IMG06_houdini_bess_mother__loc-96518779.jpg", "houdini_family.jpg", "LIBRARY OF CONGRESS"),
@@ -50,7 +50,7 @@ REGIONS = {
     "maryLincolnGhost": {
         "photo": [0.07, 0.04, 0.94, 0.95],
         "face": [0.33, 0.40, 0.55, 0.55],
-        "ghost": [0.47, 0.04, 0.88, 0.33],
+        "ghost": [0.51, 0.09, 0.71, 0.28],
         "ghostHandLeft": [0.22, 0.54, 0.36, 0.62],
         "ghostHandRight": [0.55, 0.60, 0.70, 0.70],
     },
@@ -59,6 +59,7 @@ REGIONS = {
         "houdiniHead": [0.22, 0.13, 0.36, 0.33],
         "ghostHead": [0.72, 0.13, 0.85, 0.33],
         "ghostBody": [0.62, 0.13, 0.95, 0.75],
+        "houdiniHalf": [0.04, 0.03, 0.60, 0.80],
     },
     "houdiniFamily": {
         "photo": [0.09, 0.065, 0.94, 0.95],
@@ -66,12 +67,46 @@ REGIONS = {
         "houdiniHead": [0.49, 0.12, 0.64, 0.25],
         "bess": [0.17, 0.13, 0.50, 0.58],
     },
+    "mumlerElderlyMan": {
+        "card": [0.015, 0.01, 0.985, 0.99],
+        "ghost": [0.32, 0.08, 0.60, 0.30],
+    },
+    "mumlerWoman": {
+        "card": [0.015, 0.01, 0.985, 0.99],
+        "ghost": [0.40, 0.03, 0.70, 0.24],
+    },
+    "mumlerYoungMan": {
+        "card": [0.015, 0.01, 0.985, 0.99],
+        "ghost": [0.65, 0.04, 0.88, 0.26],
+    },
+    "grantColdHarbor": {
+        "photo": [0.09, 0.10, 0.90, 0.93],
+        "head": [0.45, 0.22, 0.57, 0.35],
+    },
+    "mccookHorseback": {
+        "photo": [0.03, 0.03, 0.97, 0.97],
+        "horseAndBody": [0.32, 0.30, 0.75, 0.84],
+        "plateNumber": [0.90, 0.09, 0.98, 0.28],
+    },
+    "confederatePrisoners": {
+        "photo": [0.015, 0.015, 0.985, 0.985],
+        "camp": [0.02, 0.26, 0.98, 0.62],
+    },
+    "metSitter": {
+        "portrait": [0.16, 0.10, 0.86, 0.86],
+        "bust": [0.20, 0.12, 0.84, 0.66],
+        "head": [0.45, 0.17, 0.62, 0.34],
+    },
+    "houdiniClippings": {
+        "page": [0.01, 0.0, 0.99, 0.52],
+    },
     "grantCityPoint": {
         "photo": [0.045, 0.07, 0.95, 0.905],
         "head": [0.49, 0.36, 0.555, 0.45],
         "horseAndBody": [0.30, 0.44, 0.69, 0.85],
         "background": [0.05, 0.18, 0.95, 0.33],
         "handwriting": [0.04, 0.905, 0.25, 0.95],
+        "mount": [0.03, 0.03, 0.97, 0.965],
     },
 }
 

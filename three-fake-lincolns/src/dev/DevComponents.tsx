@@ -3,7 +3,7 @@ import "../fonts";
 import { Loupe } from "../components/Loupe";
 import { PhotoPrint } from "../components/PhotoPrint";
 import { InkFilter, ManilaTag, MonoText, PenMark, Seal } from "../components/Props";
-import { ArchiveTag, ProgressTicks, SourceCaption, Watermark } from "../components/SeriesChrome";
+import { ArchiveProgress, ArchiveTag, SourceCaption, Watermark } from "../components/SeriesChrome";
 import { Subtitle } from "../components/Subtitle";
 import { COLORS, FONTS } from "../theme";
 
@@ -25,7 +25,7 @@ export const DevComponents = () => (
     <Seal text="假" left={800} top={700} size={120} at={0} />
     <Watermark handle="@your_handle" />
     <ArchiveTag entries={[{ from: 0, text: "ARCHIVE No.001 · CA. 1865 · NEW YORK" }]} />
-    <ProgressTicks bars={28} barFrames={96} />
+    <ArchiveProgress bounds={[0, 672, 1776, 2688]} labels={["No.001", "No.002", "No.003"]} />
     <Sequence from={0} durationInFrames={96}>
       <Subtitle zh="这张林肯像，身子是*借*的" en="This Lincoln's body is borrowed" durationInFrames={96} isStatic />
     </Sequence>

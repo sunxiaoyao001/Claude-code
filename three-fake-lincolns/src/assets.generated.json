@@ -55,7 +55,7 @@
       "height": 889,
       "sourceWidth": 559,
       "sourceHeight": 889,
-      "caption": "W. H. MUMLER · CA. 1872",
+      "caption": "LINCOLN FINANCIAL FOUNDATION COLL. · CA. 1872",
       "regions": {
         "photo": [
           0.07,
@@ -70,10 +70,10 @@
           0.55
         ],
         "ghost": [
-          0.47,
-          0.04,
-          0.88,
-          0.33
+          0.51,
+          0.09,
+          0.71,
+          0.28
         ],
         "ghostHandLeft": [
           0.22,
@@ -126,6 +126,12 @@
           0.905,
           0.25,
           0.95
+        ],
+        "mount": [
+          0.03,
+          0.03,
+          0.97,
+          0.965
         ]
       }
     },
@@ -160,6 +166,12 @@
           0.13,
           0.95,
           0.75
+        ],
+        "houdiniHalf": [
+          0.04,
+          0.03,
+          0.6,
+          0.8
         ]
       }
     },
@@ -204,7 +216,14 @@
       "sourceWidth": 1072,
       "sourceHeight": 1980,
       "caption": "LIBRARY OF CONGRESS · 1926",
-      "regions": {}
+      "regions": {
+        "page": [
+          0.01,
+          0.0,
+          0.99,
+          0.52
+        ]
+      }
     },
     "mumlerElderlyMan": {
       "file": "images/mumler_spirit_a.jpg",
@@ -213,7 +232,20 @@
       "sourceWidth": 374,
       "sourceHeight": 600,
       "caption": "W. H. MUMLER · 1860S–70S",
-      "regions": {}
+      "regions": {
+        "card": [
+          0.015,
+          0.01,
+          0.985,
+          0.99
+        ],
+        "ghost": [
+          0.32,
+          0.08,
+          0.6,
+          0.3
+        ]
+      }
     },
     "mumlerWoman": {
       "file": "images/mumler_spirit_b.jpg",
@@ -222,7 +254,20 @@
       "sourceWidth": 388,
       "sourceHeight": 600,
       "caption": "W. H. MUMLER · 1860S–70S",
-      "regions": {}
+      "regions": {
+        "card": [
+          0.015,
+          0.01,
+          0.985,
+          0.99
+        ],
+        "ghost": [
+          0.4,
+          0.03,
+          0.7,
+          0.24
+        ]
+      }
     },
     "mumlerYoungMan": {
       "file": "images/mumler_spirit_c.jpg",
@@ -231,7 +276,20 @@
       "sourceWidth": 369,
       "sourceHeight": 600,
       "caption": "W. H. MUMLER · 1860S–70S",
-      "regions": {}
+      "regions": {
+        "card": [
+          0.015,
+          0.01,
+          0.985,
+          0.99
+        ],
+        "ghost": [
+          0.65,
+          0.04,
+          0.88,
+          0.26
+        ]
+      }
     },
     "grantColdHarbor": {
       "file": "images/grant_cold_harbor.jpg",
@@ -240,7 +298,20 @@
       "sourceWidth": 830,
       "sourceHeight": 1024,
       "caption": "LIBRARY OF CONGRESS · 1864",
-      "regions": {}
+      "regions": {
+        "photo": [
+          0.09,
+          0.1,
+          0.9,
+          0.93
+        ],
+        "head": [
+          0.45,
+          0.22,
+          0.57,
+          0.35
+        ]
+      }
     },
     "mccookHorseback": {
       "file": "images/mccook_horseback.jpg",
@@ -249,7 +320,26 @@
       "sourceWidth": 1024,
       "sourceHeight": 827,
       "caption": "LIBRARY OF CONGRESS · 1864",
-      "regions": {}
+      "regions": {
+        "photo": [
+          0.03,
+          0.03,
+          0.97,
+          0.97
+        ],
+        "horseAndBody": [
+          0.32,
+          0.3,
+          0.75,
+          0.84
+        ],
+        "plateNumber": [
+          0.9,
+          0.09,
+          0.98,
+          0.28
+        ]
+      }
     },
     "confederatePrisoners": {
       "file": "images/confederate_prisoners.jpg",
@@ -258,7 +348,20 @@
       "sourceWidth": 1024,
       "sourceHeight": 733,
       "caption": "LIBRARY OF CONGRESS · 1864",
-      "regions": {}
+      "regions": {
+        "photo": [
+          0.015,
+          0.015,
+          0.985,
+          0.985
+        ],
+        "camp": [
+          0.02,
+          0.26,
+          0.98,
+          0.62
+        ]
+      }
     },
     "metSitter": {
       "file": "images/met_287722_sitter.jpg",
@@ -267,7 +370,26 @@
       "sourceWidth": 2886,
       "sourceHeight": 3405,
       "caption": "THE MET · CC0",
-      "regions": {}
+      "regions": {
+        "portrait": [
+          0.16,
+          0.1,
+          0.86,
+          0.86
+        ],
+        "bust": [
+          0.2,
+          0.12,
+          0.84,
+          0.66
+        ],
+        "head": [
+          0.45,
+          0.17,
+          0.62,
+          0.34
+        ]
+      }
     }
   },
   "registration": {

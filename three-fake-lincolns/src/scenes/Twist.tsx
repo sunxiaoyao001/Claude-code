@@ -30,23 +30,28 @@ export const Twist: React.FC = () => {
   const t = useTime();
   const open = interpolate(frame, [0, 20], [0, 1], { ...CLAMP, easing: EASE.inOut });
   const restore = interpolate(frame, [0, 18], [0, 1], { ...CLAMP, easing: EASE.out });
+  // The lamp hits full on the punch (1920–1944), then settles back by 1968.
+  const lamp = interpolate(frame, [0, t(24), t(48)], [0.88, 0.8, 0.2], { ...CLAMP, easing: EASE.inOut });
   const cx = LEFT + SLIDE_W / 2;
   const cy = TOP + SLIDE_H / 2;
   const w = 60 + (SLIDE_W + 80 - 60) * open;
   const h = 44 + (SLIDE_H + 80 - 44) * open;
+  // The light reaches past the viewfinder: wide while the lamp is hot, a narrow rim once it settles.
+  const throwX = Math.min(1080 - (SLIDE_W + 80), 260) * open * Math.min(1, lamp / 0.8);
+  const throwY = 260 * open * Math.min(1, lamp / 0.8);
   return (
     <AbsoluteFill>
-      <Breath phase={1920} originX={cx} originY={cy}>
-        {/* Flat projector light (no glow): a warm field behind the slide. */}
+      <Breath phase={t(1920)} originX={cx} originY={cy}>
+        {/* Flat projector light (no glow): a warm field that throws well past the slide on the punch. */}
         <div
           style={{
             position: "absolute",
-            left: cx - w / 2,
-            top: cy - h / 2,
-            width: w,
-            height: h,
+            left: cx - (w + throwX) / 2,
+            top: cy - (h + throwY) / 2,
+            width: w + throwX,
+            height: h + throwY,
             backgroundColor: COLORS.highlightWarm,
-            opacity: 0.1 + 0.06 * open,
+            opacity: lamp,
           }}
         />
         <div style={{ position: "absolute", inset: 0, clipPath: `inset(${cy - h / 2}px ${1080 - (cx + w / 2)}px ${1920 - (cy + h / 2)}px ${cx - w / 2}px)` }}>

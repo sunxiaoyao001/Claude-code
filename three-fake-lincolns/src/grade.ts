@@ -37,8 +37,9 @@ const buildSplitToneCube = () => {
         const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / (size - 1);
         const y = applyCurve(lum);
         const tone = shadow.map((s, i) => s + (highlight[i] - s) * y);
-        // Blend the tone colour with neutral grey; 18% keeps the split subtle.
-        const out = tone.map((t) => Math.min(1, Math.max(0, y * 0.82 + t * 0.18 * (0.4 + y))));
+        // Blend the tone colour with neutral grey; 12% keeps the split subtle (a cool, neutral
+        // silver), so the one colour moment at the twist stands out.
+        const out = tone.map((t) => Math.min(1, Math.max(0, y * 0.88 + t * 0.12 * (0.4 + y))));
         rows.push(out.map((v) => v.toFixed(5)).join(" "));
       }
     }

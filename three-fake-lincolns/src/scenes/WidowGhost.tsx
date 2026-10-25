@@ -75,6 +75,15 @@ const GhostMark: React.FC<{ readonly from: number }> = ({ from }) => {
   return <PenMark kind="circle" left={a.x} top={a.y} width={b.x - a.x} height={b.y - a.y} from={from} durationInFrames={24} seed={11} />;
 };
 
+// Two short vermilion strokes under the hands resting on her shoulders (F07).
+const HandMark: React.FC<{ readonly area: string; readonly from: number; readonly seed: number }> = ({ area, from, seed }) => {
+  const g = usePrint();
+  const r = region("maryLincolnGhost", area);
+  const a = toWindow(g, r[0], r[1]);
+  const b = toWindow(g, r[2], r[3]);
+  return <PenMark kind="underline" left={a.x} top={a.y} width={b.x - a.x} height={b.y - a.y} from={from} durationInFrames={10} seed={seed} />;
+};
+
 const PHOTO = region("maryLincolnGhost", "photo");
 // No zoom beyond the breath: this source is small, so the print is capped by the 1.5x budget.
 const DEV_W = Math.floor(fitWidth("maryLincolnGhost", PHOTO, 380, BREATH_MAX_ZOOM));
@@ -85,8 +94,12 @@ const DeveloperTray: React.FC = () => {
   const t = useTime();
   // Local 0 = 768. Darkest tones first, the faint "spirit" last (it lands on 1056, a phrase downbeat).
   const develop = interpolate(frame, [t(72), t(168), t(276), t(300)], [0, 0.35, 0.68, 1], { ...CLAMP, easing: EASE.inOut });
-  // A slow sheen across the developer while the print is still blank.
-  const sheen = interpolate(frame, [0, t(168)], [-0.4, 1.4], CLAMP);
+  // The developer's surface: a slow sheen that keeps travelling, so the tray reads as liquid.
+  const sheen = ((frame / t(144)) % 1) * 1.8 - 0.4;
+  // 1152: the print is lifted out of the tray and laid on the table beside it.
+  const out = interpolate(frame, [t(384), t(408)], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  const down = interpolate(frame, [t(408), t(426)], [0, 1], { ...CLAMP, easing: EASE.out });
+  const printLift = out * (1 - down) * 0.9;
   const trayW = DEV_W + 140;
   const trayH = DEV_H + 150;
   const trayLeft = 540 - trayW / 2 - 40;
@@ -101,7 +114,8 @@ const DeveloperTray: React.FC = () => {
           width: trayW,
           height: trayH,
           backgroundColor: COLORS.ink,
-          boxShadow: "inset 0 0 0 3px #2a2926, inset 0 18px 40px rgba(0,0,0,0.7), 0 20px 50px rgba(0,0,0,0.55)",
+          borderRadius: 10,
+          boxShadow: `inset 0 0 0 3px ${COLORS.silver}55, inset 0 3px 0 4px rgba(236,230,218,0.12), inset 0 18px 40px rgba(0,0,0,0.7), 0 20px 50px rgba(0,0,0,0.55)`,
           overflow: "hidden",
         }}
       >
@@ -109,7 +123,7 @@ const DeveloperTray: React.FC = () => {
           style={{
             position: "absolute",
             inset: 0,
-            background: `linear-gradient(105deg, transparent ${sheen * 100 - 12}%, rgba(236,230,218,0.05) ${sheen * 100}%, transparent ${sheen * 100 + 12}%)`,
+            background: `linear-gradient(105deg, transparent ${sheen * 100 - 14}%, rgba(236,230,218,0.09) ${sheen * 100}%, transparent ${sheen * 100 + 14}%)`,
           }}
         />
       </div>
@@ -119,12 +133,15 @@ const DeveloperTray: React.FC = () => {
         imgH={IMG.maryLincolnGhost.height}
         width={DEV_W}
         crop={rectToCrop(PHOTO)}
-        left={trayLeft + 70 - 10}
-        top={trayTop + 75 - 10}
-        tilt={0.4}
+        left={trayLeft + 70 - 10 + out * 70}
+        top={trayTop + 75 - 10 - out * 46}
+        tilt={0.4 + out * 2.2}
         border={10}
         develop={develop}
+        lift={printLift}
       >
+        <HandMark area="ghostHandLeft" from={t(192)} seed={12} />
+        <HandMark area="ghostHandRight" from={t(204)} seed={14} />
         <GhostMark from={t(288)} />
       </PhotoPrint>
       <SourceCaption text={IMG.maryLincolnGhost.caption} left={trayLeft} top={trayTop + trayH + 20} />
@@ -136,7 +153,7 @@ export const WidowGhost: React.FC = () => {
   const t = useTime();
   return (
     <AbsoluteFill>
-      <Breath phase={672}>
+      <Breath phase={t(672)}>
         <Sequence durationInFrames={t(96)} layout="none">
           <CardTray />
         </Sequence>

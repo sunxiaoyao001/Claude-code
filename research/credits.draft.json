@@ -9,9 +9,10 @@
       "来源URL": "https://www.loc.gov/pictures/item/2003654314/",
       "馆藏号": "LC-DIG-pga-02353",
       "许可": "No known restrictions on publication（LoC）",
-      "原图分辨率": "用户上传中号 JPEG 812×1024（不够用）；待上传最大号 JPEG",
-      "用途": "封面、钩子、叠合对比、片尾循环帧",
-      "修改说明": "统一银盐调色；按 9:16 裁切"
+      "原图分辨率": "812×1024（用户上传 / 官方数据集；片中用 812×1024，只缩不放）",
+      "用途": "封面、下注、闪烁比对、反讽、差异图、第 3 张之问、接触印样、片尾循环",
+      "修改说明": "统一银盐调色；按 9:16 裁切",
+      "出处签": "LIBRARY OF CONGRESS · CA. 1865"
     },
     {
       "id": "IMG02",
@@ -21,10 +22,11 @@
       "年份": "1852",
       "来源URL": "https://www.loc.gov/pictures/item/2003679757/",
       "馆藏号": "LC-DIG-pga-02499",
-      "许可": "No known restrictions（预计，待核 LoC 页面）",
-      "原图分辨率": "待下载后用 getImageDimensions 核对",
-      "用途": "与 IMG01 等比叠合、擦除对比；放大桌上文件",
-      "修改说明": "统一调色；与 IMG01 做仿射对齐"
+      "许可": "No known restrictions on publication（LoC，待网络放开后复核权利说明页）",
+      "原图分辨率": "767×1024（用户上传 / 官方数据集；片中用 767×1024，只缩不放）",
+      "用途": "封面、闪烁比对（按配准矩阵逐像素对齐）、出借人单张、反讽",
+      "修改说明": "统一调色；与 IMG01 做仿射对齐",
+      "出处签": "LIBRARY OF CONGRESS · 1852"
     },
     {
       "id": "IMG03",
@@ -35,9 +37,10 @@
       "来源URL": "https://commons.wikimedia.org/wiki/File:Mumler_(Lincoln).jpg",
       "馆藏号": "原件：Lincoln Financial Foundation Collection",
       "许可": "PD-US（Commons）",
-      "原图分辨率": "Commons 559×889（低清）；高清候选：Fisher Library（多伦多大学）https://fisherdigitus.library.utoronto.ca/document/7632（标公有领域），或 ACPL 数字馆藏",
-      "用途": "第 2 张假像；显影母题（鬼影最后浮现）；若拿到高清件，相纸占画面 ≥70% 宽",
-      "修改说明": "统一调色；若拿不到高清件，只作为桌上小相纸，不做 2.5× 放大"
+      "原图分辨率": "559×889（用户上传 / 官方数据集；片中用 559×889，只缩不放）",
+      "用途": "名片照托盘、显影盘（鬼影最后浮现）、第 3 张之问、接触印样",
+      "修改说明": "统一调色；显影动画只改 levels 白点；未放大",
+      "出处签": "LINCOLN FINANCIAL FOUNDATION COLL. · CA. 1872"
     },
     {
       "id": "IMG04",
@@ -48,9 +51,10 @@
       "来源URL": "https://www.loc.gov/item/2007681056/",
       "馆藏号": "LC-DIG-ppmsca-15886",
       "许可": "PD-US（1931 年前出版）；LoC 待核",
-      "原图分辨率": "Commons 副本 5139×3743",
-      "用途": "机制段：三张底片拼一张，红笔圈出头 / 马与身体 / 背景",
-      "修改说明": "统一调色；竖屏局部裁切"
+      "原图分辨率": "1024×823（用户上传 / 官方数据集；片中用 1024×823，只缩不放）",
+      "用途": "S10 合成像，朱砂标注头 / 马和身体 / 背景",
+      "修改说明": "统一调色；未放大（Commons 另有 5139×3743 副本，未取得）",
+      "出处签": "LIBRARY OF CONGRESS · 1902"
     },
     {
       "id": "IMG05",
@@ -61,87 +65,122 @@
       "来源URL": "https://www.loc.gov/pictures/item/96520658/",
       "馆藏号": "LOT 7426",
       "许可": "No known restrictions on publication（LoC）",
-      "原图分辨率": "待下载后用 getImageDimensions 核对",
-      "用途": "反转重拳：第 3 张假像；全片唯一一次色彩还原；分辨率预案见分镜 S12",
-      "修改说明": "平时统一调色；反转时回到原扫描色"
+      "原图分辨率": "1024×936（用户上传 / 官方数据集；片中用 1024×936，只缩不放）",
+      "用途": "反转（唯一一次色彩还原）、100 年（只取胡迪尼半边）、接触印样",
+      "修改说明": "平时统一调色；反转时回到原扫描色",
+      "出处签": "LIBRARY OF CONGRESS · 1920–1930"
     },
     {
       "id": "IMG06",
-      "file": "public/images/houdini_bess_mother.jpg",
+      "file": "public/images/houdini_family.jpg",
       "标题": "[Harry Houdini, with his wife Beatrice and mother Cecilia Steiner Weiss, full-length portrait]",
       "作者": "不详（McManus-Young Collection）",
       "年份": "约 1900s",
       "来源URL": "https://www.loc.gov/item/96518779/",
       "馆藏号": "LCCN 96518779",
       "许可": "No known restrictions（预计，待核 LoC 页面）",
-      "原图分辨率": "Commons 副本存在；LoC 原档待下载后用 getImageDimensions 核对",
-      "用途": "暗号一句：认出贝丝本人（朱砂圈出）",
-      "修改说明": "统一调色"
+      "原图分辨率": "817×1024（用户上传 / 官方数据集；片中用 817×1024，只缩不放）",
+      "用途": "暗号、反向显影（著录未写人物位置，片中不圈人、不指认）",
+      "修改说明": "统一调色；S14 反向显影到白纸",
+      "出处签": "LIBRARY OF CONGRESS"
     },
     {
       "id": "IMG07",
-      "file": "public/images/houdini_death_clippings.jpg",
+      "file": "public/images/houdini_clippings.jpg",
       "标题": "[Two newspaper articles announcing Houdini's death on October 31, 1926]",
       "作者": "San Francisco Chronicle / Long Beach Press-Telegram",
       "年份": "1926",
       "来源URL": "https://www.loc.gov/item/2018682515/",
       "馆藏号": "LoC 2018682515",
       "许可": "待核（1926 年美国出版物已进入公有领域；以 LoC 权利说明为准）",
-      "原图分辨率": "待下载后用 getImageDimensions 核对",
-      "用途": "文献复原：halftone 网点 + 局部高亮死讯",
-      "修改说明": "原件已是网点印刷：只做统一调色，不再加 halftone（避免摩尔纹）"
+      "原图分辨率": "1072×1980（用户上传 / 官方数据集；片中用 1072×1980，只缩不放）",
+      "用途": "S14 剪报（死讯）",
+      "修改说明": "原件已是网点印刷：只做统一调色，不加 halftone",
+      "出处签": "LIBRARY OF CONGRESS · 1926"
     },
     {
-      "id": "IMG08",
-      "file": "public/images/mumler_others_*.jpg",
-      "标题": "Mumler 其他灵异照片（Dow / Conant / unidentified）",
+      "id": "IMG08a",
+      "file": "public/images/mumler_spirit_a.jpg",
+      "标题": "Mumler 灵异名片照：老年男子与女性「灵体」",
       "作者": "William H. Mumler",
-      "年份": "1860s–1870s",
+      "年份": "1860s–1870s（F25；单张年份不详，片中不标）",
       "来源URL": "https://commons.wikimedia.org/wiki/Category:William_H._Mumler",
-      "馆藏号": "多为 American Museum of Photography 藏品扫描",
-      "许可": "PD-US（Commons，逐张待核）",
-      "原图分辨率": "待下载后用 getImageDimensions 核对",
-      "用途": "名片照托盘（S06）、灵异照片目录（S08，依次圈出鬼影）；出处签按每张的 Commons 来源写",
-      "修改说明": "统一调色"
+      "馆藏号": "Commons 分类下的扫描件（用户上传；单张页面待网络放开后逐张补链接）",
+      "许可": "PD-US（1879 年以前制作）",
+      "原图分辨率": "374×600",
+      "出处签": "W. H. MUMLER · 1860S–70S",
+      "用途": "S06 名片照托盘、S08 一排三张依次圈出鬼影",
+      "修改说明": "统一调色；未放大"
+    },
+    {
+      "id": "IMG08b",
+      "file": "public/images/mumler_spirit_b.jpg",
+      "标题": "Mumler 灵异名片照：女子与男性「灵体」",
+      "作者": "William H. Mumler",
+      "年份": "1860s–1870s（F25；单张年份不详，片中不标）",
+      "来源URL": "https://commons.wikimedia.org/wiki/Category:William_H._Mumler",
+      "馆藏号": "Commons 分类下的扫描件（用户上传；单张页面待网络放开后逐张补链接）",
+      "许可": "PD-US（1879 年以前制作）",
+      "原图分辨率": "388×600",
+      "出处签": "W. H. MUMLER · 1860S–70S",
+      "用途": "S06 名片照托盘、S08 一排三张依次圈出鬼影",
+      "修改说明": "统一调色；未放大"
+    },
+    {
+      "id": "IMG08c",
+      "file": "public/images/mumler_spirit_c.jpg",
+      "标题": "Mumler 灵异名片照：青年男子与女性「灵体」",
+      "作者": "William H. Mumler",
+      "年份": "1860s–1870s（F25；单张年份不详，片中不标）",
+      "来源URL": "https://commons.wikimedia.org/wiki/Category:William_H._Mumler",
+      "馆藏号": "Commons 分类下的扫描件（用户上传；单张页面待网络放开后逐张补链接）",
+      "许可": "PD-US（1879 年以前制作）",
+      "原图分辨率": "369×600",
+      "出处签": "W. H. MUMLER · 1860S–70S",
+      "用途": "S06 名片照托盘、S08 一排三张依次圈出鬼影",
+      "修改说明": "统一调色；未放大"
     },
     {
       "id": "IMG10",
-      "file": "public/images/grant_head_coldharbor.jpg",
+      "file": "public/images/grant_cold_harbor.jpg",
       "标题": "Grant at Cold Harbor headquarters（格兰特合成像的头部来源）",
       "作者": "Brady studio",
       "年份": "1864",
       "来源URL": "https://www.loc.gov/item/2018667429/",
       "馆藏号": "LC-B8175-2",
       "许可": "PD（1864）；LoC 待核",
-      "原图分辨率": "待下载后用 getImageDimensions 核对",
-      "用途": "S10 三张原始底片之一",
-      "修改说明": "负片反相 + 统一调色"
+      "原图分辨率": "830×1024（用户上传 / 官方数据集；片中用 830×1024，只缩不放）",
+      "用途": "S10 三件原件之一（头）",
+      "修改说明": "按扫描原样显示，不做负片反相；统一调色",
+      "出处签": "LIBRARY OF CONGRESS · 1864"
     },
     {
       "id": "IMG11",
-      "file": "public/images/mccook_horse.jpg",
+      "file": "public/images/mccook_horseback.jpg",
       "标题": "Maj. Gen. Alexander McD. McCook（马和身体的来源）",
       "作者": "Brady studio",
       "年份": "1864",
       "来源URL": "https://www.loc.gov/item/2018667065/",
       "馆藏号": "LC-B817-7204",
       "许可": "PD；LoC 待核",
-      "原图分辨率": "待下载后用 getImageDimensions 核对",
-      "用途": "S10 三张原始底片之一",
-      "修改说明": "负片反相 + 统一调色"
+      "原图分辨率": "1024×827（用户上传 / 官方数据集；片中用 1024×827，只缩不放）",
+      "用途": "S10 三件原件之一（马和身体）",
+      "修改说明": "按扫描原样显示，不做负片反相；统一调色",
+      "出处签": "LIBRARY OF CONGRESS · 1864"
     },
     {
       "id": "IMG12",
-      "file": "public/images/fishers_hill_prisoners.jpg",
-      "标题": "Confederate prisoners captured at Fisher's Hill（背景来源）",
+      "file": "public/images/confederate_prisoners.jpg",
+      "标题": "Confederate prisoners captured at Fisher's Hill（背景来源；F12 只确认是照片，不确认是底片）",
       "作者": "不详",
       "年份": "1864",
       "来源URL": "https://www.loc.gov/item/2007684716/",
       "馆藏号": "LOT 4181",
       "许可": "PD；LoC 待核",
-      "原图分辨率": "待下载后用 getImageDimensions 核对",
-      "用途": "S10 三张原始底片之一",
-      "修改说明": "负片反相 + 统一调色"
+      "原图分辨率": "1024×733（用户上传 / 官方数据集；片中用 1024×733，只缩不放）",
+      "用途": "S10 三件原件之一（背景）",
+      "修改说明": "按扫描原样显示，不做负片反相；统一调色",
+      "出处签": "LIBRARY OF CONGRESS · 1864"
     },
     {
       "id": "IMG14",
@@ -152,9 +191,10 @@
       "来源URL": "https://www.metmuseum.org/art/collection/search/287722",
       "馆藏号": "The Met 287722（Gilman Collection）",
       "许可": "CC0（The Met Open Access，已从 Met 官方公开数据集下载）",
-      "原图分辨率": "2886×3405（已实测）",
-      "用途": "S09 双重曝光示意：同一人曝光两次，第二层变淡偏移成「鬼影」（标「示意」）",
-      "修改说明": "负片反相 + 叠加示意"
+      "原图分辨率": "2886×3405（用户上传 / 官方数据集；片中用 2034×2400，只缩不放）",
+      "用途": "S09 双重曝光示意（无名人物，与本案无关，角标「示意」）",
+      "修改说明": "负片反相 + 叠加示意",
+      "出处签": "THE MET · CC0"
     }
   ],
   "sfx": [
@@ -202,5 +242,9 @@
       "许可": "SIL OFL 1.1",
       "修改说明": "Google Fonts latin 子集"
     }
+  ],
+  "notes": [
+    "IMG09（Harper's 版面）、IMG13（负片示意）已删，片中不使用",
+    "所有图片只缩不放：原图长边 ≥ 显示尺寸 × 1.5（含镜头呼吸 1.5%）"
   ]
 }

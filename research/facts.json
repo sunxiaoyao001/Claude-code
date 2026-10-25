@@ -502,7 +502,7 @@
   },
   {
     "id": "F24",
-    "陈述": "把 1852 年卡尔霍恩版画按缩放 0.934、旋转 0.09° 对齐到林肯合成像后，两张版画除了头部和桌上文件，其余（身体、衣褶、地球仪、旗帜、桌布、地砖）全部重合",
+    "陈述": "把 1852 年卡尔霍恩版画按缩放 0.934、旋转 0.06° 对齐到林肯合成像后，两张版画除了头部和桌上文件，其余（身体、衣褶、地球仪、旗帜、桌布、地砖）全部重合",
     "来源": [
       {
         "url": "https://www.loc.gov/pictures/item/2003654314/",
@@ -515,8 +515,32 @@
         "摘录": "LoC 2003679757，用户下载上传，767×1024"
       }
     ],
-    "摘录方式": "本项目自行计算：OpenCV SIFT 特征匹配 229 对、RANSAC 内点 196 个，相似变换 scale 0.9336 / rot 0.089° / tx 45.7 / ty 42.2（源像素）",
-    "置信度": "高（可复现：scripts/register_prints.py）",
-    "上屏写法": "差异图标「差异图 · 两张原件配准计算」"
+    "摘录方式": "本项目自行计算：OpenCV SIFT 特征匹配 225 对、RANSAC 内点 196 个，相似变换 scale 0.9337 / rot 0.064°（源像素）；差异区 2 块：头部、桌上文件",
+    "置信度": "高（可复现：three-fake-lincolns/scripts/prepare_images.py，输出写入 src/assets.generated.json）",
+    "上屏写法": "差异图标「差异图 · 由两张原件配准计算」；S04 闪烁比对用同一组配准结果"
+  },
+  {
+    "id": "F25",
+    "陈述": "William H. Mumler 的灵异照片拍摄于 1860 年代初到 1879 年前后：1861/62 年在波士顿起家，1868 年在纽约开业，1869 年受审后回到波士顿，1879 年前后停止制作，1884 年去世",
+    "来源": [
+      {
+        "url": "https://en.wikipedia.org/wiki/William_H._Mumler",
+        "类型": "权威二手",
+        "摘录": "early 1860s ... first spirit photograph"
+      },
+      {
+        "url": "https://www.metmuseum.org/art/collection/search/296302",
+        "类型": "权威二手（The Met）",
+        "摘录": "Boston career ... New York studio in 1868"
+      },
+      {
+        "url": "https://hoaxes.org/photo_database/image/mumlers_spirit_photos/",
+        "类型": "权威二手",
+        "摘录": "stopped producing spirit photos in 1879 ... died in 1884; the Lincoln sitting around 1871, after he had moved back to Boston"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高（起始年 1860/1861/early 1860s 有出入，上屏只写 1860S–70S）",
+    "上屏写法": "出处签 W. H. MUMLER · SPIRIT PHOTOGRAPHS · 1860S–70S；不给任何单张名片照标具体年份"
   }
 ]

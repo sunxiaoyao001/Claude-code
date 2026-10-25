@@ -43,40 +43,32 @@ export const ArchiveTag: React.FC<{ readonly entries: readonly ArchiveEntry[] }>
   );
 };
 
-// One tick per bar along the bottom of the safe area; the current bar carries a vermilion dot.
-export const ProgressTicks: React.FC<{ readonly bars: number; readonly barFrames: number }> = ({ bars, barFrames }) => {
+// Three archive slots along the bottom of the safe area, one per fake. The current slot fills as its
+// chapter plays; a vermilion dot marks the playhead.
+export const ArchiveProgress: React.FC<{ readonly bounds: readonly number[]; readonly labels: readonly string[] }> = ({ bounds, labels }) => {
   const frame = useCurrentFrame();
-  const current = Math.min(bars - 1, Math.floor(frame / barFrames));
-  const width = SAFE.right - SAFE.margin;
+  const gap = 18;
+  const total = SAFE.right - SAFE.margin;
+  const slotW = (total - gap * (labels.length - 1)) / labels.length;
   const y = SAFE.bottom - 20;
   return (
-    <div style={{ position: "absolute", left: SAFE.margin, top: y, width, height: 12 }}>
-      {Array.from({ length: bars }, (_, i) => (
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            left: (i / (bars - 1)) * width,
-            top: 0,
-            width: 1,
-            height: 12,
-            backgroundColor: COLORS.silver,
-            opacity: i <= current ? 0.7 : 0.3,
-          }}
-        />
-      ))}
-      <div
-        style={{
-          position: "absolute",
-          left: (current / (bars - 1)) * width - 4,
-          top: -12,
-          width: 8,
-          height: 8,
-          borderRadius: 4,
-          backgroundColor: COLORS.vermilion,
-        }}
-      />
-    </div>
+    <>
+      {labels.map((label, i) => {
+        const from = bounds[i];
+        const to = bounds[i + 1];
+        const p = Math.min(1, Math.max(0, (frame - from) / (to - from)));
+        const current = frame >= from && frame < to;
+        const left = SAFE.margin + i * (slotW + gap);
+        return (
+          <React.Fragment key={label}>
+            <div style={{ ...monoLabel, position: "absolute", left, top: y - 38, color: current ? COLORS.printWhite : COLORS.silver, opacity: current ? 0.9 : 0.45 }}>{label}</div>
+            <div style={{ position: "absolute", left, top: y, width: slotW, height: 2, backgroundColor: COLORS.silver, opacity: 0.3 }} />
+            <div style={{ position: "absolute", left, top: y, width: slotW * p, height: 2, backgroundColor: COLORS.silver, opacity: 0.8 }} />
+            {current ? <div style={{ position: "absolute", left: left + slotW * p - 4, top: y - 3, width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.vermilion }} /> : null}
+          </React.Fragment>
+        );
+      })}
+    </>
   );
 };
 
