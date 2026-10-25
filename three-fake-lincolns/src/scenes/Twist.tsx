@@ -1,0 +1,72 @@
+import React from "react";
+import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { fitWidth, IMG, region } from "../assets";
+import { Breath, BREATH_MAX_ZOOM } from "../components/Breath";
+import { PhotoPrint, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
+import { PenMark } from "../components/Props";
+import { SourceCaption } from "../components/SeriesChrome";
+import { useTime } from "../time";
+import { CLAMP, COLORS, EASE } from "../theme";
+
+const SLIDE = region("houdiniLincolnGhost", "slide");
+// The scan caps the slide's width (1.5x budget); the projector light fills the rest of the frame.
+const SLIDE_W = Math.floor(fitWidth("houdiniLincolnGhost", SLIDE, 700, BREATH_MAX_ZOOM));
+const SLIDE_H = Math.round((SLIDE_W * ((SLIDE[3] - SLIDE[1]) * IMG.houdiniLincolnGhost.height)) / ((SLIDE[2] - SLIDE[0]) * IMG.houdiniLincolnGhost.width));
+const LEFT = Math.round(540 - SLIDE_W / 2 - 30);
+const TOP = 390;
+
+const GhostHeadMark: React.FC<{ readonly from: number }> = ({ from }) => {
+  const g = usePrint();
+  const r = region("houdiniLincolnGhost", "ghostHead");
+  const a = toWindow(g, r[0], r[1]);
+  const b = toWindow(g, r[2], r[3]);
+  return <PenMark kind="circle" left={a.x} top={a.y} width={b.x - a.x} height={b.y - a.y} from={from} durationInFrames={20} seed={13} />;
+};
+
+// 1920: the one heavy punch. A projector viewfinder opens onto Houdini's own fake, in the scan's
+// original colour (the only colour moment in the film).
+export const Twist: React.FC = () => {
+  const frame = useCurrentFrame();
+  const t = useTime();
+  const open = interpolate(frame, [0, 20], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  const restore = interpolate(frame, [0, 18], [0, 1], { ...CLAMP, easing: EASE.out });
+  const cx = LEFT + SLIDE_W / 2;
+  const cy = TOP + SLIDE_H / 2;
+  const w = 60 + (SLIDE_W + 80 - 60) * open;
+  const h = 44 + (SLIDE_H + 80 - 44) * open;
+  return (
+    <AbsoluteFill>
+      <Breath phase={1920} originX={cx} originY={cy}>
+        {/* Flat projector light (no glow): a warm field behind the slide. */}
+        <div
+          style={{
+            position: "absolute",
+            left: cx - w / 2,
+            top: cy - h / 2,
+            width: w,
+            height: h,
+            backgroundColor: COLORS.highlightWarm,
+            opacity: 0.1 + 0.06 * open,
+          }}
+        />
+        <div style={{ position: "absolute", inset: 0, clipPath: `inset(${cy - h / 2}px ${1080 - (cx + w / 2)}px ${1920 - (cy + h / 2)}px ${cx - w / 2}px)` }}>
+          <PhotoPrint
+            src={IMG.houdiniLincolnGhost.file}
+            imgW={IMG.houdiniLincolnGhost.width}
+            imgH={IMG.houdiniLincolnGhost.height}
+            width={SLIDE_W}
+            crop={rectToCrop(SLIDE)}
+            left={LEFT}
+            top={TOP}
+            border={0}
+            colorRestore={restore}
+            style={{ backgroundColor: COLORS.ink, boxShadow: "none" }}
+          >
+            <GhostHeadMark from={t(48)} />
+          </PhotoPrint>
+        </div>
+        <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={LEFT} top={TOP + SLIDE_H + 54} opacity={open} />
+      </Breath>
+    </AbsoluteFill>
+  );
+};

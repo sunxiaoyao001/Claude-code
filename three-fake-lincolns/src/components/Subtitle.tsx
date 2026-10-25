@@ -54,17 +54,19 @@ type Props = {
   readonly isStatic?: boolean;
   // Skip the exit when the line runs to the last frame of the film.
   readonly holdToEnd?: boolean;
+  // Chinese size override (the cover line is larger).
+  readonly size?: number;
 };
 
 // Rendered inside a <Sequence>, so frame 0 is the line's own start.
-export const Subtitle: React.FC<Props> = ({ zh, en, durationInFrames, isStatic = false, holdToEnd = false }) => {
+export const Subtitle: React.FC<Props> = ({ zh, en, durationInFrames, isStatic = false, holdToEnd = false, size = TYPE.subtitleZh }) => {
   const frame = useCurrentFrame();
   const { riseLines, enterFrames, exitFrames, wordStaggerFrames } = SUBTITLE_MOTION;
   const chunks = splitGroups(zh);
   const plain = chunks.map((c) => c.text).join("");
   // ≤ 14 characters always fit one line at 56 px; fitText is the guard if a line ever grows.
   const zhSize = Math.min(
-    TYPE.subtitleZh,
+    size,
     fitText({ text: plain, withinWidth: SUBTITLE_WIDTH, fontFamily: FONTS.sansZh, fontWeight: "700" }).fontSize,
   );
   const enSize = fitEnglish(en);

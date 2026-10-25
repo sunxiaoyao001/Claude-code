@@ -6,6 +6,7 @@ import { COLORS } from "../theme";
 // A crop window in normalised image coordinates (0..1 on both axes).
 export type Crop = { readonly x0: number; readonly y0: number; readonly x1: number; readonly y1: number };
 export const FULL: Crop = { x0: 0, y0: 0, x1: 1, y1: 1 };
+export const rectToCrop = (r: readonly number[]): Crop => ({ x0: r[0], y0: r[1], x1: r[2], y1: r[3] });
 
 type PrintGeometry = {
   readonly src: string;

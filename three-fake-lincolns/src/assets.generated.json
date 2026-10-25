@@ -1,0 +1,310 @@
+{
+  "images": {
+    "lincolnComposite": {
+      "file": "images/lincoln_composite.jpg",
+      "width": 812,
+      "height": 1024,
+      "sourceWidth": 812,
+      "sourceHeight": 1024,
+      "caption": "LIBRARY OF CONGRESS · CA. 1865",
+      "regions": {
+        "engraving": [
+          0.125,
+          0.08,
+          0.865,
+          0.873
+        ],
+        "head": [
+          0.5,
+          0.215,
+          0.585,
+          0.31
+        ],
+        "neck": [
+          0.505,
+          0.3,
+          0.575,
+          0.335
+        ],
+        "papers": [
+          0.66,
+          0.535,
+          0.82,
+          0.6
+        ],
+        "figure": [
+          0.39,
+          0.215,
+          0.68,
+          0.82
+        ]
+      }
+    },
+    "calhoun1852": {
+      "file": "images/calhoun_1852.jpg",
+      "width": 767,
+      "height": 1024,
+      "sourceWidth": 767,
+      "sourceHeight": 1024,
+      "caption": "LIBRARY OF CONGRESS · 1852",
+      "regions": {}
+    },
+    "maryLincolnGhost": {
+      "file": "images/mumler_mary_lincoln.jpg",
+      "width": 559,
+      "height": 889,
+      "sourceWidth": 559,
+      "sourceHeight": 889,
+      "caption": "W. H. MUMLER · CA. 1872",
+      "regions": {
+        "photo": [
+          0.07,
+          0.04,
+          0.94,
+          0.95
+        ],
+        "face": [
+          0.33,
+          0.4,
+          0.55,
+          0.55
+        ],
+        "ghost": [
+          0.47,
+          0.04,
+          0.88,
+          0.33
+        ],
+        "ghostHandLeft": [
+          0.22,
+          0.54,
+          0.36,
+          0.62
+        ],
+        "ghostHandRight": [
+          0.55,
+          0.6,
+          0.7,
+          0.7
+        ]
+      }
+    },
+    "grantCityPoint": {
+      "file": "images/grant_city_point.jpg",
+      "width": 1024,
+      "height": 823,
+      "sourceWidth": 1024,
+      "sourceHeight": 823,
+      "caption": "LIBRARY OF CONGRESS · 1902",
+      "regions": {
+        "photo": [
+          0.045,
+          0.07,
+          0.95,
+          0.905
+        ],
+        "head": [
+          0.49,
+          0.36,
+          0.555,
+          0.45
+        ],
+        "horseAndBody": [
+          0.3,
+          0.44,
+          0.69,
+          0.85
+        ],
+        "background": [
+          0.05,
+          0.18,
+          0.95,
+          0.33
+        ],
+        "handwriting": [
+          0.04,
+          0.905,
+          0.25,
+          0.95
+        ]
+      }
+    },
+    "houdiniLincolnGhost": {
+      "file": "images/houdini_lincoln_ghost.jpg",
+      "width": 1024,
+      "height": 936,
+      "sourceWidth": 1024,
+      "sourceHeight": 936,
+      "caption": "LIBRARY OF CONGRESS · 1920–1930",
+      "regions": {
+        "slide": [
+          0.04,
+          0.03,
+          0.955,
+          0.965
+        ],
+        "houdiniHead": [
+          0.22,
+          0.13,
+          0.36,
+          0.33
+        ],
+        "ghostHead": [
+          0.72,
+          0.13,
+          0.85,
+          0.33
+        ],
+        "ghostBody": [
+          0.62,
+          0.13,
+          0.95,
+          0.75
+        ]
+      }
+    },
+    "houdiniFamily": {
+      "file": "images/houdini_family.jpg",
+      "width": 817,
+      "height": 1024,
+      "sourceWidth": 817,
+      "sourceHeight": 1024,
+      "caption": "LIBRARY OF CONGRESS",
+      "regions": {
+        "photo": [
+          0.09,
+          0.065,
+          0.94,
+          0.95
+        ],
+        "bessHead": [
+          0.27,
+          0.16,
+          0.4,
+          0.27
+        ],
+        "houdiniHead": [
+          0.49,
+          0.12,
+          0.64,
+          0.25
+        ],
+        "bess": [
+          0.17,
+          0.13,
+          0.5,
+          0.58
+        ]
+      }
+    },
+    "houdiniClippings": {
+      "file": "images/houdini_clippings.jpg",
+      "width": 1072,
+      "height": 1980,
+      "sourceWidth": 1072,
+      "sourceHeight": 1980,
+      "caption": "LIBRARY OF CONGRESS · 1926",
+      "regions": {}
+    },
+    "mumlerElderlyMan": {
+      "file": "images/mumler_spirit_a.jpg",
+      "width": 374,
+      "height": 600,
+      "sourceWidth": 374,
+      "sourceHeight": 600,
+      "caption": "W. H. MUMLER · 1860S–70S",
+      "regions": {}
+    },
+    "mumlerWoman": {
+      "file": "images/mumler_spirit_b.jpg",
+      "width": 388,
+      "height": 600,
+      "sourceWidth": 388,
+      "sourceHeight": 600,
+      "caption": "W. H. MUMLER · 1860S–70S",
+      "regions": {}
+    },
+    "mumlerYoungMan": {
+      "file": "images/mumler_spirit_c.jpg",
+      "width": 369,
+      "height": 600,
+      "sourceWidth": 369,
+      "sourceHeight": 600,
+      "caption": "W. H. MUMLER · 1860S–70S",
+      "regions": {}
+    },
+    "grantColdHarbor": {
+      "file": "images/grant_cold_harbor.jpg",
+      "width": 830,
+      "height": 1024,
+      "sourceWidth": 830,
+      "sourceHeight": 1024,
+      "caption": "LIBRARY OF CONGRESS · 1864",
+      "regions": {}
+    },
+    "mccookHorseback": {
+      "file": "images/mccook_horseback.jpg",
+      "width": 1024,
+      "height": 827,
+      "sourceWidth": 1024,
+      "sourceHeight": 827,
+      "caption": "LIBRARY OF CONGRESS · 1864",
+      "regions": {}
+    },
+    "confederatePrisoners": {
+      "file": "images/confederate_prisoners.jpg",
+      "width": 1024,
+      "height": 733,
+      "sourceWidth": 1024,
+      "sourceHeight": 733,
+      "caption": "LIBRARY OF CONGRESS · 1864",
+      "regions": {}
+    },
+    "metSitter": {
+      "file": "images/met_287722_sitter.jpg",
+      "width": 2034,
+      "height": 2400,
+      "sourceWidth": 2886,
+      "sourceHeight": 3405,
+      "caption": "THE MET · CC0",
+      "regions": {}
+    }
+  },
+  "registration": {
+    "calhounToLincoln": {
+      "matrix": [
+        [
+          0.933667016946891,
+          -0.0010368186649743585,
+          45.417105846964105
+        ],
+        [
+          0.0010368186649743585,
+          0.933667016946891,
+          42.32640114506192
+        ]
+      ],
+      "scale": 0.93367,
+      "rotationDeg": 0.0636,
+      "matches": 225,
+      "inliers": 196,
+      "differenceMask": "images/diff_calhoun_lincoln.png",
+      "differenceBlobs": [
+        [
+          0.4791,
+          0.2148,
+          0.6096,
+          0.335,
+          8620
+        ],
+        [
+          0.6318,
+          0.5342,
+          0.8362,
+          0.6045,
+          6975
+        ]
+      ]
+    }
+  }
+}

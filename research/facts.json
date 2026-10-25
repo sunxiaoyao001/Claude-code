@@ -80,7 +80,8 @@
       }
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
-    "置信度": "高"
+    "置信度": "高",
+    "上屏写法": "「他说奴隶制不是恶，是善」——对应原文 'instead of an evil, a good—a positive good'"
   },
   {
     "id": "F05",
@@ -208,7 +209,7 @@
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "高",
-    "上屏写法": "「证据不足，法官放了他」——兼容「预审驳回」和「无罪」两种表述，不写「判无罪」"
+    "上屏写法": "「他被控诈骗，法官放了他」——兼容「预审驳回」和「无罪」两种说法"
   },
   {
     "id": "F11",
@@ -465,11 +466,11 @@
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "高",
-    "上屏写法": "下注答案「B 一位副总统」；揭晓「副总统卡尔霍恩」"
+    "上屏写法": "档案签 JOHN C. CALHOUN / VICE PRESIDENT · 1825–1832"
   },
   {
     "id": "F22",
-    "陈述": "下注题选项「A 另一位总统」是诱饵选项，不是事实陈述",
+    "陈述": "下注题选项「A 一位废奴派」是诱饵选项，不是事实陈述；「B 一位蓄奴派」对应 F05",
     "来源": [],
     "摘录方式": "—",
     "置信度": "—",
@@ -477,7 +478,7 @@
   },
   {
     "id": "F23",
-    "陈述": "林肯在 1863 年 1 月 1 日颁布《解放奴隶宣言》（Emancipation Proclamation），因此常被称为「解放者」",
+    "陈述": "林肯在 1863 年 1 月 1 日颁布《解放奴隶宣言》（Emancipation Proclamation），因此常被称为「解放者」；「伟大的解放者」（the Great Emancipator）是他通行的称号",
     "来源": [
       {
         "url": "https://www.archives.gov/exhibits/featured-documents/emancipation-proclamation",
@@ -488,10 +489,34 @@
         "url": "https://www.archives.gov/historical-docs/emancipation-proclamation",
         "类型": "一手（美国国家档案馆）",
         "摘录": "Emancipation Proclamation (1863)"
+      },
+      {
+        "url": "https://uncpress.org/9781469627328/lincoln-and-the-politics-of-slavery/",
+        "类型": "权威二手（北卡大学出版社）",
+        "摘录": "Redefining Lincoln's presidency — and his role as The Great Emancipator"
       }
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "高",
     "上屏写法": "「解放者的头，蓄奴派的身子」；档案签 EMANCIPATION PROCLAMATION · 1863"
+  },
+  {
+    "id": "F24",
+    "陈述": "把 1852 年卡尔霍恩版画按缩放 0.934、旋转 0.09° 对齐到林肯合成像后，两张版画除了头部和桌上文件，其余（身体、衣褶、地球仪、旗帜、桌布、地砖）全部重合",
+    "来源": [
+      {
+        "url": "https://www.loc.gov/pictures/item/2003654314/",
+        "类型": "一手（原图）",
+        "摘录": "LoC 2003654314，用户下载上传，812×1024"
+      },
+      {
+        "url": "https://www.loc.gov/pictures/item/2003679757/",
+        "类型": "一手（原图）",
+        "摘录": "LoC 2003679757，用户下载上传，767×1024"
+      }
+    ],
+    "摘录方式": "本项目自行计算：OpenCV SIFT 特征匹配 229 对、RANSAC 内点 196 个，相似变换 scale 0.9336 / rot 0.089° / tx 45.7 / ty 42.2（源像素）",
+    "置信度": "高（可复现：scripts/register_prints.py）",
+    "上屏写法": "差异图标「差异图 · 两张原件配准计算」"
   }
 ]

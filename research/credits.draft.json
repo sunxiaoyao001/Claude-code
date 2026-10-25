@@ -144,30 +144,17 @@
       "修改说明": "负片反相 + 统一调色"
     },
     {
-      "id": "IMG13",
-      "file": "public/images/met_berger_lincoln_1864.jpg",
-      "标题": "Abraham Lincoln",
-      "作者": "Anthony Berger（Brady & Co.）",
-      "年份": "1864-02-09",
-      "来源URL": "https://www.metmuseum.org/art/collection/search/285876",
-      "馆藏号": "The Met 285876（Gilman Collection, 2005）",
-      "许可": "CC0（The Met Open Access，已从 Met 官方公开数据集下载）",
-      "原图分辨率": "1201×2000（已实测）",
-      "用途": "S09 双重曝光示意的「鬼影」负片（标「示意」）",
-      "修改说明": "负片反相、降低密度作淡影"
-    },
-    {
       "id": "IMG14",
-      "file": "public/images/sitter_portrait.jpg",
-      "标题": "示意用的 19 世纪肖像（待定，需公有领域）",
-      "作者": "待定",
+      "file": "public/images/met_287722_sitter.jpg",
+      "标题": "[British Official]",
+      "作者": "Unknown",
       "年份": "1860s",
-      "来源URL": "待找（LoC / Commons）",
-      "馆藏号": "—",
-      "许可": "须 PD / CC0",
-      "原图分辨率": "待下载后用 getImageDimensions 核对",
-      "用途": "S09 双重曝光示意的肖像负片",
-      "修改说明": "负片反相"
+      "来源URL": "https://www.metmuseum.org/art/collection/search/287722",
+      "馆藏号": "The Met 287722（Gilman Collection）",
+      "许可": "CC0（The Met Open Access，已从 Met 官方公开数据集下载）",
+      "原图分辨率": "2886×3405（已实测）",
+      "用途": "S09 双重曝光示意：同一人曝光两次，第二层变淡偏移成「鬼影」（标「示意」）",
+      "修改说明": "负片反相 + 叠加示意"
     }
   ],
   "sfx": [
