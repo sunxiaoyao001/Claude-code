@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, Sequence, Track, useVideoConfig } from "remotion";
 import "./fonts";
 import { Desk } from "./components/Desk";
+import { Soundtrack } from "./components/Soundtrack";
 import { InkFilter } from "./components/Props";
 import { ArchiveProgress, ArchiveTag, Watermark } from "./components/SeriesChrome";
 import { Subtitle } from "./components/Subtitle";
@@ -87,6 +88,7 @@ export const Main: React.FC<MainProps> = ({ watermark }) => {
         <Scenes />
         <Subtitles />
         <Chrome watermark={watermark} />
+        <Soundtrack />
       </AbsoluteFill>
     </TimeScale.Provider>
   );

@@ -1,6 +1,8 @@
 import React, { createContext, useContext } from "react";
 import { CanvasImage, staticFile, useCurrentFrame } from "remotion";
+import { MIN_SOURCE_PER_DISPLAY } from "../assets";
 import { photoGrade } from "../grade";
+import { BREATH_MAX_ZOOM } from "./Breath";
 import { COLORS } from "../theme";
 
 // A crop window in normalised image coordinates (0..1 on both axes).
@@ -77,6 +79,11 @@ export const PhotoPrint: React.FC<Props> = ({
 }) => {
   const frame = useCurrentFrame();
   const scale = width / ((crop.x1 - crop.x0) * imgW);
+  // Hard guard for the client's rule: never show a source pixel larger than 1/1.5 of a screen
+  // pixel, counting the camera breath. Scenes size prints with fitWidth(); this catches mistakes.
+  if (scale * MIN_SOURCE_PER_DISPLAY * BREATH_MAX_ZOOM > 1 + 1e-6) {
+    throw new Error(`${src}: displayed at ${(scale * 100).toFixed(1)}% of source, above the 1.5x budget`);
+  }
   const height = (crop.y1 - crop.y0) * imgH * scale;
   const geometry: PrintGeometry = { src, imgW, imgH, scale, crop, develop, colorRestore };
   // Lifting a print off the table lengthens and softens its shadow.

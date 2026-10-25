@@ -1,0 +1,74 @@
+import { Audio } from "@remotion/media";
+import React from "react";
+import { interpolate, Sequence, staticFile, useVideoConfig } from "remotion";
+import manifest from "../../public/sfx/manifest.json";
+import { useTime } from "../time";
+import { SFX, SUBTITLE_TICKS, type SfxEvent, type SfxName } from "../timeline";
+
+type ManifestEntry = { readonly file: string; readonly durationSec: number; readonly peakOffsetFrames: number };
+const MANIFEST = manifest as unknown as Record<string, ManifestEntry>;
+
+// Mix: the score sits at −6 dB; timeline gains are relative to the sound files plus this bus offset,
+// so a −26 dB pen lands a few dB under the score and the −12 dB sub hit peaks just under full scale.
+// The finished render is loudness-normalised to −14 LUFS afterwards (see README).
+const MUSIC_GAIN = 0.5;
+const SFX_BUS_DB = 12;
+const ROOM_TONE_DB = -24;
+const dbToGain = (db: number) => 10 ** (db / 20);
+
+// The score steps back (−4 dB) under the three hero hits: the seal, the twist, the golden line.
+const DUCKS = [240, 1920, 2400];
+const DUCK_GAIN = dbToGain(-4);
+
+// Sounds with pitch variants; the variant is picked from the frame so renders are deterministic.
+const VARIANTS: Partial<Record<SfxName, number>> = { paper_tick: 5, typewriter: 5 };
+const fileFor = (e: SfxEvent): ManifestEntry => {
+  const n = VARIANTS[e.sound];
+  const entry = MANIFEST[n ? `${e.sound}_${(e.at * 7 + Math.floor(e.at / 3)) % n}` : e.sound];
+  if (!entry) {
+    throw new Error(`No sound file for ${e.sound}`);
+  }
+  return entry;
+};
+
+const Music: React.FC = () => {
+  const t = useTime();
+  return (
+    <Audio
+      src={staticFile(MANIFEST._score.file)}
+      volume={(f) => {
+        let g = 1;
+        for (const d of DUCKS) {
+          const at = t(d);
+          g = Math.min(g, interpolate(f, [at - 2, at, at + 8, at + 26], [1, DUCK_GAIN, DUCK_GAIN, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }));
+        }
+        return MUSIC_GAIN * g;
+      }}
+    />
+  );
+};
+
+// One sound event: the file starts early by its measured peak offset, so the transient (not the
+// file start) lands on the picture frame.
+const SoundEvent: React.FC<{ readonly e: SfxEvent }> = ({ e }) => {
+  const t = useTime();
+  const { fps } = useVideoConfig();
+  const entry = fileFor(e);
+  const start = t(e.at) - Math.round(entry.peakOffsetFrames);
+  const length = Math.ceil(entry.durationSec * fps) + 2;
+  return (
+    <Sequence from={Math.max(0, start)} durationInFrames={length} name={e.sound} layout="none">
+      <Audio src={staticFile(entry.file)} trimBefore={Math.max(0, -start)} volume={dbToGain(e.gainDb + SFX_BUS_DB)} />
+    </Sequence>
+  );
+};
+
+export const Soundtrack: React.FC = () => (
+  <>
+    <Music />
+    <Audio src={staticFile(MANIFEST.room_tone.file)} volume={dbToGain(ROOM_TONE_DB)} />
+    {[...SFX, ...SUBTITLE_TICKS].map((e, i) => (
+      <SoundEvent key={`${e.sound}-${e.at}-${i}`} e={e} />
+    ))}
+  </>
+);

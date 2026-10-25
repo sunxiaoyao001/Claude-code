@@ -26,7 +26,7 @@ export const DevComponents = () => (
     <Watermark handle="@your_handle" />
     <ArchiveTag entries={[{ from: 0, text: "ARCHIVE No.001 · CA. 1865 · NEW YORK" }]} />
     <ArchiveProgress bounds={[0, 672, 1776, 2688]} labels={["No.001", "No.002", "No.003"]} />
-    <Sequence from={0} durationInFrames={96}>
+    <Sequence durationInFrames={96}>
       <Subtitle zh="这张林肯像，身子是*借*的" en="This Lincoln's body is borrowed" durationInFrames={96} isStatic />
     </Sequence>
   </AbsoluteFill>
