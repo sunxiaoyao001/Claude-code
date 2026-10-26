@@ -15,3 +15,12 @@
 | `webapp-testing` | anthropics/skills | 用 Playwright 启动本地站点、截图、验证前端行为 |
 
 更新：重新克隆上游仓库并覆盖对应目录；Impeccable 也可用 `npx impeccable install --providers=claude --scope=project`。
+
+## Lakehaven 规划图（`lakehaven/`）
+
+Cities: Skylines II 自定义地图 Lakehaven（CityLogic，Paradox Mods #162872）的可打印规划图：
+
+- `lakehaven-map.pdf`：A4 横向 4 页，依次是底图、规划方案、规划说明、空白规划图，可以直接打印。
+- `lakehaven-map.html`：同样内容的网页版。
+- `geometry.json`：岸线数据，从截图透视校正后描出，做法见 `SOURCES.md`。
+- `build_map.py` + `render_pdf.js`：生成脚本，`python3 lakehaven/build_map.py && node lakehaven/render_pdf.js`。
