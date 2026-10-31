@@ -1,0 +1,560 @@
+[
+  {
+    "id": "F01",
+    "陈述": "LoC 藏的《Abraham Lincoln》美柔汀版画是合成像：林肯的头叠在 1852 年卡尔霍恩版画的身体和背景上；刻版者 William Pate，年代标为 [1865?]；出版者 William Pate，纽约 Fulton 街 58 & 60 号",
+    "来源": [
+      {
+        "url": "https://www.loc.gov/pictures/item/2003654314/",
+        "类型": "一手",
+        "摘录": "Creator(s): Pate, William, engraver ... [1865?] ... Print is a composite ... No known restrictions on publication ... Published by William Pate, 58 & 60 Fulton St., New York"
+      },
+      {
+        "url": "https://www.bronxdoc.org/bronx-documentary-center/exhibits/altered-images/1865-2/",
+        "类型": "权威二手",
+        "摘录": "hand-drawn engraving based on photographs ... mistakenly identified as a photo"
+      },
+      {
+        "url": "https://civilwarnews.com/issues/2018/may/photoshopping-19th-century-style-part-ii/",
+        "类型": "权威二手",
+        "摘录": "William Pate ... probably published the Lincoln alteration in 1865"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "档案签「No.001 · c.1865 · NEW YORK」（纽约 = 出版地）；称「版画」「肖像」，不称「照片」",
+    "读图核实": "2026-10-24 读图核实：用户从 LoC 下载并上传的 2003654314 版画（812×1024）上，可读到底部「Published by William Pate, 58 & 60 Fulton St. New York」"
+  },
+  {
+    "id": "F02",
+    "陈述": "被借用身体的原版画：《John C. Calhoun》，T. Hicks 原画，据 Brady 银版像，A.H. Ritchie 刻，1852",
+    "来源": [
+      {
+        "url": "https://www.loc.gov/pictures/item/2003679757/",
+        "类型": "一手",
+        "摘录": "John C. Calhoun / painted by T. Hicks ; likeness from a dage. by Brady ; engraved by A.H. Ritchie ... 1852"
+      },
+      {
+        "url": "https://scholarsjunction.msstate.edu/fvw-artifacts/362",
+        "类型": "权威二手",
+        "摘录": "composite ... used Ritchie's 1852 engraving and Anthony Berger's 1864 photograph of Lincoln"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "备注": "林肯头像的来源照片（Berger 1864 还是 Brady）各说不一，不上屏"
+  },
+  {
+    "id": "F03",
+    "陈述": "桌上文件的字被改了：卡尔霍恩版写 strict constitution / free trade / the sovereignty of the states；林肯版改为 constitution / union / proclamation of freedom",
+    "来源": [
+      {
+        "url": "https://www.bronxdoc.org/bronx-documentary-center/exhibits/altered-images/1865-2/",
+        "类型": "权威二手",
+        "摘录": "Changed text on the table papers shifts the message from states' rights to Union and emancipation"
+      },
+      {
+        "url": "https://scholarsjunction.msstate.edu/fvw-prints/204",
+        "类型": "权威二手",
+        "摘录": "the papers on the table say 'strict constitution,' 'free trade,' and 'the sovereignty of the states.' In the Lincoln image, these words have been changed"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "中高",
+    "复核方式": "拿到两张 LoC 高清件后直接读图（图本身就是一手证据）",
+    "上屏写法": "「连桌上的文件都改了」+ 差异图（F24）框出文件区——不在屏幕上逐词对比；拿到高清件读图确认后再考虑更具体的写法",
+    "读图核实": "2026-10-24 读图核实：用户从 LoC 下载并上传的 2003654314 版画（812×1024）上，可读到桌上文件「CONSTITUTION」「UNION」「Proclamation of Freedom」（林肯版）；卡尔霍恩版待原图到手后核对"
+  },
+  {
+    "id": "F04",
+    "陈述": "卡尔霍恩 1837 年 2 月 6 日在参议院演讲，称奴隶制「不是罪恶，而是积极的善」(a positive good)",
+    "来源": [
+      {
+        "url": "https://courses.lumenlearning.com/ushistory1/chapter/john-c-calhoun-slavery-a-positive-good-1837/",
+        "类型": "一手（演讲原文转载）",
+        "摘录": "instead of an evil, a good—a positive good"
+      },
+      {
+        "url": "https://oll.libertyfund.org/quote/john-calhoun-slavery-positive-good",
+        "类型": "权威二手",
+        "摘录": "John Calhoun on Slavery as a Positive Good"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "「他说奴隶制不是恶，是善」——对应原文 'instead of an evil, a good—a positive good'"
+  },
+  {
+    "id": "F05",
+    "陈述": "卡尔霍恩是内战前最有影响力的蓄奴派政治人物、州权论代表",
+    "来源": [
+      {
+        "url": "https://www.stolaf.edu/people/fitz/COURSES/calhoun.html",
+        "类型": "权威二手",
+        "摘录": "the most important proslavery politician in the country in the decades before midcentury"
+      },
+      {
+        "url": "https://civilwarnews.com/issues/2018/may/photoshopping-19th-century-style-part-ii/",
+        "类型": "权威二手",
+        "摘录": "strict constitutional constructionist, state's rights advocate and nullification promoter"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "中高",
+    "上屏写法": "下注选项「B 一位蓄奴派」；揭晓后「解放者的头，蓄奴派的身子」——对应 'the most important proslavery politician'"
+  },
+  {
+    "id": "F06",
+    "陈述": "卡尔霍恩生于 1782 年，卒于 1850 年",
+    "来源": [
+      {
+        "url": "https://www.stolaf.edu/people/fitz/COURSES/calhoun.html",
+        "类型": "权威二手",
+        "摘录": "1782–1850"
+      },
+      {
+        "url": "https://guides.loc.gov/john-c-calhoun",
+        "类型": "权威二手",
+        "摘录": "John C. Calhoun: A Resource Guide"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "档案签「JOHN C. CALHOUN · 1782–1850」"
+  },
+  {
+    "id": "F07",
+    "陈述": "Mumler 拍的玛丽·林肯像里，她身后有一个「林肯」的鬼影，双手搭在她肩上；原件属 Lincoln Financial Foundation Collection（Allen County Public Library 等）",
+    "来源": [
+      {
+        "url": "https://www.antiquetrader.com/collectibles/spirit-photography-in-post-civil-war-era",
+        "类型": "权威二手",
+        "摘录": "the ghostly figure of her husband behind her and resting his hands on her shoulders ... Lincoln Financial Foundation Collection"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/William_H._Mumler",
+        "类型": "权威二手",
+        "摘录": "Mary Todd Lincoln with an apparent spirit of her husband ... assumed to be a hoax"
+      },
+      {
+        "url": "https://www.whitehousehistory.org/photos/seances-in-the-red-room-photo-2",
+        "类型": "权威二手",
+        "摘录": "credit: Allen County Public Library, Fort Wayne, Indiana"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高"
+  },
+  {
+    "id": "F08",
+    "陈述": "这次拍摄的年份有争议：Mumler 本人致 Boston Record 的信给出 1872 年 2 月下旬（Snopes、Guinness 采用）；另有 1869、1871、1870 年代初等说法",
+    "来源": [
+      {
+        "url": "https://www.snopes.com/fact-check/lincoln-ghost-picture/",
+        "类型": "权威二手",
+        "摘录": "In February 1872, Mary Todd Lincoln visited his photography studio in Boston"
+      },
+      {
+        "url": "https://www.guinnessworldrecords.com/world-records/722305-first-spirit-photograph",
+        "类型": "权威二手",
+        "摘录": "1872"
+      },
+      {
+        "url": "https://hoaxes.org/photo_database/image/mumlers_spirit_photos/",
+        "类型": "权威二手",
+        "摘录": "dates vary"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "中（有争议）",
+    "上屏写法": "只用档案签「c.1872」，字幕不写年份"
+  },
+  {
+    "id": "F09",
+    "陈述": "玛丽·林肯用假名（Mrs. Lindall）去了 Mumler 在波士顿的照相馆；Mumler 称底片冲出来前没认出她",
+    "来源": [
+      {
+        "url": "https://en.wikipedia.org/wiki/William_H._Mumler",
+        "类型": "权威二手",
+        "摘录": "Mrs. Lindall"
+      },
+      {
+        "url": "https://www.snopes.com/fact-check/lincoln-ghost-picture/",
+        "类型": "权威二手",
+        "摘录": "visited his photography studio in Boston"
+      },
+      {
+        "url": "https://www.nationalgeographic.com/history/article/history-victorian-ghost-photos-harry-houdini-abraham-lincoln",
+        "类型": "权威二手",
+        "摘录": "gave the well-known photographer a false name"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "中高",
+    "上屏写法": "「她报的是假名」；不上屏「戴面纱」（只有单一来源）"
+  },
+  {
+    "id": "F10",
+    "陈述": "1869 年 4 月 Mumler 在纽约以欺诈受审，巴纳姆出庭作证指控他；法官以证据不足放了他",
+    "来源": [
+      {
+        "url": "https://en.wikipedia.org/wiki/William_H._Mumler",
+        "类型": "权威二手",
+        "摘录": "brought to trial for fraud in April 1869 ... acquitted"
+      },
+      {
+        "url": "https://photographymuseum.com/mumcartoon",
+        "类型": "权威二手（美国摄影博物馆）",
+        "摘录": "The judge in the case reluctantly decided to drop the charges against Mumler, citing a lack of evidence. P. T. Barnum testified against him."
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "「他被控诈骗，法官放了他」——兼容「预审驳回」和「无罪」两种说法"
+  },
+  {
+    "id": "F11",
+    "陈述": "Mumler 的鬼影具体怎么做出来的，至今说不清；双重曝光是灵异照片的常见造假手法",
+    "来源": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Spirit_photography",
+        "类型": "权威二手",
+        "摘录": "assumed to be a hoax, although it is still unclear how exactly it was created"
+      },
+      {
+        "url": "https://assets.atlasobscura.com/articles/houdini-conan-doyle-spirit-photography",
+        "类型": "权威二手",
+        "摘录": "Houdini used a process of double exposure to create the image"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "机制段的双重曝光动画标「示意」，不说 Mumler 就是这么做的"
+  },
+  {
+    "id": "F12",
+    "陈述": "LoC《General Grant at City Point》（约 1902，L.C. Handy）是三张照片拼的：头取自格兰特在冷港的照片（LC-B8175-2），马和身体是麦库克少将（LC-B817-7204），背景是费希尔山战役被俘的南军（LOT 4181）",
+    "来源": [
+      {
+        "url": "https://www.loc.gov/resource/ppmsca.15886/",
+        "类型": "一手",
+        "摘录": "composite ... head: Grant at his Cold Harbor, Va. headquarters (LC-B8175-2); horse and body: Maj. Gen. Alexander McDowell McCook (LC-B817-7204); background: Confederate prisoners captured in the battle of Fisher's Hill, Va. (LOT 4181)"
+      },
+      {
+        "url": "https://www.metmuseum.org/art/collection/search/294786",
+        "类型": "权威二手",
+        "摘录": "same three-negative breakdown, all dated to 1864"
+      },
+      {
+        "url": "https://www.loc.gov/collections/civil-war-glass-negatives/articles-and-essays/solving-a-civil-war-photograph-mystery/",
+        "类型": "一手（LoC 专文）",
+        "摘录": "horse and man's body ... from McCook's negative (LC-B817-7204) ... background ... Confederate prisoners captured in the battle of Fisher's Hill"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高"
+  },
+  {
+    "id": "F13",
+    "陈述": "LoC 藏有胡迪尼和「林肯鬼魂」的玻璃幻灯片（1920–1930），是胡迪尼为说明灵异照片可以伪造而做的，用的是双重曝光",
+    "来源": [
+      {
+        "url": "https://www.loc.gov/pictures/item/96520658/",
+        "类型": "一手",
+        "摘录": "[Houdini and the ghost of Abraham Lincoln] ... lantern slide ... between 1920 and 1930 ... No known restrictions on publication"
+      },
+      {
+        "url": "https://blogs.loc.gov/teachers/2017/10/harry-houdini-ghostbuster-exploring-an-illusionists-exposs-through-primary-sources/",
+        "类型": "一手（LoC 馆员）",
+        "摘录": "illustrates how a photographer could produce fraudulent 'spirit photographs'"
+      },
+      {
+        "url": "https://assets.atlasobscura.com/articles/houdini-conan-doyle-spirit-photography",
+        "类型": "权威二手",
+        "摘录": "around 1925 to prove that spirit photography was a fraud ... double exposure"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "档案签「1920s」，不写具体年份"
+  },
+  {
+    "id": "F14",
+    "陈述": "胡迪尼 1926 年 10 月 31 日（万圣节）在底特律去世，死因是阑尾破裂引起的腹膜炎；被学生击腹与阑尾炎的因果至今有争议",
+    "来源": [
+      {
+        "url": "https://www.loc.gov/item/2018682515/",
+        "类型": "一手",
+        "摘录": "died of peritonitis resulting from appendicitis on October 31, 1926, in Detroit, Michigan"
+      },
+      {
+        "url": "https://www.snopes.com/fact-check/punched-out",
+        "类型": "权威二手",
+        "摘录": "reported cases ... of appendicitis following blunt abdominal trauma are quite rare"
+      },
+      {
+        "url": "https://www.pbs.org/newshour/health/what-caused-harry-houdinis-mysterious-death",
+        "类型": "权威二手",
+        "摘录": "died of peritonitis from a ruptured appendix ... October 31"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "「1926 年万圣节，他死了」；不提一拳，不提水牢"
+  },
+  {
+    "id": "F15",
+    "陈述": "胡迪尼生前向妻子贝丝承诺：如果他先死，会设法从「那边」传回一句只有两人知道的暗号「Rosabelle, believe」（Rosabelle 是贝丝唱过的歌，刻在她的婚戒上），用来证明消息确实来自他",
+    "来源": [
+      {
+        "url": "https://www.mentalfloss.com/article/70298/enduring-tradition-houdini-seance-halloween",
+        "类型": "权威二手",
+        "摘录": "a code that spelled 'Believe' ... 'Rosabelle, believe'"
+      },
+      {
+        "url": "https://www.geniimagazine.com/wiki/index.php/The_Houdini_Code",
+        "类型": "权威二手（魔术行业刊物）",
+        "摘录": "'Rosabelle' referring to a song she sang"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Bess_Houdini",
+        "类型": "权威二手",
+        "摘录": "Rosabelle, believe"
+      },
+      {
+        "url": "https://www.summitdaily.com/news/rosabelle-believe/",
+        "类型": "二手",
+        "摘录": "Houdini promised Bess he would try to come back and communicate if he died first, and the code was meant to prove the message was really from him"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "「他和妻子约好：死后报暗号」；打字机打出 ROSABELLE, BELIEVE"
+  },
+  {
+    "id": "F16",
+    "陈述": "胡迪尼死后，贝丝连续 10 年在万圣节办降神会",
+    "来源": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Theatrical_s%C3%A9ance",
+        "类型": "权威二手",
+        "摘录": "done by Houdini's wife Beatrice (Bess) for ten years after Houdini died"
+      },
+      {
+        "url": "https://www.mentalfloss.com/article/70298/enduring-tradition-houdini-seance-halloween",
+        "类型": "权威二手",
+        "摘录": "annual séances on Halloween"
+      },
+      {
+        "url": "https://www.summitdaily.com/news/rosabelle-believe/",
+        "类型": "二手",
+        "摘录": "annual well-publicized séances held on October 31"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "备注": "计数器 1927→1936 由「1926 年去世 + 连续 10 年万圣节」推算（1927 为第一个忌日）"
+  },
+  {
+    "id": "F17",
+    "陈述": "1936 年万圣节，贝丝在好莱坞 Knickerbocker 酒店屋顶办了最后一场降神会（约 300 名受邀者，电台转播），胡迪尼没有出现；此后她不再参加",
+    "来源": [
+      {
+        "url": "https://blogs.loc.gov/loc/2020/10/hollywood-houdini-and-the-halloween-seance-of-1936/",
+        "类型": "一手（LoC 馆员）",
+        "摘录": "roof of the Knickerbocker Hotel ... Halloween 1936 ... invitation-only crowd of about 300 ... her last attempt"
+      },
+      {
+        "url": "https://www.nationalgeographic.com/history/article/harry-houdini-skeptic-spirits-mediums-fraud",
+        "类型": "权威二手",
+        "摘录": "the event was recorded ... Houdini never appeared"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "「最后那场，什么也没来」（指 1936 年最后一场降神会）"
+  },
+  {
+    "id": "F18",
+    "陈述": "争议点：1929 年灵媒 Arthur Ford 声称传回了暗号；暗号此前已出现在 1928 年 Kellock 的胡迪尼传记里，贝丝后来称此事是假的",
+    "来源": [
+      {
+        "url": "https://www.skepdic.com/fordhoax.html",
+        "类型": "权威二手",
+        "摘录": "Ford ... 1929"
+      },
+      {
+        "url": "https://www.futilitycloset.com/2017/11/28/overdue-7/",
+        "类型": "二手",
+        "摘录": "the code had already been printed in Harold Kellock's 1928 Houdini biography"
+      },
+      {
+        "url": "https://www.nationalgeographic.com/premium/article/harry-houdini-skeptic-spirits-mediums-fraud",
+        "类型": "权威二手",
+        "摘录": "likely found the phrase in a Houdini biography"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "因为有这件事，**禁止**上屏「暗号从没出现过」「他一次也没来」"
+  },
+  {
+    "id": "F19",
+    "陈述": "2026 年 10 月 31 日是胡迪尼逝世 100 周年（由 F14 推算）",
+    "来源": [
+      {
+        "url": "https://www.wildabouthoudini.com/2026/08/the-late-seance-at-278-is-now-open-to.html?m=1",
+        "类型": "二手",
+        "摘录": "Halloween ... centennial séances"
+      },
+      {
+        "url": "https://hungarytoday.hu/no-chains-can-hold-this-legacy-houdini-100-kicks-off-in-his-birthplace/",
+        "类型": "二手",
+        "摘录": "Houdini 100"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高"
+  },
+  {
+    "id": "F20",
+    "陈述": "胡迪尼是以逃脱术闻名的魔术师（illusionist / escape artist），1874 年生于布达佩斯",
+    "来源": [
+      {
+        "url": "https://www.loc.gov/item/96518776/",
+        "类型": "一手",
+        "摘录": "[Harry Houdini, full-length portrait, standing, facing front, in chains] ... 1903"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Chinese_Water_Torture_Cell",
+        "类型": "权威二手",
+        "摘录": "Houdini continued to perform the escape until his death in 1926"
+      },
+      {
+        "url": "https://www.loc.gov/pictures/resource/ppmsca.40859/",
+        "类型": "一手",
+        "摘录": "[Houdini jumps from Harvard Bridge, Boston, Massachusetts] ... in chains and handcuffs"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Harry_Houdini",
+        "类型": "权威二手",
+        "摘录": "Hungarian-American escape artist, illusionist ... skeptic who set out to expose frauds"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "「魔术师胡迪尼」"
+  },
+  {
+    "id": "F21",
+    "陈述": "卡尔霍恩是美国第 7 任副总统（1825–1832），也是第一位辞职的副总统",
+    "来源": [
+      {
+        "url": "https://en.wikipedia.org/wiki/John_C._Calhoun",
+        "类型": "权威二手",
+        "摘录": "7th vice president ... March 4, 1825 – December 28, 1832"
+      },
+      {
+        "url": "https://blogs.loc.gov/law/2017/12/today-in-history-resignation-of-vice-president-john-c-calhoun/",
+        "类型": "一手（LoC 法律图书馆）",
+        "摘录": "resignation of Vice President John C. Calhoun"
+      },
+      {
+        "url": "https://www.senate.gov/senators/FeaturedBios/Featured_Bio_Calhoun.htm",
+        "类型": "一手（美国参议院）",
+        "摘录": "Calhoun ... vice president"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "档案签 JOHN C. CALHOUN / VICE PRESIDENT · 1825–1832"
+  },
+  {
+    "id": "F22",
+    "陈述": "下注题选项「A 一位废奴派」是诱饵选项，不是事实陈述；「B 一位蓄奴派」对应 F05",
+    "来源": [],
+    "摘录方式": "—",
+    "置信度": "—",
+    "上屏写法": "只作为二选一的干扰项出现"
+  },
+  {
+    "id": "F23",
+    "陈述": "林肯在 1863 年 1 月 1 日颁布《解放奴隶宣言》（Emancipation Proclamation），因此常被称为「解放者」；「伟大的解放者」（the Great Emancipator）是他通行的称号",
+    "来源": [
+      {
+        "url": "https://www.archives.gov/exhibits/featured-documents/emancipation-proclamation",
+        "类型": "一手（美国国家档案馆）",
+        "摘录": "President Abraham Lincoln issued the Emancipation Proclamation on January 1, 1863"
+      },
+      {
+        "url": "https://www.archives.gov/historical-docs/emancipation-proclamation",
+        "类型": "一手（美国国家档案馆）",
+        "摘录": "Emancipation Proclamation (1863)"
+      },
+      {
+        "url": "https://uncpress.org/9781469627328/lincoln-and-the-politics-of-slavery/",
+        "类型": "权威二手（北卡大学出版社）",
+        "摘录": "Redefining Lincoln's presidency — and his role as The Great Emancipator"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高",
+    "上屏写法": "「解放者的头，蓄奴派的身子」；档案签 EMANCIPATION PROCLAMATION · 1863"
+  },
+  {
+    "id": "F24",
+    "陈述": "把 1852 年卡尔霍恩版画按缩放 0.934、旋转 0.06° 对齐到林肯合成像后，两张版画除了头部和桌上文件，其余（身体、衣褶、地球仪、旗帜、桌布、地砖）全部重合",
+    "来源": [
+      {
+        "url": "https://www.loc.gov/pictures/item/2003654314/",
+        "类型": "一手（原图）",
+        "摘录": "LoC 2003654314，用户下载上传，812×1024"
+      },
+      {
+        "url": "https://www.loc.gov/pictures/item/2003679757/",
+        "类型": "一手（原图）",
+        "摘录": "LoC 2003679757，用户下载上传，767×1024"
+      }
+    ],
+    "摘录方式": "本项目自行计算：OpenCV SIFT 特征匹配 225 对、RANSAC 内点 196 个，相似变换 scale 0.9337 / rot 0.064°（源像素）；差异区 2 块：头部、桌上文件",
+    "置信度": "高（可复现：three-fake-lincolns/scripts/prepare_images.py，输出写入 src/assets.generated.json）",
+    "上屏写法": "差异图标「差异图 · 由两张原件配准计算」；S04 闪烁比对用同一组配准结果"
+  },
+  {
+    "id": "F25",
+    "陈述": "William H. Mumler 的灵异照片拍摄于 1860 年代初到 1879 年前后：1861/62 年在波士顿起家，1868 年在纽约开业，1869 年受审后回到波士顿，1879 年前后停止制作，1884 年去世",
+    "来源": [
+      {
+        "url": "https://en.wikipedia.org/wiki/William_H._Mumler",
+        "类型": "权威二手",
+        "摘录": "early 1860s ... first spirit photograph"
+      },
+      {
+        "url": "https://www.metmuseum.org/art/collection/search/296302",
+        "类型": "权威二手（The Met）",
+        "摘录": "Boston career ... New York studio in 1868"
+      },
+      {
+        "url": "https://hoaxes.org/photo_database/image/mumlers_spirit_photos/",
+        "类型": "权威二手",
+        "摘录": "stopped producing spirit photos in 1879 ... died in 1884; the Lincoln sitting around 1871, after he had moved back to Boston"
+      }
+    ],
+    "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
+    "置信度": "高（起始年 1860/1861/early 1860s 有出入，上屏只写 1860S–70S）",
+    "上屏写法": "出处签 W. H. MUMLER · SPIRIT PHOTOGRAPHS · 1860S–70S；不给任何单张名片照标具体年份"
+  },
+  {
+    "id": "F26",
+    "陈述": "LoC 96518779 的著录标题为「Harry Houdini, with his wife Beatrice and mother Cecilia Steiner Weiss, full-length portrait」：照片里是胡迪尼、妻子贝丝（Beatrice）和母亲；著录没有写明每个人站在哪",
+    "来源": [
+      {
+        "url": "https://www.loc.gov/item/96518779/",
+        "类型": "一手（LoC 著录）",
+        "摘录": "[Harry Houdini, with his wife Beatrice and mother Cecilia Steiner Weiss, full-length portrait]"
+      }
+    ],
+    "摘录方式": "用户从该页下载上传图片时记录的标题；网络放开后复核原页",
+    "置信度": "中高",
+    "上屏写法": "出处签 LIBRARY OF CONGRESS · HOUDINI, WIFE, MOTHER；不圈人、不指认谁是贝丝"
+  }
+]

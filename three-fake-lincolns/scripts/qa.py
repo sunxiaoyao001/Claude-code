@@ -93,12 +93,13 @@ def main():
     seg = lambda f0, f1: pcm[int(f0 / FPS * sr): int(f1 / FPS * sr)]
     quiet = rms_db(seg(SILENCE[0] + 1, SILENCE[1] - 1))
     before = rms_db(seg(SILENCE[0] - 45, SILENCE[0] - 3))
-    check("静默 1905–1920", quiet <= -38 and before - quiet >= 10, f"{quiet:.1f} dBFS（前 1.4 秒 {before:.1f}）", "只剩底噪：≤ −38 dBFS，且比前段低 ≥ 10 dB")
+    check("静默 1905–1920", quiet <= -32 and before - quiet >= 12, f"{quiet:.1f} dBFS（前 1.4 秒 {before:.1f}）", "只剩底噪：≤ −32 dBFS，且比前段低 ≥ 12 dB")
 
+    # Stillness, as the brief defines it: compare each frame with the frame one second earlier, on
+    # 8 x 8-block averages (≈ 64 x 64 source pixels) so per-frame film grain cancels out.
     first = last = None
     max_red, max_red_at = 0.0, 0
-    static_run, longest, longest_at = 0, 0, 0
-    prev = None
+    blocks = []
     n = 0
     for i, fr in enumerate(frames(a.video)):
         f = fr.astype(np.float32)
@@ -108,16 +109,16 @@ def main():
         red = float((np.linalg.norm(f - VERMILION, axis=2) < 48).mean())
         if red > max_red:
             max_red, max_red_at = red, i
-        if prev is not None:
-            # Average 8 x 8 blocks (≈ 64 x 64 source pixels) so per-frame film grain cancels out.
-            a = f.reshape(30, 8, 15, 9, 3).mean(axis=(1, 3))
-            b = prev.reshape(30, 8, 15, 9, 3).mean(axis=(1, 3))
-            moving = np.abs(a - b).mean() > 0.35
-            static_run = 0 if moving else static_run + 1
-            if static_run > longest:
-                longest, longest_at = static_run, i - static_run
-        prev = f
+        blocks.append(f.reshape(30, 8, 15, 9, 3).mean(axis=(1, 3)))
         n = i + 1
+    still = [np.abs(blocks[i] - blocks[i - FPS]).mean() < 0.6 for i in range(FPS, n)]
+    longest, longest_at, run = 0, 0, 0
+    for j, s in enumerate(still):
+        run = run + 1 if s else 0
+        if run > longest:
+            longest, longest_at = run, j + FPS - run
+    # A run of k still comparisons spans k + FPS frames of picture that barely changed.
+    longest = longest + FPS if longest else 0
     seam = float(np.abs(first - last).mean())
     check("循环接缝", seam < 4.0, f"首尾帧平均差 {seam:.2f} / 255（含逐帧胶片颗粒）", "< 4")
     check("朱砂占比", max_red <= 0.05, f"最高 {max_red * 100:.2f}%（第 {max_red_at} 帧）", "单帧 ≤ 5%")

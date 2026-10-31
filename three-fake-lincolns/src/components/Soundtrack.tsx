@@ -13,7 +13,7 @@ const MANIFEST = manifest as unknown as Record<string, ManifestEntry>;
 // The finished render is loudness-normalised to −14 LUFS afterwards (see README).
 const MUSIC_GAIN = 0.5;
 const SFX_BUS_DB = 12;
-const ROOM_TONE_DB = -24;
+const ROOM_TONE_DB = -33;
 const dbToGain = (db: number) => 10 ** (db / 20);
 
 // The score steps back (−4 dB) under the three hero hits: the seal, the twist, the golden line.
