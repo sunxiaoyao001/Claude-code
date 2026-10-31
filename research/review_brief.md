@@ -14,6 +14,8 @@
 - `audio/alignment.md`：每个音效与检测到的最近起音的误差（单位：帧）
 - `audio/ebur128.txt`：响度报告
 - `facts.json`、`credits.json`、`script.md`
+- `description.md`：发布简介与置顶评论（片尾署名卡写的「完整出处见简介」就是这份）
+- `qa.md`：自动质检结果
 
 你看不了视频的话，就逐张看联系表和关键帧，再结合 script.md 的时间码判断节奏。
 
