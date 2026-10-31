@@ -17,3 +17,4 @@ public/dev/
 assets/salamander/
 assets/piano_src/*.wav
 out/
+__pycache__/
