@@ -237,7 +237,7 @@ def build_score(bpm, bars, fps, silence_frames):
         # downbeat accents: the reveal (bar 4) and the ghost (bar 12), kept well below the twist and
         # the golden line
         if bar_no in (4, 12):
-            g = 0.55 if bar_no == 4 else 0.62
+            g = 0.45 if bar_no == 4 else 0.5
             place("piano", piano(ROOTS[ch], 3.0, 0.95), t0, 0.9 * g, -0.1)
             place("piano", piano(ROOTS[ch] + 12, 3.0, 0.9), t0, 0.7 * g, 0.1)
             for m in CHORDS[ch]:
@@ -250,8 +250,10 @@ def build_score(bpm, bars, fps, silence_frames):
                 v = 0.42 if k % 2 else 0.5
                 place("piano", piano(m, beat * 0.45, v), t0 + k * beat / 2, 0.45, 0.15 * ((k % 3) - 1))
         if bar_no == 21:
-            # the punch: a full low A minor chord with the sub hit, so it carries on a phone speaker
-            for m, gm in ((45, 0.8), (52, 0.6), (57, 0.55), (60, 0.4)):
+            # the punch: a full A minor chord with the sub hit. The low voicing gives the weight on
+            # headphones; the upper voicing (E4–C5, above a phone speaker's ~300 Hz roll-off) is what
+            # a phone actually plays, so the twist stays the loudest hit there too.
+            for m, gm in ((45, 0.8), (52, 0.6), (57, 0.55), (60, 0.4), (64, 0.5), (69, 0.55), (72, 0.4)):
                 place("piano", piano(m, bar * 0.9, 0.95), t0, gm)
         if 21 <= bar_no <= 24:
             # twist: low octaves, one per half bar
