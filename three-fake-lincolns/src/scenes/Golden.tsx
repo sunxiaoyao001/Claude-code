@@ -17,23 +17,11 @@ const STRIP: readonly { key: ImageKey; crop: string; width: number; left: number
   { key: "houdiniLincolnGhost", crop: "slide", width: 290, left: 594, label: "No.003" },
 ];
 const FRAME_TOP = SHEET.top + 40;
-// The film rebate printed on the sheet: a black band with a row of sprocket holes along each edge.
-const BAND = { left: SHEET.left + 16, right: SHEET.left + SHEET.width - 16, top: SHEET.top + 8, bottom: FRAME_TOP + 300 + 30 } as const;
-const HOLES = Array.from({ length: Math.floor((BAND.right - BAND.left - 20) / 34) }, (_, i) => BAND.left + 14 + i * 34);
-
-// `soft` puts the sheet slightly out of focus (depth of field) behind the golden line.
-export const ContactSheet: React.FC<{ readonly dim: number; readonly soft?: number }> = ({ dim, soft = 0 }) => (
+// `soft` puts the sheet slightly out of focus (depth of field) behind the golden line; `markFrom`
+// is when the editor's grease pencil rings the third frame (the magician's fake).
+export const ContactSheet: React.FC<{ readonly dim: number; readonly soft?: number; readonly markFrom?: number }> = ({ dim, soft = 0, markFrom }) => (
   <AbsoluteFill style={{ filter: soft > 0.05 ? `blur(${soft}px)` : undefined }}>
-    <div style={{ position: "absolute", ...SHEET, backgroundColor: COLORS.printWhite, rotate: "-0.4deg", boxShadow: "0 12px 30px rgba(0,0,0,0.5)" }}>
-      <div style={{ position: "absolute", left: BAND.left - SHEET.left, top: BAND.top - SHEET.top, width: BAND.right - BAND.left, height: BAND.bottom - BAND.top, backgroundColor: COLORS.ink }}>
-        {HOLES.map((x) => (
-          <React.Fragment key={x}>
-            <div style={{ position: "absolute", left: x - BAND.left, top: 8, width: 16, height: 14, borderRadius: 3, backgroundColor: COLORS.printWhite, opacity: 0.85 }} />
-            <div style={{ position: "absolute", left: x - BAND.left, bottom: 8, width: 16, height: 14, borderRadius: 3, backgroundColor: COLORS.printWhite, opacity: 0.85 }} />
-          </React.Fragment>
-        ))}
-      </div>
-    </div>
+    <div style={{ position: "absolute", ...SHEET, backgroundColor: COLORS.printWhite, rotate: "-0.4deg", boxShadow: "0 12px 30px rgba(0,0,0,0.5)" }} />
     {STRIP.map((s) => (
       <React.Fragment key={s.key}>
         <PhotoPrint
@@ -64,6 +52,9 @@ export const ContactSheet: React.FC<{ readonly dim: number; readonly soft?: numb
         background: `linear-gradient(to bottom, rgba(14,14,16,0) 0, ${COLORS.ink} 70px, ${COLORS.ink} calc(100% - 70px), rgba(14,14,16,0) 100%)`,
       }}
     />
+    {markFrom !== undefined ? (
+      <PenMark kind="circle" left={STRIP[2].left - 6} top={FRAME_TOP - 6} width={STRIP[2].width + 26} height={290} from={markFrom} durationInFrames={14} seed={33} />
+    ) : null}
   </AbsoluteFill>
 );
 
@@ -87,10 +78,10 @@ export const Golden: React.FC = () => {
     <AbsoluteFill>
       <Breath phase={t(base)}>
         <Dolly from={0.97} end={144} originX={513} originY={464}>
-          <ContactSheet dim={0.6} soft={interpolate(frame, [0, t(24)], [0, 1.6], { ...CLAMP, easing: EASE.inOut })} />
+          <ContactSheet dim={0.6} soft={interpolate(frame, [0, t(24)], [0, 1.6], { ...CLAMP, easing: EASE.inOut })} markFrom={t(120)} />
         </Dolly>
       </Breath>
-      <div style={{ position: "absolute", left: SAFE.margin + 77, top: 820, fontFamily: FONTS.serifZh, fontWeight: 900, fontSize: TYPE.golden, lineHeight: "172px", letterSpacing: TYPE.titleTracking }}>
+      <div style={{ position: "absolute", left: SAFE.margin, top: 820, fontFamily: FONTS.serifZh, fontWeight: 900, fontSize: TYPE.golden, lineHeight: "172px", letterSpacing: TYPE.titleTracking }}>
         {/* One character per eighth note, each falling into its own mask. */}
         {GOLDEN.lines.map((line, i) => (
           <div key={i}>
@@ -103,7 +94,7 @@ export const Golden: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          left: SAFE.margin + 77,
+          left: SAFE.margin,
           top: 1196,
           fontFamily: FONTS.italicEn,
           fontStyle: "italic",
@@ -116,7 +107,7 @@ export const Golden: React.FC = () => {
         {GOLDEN.en}
       </div>
       {/* 2508: one stroke under 想相信, an eighth after the line has formed. */}
-      <PenMark kind="underline" left={SAFE.margin + 77 + 2 * 150} top={820 + 172 + 8} width={3 * 150} height={150} from={t(GOLDEN.enAt - base + 12)} durationInFrames={12} seed={27} />
+      <PenMark kind="underline" left={SAFE.margin + 2 * 150} top={820 + 172 + 8} width={3 * 150} height={150} from={t(GOLDEN.enAt - base + 12)} durationInFrames={12} seed={27} />
     </AbsoluteFill>
   );
 };

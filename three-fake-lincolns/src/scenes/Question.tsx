@@ -25,16 +25,18 @@ const ROW_W = L_W + M_W + SLOT_W + BORDER * 6 + GAP * 2;
 const ROW_LEFT = Math.round((SAFE.margin + SAFE.right) / 2 - ROW_W / 2);
 const ROW_TOP = 300;
 const SLOT_LEFT = ROW_LEFT + L_W + M_W + BORDER * 4 + GAP * 2;
+// The empty third place on screen; the twist's viewfinder grows out of exactly this rectangle.
+export const EMPTY_SLOT = { left: SLOT_LEFT, top: ROW_TOP, width: SLOT_W + BORDER * 2, height: SLOT_H + BORDER * 2 } as const;
 
 const BOX = { left: 250, top: 880, width: 560, height: 240 } as const;
 const BOX_AT = 48;
 
 // A wooden box of glass slides seen from above: rim, the slides' edges, a manila label.
-const SlideBox: React.FC<{ readonly top: number }> = ({ top }) => (
+const SlideBox: React.FC<{ readonly top: number; readonly left: number }> = ({ top, left }) => (
   <div
     style={{
       position: "absolute",
-      left: BOX.left,
+      left,
       top,
       width: BOX.width,
       height: BOX.height,
@@ -60,7 +62,7 @@ const TL = { y: 790, left: 100, right: 930, from: 1850, to: 1935 } as const;
 const yearX = (year: number) => TL.left + ((year - TL.from) / (TL.to - TL.from)) * (TL.right - TL.left);
 const SLOTS = [
   { x: ROW_LEFT + BORDER + L_W / 2, bottom: ROW_TOP + L_H + 2 * BORDER, year: 1865 },
-  { x: ROW_LEFT + L_W + 3 * BORDER + GAP + M_W / 2, bottom: ROW_TOP + 14 + M_H + 2 * BORDER, year: 1872 },
+  { x: ROW_LEFT + L_W + 3 * BORDER + GAP + M_W / 2, bottom: ROW_TOP + 14 + M_H + 2 * BORDER, year: 1872, from: 1869 },
 ] as const;
 const SLOT3_X = SLOT_LEFT + BORDER + SLOT_W / 2;
 
@@ -81,7 +83,11 @@ const Timeline: React.FC = () => {
       {SLOTS.map((sl, i) => (
         <React.Fragment key={sl.year}>
           <Ink d={`M ${sl.x} ${sl.bottom + 6} V ${TL.y - 40} L ${yearX(sl.year)} ${TL.y - 4}`} from={t(18 + i * 6)} duration={12} width={1.5} opacity={0.8} />
-          <Ink d={`M ${yearX(sl.year) - 6} ${TL.y} a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0`} from={t(24 + i * 6)} duration={6} color={COLORS.vermilion} width={2} opacity={1} />
+          {"from" in sl ? (
+            <Ink d={`M ${yearX(sl.from)} ${TL.y - 6} V ${TL.y + 6} M ${yearX(sl.from)} ${TL.y} H ${yearX(sl.year)} M ${yearX(sl.year)} ${TL.y - 6} V ${TL.y + 6}`} from={t(24 + i * 6)} duration={6} color={COLORS.vermilion} width={3} opacity={1} />
+          ) : (
+            <Ink d={`M ${yearX(sl.year) - 6} ${TL.y} a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0`} from={t(24 + i * 6)} duration={6} color={COLORS.vermilion} width={2} opacity={1} />
+          )}
         </React.Fragment>
       ))}
       {/* The third: no year yet, a dashed span over the decades still to come. */}
@@ -145,7 +151,7 @@ export const Question: React.FC = () => {
           </MonoText>
         </ManilaTag>
         <Timeline />
-        <SlideBox top={BOX.top + (1 - boxIn) * 1100} />
+        <SlideBox top={BOX.top} left={BOX.left + (1 - boxIn) * 900} />
         </Dolly>
       </Breath>
     </AbsoluteFill>

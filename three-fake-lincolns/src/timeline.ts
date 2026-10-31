@@ -32,7 +32,7 @@ export const LINES: readonly Line[] = [
   { from: 288, to: 384, zh: "答案是 B：*卡尔霍恩*", en: "It's B: John C. Calhoun", facts: ["F02", "F05", "F21"] },
   { from: 384, to: 480, zh: "他说奴隶制不是恶，是*善*", en: "He said slavery wasn't an evil, but a good", facts: ["F04", "F06"] },
   { from: 480, to: 576, zh: "*解放者*的头，蓄奴派的身子", en: "The Emancipator's head on a pro-slavery body", facts: ["F05", "F23"] },
-  { from: 576, to: 672, zh: "桌上的字，从州权改成了*联邦*", en: "On the desk, \"states\" became \"Union\"", facts: ["F03", "F24"] },
+  { from: 576, to: 672, zh: "连桌上的*文件*都改了", en: "Even the papers on the desk were rewritten", facts: ["F03", "F24"] },
   { from: 672, to: 744, zh: "这只是第 *1* 张", en: "That was only the first", facts: [] },
   { from: 744, to: 840, zh: "第 2 张，主角是林肯的*遗孀*", en: "The second stars Lincoln's widow", facts: ["F07"] },
   { from: 840, to: 936, zh: "她报*假名*，摄影师说没认出", en: "She gave a false name; he said he didn't know her", facts: ["F09"] },
@@ -132,7 +132,7 @@ export const ARCHIVE_TAGS = [
   { from: 672, text: "ARCHIVE No.002" },
   { from: 768, text: "ARCHIVE No.002 · CA. 1872 · BOSTON" },
   { from: 1200, text: "ARCHIVE No.002" },
-  { from: 1584, text: "EXHIBIT · CA. 1902 · L.C. HANDY" },
+  { from: 1584, text: "EXHIBIT · CA. 1902 · © L.C. HANDY" },
   { from: 1776, text: "ARCHIVE No.003 · ?" },
   { from: 1920, text: "ARCHIVE No.003 · 1920S" },
   { from: 2016, text: "ARCHIVE No.003" },
@@ -145,7 +145,7 @@ export const ARCHIVE_TAGS = [
 // below are derived from these, so picture and sound cannot drift apart.
 export type Typed = { readonly from: number; readonly every: number; readonly text: string };
 export const TYPED = {
-  trialStamp: { from: 1206, every: 2, text: "NEW YORK · APRIL 1869" },
+  trialStamp: { from: 1206, every: 2, text: "NEW YORK · 1869" },
   code: { from: 2028, every: 2, text: "ROSABELLE, BELIEVE" },
   centenary: { from: 2316, every: 3, text: "+100 YEARS" },
 } as const satisfies Record<string, Typed>;
@@ -193,12 +193,12 @@ export const SFX: readonly SfxEvent[] = [
   { at: 240, sound: "stamp", gainDb: -22 },
   // fake No.1
   { at: 288, sound: "paper_slide", gainDb: -22 },
-  { at: 330, sound: "paper_slide", gainDb: -26 },
+  { at: 306, sound: "paper_slide", gainDb: -26 },
   // blink comparator: one hard switch per eighth note
   { at: 342, sound: "paper_tick", gainDb: -22 },
   { at: 354, sound: "paper_tick", gainDb: -22 },
   { at: 366, sound: "paper_tick", gainDb: -22 },
-  { at: 378, sound: "paper_tick", gainDb: -22 },
+  { at: 378, sound: "paper_tick", gainDb: -25 },
   { at: 432, sound: "tag_drop", gainDb: -28 },
   { at: 480, sound: "pen", gainDb: -26 },
   { at: 504, sound: "pen", gainDb: -26 },
@@ -214,13 +214,11 @@ export const SFX: readonly SfxEvent[] = [
   { at: 708, sound: "tag_drop", gainDb: -30 },
   { at: 720, sound: "stamp", gainDb: -22 },
   { at: 744, sound: "paper_slide", gainDb: -26 },
-  { at: 768, sound: "liquid", gainDb: -28 },
-  { at: 936, sound: "liquid", gainDb: -32 },
+  // the developer, rocked in its tray: a low continuous slosh under the whole shot
+  ...[768, 840, 912, 984, 1056, 1128].map((at) => ({ at, sound: "liquid" as const, gainDb: at === 768 ? -30 : -36 })),
   { at: 1008, sound: "pen", gainDb: -28 },
   { at: 1020, sound: "pen", gainDb: -28 },
-  { at: 1056, sound: "sub_hit_low", gainDb: -26 },
   { at: 1056, sound: "pen", gainDb: -26 },
-  { at: 1152, sound: "liquid", gainDb: -34 },
   { at: 1176, sound: "paper_slide", gainDb: -28 },
   { at: 1200, sound: "paper_slide", gainDb: -26 },
   // trial, mystery
@@ -232,7 +230,7 @@ export const SFX: readonly SfxEvent[] = [
   { at: 1320, sound: "pen", gainDb: -28 },
   { at: 1332, sound: "pen", gainDb: -28 },
   // darkroom
-  { at: 1397, sound: "shutter", gainDb: -24 },
+  { at: 1392, sound: "paper_slide", gainDb: -28 },
   { at: 1400, sound: "paper_slide", gainDb: -30 },
   { at: 1416, sound: "shutter", gainDb: -22 },
   { at: 1488, sound: "shutter", gainDb: -22 },
@@ -250,8 +248,8 @@ export const SFX: readonly SfxEvent[] = [
   { at: 1824, sound: "paper_slide", gainDb: -24 },
   // twist: the one punch
   { at: 1920, sound: "projector_click", gainDb: -20 },
-  { at: 1920, sound: "sub_hit", gainDb: -23 },
-  { at: 1944, sound: "tag_drop", gainDb: -28 },
+  { at: 1920, sound: "sub_hit", gainDb: -16 },
+  { at: 1938, sound: "tag_drop", gainDb: -28 },
   { at: 1968, sound: "pen", gainDb: -26 },
   // code, séances
   { at: 2016, sound: "projector_click", gainDb: -26 },
@@ -261,10 +259,8 @@ export const SFX: readonly SfxEvent[] = [
   { at: 2208, sound: "paper_slide", gainDb: -28 },
   ...typewriterRun(SEANCE_COUNTER.from, SEANCE_COUNTER.last - SEANCE_COUNTER.first + 1, SEANCE_COUNTER.every, -34),
   // centenary, golden line, outro
-  { at: 2309, sound: "shutter", gainDb: -24 },
   { at: 2304, sound: "paper_slide", gainDb: -28 },
   ...typedSfx(TYPED.centenary, -32),
-  { at: 2400, sound: "sub_hit_low", gainDb: -22 },
   { at: 2544, sound: "flip", gainDb: -24 },
   { at: 2604, sound: "flip", gainDb: -26 },
 ];
@@ -274,5 +270,7 @@ export const SFX: readonly SfxEvent[] = [
 export const SUBTITLE_TICKS: readonly SfxEvent[] = LINES.filter((l) => !l.isStatic).flatMap((l) => {
   const k = splitGroups(l.zh).findIndex((c) => c.keyword);
   const tick = { at: l.from, sound: "paper_tick" as const, gainDb: -30 };
-  return k < 0 ? [tick] : [tick, { at: l.from + k * 2 + 6, sound: "stamp" as const, gainDb: -34 }];
+  // The stamp sound is kept for the four phrase openings only; elsewhere the keyword lands silently.
+  const phraseOpening = [288, 672, 1056, 1920].includes(l.from);
+  return k < 0 || !phraseOpening ? [tick] : [tick, { at: l.from + k * 2 + 6, sound: "stamp" as const, gainDb: -32 }];
 });

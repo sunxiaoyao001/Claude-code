@@ -6,7 +6,7 @@ import "./fonts";
 import { Desk } from "./components/Desk";
 import { FilmLook } from "./components/FilmLook";
 import { Soundtrack } from "./components/Soundtrack";
-import { irisShutter, slideCarrier, sweepOff } from "./components/Transitions";
+import { slideCarrier, sweepOff } from "./components/Transitions";
 import { InkFilter } from "./components/Props";
 import { ArchiveProgress, ArchiveTag, Watermark } from "./components/SeriesChrome";
 import { Subtitle } from "./components/Subtitle";
@@ -46,7 +46,7 @@ const Chrome: React.FC<{ readonly watermark: string }> = ({ watermark }) => {
     <>
       <Watermark handle={watermark} />
       <ArchiveTag entries={ARCHIVE_TAGS.map((e) => ({ from: t(e.from), text: e.text }))} />
-      <ArchiveProgress bounds={CHAPTERS.bounds.map(t)} labels={CHAPTERS.labels} barFrames={t(BAR)} />
+      <ArchiveProgress bounds={CHAPTERS.bounds.map(t)} labels={CHAPTERS.labels} barFrames={t(BAR)} rewind={[t(2604), t(2616)]} />
     </>
   );
 };
@@ -72,11 +72,9 @@ const SCENE_COMPONENTS: Record<keyof typeof SCENES, { name: string; Component: R
 const TRANSITIONS: Partial<Record<keyof typeof SCENES, { readonly length: number; readonly make: () => TransitionPresentation<Record<string, never>> }>> = {
   borrowedBody: { length: 16, make: sweepOff },
   widowGhost: { length: 16, make: sweepOff },
-  trial: { length: 12, make: irisShutter },
   darkroom: { length: 16, make: sweepOff },
   grant: { length: 16, make: sweepOff },
   twist: { length: 14, make: slideCarrier },
-  seances: { length: 12, make: irisShutter },
 };
 
 const Scenes: React.FC = () => {

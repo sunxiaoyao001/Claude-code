@@ -60,7 +60,7 @@ export const Outro: React.FC = () => {
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
         {frame < t(12) ? (
-          <ContactSheet dim={0.6} soft={1.6} />
+          <ContactSheet dim={0.6} soft={1.6} markFrom={-100} />
         ) : (
           <AbsoluteFill style={{ transformOrigin: `${COVER_ORIGIN.x}px ${COVER_ORIGIN.y}px`, scale: settle }}>
             <CoverPrints phase={t(BASE)} />

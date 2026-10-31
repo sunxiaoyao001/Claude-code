@@ -24,7 +24,7 @@ MAX_EDGE = 2400
 SOURCES = {
     "lincolnComposite": ("uploads/IMG01_lincoln_composite__loc-2003654314.jpg", "lincoln_composite.jpg", "LIBRARY OF CONGRESS · CA. 1865"),
     "calhoun1852": ("uploads/IMG02_calhoun_1852__loc-2003679757.jpg", "calhoun_1852.jpg", "LIBRARY OF CONGRESS · 1852"),
-    "maryLincolnGhost": ("uploads/IMG03_mumler_mary_lincoln__commons-Mumler_Lincoln.jpg", "mumler_mary_lincoln.jpg", "LINCOLN FINANCIAL FDN. COLL. · CA. 1872"),
+    "maryLincolnGhost": ("uploads/IMG03_mumler_mary_lincoln__commons-Mumler_Lincoln.jpg", "mumler_mary_lincoln.jpg", "LFFC · VIA WIKIMEDIA COMMONS · CA. 1872"),
     "grantCityPoint": ("uploads/IMG04_grant_city_point__loc-2007681056.jpg", "grant_city_point.jpg", "LIBRARY OF CONGRESS · 1902"),
     "houdiniLincolnGhost": ("uploads/IMG05_houdini_lincoln_ghost__loc-96520658.jpg", "houdini_lincoln_ghost.jpg", "LIBRARY OF CONGRESS · 1920–1930"),
     "houdiniFamily": ("uploads/IMG06_houdini_bess_mother__loc-96518779.jpg", "houdini_family.jpg", "LIBRARY OF CONGRESS"),
@@ -98,7 +98,9 @@ REGIONS = {
         "head": [0.45, 0.17, 0.62, 0.34],
     },
     "houdiniClippings": {
-        "page": [0.01, 0.0, 0.99, 0.52],
+        # Mastheads and headlines only: the subhead below ("Student's Blow…", a disputed cause of
+        # death, F14) is cropped out.
+        "page": [0.01, 0.0, 0.99, 0.157],
     },
     "grantCityPoint": {
         "photo": [0.045, 0.07, 0.95, 0.905],
@@ -166,6 +168,33 @@ def difference_mask(a, b, M, engraving):
     return rgba, sorted(blobs, key=lambda b: -b[4])
 
 
+def trace_sitter(path, crop, head):
+    """Outline of the sitter in the Met portrait, for the darkroom schematic (the drawing is traced
+    from the photograph, not a stock figure). GrabCut on the figure, unioned with a hand-measured
+    head ellipse (the light face and hair are close to the background). Returns points normalised to
+    the crop."""
+    im = cv2.imread(path)
+    h, w = im.shape[:2]
+    x0, y0, x1, y1 = (int(crop[0] * w), int(crop[1] * h), int(crop[2] * w), int(crop[3] * h))
+    c = im[y0:y1, x0:x1]
+    c = cv2.resize(c, (c.shape[1] // 3, c.shape[0] // 3))
+    H, W = c.shape[:2]
+    mask = np.zeros((H, W), np.uint8)
+    rect = (int(0.28 * W), int(0.06 * H), int(0.62 * W), int(0.94 * H))
+    cv2.setRNGSeed(7)
+    cv2.grabCut(c, mask, rect, np.zeros((1, 65)), np.zeros((1, 65)), 6, cv2.GC_INIT_WITH_RECT)
+    m = np.where((mask == 1) | (mask == 3), 255, 0).astype(np.uint8)
+    cx, cy, rx, ry = head
+    cv2.ellipse(m, (int(cx * W), int(cy * H)), (int(rx * W), int(ry * H)), 0, 0, 360, 255, -1)
+    m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((15, 15), np.uint8))
+    m = cv2.morphologyEx(m, cv2.MORPH_OPEN, np.ones((7, 7), np.uint8))
+    n, lab, st, _ = cv2.connectedComponentsWithStats(m)
+    m = (lab == 1 + np.argmax(st[1:, 4])).astype(np.uint8) * 255
+    cs, _ = cv2.findContours(m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    poly = cv2.approxPolyDP(max(cs, key=cv2.contourArea), 2.0, True)[:, 0, :]
+    return [[round(float(x) / W, 4), round(float(y) / H, 4)] for x, y in poly]
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     manifest = {"images": {}, "registration": {}}
@@ -181,6 +210,10 @@ def main():
             "regions": REGIONS.get(key, {}),
         }
         print(f"{key:22s} {ow}x{oh} -> {w}x{h}")
+
+    manifest["images"]["metSitter"]["silhouette"] = trace_sitter(
+        os.path.join(OUT, "met_287722_sitter.jpg"), REGIONS["metSitter"]["bust"], (0.518, 0.258, 0.112, 0.155)
+    )
 
     lin = os.path.join(OUT, "lincoln_composite.jpg")
     cal = os.path.join(OUT, "calhoun_1852.jpg")

@@ -224,13 +224,14 @@ def build_score(bpm, bars, fps, silence_frames):
         t0 = b * bar
         bar_no = b + 1
         bright = 900 if bar_no <= 3 else (2200 if bar_no == GOLDEN_BAR else 1500)
-        place("pad", pad(CHORDS[ch], bar, bright), t0, 0.55 if bar_no <= 3 else 0.45)
-        # downbeat accents: the reveal (bar 4) and the ghost (bar 12)
+        place("pad", pad(CHORDS[ch], bar, bright), t0, 0.42 if bar_no <= 3 else 0.45)
+        # downbeat accents: the reveal (bar 4) and the ghost (bar 12), kept below the twist
         if bar_no in (4, 12):
-            place("piano", piano(ROOTS[ch], 3.0, 0.95), t0, 0.9, -0.1)
-            place("piano", piano(ROOTS[ch] + 12, 3.0, 0.9), t0, 0.7, 0.1)
+            g = 0.7 if bar_no == 4 else 0.8
+            place("piano", piano(ROOTS[ch], 3.0, 0.95), t0, 0.9 * g, -0.1)
+            place("piano", piano(ROOTS[ch] + 12, 3.0, 0.9), t0, 0.7 * g, 0.1)
             for m in CHORDS[ch]:
-                place("piano", piano(m + 12, 2.5, 0.75), t0, 0.35)
+                place("piano", piano(m + 12, 2.5, 0.75), t0, 0.35 * g)
         if 4 <= bar_no <= 20:
             pattern = [0, 1, 3, 4, 6] if bar_no < 12 else [0, 1, 2, 3, 4, 5, 6, 7]
             tones = ARP[ch]
@@ -249,8 +250,14 @@ def build_score(bpm, bars, fps, silence_frames):
             for k, chord in enumerate(GOLDEN_CHORDS):
                 for m in chord:
                     place("piano", piano(m, beat * 1.9, 0.6), t0 + 2 * k * beat, 0.4, 0.1)
+            # one clear note per character on every eighth (v11 layer), and a held chord under the
+            # last character, 信; an octave above the chords opens the top of the line.
             for k, m in enumerate(GOLDEN_MELODY):
-                place("piano", piano(m, beat * 0.9, 0.5), t0 + k * beat / 2, 0.45, -0.1)
+                place("piano", piano(m, beat * 0.9, 0.8), t0 + k * beat / 2, 0.75, -0.1)
+            for m in GOLDEN_CHORDS[0]:
+                place("piano", piano(m + 12, beat * 1.5, 0.55), t0, 0.25, 0.15)
+            for m in GOLDEN_CHORDS[0]:
+                place("piano", piano(m, beat * 3.0, 0.6), t0 + 3.5 * beat, 0.4, 0.05)
         if bar_no == GOLDEN_BAR + 1:
             for k in (0, 2, 4, 6):
                 place("piano", piano(ARP[ch][k % 4], beat * 0.9, 0.42), t0 + k * beat / 2, 0.4)
@@ -267,14 +274,20 @@ def build_score(bpm, bars, fps, silence_frames):
 
     out = (mix["pad"] * 0.9 + mix["piano"] * 2.4 + mix["bass"] * 0.35 + mix["perc"] * 0.45)
     out = add_reverb(out, wet=0.28, rt60=2.4)
-    out = out[: int(total * SR)]
+    # Seamless loop: whatever rings past the last bar (pad, reverb tail) is folded onto the start,
+    # so frame 0 already carries the sound of the last frame.
+    end = int(total * SR)
+    wrap = min(int(3.0 * SR), len(out) - end)
+    out[:wrap] += out[end:end + wrap]
+    out = out[:end].copy()
+    # Lows in mono (below 120 Hz) for phone speakers and mono fold-down.
+    lows = lowpass(out, 120)
+    out = out - lows + lows.mean(axis=1, keepdims=True)
     # hard silence before the twist (after reverb, so no tail leaks through)
     s0, s1 = (int(f / fps * SR) for f in silence_frames)
     fade = int(0.02 * SR)
     out[s0 - fade:s0] *= np.linspace(1, 0, fade)[:, None]
     out[s0:s1] = 0
-    # loop: tail fades to the opening level
-    out[-int(1.5 * SR):] *= np.linspace(1, 0.35, int(1.5 * SR))[:, None]
     return norm_peak(out, -3.0)
 
 
@@ -300,11 +313,12 @@ def sfx_typewriter(semitone):
 def sfx_stamp():
     n = int(0.6 * SR)
     t = np.arange(n) / SR
-    f = 95 * np.exp(-t / 0.05) + 55
-    thud = np.sin(2 * np.pi * np.cumsum(f) / SR) * env_ad(n, 0.002, 0.09)
+    # A rubber stamp pressed into paper on a wooden desk: an unpitched body knock, the slap of
+    # the rubber, a short squish of ink. No sine sweep: the film keeps its one low hit for the twist.
+    knock = bandpass(rng.standard_normal(n), 120, 600) * env_ad(n, 0.002, 0.05)
     slap = bandpass(rng.standard_normal(n), 400, 3500) * env_ad(n, 0.0008, 0.02)
     squish = lowpass(rng.standard_normal(n), 900) * env_ad(n, 0.02, 0.08) * 0.3
-    return norm_peak(add_reverb(thud + 0.5 * slap + squish, 0.12, 0.6), -2)
+    return norm_peak(add_reverb(0.8 * knock + 0.6 * slap + squish, 0.1, 0.5), -3)
 
 
 def sfx_shutter():
@@ -361,15 +375,10 @@ def sfx_projector_click():
 def sfx_liquid():
     n = int(1.4 * SR)
     t = np.arange(n) / SR
-    base = lowpass(rng.standard_normal(n), 700) * (0.4 + 0.6 * np.sin(np.pi * t / 1.4)) * 0.4
-    bubbles = np.zeros(n)
-    for _ in range(9):
-        i = int(rng.uniform(0.05, 1.2) * SR)
-        m = int(0.05 * SR)
-        f = rng.uniform(500, 1400)
-        tt = np.arange(m) / SR
-        bubbles[i:i + m] += np.sin(2 * np.pi * f * (1 + 3 * tt) * tt) * env_ad(m, 0.002, 0.012)
-    return norm_peak(base + 0.5 * bubbles, -6)
+    # Developer rocked in a tray: low-passed water noise with two soft surges, no pitched bubbles.
+    surge = np.sin(np.pi * t / 1.4) ** 2 * (0.6 + 0.4 * np.sin(2 * np.pi * t / 0.7))
+    wash = bandpass(rng.standard_normal(n), 150, 1800) * surge
+    return norm_peak(lowpass(wash, 1500), -6)
 
 
 def sfx_pen():
@@ -410,20 +419,21 @@ def sfx_flip():
 def room_tone(seconds):
     n = int(seconds * SR)
     t = np.arange(n) / SR
+    # Air of a quiet room (150 Hz – 8 kHz) plus a faint projector-fan rumble; audible on a phone.
+    air = bandpass(rng.standard_normal((n, 2)), 150, 8000)
+    air = air / np.max(np.abs(air))
     brown = np.cumsum(rng.standard_normal((n, 2)), axis=0)
-    brown = highpass(brown, 30)
-    brown = lowpass(brown, 600) / np.max(np.abs(brown))
-    hum = (np.sin(2 * np.pi * 60 * t) + 0.3 * np.sin(2 * np.pi * 120 * t))[:, None] * 0.05
+    brown = lowpass(highpass(brown, 60), 300)
+    brown = 0.35 * brown / np.max(np.abs(brown))
     drips = np.zeros((n, 2))
     for at in np.arange(7.3, seconds, 11.7):
+        # A darkroom drip: a short, soft, unpitched tick (low-passed noise), not a sine chirp.
         i = int(at * SR)
-        m = int(0.08 * SR)
-        f = rng.uniform(900, 1300)
-        tt = np.arange(m) / SR
-        d = np.sin(2 * np.pi * f * (1 + 2 * tt) * tt) * env_ad(m, 0.001, 0.015)
-        drips[i:i + m, :] += 0.25 * d[:, None]
-    x = brown * 0.8 + hum + drips
-    x[: int(0.5 * SR)] *= np.linspace(0, 1, int(0.5 * SR))[:, None]
+        m = int(0.06 * SR)
+        d = lowpass(rng.standard_normal(m), 2500) * env_ad(m, 0.001, 0.012)
+        drips[i:i + m, :] += 0.3 * d[:, None]
+    # Full level from the first sample: the film loops, so the room never fades in.
+    x = 0.6 * air + brown + drips
     return norm_peak(add_reverb(x, 0.2, 1.2), -6)
 
 

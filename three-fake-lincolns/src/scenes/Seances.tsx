@@ -19,7 +19,8 @@ const PAGE = region("houdiniClippings", "page");
 const PAGE_W = Math.floor(fitWidth("houdiniClippings", PAGE, 640, BREATH_MAX_ZOOM));
 const PAGE_H = Math.round((PAGE_W * (PAGE[3] - PAGE[1]) * IMG.houdiniClippings.height) / ((PAGE[2] - PAGE[0]) * IMG.houdiniClippings.width));
 const PAGE_LEFT = 120;
-const PAGE_TOP = 236;
+// The headline strip is laid across the lower half of the family print, leaving the faces visible.
+const PAGE_TOP = 620;
 const PAGE_BORDER = 12;
 const PULL_AT = 96;
 
@@ -36,7 +37,8 @@ const RollingDigit: React.FC<{ readonly prev: string; readonly next: string; rea
 
 const COUNTER_TOP = Math.max(FAMILY_BOTTOM, PAGE_TOP + PAGE_H + PAGE_BORDER * 2) + 70;
 
-// Ten Halloweens as calendar cells, 1927–1936, each struck off with one pen stroke as it is counted.
+// Ten Halloweens as calendar cells, 1927–1936, each ticked as it is counted (a neutral tally: the
+// facts say she held a séance each year, not what happened at each). The last one is marked LAST (F17).
 const CELL = { left: 360, top: COUNTER_TOP + 34, w: 54, h: 62, gap: 4 } as const;
 const HalloweenCells: React.FC = () => {
   const t = useTime();
@@ -51,7 +53,13 @@ const HalloweenCells: React.FC = () => {
           <React.Fragment key={y}>
             <Ink d={`M ${x} ${CELL.top} h ${CELL.w} v ${CELL.h} h ${-CELL.w} Z`} from={t(2) + i * 2} duration={8} width={1.5} opacity={0.55} />
             <InkLabel x={x + CELL.w / 2} y={CELL.top + 40} text={`'${String(y).slice(2)}`} from={t(4) + i * 2} anchor="middle" />
-            <Ink d={`M ${x + 6} ${CELL.top + CELL.h - 6} L ${x + CELL.w - 6} ${CELL.top + 6}`} from={at} duration={6} color={COLORS.vermilion} width={2.5} opacity={0.95} />
+            <Ink d={`M ${x + CELL.w / 2} ${CELL.top + CELL.h - 8} V ${CELL.top + CELL.h - 18}`} from={at} duration={4} color={COLORS.printWhite} width={2.5} opacity={0.9} />
+            {y === last ? (
+              <>
+                <Ink d={`M ${x - 3} ${CELL.top - 3} h ${CELL.w + 6} v ${CELL.h + 6} h ${-CELL.w - 6} Z`} from={at + 4} duration={8} color={COLORS.vermilion} width={2} opacity={1} />
+                <InkLabel x={x + CELL.w / 2} y={CELL.top + CELL.h + 30} text="LAST" from={at + 8} anchor="middle" color={COLORS.vermilion} />
+              </>
+            ) : null}
           </React.Fragment>
         );
       })}

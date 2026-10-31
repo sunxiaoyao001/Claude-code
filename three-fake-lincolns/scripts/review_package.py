@@ -125,6 +125,7 @@ def main():
     shutil.copy(os.path.join(RESEARCH, "facts.json"), os.path.join(out, "facts.json"))
     shutil.copy(os.path.join(RESEARCH, "credits.draft.json"), os.path.join(out, "credits.json"))
     shutil.copy(os.path.join(RESEARCH, "script.md"), os.path.join(out, "script.md"))
+    shutil.copy(os.path.join(RESEARCH, "publish.md"), os.path.join(out, "description.md"))
     print(out)
     print(summary)
 

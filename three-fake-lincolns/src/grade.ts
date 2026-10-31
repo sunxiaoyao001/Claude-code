@@ -29,6 +29,7 @@ const applyCurve = (x: number) => {
 const buildSplitToneCube = () => {
   const size = 17;
   const shadow = hexToRgb(COLORS.shadowCool);
+  const PAPER = hexToRgb(COLORS.printWhite);
   const highlight = hexToRgb(COLORS.highlightWarm);
   const rows: string[] = ['TITLE "darkroom-split-tone"', `LUT_3D_SIZE ${size}`];
   for (let b = 0; b < size; b++) {
@@ -39,7 +40,8 @@ const buildSplitToneCube = () => {
         const tone = shadow.map((s, i) => s + (highlight[i] - s) * y);
         // Blend the tone colour with neutral grey; 12% keeps the split subtle (a cool, neutral
         // silver), so the one colour moment at the twist stands out.
-        const out = tone.map((t) => Math.min(1, Math.max(0, y * 0.88 + t * 0.12 * (0.4 + y))));
+        // Paper white is the brightest tone a print can have (#ECE6DA), never 255 white.
+        const out = tone.map((t, c) => Math.min(PAPER[c], Math.max(0, y * 0.88 + t * 0.12 * (0.4 + y))));
         rows.push(out.map((v) => v.toFixed(5)).join(" "));
       }
     }

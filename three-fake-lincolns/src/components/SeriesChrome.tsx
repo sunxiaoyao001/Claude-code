@@ -46,12 +46,15 @@ export const ArchiveTag: React.FC<{ readonly entries: readonly ArchiveEntry[] }>
 
 // Three archive slots along the bottom of the safe area, one per fake. The current slot fills as its
 // chapter plays; a vermilion dot marks the playhead.
-export const ArchiveProgress: React.FC<{ readonly bounds: readonly number[]; readonly labels: readonly string[]; readonly barFrames: number }> = ({
-  bounds,
-  labels,
-  barFrames,
-}) => {
-  const frame = useCurrentFrame();
+export const ArchiveProgress: React.FC<{
+  readonly bounds: readonly number[];
+  readonly labels: readonly string[];
+  readonly barFrames: number;
+  // [from, to]: the playhead rewinds to the start over these frames (end of film = frame 0).
+  readonly rewind: readonly [number, number];
+}> = ({ bounds, labels, barFrames, rewind }) => {
+  const now = useCurrentFrame();
+  const frame = now < rewind[0] ? now : interpolate(now, rewind, [rewind[0], 0], { ...CLAMP, easing: EASE.inOut });
   // Advance one bar at a time, each step eased over 12 frames (no constant-speed creep).
   const stepped = (f: number) => {
     const bar = Math.floor(f / barFrames);
@@ -66,8 +69,10 @@ export const ArchiveProgress: React.FC<{ readonly bounds: readonly number[]; rea
       {labels.map((label, i) => {
         const from = bounds[i];
         const to = bounds[i + 1];
-        const p = Math.min(1, Math.max(0, (stepped(frame) - from) / (to - from)));
+        const f = now < rewind[0] ? stepped(frame) : frame;
+        const p = Math.min(1, Math.max(0, (f - from) / (to - from)));
         const current = frame >= from && frame < to;
+        // During the rewind the bar moves smoothly instead of stepping per bar.
         const left = SAFE.margin + i * (slotW + gap);
         return (
           <React.Fragment key={label}>
@@ -101,10 +106,10 @@ export const IllustrativeMark: React.FC = () => (
     style={{
       position: "absolute",
       right: 1080 - SAFE.right,
-      top: SAFE.bottom - 112,
+      top: SAFE.bottom - 128,
       fontFamily: FONTS.sansZh,
-      fontWeight: 500,
-      fontSize: TYPE.label,
+      fontWeight: 700,
+      fontSize: TYPE.subtitleEn,
       color: COLORS.printWhite,
       border: `1px solid ${COLORS.silver}`,
       padding: "4px 10px",

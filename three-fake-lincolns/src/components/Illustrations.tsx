@@ -1,10 +1,16 @@
 import React from "react";
+import { IMG } from "../assets";
 import { COLORS } from "../theme";
 import { Drawing, Ink, InkLabel, useInk } from "./LineArt";
 
 // Content illustrations in the archivist's line style (all frames scene-local render frames).
 
-// ---- A head-and-shoulders bust, the stock figure of a studio portrait -----------------------------
+// ---- The sitter's outline, traced from the Met photograph itself (scripts/prepare_images.py) ------
+const SILHOUETTE = IMG.metSitter.silhouette ?? [];
+const sitter = (left: number, top: number, size: number) =>
+  SILHOUETTE.length ? `M ${SILHOUETTE.map(([u, v]) => `${(left + u * size).toFixed(1)} ${(top + v * size).toFixed(1)}`).join(" L ")} Z` : "";
+
+// ---- A head-and-shoulders bust (unused fallback when no traced outline exists) -------------------
 const bust = (cx: number, top: number, s = 1) => {
   const hx = 30 * s;
   const hy = 34 * s;
@@ -44,9 +50,9 @@ export const CameraDiagram: React.FC<{ readonly drawFrom: number; readonly exp1:
   return (
     <Drawing>
       {/* sitter (exposure 1) and the same sitter again (exposure 2) */}
-      <Ink d={bust(200, 300)} from={drawFrom} duration={20} />
+      <Ink d={SILHOUETTE.length ? sitter(110, 290, 170) : bust(200, 300)} from={drawFrom} duration={24} />
       <InkLabel x={200} y={480} text="EXP. 1" from={exp1} anchor="middle" color={COLORS.printWhite} />
-      <Ink d={bust(330, 282, 0.95)} from={exp2 - 6} duration={14} color={COLORS.vermilion} dash="7 6" opacity={0.9} />
+      <Ink d={SILHOUETTE.length ? sitter(236, 268, 162) : bust(330, 282, 0.95)} from={exp2 - 6} duration={14} color={COLORS.vermilion} dash="7 6" opacity={0.9} />
       <InkLabel x={330} y={480} text="EXP. 2" from={exp2} anchor="middle" color={COLORS.vermilion} />
       {/* camera: lens barrel, front standard, bellows, rear standard with the plate, tripod */}
       <Ink d={`M 540 360 H 590 V 410 H 540 Z M 540 362 C 532 372 532 398 540 408`} from={drawFrom + 4} duration={14} />
@@ -64,12 +70,22 @@ export const CameraDiagram: React.FC<{ readonly drawFrom: number; readonly exp1:
 };
 
 // ---- Magic lantern with its cone of light (twist) -------------------------------------------------
-export const MagicLantern: React.FC<{ readonly from: number; readonly target: { readonly left: number; readonly right: number; readonly y: number } }> = ({ from, target }) => {
+// The cone's two outer edges run from the lens to the far corners of the projected image (its top
+// left and bottom right); the part over the image itself is masked out.
+export const MagicLantern: React.FC<{ readonly from: number; readonly target: { readonly left: number; readonly top: number; readonly right: number; readonly bottom: number } }> = ({
+  from,
+  target,
+}) => {
   const lens = { x: 330, y: 1062 };
   return (
     <Drawing>
-      {/* cone first, faint, so the slide reads as the lantern's projection */}
-      <Ink d={`M ${lens.x} ${lens.y - 14} L ${target.left} ${target.y} M ${lens.x} ${lens.y + 14} L ${target.right} ${target.y}`} from={from + 14} duration={16} width={1.5} opacity={0.35} />
+      <mask id="lantern-cone" maskUnits="userSpaceOnUse" x={0} y={0} width={1080} height={1920}>
+        <rect x={0} y={0} width={1080} height={1920} fill="white" />
+        <rect x={target.left} y={target.top} width={target.right - target.left} height={target.bottom - target.top} fill="black" />
+      </mask>
+      <g mask="url(#lantern-cone)">
+        <Ink d={`M ${lens.x} ${lens.y - 14} L ${target.left} ${target.top} M ${lens.x} ${lens.y + 14} L ${target.right} ${target.bottom}`} from={from + 14} duration={16} width={1.5} opacity={0.35} />
+      </g>
       {/* body, chimney with its cap, lens tube, feet */}
       <Ink d="M 110 1030 H 262 V 1140 H 110 Z M 128 1048 H 244 V 1122 H 128 Z" from={from} duration={18} />
       <Ink d="M 166 1030 V 984 H 206 V 1030 M 156 984 H 216 L 206 966 H 166 Z" from={from + 6} duration={14} />
@@ -117,19 +133,10 @@ export const EngravedFrame: React.FC<{ readonly from: number; readonly x: number
       `V ${y0 + r} A ${r} ${r} 0 0 0 ${x0 + r} ${y0}`,
     ].join(" ");
   };
-  const diamond = (cx: number, cy: number) => `M ${cx} ${cy - 6} L ${cx + 6} ${cy} L ${cx} ${cy + 6} L ${cx - 6} ${cy} Z`;
   return (
     <Drawing>
       <Ink d={notch(0, 22)} from={from} duration={24} width={1.5} opacity={0.6} />
       <Ink d={notch(9, 14)} from={from + 4} duration={24} width={1} opacity={0.4} color={COLORS.silver} />
-      <Ink
-        d={[diamond(x + 4, y + 4), diamond(x + w - 4, y + 4), diamond(x + 4, y + h - 4), diamond(x + w - 4, y + h - 4)].join(" ")}
-        from={from + 20}
-        duration={8}
-        width={1.5}
-        color={COLORS.vermilion}
-        opacity={0.9}
-      />
     </Drawing>
   );
 };

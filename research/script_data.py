@@ -41,7 +41,7 @@ LINES = [
     (480, 576, "*解放者*的头，蓄奴派的身子", "The Emancipator's head on a pro-slavery body",
      "两张相纸重新并排，朱砂 Circle 分别圈住两张脸（480 / 504）；旁注用朱砂铅笔批注样式（不用档案签，免得被误读成版画年代）：左 EMANCIPATION PROCLAMATION · 1863，右 “A POSITIVE GOOD” · 1837", "IMG01, IMG02",
      "两个 Circle 先后落在 480 / 504", "红笔划纸声 ×2", "F05, F23", True, False),
-    (576, 672, "桌上的字，从州权改成了*联邦*", "On the desk, \"states\" became \"Union\"",
+    (576, 672, "连桌上的*文件*都改了", "Even the papers on the desk were rewritten",
      "两张版画叠合后的差异图：除了头和桌上的文件，其余全部重合（由两张原图配准计算，标「差异图」）；朱砂 Box 先框头、再框文件（落在 576 / 600）", "IMG02, IMG01",
      "差异区按八分音符依次亮起；Box progress 20 f", "红笔划纸声 ×2", "F03, F24", True, False),
     # P3 · bars 8-11 · fake No.2: the widow's ghost

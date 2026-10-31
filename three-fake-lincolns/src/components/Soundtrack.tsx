@@ -3,7 +3,7 @@ import React from "react";
 import { interpolate, Sequence, staticFile, useVideoConfig } from "remotion";
 import manifest from "../../public/sfx/manifest.json";
 import { useTime } from "../time";
-import { SFX, SUBTITLE_TICKS, type SfxEvent, type SfxName } from "../timeline";
+import { SFX, SILENCE, SUBTITLE_TICKS, type SfxEvent, type SfxName } from "../timeline";
 
 type ManifestEntry = { readonly file: string; readonly durationSec: number; readonly peakOffsetFrames: number };
 const MANIFEST = manifest as unknown as Record<string, ManifestEntry>;
@@ -13,12 +13,16 @@ const MANIFEST = manifest as unknown as Record<string, ManifestEntry>;
 // The finished render is loudness-normalised to −14 LUFS afterwards (see README).
 const MUSIC_GAIN = 0.5;
 const SFX_BUS_DB = 12;
-const ROOM_TONE_DB = -33;
+const ROOM_TONE_DB = -40;
 const dbToGain = (db: number) => 10 ** (db / 20);
 
-// The score steps back (−4 dB) under the three hero hits: the seal, the twist, the golden line.
-const DUCKS = [240, 1920, 2400];
+// The score steps back (−4 dB) under the seal and the twist.
+const DUCKS = [240, 1920];
 const DUCK_GAIN = dbToGain(-4);
+
+// Friction and slosh sounds start on the picture event (the stroke, the slide begins) and peak later;
+// clicks and hits put their peak on the event.
+const ONSET_ALIGNED: readonly SfxName[] = ["pen", "paper_slide", "page_turn", "flip", "liquid"];
 
 // Sounds with pitch variants; the variant is picked from the frame so renders are deterministic.
 const VARIANTS: Partial<Record<SfxName, number>> = { paper_tick: 5, typewriter: 5 };
@@ -54,7 +58,7 @@ const SoundEvent: React.FC<{ readonly e: SfxEvent }> = ({ e }) => {
   const t = useTime();
   const { fps } = useVideoConfig();
   const entry = fileFor(e);
-  const start = t(e.at) - Math.round(entry.peakOffsetFrames);
+  const start = t(e.at) - (ONSET_ALIGNED.includes(e.sound) ? 0 : Math.round(entry.peakOffsetFrames));
   const length = Math.ceil(entry.durationSec * fps) + 2;
   return (
     <Sequence from={Math.max(0, start)} durationInFrames={length} name={e.sound} layout="none">
@@ -63,10 +67,25 @@ const SoundEvent: React.FC<{ readonly e: SfxEvent }> = ({ e }) => {
   );
 };
 
+// The room stays under everything, except in the half second before the twist, where it drops
+// 24 dB so the silence is a silence.
+const RoomTone: React.FC = () => {
+  const t = useTime();
+  return (
+    <Audio
+      src={staticFile(MANIFEST.room_tone.file)}
+      volume={(f) =>
+        dbToGain(ROOM_TONE_DB) *
+        interpolate(f, [t(SILENCE.from) - 2, t(SILENCE.from), t(SILENCE.to) - 1, t(SILENCE.to)], [1, 0.06, 0.06, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })
+      }
+    />
+  );
+};
+
 export const Soundtrack: React.FC = () => (
   <>
     <Music />
-    <Audio src={staticFile(MANIFEST.room_tone.file)} volume={dbToGain(ROOM_TONE_DB)} />
+    <RoomTone />
     {[...SFX, ...SUBTITLE_TICKS].map((e, i) => (
       <SoundEvent key={`${e.sound}-${e.at}-${i}`} e={e} />
     ))}

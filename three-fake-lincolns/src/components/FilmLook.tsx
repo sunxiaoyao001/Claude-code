@@ -1,6 +1,8 @@
 import { whiteNoise } from "@remotion/effects/white-noise";
 import React from "react";
 import { AbsoluteFill, random, Solid, useCurrentFrame, useVideoConfig } from "remotion";
+import { useTime } from "../time";
+import { GOLDEN, SCENES, SILENCE } from "../timeline";
 import { COLORS } from "../theme";
 
 // The film's one filter, over the whole frame: it reads as a print struck from a worn reel.
@@ -23,16 +25,21 @@ const Dust: React.FC<{ readonly frame: number; readonly clean: boolean }> = ({ f
     const light = random(`dust-l-${frame}-${i}`) < 0.25;
     return <ellipse key={i} cx={x} cy={y} rx={r} ry={r * (0.6 + random(`dust-e-${frame}-${i}`) * 0.6)} fill={light ? COLORS.printWhite : COLORS.ink} opacity={light ? 0.45 : 0.7} />;
   });
-  // A hair: one every ~2.4 s, held for 6 frames.
+  // A hair: at most one every ~2.4 s, at a random moment in its window, held for 6 frames.
   const hairSlot = Math.floor(frame / 72);
-  const hairOn = !clean && frame % 72 < 6 && random(`hair-on-${hairSlot}`) < 0.7;
+  const hairStart = Math.floor(random(`hair-t-${hairSlot}`) * 60);
+  const hairOn = !clean && frame % 72 >= hairStart && frame % 72 < hairStart + 6 && random(`hair-on-${hairSlot}`) < 0.6;
   const hx = 120 + random(`hair-x-${hairSlot}`) * 840;
   const hy = 220 + random(`hair-y-${hairSlot}`) * 1300;
   const hs = 0.7 + random(`hair-s-${hairSlot}`) * 0.8;
-  // A scratch: one every ~3.2 s, held for 14 frames, drifting a few pixels.
-  const scratchSlot = Math.floor(frame / 96);
-  const scratchOn = !clean && frame % 96 < 14 && random(`scr-on-${scratchSlot}`) < 0.6;
-  const sx = 80 + random(`scr-x-${scratchSlot}`) * 920 + (frame % 96) * 0.4;
+  // A scratch: at most one every ~4 s, at a random moment in its window, held for 10 frames,
+  // drifting a few pixels; kept to the left and right thirds, off the subject.
+  const scratchSlot = Math.floor(frame / 120);
+  const scratchStart = Math.floor(random(`scr-t-${scratchSlot}`) * 100);
+  const local = frame % 120 - scratchStart;
+  const scratchOn = !clean && local >= 0 && local < 10 && random(`scr-on-${scratchSlot}`) < 0.5;
+  const side = random(`scr-side-${scratchSlot}`) < 0.5;
+  const sx = (side ? 60 + random(`scr-x-${scratchSlot}`) * 220 : 800 + random(`scr-x-${scratchSlot}`) * 220) + local * 0.4;
   return (
     <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
       {specks}
@@ -53,7 +60,10 @@ const Dust: React.FC<{ readonly frame: number; readonly clean: boolean }> = ({ f
 export const FilmLook: React.FC = () => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
-  const clean = frame < 12 || frame > durationInFrames - 13;
+  const t = useTime();
+  // No hair or scratch on the cover, the loop seam, the twist and the golden line.
+  const clean =
+    frame < 12 || frame > durationInFrames - 13 || (frame >= t(SILENCE.from) && frame < t(SCENES.code.from)) || (frame >= t(GOLDEN.from) && frame < t(GOLDEN.to));
   return (
     <AbsoluteFill style={{ pointerEvents: "none" }}>
       <div style={{ position: "absolute", left: 0, top: 0, width: 540, height: 960, scale: 2, transformOrigin: "0 0", mixBlendMode: "overlay", opacity: 0.22 }}>

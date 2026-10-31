@@ -10,6 +10,8 @@ export type ImageAsset = {
   readonly sourceHeight: number;
   readonly caption: string;
   readonly regions: Record<string, readonly number[]>;
+  // Outline traced from the photograph (points normalised to a crop), where one exists.
+  readonly silhouette?: readonly (readonly number[])[];
 };
 
 export const IMG = data.images as Record<keyof typeof data.images, ImageAsset>;

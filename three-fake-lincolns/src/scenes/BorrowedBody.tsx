@@ -144,7 +144,7 @@ const CutLine: React.FC<{ readonly left: number; readonly top: number; readonly 
   );
 };
 
-const optionStyle: React.CSSProperties = { fontFamily: FONTS.serifZh, fontWeight: 900, fontSize: TYPE.subtitleZh, color: COLORS.ink, marginLeft: 18 };
+const optionStyle: React.CSSProperties = { fontFamily: FONTS.sansZh, fontWeight: 700, fontSize: 44, color: COLORS.ink, marginLeft: 18 };
 
 // ---- 0–288: cover, bet, title (one continuous shot) ----------------------------------------
 const CoverBetTitle: React.FC = () => {
@@ -279,7 +279,6 @@ const Reveal: React.FC = () => {
   const lincolnPos = { left: lerp(COVER.lincoln.left, ALIGNED.left, back), top: lerp(COVER.lincoln.top, ALIGNED.top, back), tilt: lerp(COVER.lincoln.tilt, ALIGNED.tilt, back) };
   const calhounPos = { left: lerp(COVER.calhoun.left, ALIGNED.left, align), top: lerp(COVER.calhoun.top, ALIGNED.top, align), tilt: lerp(COVER.calhoun.tilt, ALIGNED.tilt, align) };
   const tagLift = interpolate(frame, [0, t(18)], [0, 1], { ...CLAMP, easing: EASE.inOut });
-  const titleOut = interpolate(frame, [0, 12], [0, 1], { ...CLAMP, easing: EASE.inOut });
   const optionsOut = interpolate(frame, [12, 24], [0, 1], { ...CLAMP, easing: EASE.inOut });
   return (
     <AbsoluteFill>
@@ -313,12 +312,6 @@ const Reveal: React.FC = () => {
           <span style={optionStyle}>一位蓄奴派</span>
         </ManilaTag>
         <PenMark kind="circle" left={0} top={110} width={330} height={92} from={0} durationInFrames={10} />
-      </div>
-      <div style={{ position: "absolute", left: 153, top: 1100 + 520 * titleOut, opacity: 1 - titleOut }}>
-        <div style={{ fontFamily: FONTS.serifZh, fontWeight: 900, fontSize: TYPE.title, lineHeight: "136px", letterSpacing: TYPE.titleTracking, color: COLORS.printWhite }}>
-          林肯的
-          <br />3 张假像
-        </div>
       </div>
       {/* The lender's tag lands while his print is the one showing (354–366). */}
       <Sequence from={t(66)} layout="none">

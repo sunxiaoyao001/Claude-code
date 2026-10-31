@@ -38,10 +38,10 @@
 
 出处：
 - 美国国会图书馆（LoC）：2003654314（林肯合成像，[1865?]）· 2003679757（卡尔霍恩，1852）· 2007681056（格兰特合成像，约 1902）· 2018667429 · 2018667065 · 2007684716（格兰特合成像的三件原件，1864）· 96520658（胡迪尼与「林肯鬼魂」幻灯片，1920–1930）· 96518779（胡迪尼与妻子、母亲）· 2018682515（1926 年死讯剪报）
-- W. H. Mumler 灵异照片：Wikimedia Commons（公有领域），玛丽·林肯那张原件属 Lincoln Financial Foundation Collection
+- W. H. Mumler 灵异照片：Wikimedia Commons（公有领域）：File:Mumler_(Dow).jpg · File:Mumler_(Conant).jpg · File:Mumler_(unidentified).jpg · File:Mumler_(Lincoln).jpg；玛丽·林肯那张原件属 Lincoln Financial Foundation Collection（ACPL），片中用的是 Commons 副本
 - 双重曝光示意人物：The Met 287722（CC0），与本案无关
 - 差异图：由两张 LoC 原件配准计算（SIFT + RANSAC），可复现
-- 配乐与音效：原创；钢琴采样 Salamander Grand Piano，Alexander Holm，CC BY 3.0
+- 配乐与音效：原创；钢琴采样 Salamander Grand Piano（Alexander Holm，CC BY 3.0，https://creativecommons.org/licenses/by/3.0/ ，经重采样与混音修改）
 - 字体：Noto Serif SC / Noto Sans SC / EB Garamond / IBM Plex Mono（SIL OFL）
 
 关于暗号：1929 年有位灵媒（Arthur Ford）声称传回了「Rosabelle, believe」。但这句暗号 1928 年已经印在一本胡迪尼传记里，贝丝后来也说那件事是假的。所以片子里只说「最后那场，什么也没来」，指的是 1936 年万圣节那场最后的降神会。1927→1936 的计数按「1926 年万圣节去世 + 连续 10 年万圣节」推算。

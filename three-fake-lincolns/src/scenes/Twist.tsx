@@ -5,6 +5,7 @@ import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
 import { ManilaTag, MonoText, PenMark } from "../components/Props";
 import { MagicLantern } from "../components/Illustrations";
+import { EMPTY_SLOT } from "./Question";
 import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
 import { CLAMP, COLORS, EASE } from "../theme";
@@ -43,34 +44,37 @@ const GhostHeadMark: React.FC<{ readonly from: number }> = ({ from }) => {
 export const Twist: React.FC = () => {
   const frame = useCurrentFrame();
   const t = useTime();
-  const open = interpolate(frame, [0, 20], [0, 1], { ...CLAMP, easing: EASE.inOut });
-  const restore = interpolate(frame, [0, 18], [0, 1], { ...CLAMP, easing: EASE.out });
-  // The lamp hits full on the punch (1920–1944), then settles back by 1968.
-  const lamp = interpolate(frame, [0, t(24), t(48)], [0.88, 0.8, 0.2], { ...CLAMP, easing: EASE.inOut });
+  // The punch is the very first frame: the viewfinder opens out of the empty No.003 slot of the
+  // previous shot (already the slot's full size), reaches the whole slide in 8 frames, the lamp is
+  // at full on frame 1920, and the colour is cut in hard (the frame before is black and white).
+  const open = interpolate(frame, [0, 8], [0, 1], { ...CLAMP, easing: EASE.out });
+  const restore = 1;
+  const lamp = interpolate(frame, [0, t(24), t(48)], [1, 0.85, 0.22], { ...CLAMP, easing: EASE.inOut });
   const cx = LEFT + SLIDE_W / 2;
   const cy = TOP + SLIDE_H / 2;
-  const w = 60 + (SLIDE_W + 80 - 60) * open;
-  const h = 44 + (SLIDE_H + 80 - 44) * open;
-  // The light reaches past the viewfinder: wide while the lamp is hot, a narrow rim once it settles.
-  const throwX = Math.min(1080 - (SLIDE_W + 80), 260) * open * Math.min(1, lamp / 0.8);
-  const throwY = 260 * open * Math.min(1, lamp / 0.8);
+  const lerp = (a: number, b: number) => a + (b - a) * open;
+  const winL = lerp(EMPTY_SLOT.left, LEFT - 40);
+  const winT = lerp(EMPTY_SLOT.top, TOP - 40);
+  const winR = lerp(EMPTY_SLOT.left + EMPTY_SLOT.width, LEFT + SLIDE_W + 40);
+  const winB = lerp(EMPTY_SLOT.top + EMPTY_SLOT.height, TOP + SLIDE_H + 40);
+  // The light throws well past the viewfinder while the lamp is hot, then narrows to a rim.
+  const throwPad = 260 * Math.min(1, lamp / 0.85);
   return (
     <AbsoluteFill>
       <Breath phase={t(1920)} originX={cx} originY={cy}>
         <Dolly from={0.97} start={20} end={96} originX={cx} originY={cy}>
-        {/* Flat projector light (no glow): a warm field that throws well past the slide on the punch. */}
+        {/* Projector light: brightest at the centre of the beam, falling off toward its edge. */}
         <div
           style={{
             position: "absolute",
-            left: cx - (w + throwX) / 2,
-            top: cy - (h + throwY) / 2,
-            width: w + throwX,
-            height: h + throwY,
-            backgroundColor: COLORS.printWhite,
-            opacity: lamp,
+            left: winL - throwPad,
+            top: winT - throwPad,
+            width: winR - winL + 2 * throwPad,
+            height: winB - winT + 2 * throwPad,
+            background: `radial-gradient(ellipse 50% 50% at 50% 50%, rgba(236,230,218,${lamp}) 0%, rgba(236,230,218,${lamp * 0.75}) 55%, rgba(236,230,218,0) 100%)`,
           }}
         />
-        <div style={{ position: "absolute", inset: 0, clipPath: `inset(${cy - h / 2}px ${1080 - (cx + w / 2)}px ${1920 - (cy + h / 2)}px ${cx - w / 2}px)` }}>
+        <div style={{ position: "absolute", inset: 0, clipPath: `inset(${winT}px ${1080 - winR}px ${1920 - winB}px ${winL}px)` }}>
           <PhotoPrint
             src={IMG.houdiniLincolnGhost.file}
             imgW={IMG.houdiniLincolnGhost.width}
@@ -87,7 +91,7 @@ export const Twist: React.FC = () => {
             <GhostHeadMark from={t(48)} />
           </PhotoPrint>
         </div>
-        <MagicLantern from={t(28)} target={{ left: LEFT + 40, right: LEFT + SLIDE_W - 40, y: TOP + SLIDE_H + 30 }} />
+        <MagicLantern from={t(28)} target={{ left: LEFT - 40, top: TOP - 40, right: LEFT + SLIDE_W + 40, bottom: TOP + SLIDE_H + 40 }} />
         <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={950} top={TOP + SLIDE_H + 94} opacity={open} />
         </Dolly>
       </Breath>

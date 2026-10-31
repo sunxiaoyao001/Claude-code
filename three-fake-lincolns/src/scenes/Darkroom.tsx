@@ -37,8 +37,8 @@ const SecondExposure: React.FC<{ readonly amount: number }> = ({ amount }) => {
   const g = usePrint();
   const w = Math.round(g.imgW * g.scale);
   const h = Math.round(g.imgH * g.scale);
-  const dx = -0.24 * PLATE_W;
-  const dy = -0.04 * PLATE_H;
+  const dx = -0.26 * PLATE_W;
+  const dy = -0.09 * PLATE_H;
   return (
     <div
       style={{
@@ -47,7 +47,8 @@ const SecondExposure: React.FC<{ readonly amount: number }> = ({ amount }) => {
         top: -g.crop.y0 * g.imgH * g.scale + dy,
         width: w,
         height: h,
-        opacity: 0.42 * amount,
+        opacity: 0.3 * amount,
+        filter: "blur(1.5px)",
         maskImage: "radial-gradient(ellipse 22% 34% at 53% 42%, black 55%, transparent 100%)",
       }}
     >
@@ -69,7 +70,8 @@ export const Darkroom: React.FC = () => {
   const flash = Math.max(
     ...[EXPOSURE_1, EXPOSURE_2].map((e) => interpolate(frame, [t(e) - 1, t(e) + 1, t(e) + 10], [0, 0.6, 0], { ...CLAMP, easing: EASE.out })),
   );
-  const rise = (1 - inP) * 1100;
+  // The loaded holder is pushed in from the right (never through the subtitle band).
+  const rise = (1 - inP) * 900;
   return (
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
@@ -77,7 +79,7 @@ export const Darkroom: React.FC = () => {
         <CameraDiagram drawFrom={2} exp1={t(EXPOSURE_1)} exp2={t(EXPOSURE_2)} />
         {/* Viewing table: a flat field of warm light, no glow. */}
         <div style={{ position: "absolute", left: TABLE_LEFT, top: TABLE_TOP, width: TABLE_W, height: TABLE_H, backgroundColor: COLORS.printWhite, opacity: 0.16 }} />
-        <div style={{ position: "absolute", left: 0, top: rise, width: 1080, height: 1920 }}>
+        <div style={{ position: "absolute", left: rise, top: 0, width: 1080, height: 1920 }}>
           <div
             style={{
               position: "absolute",

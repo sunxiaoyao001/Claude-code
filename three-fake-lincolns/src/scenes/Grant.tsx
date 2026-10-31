@@ -160,8 +160,8 @@ export const Grant: React.FC = () => {
           imgH={IMG.grantCityPoint.height}
           width={COMP_W}
           crop={rectToCrop(MOUNT)}
-          left={COMP_LEFT}
-          top={COMP_TOP + (1 - compIn) * 1400}
+          left={COMP_LEFT + (1 - compIn) * 1000}
+          top={COMP_TOP}
           tilt={0.4}
           border={COMP_BORDER}
           lift={(1 - compIn) * 0.8}

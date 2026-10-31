@@ -5,7 +5,7 @@ import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
 import { Drawing, Ink } from "../components/LineArt";
 import { ArchiveStamp, PenMark } from "../components/Props";
-import { SourceCaption } from "../components/SeriesChrome";
+import { IllustrativeMark, SourceCaption } from "../components/SeriesChrome";
 import { photoGrade } from "../grade";
 import { useTime } from "../time";
 import { CLAMP, COLORS, EASE } from "../theme";
@@ -101,8 +101,8 @@ const HandMark: React.FC<{ readonly area: string; readonly from: number; readonl
 // Darkroom print tongs: two long strips hinged at the top, rubber-tipped jaws on the corner.
 const PrintTongs: React.FC<{ readonly x: number; readonly y: number; readonly from: number }> = ({ x, y, from }) => (
   <Drawing>
-    <Ink d={`M ${x - 16} ${y + 18} L ${x + 104} ${y - 196} M ${x + 8} ${y + 26} L ${x + 140} ${y - 178} M ${x + 104} ${y - 196} Q ${x + 128} ${y - 214} ${x + 140} ${y - 178}`} from={from} duration={10} width={3} opacity={0.85} />
-    <Ink d={`M ${x - 16} ${y + 18} L ${x - 6} ${y} M ${x + 8} ${y + 26} L ${x + 18} ${y + 8}`} from={from + 6} duration={4} width={7} color={COLORS.ink} opacity={1} />
+    <Ink d={`M ${x - 18} ${y + 14} L ${x + 190} ${y - 34} M ${x - 6} ${y + 34} L ${x + 196} ${y - 6} M ${x + 190} ${y - 34} Q ${x + 214} ${y - 24} ${x + 196} ${y - 6}`} from={from} duration={10} width={3} opacity={0.85} />
+    <Ink d={`M ${x - 18} ${y + 14} L ${x + 2} ${y + 10} M ${x - 6} ${y + 34} L ${x + 12} ${y + 30}`} from={from + 6} duration={4} width={7} color={COLORS.ink} opacity={1} />
   </Drawing>
 );
 
@@ -115,7 +115,7 @@ const DeveloperTray: React.FC = () => {
   const frame = useCurrentFrame();
   const t = useTime();
   // Local 0 = 768. Darkest tones first, the faint "spirit" last (it lands on 1056, a phrase downbeat).
-  const develop = interpolate(frame, [t(72), t(168), t(276), t(300)], [0, 0.35, 0.68, 1], { ...CLAMP, easing: EASE.inOut });
+  const develop = interpolate(frame, [t(6), t(168), t(276), t(300)], [0, 0.35, 0.68, 1], { ...CLAMP, easing: EASE.inOut });
   // The developer's surface: a slow sheen that keeps travelling, so the tray reads as liquid.
   const sheen = EASE.inOut((frame / t(144)) % 1) * 1.8 - 0.4;
   // 1152: the print is lifted out of the tray and laid on the table beside it.
@@ -172,7 +172,7 @@ const DeveloperTray: React.FC = () => {
         <GhostMark from={t(288)} />
       </PhotoPrint>
       {tongsAway < 1 ? (
-        <div style={{ position: "absolute", inset: 0, translate: `${tongsAway * 120}px ${-tongsAway * 260}px`, opacity: 1 - tongsAway }}>
+        <div style={{ position: "absolute", inset: 0, translate: `${tongsAway * 300}px ${-tongsAway * 40}px`, opacity: 1 - tongsAway }}>
           <PrintTongs x={printLeft + DEV_W + 20 - 8} y={printTop + 6} from={t(372)} />
         </div>
       ) : null}
@@ -191,13 +191,17 @@ export const WidowGhost: React.FC = () => {
             <CardTray />
           </Dolly>
         </Sequence>
-        {/* 14 seconds in the developer: the camera creeps in the whole time (0.9 → 1). */}
+        {/* 14 seconds in the developer: the camera creeps in the whole time (0.9 → 1). The tray is a
+            schematic (an albumen carte was printed out in daylight), so it carries the 示意 mark. */}
         <Sequence from={t(96)} layout="none">
           <Dolly from={0.9} end={420} originX={500} originY={640}>
             <DeveloperTray />
           </Dolly>
         </Sequence>
       </Breath>
+      <Sequence from={t(96)} layout="none">
+        <IllustrativeMark />
+      </Sequence>
     </AbsoluteFill>
   );
 };

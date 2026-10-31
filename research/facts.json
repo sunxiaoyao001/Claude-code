@@ -61,7 +61,7 @@
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "中高",
     "复核方式": "拿到两张 LoC 高清件后直接读图（图本身就是一手证据）",
-    "上屏写法": "「连桌上的文件都改了」+ 差异图（F24）框出文件区——不在屏幕上逐词对比；拿到高清件读图确认后再考虑更具体的写法",
+    "上屏写法": "「连桌上的文件都改了」+ 差异图（F24）框出文件区。不写「州权→联邦」之类的逐词对应：两条来源按顺序列出的是 strict constitution / free trade / the sovereignty of the states → constitution / union / proclamation of freedom，卡尔霍恩一侧尚未读图",
     "读图核实": "2026-10-24 读图核实：用户从 LoC 下载并上传的 2003654314 版画（812×1024）上，可读到桌上文件「CONSTITUTION」「UNION」「Proclamation of Freedom」（林肯版）；卡尔霍恩版待原图到手后核对"
   },
   {
@@ -142,7 +142,8 @@
       }
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
-    "置信度": "高"
+    "置信度": "高",
+    "备注": "片中所用扫描件是 Wikimedia Commons 的 559×889 副本（据 Commons 页面，2008 年取自 rogerjnorton.com），原件属 Lincoln Financial Foundation Collection（ACPL）；出处签写作 LFFC · VIA WIKIMEDIA COMMONS；如能取得 ACPL 官方扫描件应替换"
   },
   {
     "id": "F08",
@@ -502,7 +503,7 @@
   },
   {
     "id": "F24",
-    "陈述": "把 1852 年卡尔霍恩版画按缩放 0.934、旋转 0.06° 对齐到林肯合成像后，两张版画除了头部和桌上文件，其余（身体、衣褶、地球仪、旗帜、桌布、地砖）全部重合",
+    "陈述": "把 1852 年卡尔霍恩版画按缩放 0.934、旋转 0.06° 对齐到林肯合成像后，两张版画除了头部和桌上文件，其余（身体、衣褶、地球仪、旗帜位置、桌布、地砖）全部重合；旗帜星点的深浅两版不同（印次或刷版调子差异，不是构图改动）",
     "来源": [
       {
         "url": "https://www.loc.gov/pictures/item/2003654314/",
@@ -545,15 +546,15 @@
   },
   {
     "id": "F26",
-    "陈述": "LoC 96518779 的著录标题为「Harry Houdini, with his wife Beatrice and mother Cecilia Steiner Weiss, full-length portrait」：照片里是胡迪尼、妻子贝丝（Beatrice）和母亲；著录没有写明每个人站在哪",
+    "陈述": "LoC 96518779 的著录标题为「Harry Houdini, with his wife Beatrice and mother Cecilia Steiner Weiss, full-length portrait」，年代约 1900，权利说明 No known restrictions on publication；著录没有写明每个人站在哪",
     "来源": [
       {
-        "url": "https://www.loc.gov/item/96518779/",
+        "url": "https://loc.gov/pictures/item/96518779/",
         "类型": "一手（LoC 著录）",
-        "摘录": "[Harry Houdini, with his wife Beatrice and mother Cecilia Steiner Weiss, full-length portrait]"
+        "摘录": "[Harry Houdini, with his wife Beatrice and mother Cecilia Steiner Weiss, full-length portrait] … ca. 1900 … No known restrictions on publication"
       }
     ],
-    "摘录方式": "用户从该页下载上传图片时记录的标题；网络放开后复核原页",
+    "摘录方式": "WebSearch（extended）返回的著录摘要，2026-10-31；loc.gov 在本环境不可直连",
     "置信度": "中高",
     "上屏写法": "出处签 LIBRARY OF CONGRESS · HOUDINI, WIFE, MOTHER；不圈人、不指认谁是贝丝"
   }
