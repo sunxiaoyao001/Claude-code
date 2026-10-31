@@ -26,7 +26,7 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
         schema={mainSchema}
-        defaultProps={{ durationSec: 89.6, aspect: "9:16", watermark: "@your_handle", motionBlur: false }}
+        defaultProps={{ durationSec: 89.6, aspect: "9:16", watermark: "@Faulx.Elys", motionBlur: false }}
         calculateMetadata={calculateMetadata}
       />
       <Folder name="Dev">
