@@ -93,6 +93,31 @@ export const SCENES = {
 // Bottom progress: one slot per fake (the chapter tags No.001 / No.002 / No.003).
 export const CHAPTERS = { bounds: [0, 672, 1776, BASE_TOTAL], labels: ["No.001", "No.002", "No.003"] } as const;
 
+// Frames with fast movement (prints dealt, swept, lifted, pulled; transitions). The final render
+// applies motion blur only here; everything else is slow camera breath and needs none.
+export const BLUR_WINDOWS: readonly (readonly [number, number])[] = [
+  [96, 124], // prints rise for the bet
+  [100, 130], // bet tags slide in
+  [288, 332], // tag pulled, prints slide into alignment
+  [672, 722], // sweep-off + cards dealt
+  [744, 770], // the widow's card is lifted
+  [1150, 1180], // the print is lifted out of the tray
+  [1200, 1216], // sweep-off + case card
+  [1278, 1308], // case card moves, cards dealt
+  [1392, 1408], // leaf shutter, plate holder
+  [1574, 1600], // sweep-off, first original falls
+  [1598, 1634], // originals fall
+  [1644, 1658], // composite pushed in
+  [1776, 1800], // sweep-off, prints slide in
+  [1824, 1844], // slide box
+  [2016, 2034], // slide carrier
+  [2112, 2128], // clipping laid over
+  [2208, 2224], // clipping pulled away
+  [2304, 2322], // leaf shutter, print slides in
+  [2544, 2558], // credits card in
+  [2604, 2618], // credits card out
+];
+
 // The 0.5 s of musical silence before the twist.
 export const SILENCE = { from: 1905, to: 1920 } as const;
 

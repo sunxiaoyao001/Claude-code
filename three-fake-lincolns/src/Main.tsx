@@ -1,7 +1,7 @@
 import React from "react";
 import { CameraMotionBlur } from "@remotion/motion-blur";
 import { linearTiming, TransitionSeries, type TransitionPresentation } from "@remotion/transitions";
-import { AbsoluteFill, Sequence, Track, useVideoConfig } from "remotion";
+import { AbsoluteFill, Sequence, Track, useCurrentFrame, useVideoConfig } from "remotion";
 import "./fonts";
 import { Desk } from "./components/Desk";
 import { Soundtrack } from "./components/Soundtrack";
@@ -24,7 +24,7 @@ import { Twist } from "./scenes/Twist";
 import { WidowGhost } from "./scenes/WidowGhost";
 import { EASE } from "./theme";
 import { TimeScale, useTime } from "./time";
-import { ARCHIVE_TAGS, BAR, BASE_TOTAL, CHAPTERS, LINES, SCENES } from "./timeline";
+import { ARCHIVE_TAGS, BAR, BASE_TOTAL, BLUR_WINDOWS, CHAPTERS, LINES, SCENES } from "./timeline";
 
 const Subtitles: React.FC = () => {
   const t = useTime();
@@ -101,15 +101,20 @@ const Scenes: React.FC = () => {
   );
 };
 
-// Motion blur for the final render (shutter 180°); drafts leave it off.
-const MaybeBlur: React.FC<{ readonly on: boolean; readonly children: React.ReactNode }> = ({ on, children }) =>
-  on ? (
+// Motion blur for the final render (shutter 180°, 6 samples), only on frames with fast movement
+// (BLUR_WINDOWS); drafts leave it off.
+const MaybeBlur: React.FC<{ readonly on: boolean; readonly children: React.ReactNode }> = ({ on, children }) => {
+  const frame = useCurrentFrame();
+  const t = useTime();
+  const moving = on && BLUR_WINDOWS.some(([a, b]) => frame >= t(a) && frame <= t(b));
+  return moving ? (
     <CameraMotionBlur shutterAngle={180} samples={6}>
       {children}
     </CameraMotionBlur>
   ) : (
     <>{children}</>
   );
+};
 
 export const Main: React.FC<MainProps> = ({ watermark, motionBlur }) => {
   const { durationInFrames } = useVideoConfig();
