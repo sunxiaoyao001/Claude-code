@@ -3,6 +3,7 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region } from "../assets";
 import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
+import { CenturyRuler } from "../components/Illustrations";
 import { MonoText, TypedMono } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
@@ -41,6 +42,7 @@ export const Centenary: React.FC = () => {
           sheenAt={t(12)}
         />
         <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={LEFT} top={BOTTOM + 16} opacity={inP} />
+        <CenturyRuler from={t(12)} duration={t(66)} left={153} right={927} y={BOTTOM + 250} />
         <div style={{ position: "absolute", left: 153, top: BOTTOM + 84 }}>
           <MonoText color={COLORS.silver}>HARRY HOUDINI · DIED OCT. 31, 1926</MonoText>
           <div style={{ marginTop: 8 }}>

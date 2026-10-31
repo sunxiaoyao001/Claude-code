@@ -4,6 +4,7 @@ import { fitWidth, IMG, region } from "../assets";
 import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
 import { ManilaTag, MonoText, PenMark } from "../components/Props";
+import { MagicLantern } from "../components/Illustrations";
 import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
 import { CLAMP, COLORS, EASE } from "../theme";
@@ -86,7 +87,8 @@ export const Twist: React.FC = () => {
             <GhostHeadMark from={t(48)} />
           </PhotoPrint>
         </div>
-        <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={LEFT} top={TOP + SLIDE_H + 94} opacity={open} />
+        <MagicLantern from={t(28)} target={{ left: LEFT + 40, right: LEFT + SLIDE_W - 40, y: TOP + SLIDE_H + 30 }} />
+        <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={950} top={TOP + SLIDE_H + 94} opacity={open} />
         </Dolly>
       </Breath>
     </AbsoluteFill>

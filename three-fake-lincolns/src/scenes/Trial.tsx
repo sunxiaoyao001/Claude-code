@@ -3,6 +3,7 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region, type ImageKey } from "../assets";
 import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
+import { Ink, InkLabel } from "../components/LineArt";
 import { MonoText, PenMark, TypedMono } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
@@ -35,6 +36,22 @@ const GhostMark: React.FC<{ readonly k: ImageKey; readonly from: number; readonl
   return <PenMark kind="circle" left={a.x} top={a.y} width={b.x - a.x} height={b.y - a.y} from={from} durationInFrames={12} seed={seed} />;
 };
 
+const CaseFolder: React.FC = () => {
+  const w = CASE.width + 80;
+  const h = CASE.height + 90;
+  return (
+    <>
+      <Ink d={`M 0 26 H 150 L 170 0 H 320 L 340 26 H ${w} V ${h} H 0 Z`} from={2} duration={16} color={COLORS.silver} width={1.5} opacity={0.55} />
+      <InkLabel x={176} y={20} text="CASE FILE" from={10} />
+    </>
+  );
+};
+
+// A bent-wire paper clip, drawn in one stroke.
+const PaperClip: React.FC = () => (
+  <Ink d="M 10 96 V 18 A 10 10 0 0 1 30 18 V 84 A 6 6 0 0 1 18 84 V 30" from={8} duration={12} width={3} opacity={0.85} />
+);
+
 // A blank case card: printed heading, the date typed in. It is never laid on a photograph, so it
 // cannot be read as the date of any picture (F10 dates the trial only).
 const CASE = { width: 660, height: 260 } as const;
@@ -53,7 +70,14 @@ const CaseCard: React.FC<{ readonly left: number; readonly top: number; readonly
       boxSizing: "border-box",
     }}
   >
+    {/* The case folder behind the card and a paper clip holding it, in line. */}
+    <svg width={CASE.width + 80} height={CASE.height + 90} style={{ position: "absolute", left: -40, top: -60, overflow: "visible", zIndex: -1 }}>
+      <CaseFolder />
+    </svg>
     <div style={{ position: "absolute", left: 0, right: 0, top: 18, height: 3, backgroundColor: COLORS.vermilion }} />
+    <svg width={40} height={110} style={{ position: "absolute", left: 46, top: -34, overflow: "visible" }}>
+      <PaperClip />
+    </svg>
     <MonoText>W. H. MUMLER · FRAUD TRIAL</MonoText>
     <div style={{ height: 1, backgroundColor: COLORS.silver, opacity: 0.6, margin: "18px 0 30px" }} />
     <TypedMono typed={TYPED.trialStamp} sceneFrom={BASE} size={TYPE.subtitleEn} />
@@ -72,7 +96,7 @@ export const Trial: React.FC = () => {
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
         <Dolly from={0.95} end={192} originX={513} originY={650}>
-        <CaseCard left={caseLeft + (1 - caseIn) * 900} top={420 + caseDown * (ROW_BOTTOM + 90 - 420)} tilt={-0.8 + caseDown * 1.4} />
+        <CaseCard left={caseLeft + (1 - caseIn) * 900} top={420 + caseDown * (ROW_BOTTOM + 130 - 420)} tilt={-0.8 + caseDown * 1.4} />
         {CARDS.map((c, i) => {
           const inP = interpolate(frame, [t(c.at) - 10, t(c.at)], [0, 1], { ...CLAMP, easing: EASE.out });
           if (frame < t(c.at) - 10) return null;

@@ -10,18 +10,30 @@ import { CLAMP, COLORS, EASE, FONTS, SAFE, TYPE } from "../theme";
 
 // The three fakes as a contact sheet: one sheet of paper, each frame with a black film edge and its
 // number, held down so the golden line owns the frame.
-const SHEET = { left: 76, top: 268, width: 874, height: 392 } as const;
+const SHEET = { left: 76, top: 268, width: 874, height: 430 } as const;
 const STRIP: readonly { key: ImageKey; crop: string; width: number; left: number; label: string }[] = [
   { key: "lincolnComposite", crop: "engraving", width: 200, left: 112, label: "No.001" },
   { key: "maryLincolnGhost", crop: "photo", width: 170, left: 368, label: "No.002" },
   { key: "houdiniLincolnGhost", crop: "slide", width: 290, left: 594, label: "No.003" },
 ];
-const FRAME_TOP = SHEET.top + 28;
+const FRAME_TOP = SHEET.top + 40;
+// The film rebate printed on the sheet: a black band with a row of sprocket holes along each edge.
+const BAND = { left: SHEET.left + 16, right: SHEET.left + SHEET.width - 16, top: SHEET.top + 8, bottom: FRAME_TOP + 300 + 30 } as const;
+const HOLES = Array.from({ length: Math.floor((BAND.right - BAND.left - 20) / 34) }, (_, i) => BAND.left + 14 + i * 34);
 
 // `soft` puts the sheet slightly out of focus (depth of field) behind the golden line.
 export const ContactSheet: React.FC<{ readonly dim: number; readonly soft?: number }> = ({ dim, soft = 0 }) => (
   <AbsoluteFill style={{ filter: soft > 0.05 ? `blur(${soft}px)` : undefined }}>
-    <div style={{ position: "absolute", ...SHEET, backgroundColor: COLORS.printWhite, rotate: "-0.4deg", boxShadow: "0 12px 30px rgba(0,0,0,0.5)" }} />
+    <div style={{ position: "absolute", ...SHEET, backgroundColor: COLORS.printWhite, rotate: "-0.4deg", boxShadow: "0 12px 30px rgba(0,0,0,0.5)" }}>
+      <div style={{ position: "absolute", left: BAND.left - SHEET.left, top: BAND.top - SHEET.top, width: BAND.right - BAND.left, height: BAND.bottom - BAND.top, backgroundColor: COLORS.ink }}>
+        {HOLES.map((x) => (
+          <React.Fragment key={x}>
+            <div style={{ position: "absolute", left: x - BAND.left, top: 8, width: 16, height: 14, borderRadius: 3, backgroundColor: COLORS.printWhite, opacity: 0.85 }} />
+            <div style={{ position: "absolute", left: x - BAND.left, bottom: 8, width: 16, height: 14, borderRadius: 3, backgroundColor: COLORS.printWhite, opacity: 0.85 }} />
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
     {STRIP.map((s) => (
       <React.Fragment key={s.key}>
         <PhotoPrint

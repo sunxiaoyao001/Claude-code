@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, interpolate, Sequence, useCurrentFrame, useVideoConfig } from "remotion";
 import { CALHOUN_TO_LINCOLN, fitWidth, IMG, lincolnRectToCalhoun, region } from "../assets";
 import { Breath, Dolly } from "../components/Breath";
+import { EngravedFrame } from "../components/Illustrations";
 import { AlignedCalhoun, DifferenceOverlay } from "../components/Overlays";
 import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
 import { ManilaTag, MonoText, PenMark, Seal } from "../components/Props";
@@ -160,6 +161,8 @@ const CoverBetTitle: React.FC = () => {
               </div>
             </div>
           ))}
+          {/* An engraved double-rule frame draws itself around the title, corners last. */}
+          <EngravedFrame from={t(192)} x={120} y={1052} w={810} h={360} />
           <Seal text="假" left={790} top={1252} size={112} at={t(240)} />
         </>
       ) : null}

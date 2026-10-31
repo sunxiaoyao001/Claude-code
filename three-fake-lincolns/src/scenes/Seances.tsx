@@ -3,6 +3,7 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region } from "../assets";
 import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
+import { Drawing, Ink, InkLabel } from "../components/LineArt";
 import { MonoText } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
@@ -33,6 +34,31 @@ const RollingDigit: React.FC<{ readonly prev: string; readonly next: string; rea
   </span>
 );
 
+const COUNTER_TOP = Math.max(FAMILY_BOTTOM, PAGE_TOP + PAGE_H + PAGE_BORDER * 2) + 70;
+
+// Ten Halloweens as calendar cells, 1927–1936, each struck off with one pen stroke as it is counted.
+const CELL = { left: 360, top: COUNTER_TOP + 34, w: 54, h: 62, gap: 4 } as const;
+const HalloweenCells: React.FC = () => {
+  const t = useTime();
+  const { from, every, first, last } = SEANCE_COUNTER;
+  const years = Array.from({ length: last - first + 1 }, (_, i) => first + i);
+  return (
+    <Drawing>
+      {years.map((y, i) => {
+        const x = CELL.left + i * (CELL.w + CELL.gap);
+        const at = t(from + i * every) - t(BASE);
+        return (
+          <React.Fragment key={y}>
+            <Ink d={`M ${x} ${CELL.top} h ${CELL.w} v ${CELL.h} h ${-CELL.w} Z`} from={t(2) + i * 2} duration={8} width={1.5} opacity={0.55} />
+            <InkLabel x={x + CELL.w / 2} y={CELL.top + 40} text={`'${String(y).slice(2)}`} from={t(4) + i * 2} anchor="middle" />
+            <Ink d={`M ${x + 6} ${CELL.top + CELL.h - 6} L ${x + CELL.w - 6} ${CELL.top + 6}`} from={at} duration={6} color={COLORS.vermilion} width={2.5} opacity={0.95} />
+          </React.Fragment>
+        );
+      })}
+    </Drawing>
+  );
+};
+
 const Counter: React.FC = () => {
   const frame = useCurrentFrame();
   const t = useTime();
@@ -51,7 +77,7 @@ const Counter: React.FC = () => {
   const prev = String(year === first ? year : year - 1);
   const next = String(year);
   return (
-    <div style={{ position: "absolute", left: 153, top: Math.max(FAMILY_BOTTOM, PAGE_TOP + PAGE_H + PAGE_BORDER * 2) + 70 }}>
+    <div style={{ position: "absolute", left: 153, top: COUNTER_TOP }}>
       <MonoText color={COLORS.silver}>HALLOWEEN SÉANCE</MonoText>
       <div style={{ marginTop: 6 }}>
         <MonoText size={TYPE.subtitleZh} color={COLORS.printWhite} style={{ display: "inline-flex" }}>
@@ -96,6 +122,7 @@ export const Seances: React.FC = () => {
           </>
         ) : null}
         <Counter />
+        <HalloweenCells />
         </Dolly>
       </Breath>
     </AbsoluteFill>

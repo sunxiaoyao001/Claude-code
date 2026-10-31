@@ -2,8 +2,8 @@ import React from "react";
 import { AbsoluteFill, CanvasImage, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region } from "../assets";
 import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
+import { CameraDiagram } from "../components/Illustrations";
 import { PhotoPrint, rectToCrop, usePrint } from "../components/PhotoPrint";
-import { MonoText } from "../components/Props";
 import { IllustrativeMark, SourceCaption } from "../components/SeriesChrome";
 import { photoGrade } from "../grade";
 import { useTime } from "../time";
@@ -13,9 +13,9 @@ import { CLAMP, COLORS, EASE, SAFE } from "../theme";
 // Scene-local frames: 0 = 1392. A schematic of double exposure with an unrelated, anonymous sitter
 // (The Met, CC0). It shows the general technique only, not how Mumler worked (F11).
 const BASE = SCENES.darkroom.from;
-// The Met scan is large (2400 px here), so this is the one plate that can fill most of the width.
+// Top band: a line drawing of the wet-plate camera and the two exposures. Below it, the plate itself.
 const PORTRAIT = region("metSitter", "bust");
-const PLATE_W = Math.floor(fitWidth("metSitter", PORTRAIT, 600, BREATH_MAX_ZOOM));
+const PLATE_W = Math.floor(fitWidth("metSitter", PORTRAIT, 400, BREATH_MAX_ZOOM));
 const PLATE_H = Math.round((PLATE_W * (PORTRAIT[3] - PORTRAIT[1]) * IMG.metSitter.height) / ((PORTRAIT[2] - PORTRAIT[0]) * IMG.metSitter.width));
 const FRAME = 26; // plate holder rails
 const HOLDER_W = PLATE_W + FRAME * 2;
@@ -23,7 +23,7 @@ const HOLDER_H = PLATE_H + FRAME * 2;
 const TABLE_W = HOLDER_W + 180;
 const TABLE_H = HOLDER_H + 130;
 const TABLE_LEFT = Math.round((SAFE.margin + SAFE.right) / 2 - TABLE_W / 2);
-const TABLE_TOP = 240;
+const TABLE_TOP = 590;
 const HOLDER_LEFT = TABLE_LEFT + (TABLE_W - HOLDER_W) / 2;
 const HOLDER_TOP = TABLE_TOP + (TABLE_H - HOLDER_H) / 2;
 
@@ -56,17 +56,6 @@ const SecondExposure: React.FC<{ readonly amount: number }> = ({ amount }) => {
   );
 };
 
-const ExposureLabel: React.FC<{ readonly n: number; readonly at: number; readonly top: number }> = ({ n, at, top }) => {
-  const frame = useCurrentFrame();
-  const p = interpolate(frame, [at, at + 8], [0, 1], { ...CLAMP, easing: EASE.out });
-  return (
-    <div style={{ position: "absolute", left: TABLE_LEFT, top, opacity: p, translate: `${(1 - p) * -12}px 0`, display: "flex", alignItems: "center", gap: 14 }}>
-      <div style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.vermilion }} />
-      <MonoText color={COLORS.printWhite}>{`EXPOSURE ${n}`}</MonoText>
-    </div>
-  );
-};
-
 export const Darkroom: React.FC = () => {
   const frame = useCurrentFrame();
   const t = useTime();
@@ -85,6 +74,7 @@ export const Darkroom: React.FC = () => {
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
         <Dolly from={0.94} end={192} originX={TABLE_LEFT + TABLE_W / 2} originY={TABLE_TOP + TABLE_H / 2}>
+        <CameraDiagram drawFrom={2} exp1={t(EXPOSURE_1)} exp2={t(EXPOSURE_2)} />
         {/* Viewing table: a flat field of warm light, no glow. */}
         <div style={{ position: "absolute", left: TABLE_LEFT, top: TABLE_TOP, width: TABLE_W, height: TABLE_H, backgroundColor: COLORS.printWhite, opacity: 0.16 }} />
         <div style={{ position: "absolute", left: 0, top: rise, width: 1080, height: 1920 }}>
@@ -132,9 +122,7 @@ export const Darkroom: React.FC = () => {
             <div style={{ position: "absolute", left: "50%", top: 14, width: 120, height: 10, marginLeft: -60, borderRadius: 5, backgroundColor: COLORS.darkPaper }} />
           </div>
         </div>
-        <ExposureLabel n={1} at={t(EXPOSURE_1)} top={TABLE_TOP + TABLE_H + 26} />
-        <ExposureLabel n={2} at={t(EXPOSURE_2)} top={TABLE_TOP + TABLE_H + 66} />
-        <SourceCaption text="THE MET 287722 · CC0 · SITTER UNRELATED" left={TABLE_LEFT} top={TABLE_TOP + TABLE_H + 112} />
+        <SourceCaption text="THE MET 287722 · CC0 · SITTER UNRELATED" left={SAFE.margin} top={236} />
         </Dolly>
       </Breath>
       <IllustrativeMark />

@@ -3,6 +3,7 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region } from "../assets";
 import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
+import { Drawing, Ink, InkLabel } from "../components/LineArt";
 import { ManilaTag, MonoText } from "../components/Props";
 import { useTime } from "../time";
 import { SCENES } from "../timeline";
@@ -25,7 +26,7 @@ const ROW_LEFT = Math.round((SAFE.margin + SAFE.right) / 2 - ROW_W / 2);
 const ROW_TOP = 300;
 const SLOT_LEFT = ROW_LEFT + L_W + M_W + BORDER * 4 + GAP * 2;
 
-const BOX = { left: 250, top: 800, width: 560, height: 300 } as const;
+const BOX = { left: 250, top: 880, width: 560, height: 240 } as const;
 const BOX_AT = 48;
 
 // A wooden box of glass slides seen from above: rim, the slides' edges, a manila label.
@@ -52,6 +53,43 @@ const SlideBox: React.FC<{ readonly top: number }> = ({ top }) => (
     </ManilaTag>
   </div>
 );
+
+// A timeline ruled under the row: each fake hangs from its year; the third hangs from a dashed "?".
+const M_H = Math.round((M_W * (M_CROP[3] - M_CROP[1]) * IMG.maryLincolnGhost.height) / ((M_CROP[2] - M_CROP[0]) * IMG.maryLincolnGhost.width));
+const TL = { y: 790, left: 100, right: 930, from: 1850, to: 1935 } as const;
+const yearX = (year: number) => TL.left + ((year - TL.from) / (TL.to - TL.from)) * (TL.right - TL.left);
+const SLOTS = [
+  { x: ROW_LEFT + BORDER + L_W / 2, bottom: ROW_TOP + L_H + 2 * BORDER, year: 1865 },
+  { x: ROW_LEFT + L_W + 3 * BORDER + GAP + M_W / 2, bottom: ROW_TOP + 14 + M_H + 2 * BORDER, year: 1872 },
+] as const;
+const SLOT3_X = SLOT_LEFT + BORDER + SLOT_W / 2;
+
+const Timeline: React.FC = () => {
+  const t = useTime();
+  const decades = Array.from({ length: 9 }, (_, i) => TL.from + i * 10);
+  const halves = Array.from({ length: 8 }, (_, i) => TL.from + 5 + i * 10);
+  return (
+    <Drawing>
+      <Ink d={`M ${TL.left} ${TL.y} H ${TL.right}`} from={t(4)} duration={t(20)} width={1.5} opacity={0.7} />
+      {decades.map((yr, i) => (
+        <React.Fragment key={yr}>
+          <Ink d={`M ${yearX(yr)} ${TL.y} V ${TL.y - 16}`} from={t(4) + i * 2} duration={6} width={1.5} opacity={0.7} />
+          <InkLabel x={yearX(yr)} y={TL.y + 34} text={String(yr)} from={t(8) + i * 2} anchor="middle" />
+        </React.Fragment>
+      ))}
+      <Ink d={halves.map((yr) => `M ${yearX(yr)} ${TL.y} V ${TL.y - 8}`).join(" ")} from={t(10)} duration={t(14)} width={1} opacity={0.45} />
+      {SLOTS.map((sl, i) => (
+        <React.Fragment key={sl.year}>
+          <Ink d={`M ${sl.x} ${sl.bottom + 6} V ${TL.y - 40} L ${yearX(sl.year)} ${TL.y - 4}`} from={t(18 + i * 6)} duration={12} width={1.5} opacity={0.8} />
+          <Ink d={`M ${yearX(sl.year) - 6} ${TL.y} a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0`} from={t(24 + i * 6)} duration={6} color={COLORS.vermilion} width={2} opacity={1} />
+        </React.Fragment>
+      ))}
+      {/* The third: no year yet, a dashed span over the decades still to come. */}
+      <Ink d={`M ${SLOT3_X} ${ROW_TOP + SLOT_H + 2 * BORDER + 6} V ${TL.y - 40}`} from={t(32)} duration={10} width={1.5} dash="6 6" color={COLORS.vermilion} opacity={0.9} />
+      <Ink d={`M ${yearX(1880)} ${TL.y - 26} H ${TL.right} M ${yearX(1880)} ${TL.y - 32} V ${TL.y - 20} M ${TL.right} ${TL.y - 32} V ${TL.y - 20}`} from={t(38)} duration={12} width={1.5} dash="6 6" color={COLORS.vermilion} opacity={0.9} />
+    </Drawing>
+  );
+};
 
 export const Question: React.FC = () => {
   const frame = useCurrentFrame();
@@ -106,6 +144,7 @@ export const Question: React.FC = () => {
             ?
           </MonoText>
         </ManilaTag>
+        <Timeline />
         <SlideBox top={BOX.top + (1 - boxIn) * 1100} />
         </Dolly>
       </Breath>
