@@ -1,0 +1,20 @@
+node_modules
+dist
+.DS_Store
+.env
+
+# Ignore the output video from Git but not videos you import into src/.
+out
+
+# Large regenerable sources: fonts via scripts/fetch_fonts.sh, audio via scripts/synth_audio.py
+assets/fonts_src/*.otf
+public/music/*.wav
+public/sfx/*.wav
+# Raw archive downloads are kept locally; processed versions live in public/images
+assets/raw/
+public/dev/
+
+assets/salamander/
+assets/piano_src/*.wav
+out/
+__pycache__/

@@ -1,0 +1,452 @@
+{
+  "images": [
+    {
+      "id": "IMG01",
+      "file": "public/images/lincoln_composite.jpg",
+      "标题": "Abraham Lincoln（合成美柔汀版画）",
+      "作者": "William Pate（刻版）",
+      "年份": "[1865?]",
+      "来源URL": "https://www.loc.gov/pictures/item/2003654314/",
+      "馆藏号": "LC-DIG-pga-02353",
+      "许可": "No known restrictions on publication（LoC）",
+      "原图分辨率": "812×1024（用户上传 / 官方数据集；片中用 812×1024，只缩不放）",
+      "用途": "封面、下注、闪烁比对、反讽、差异图、第 3 张之问、接触印样、片尾循环",
+      "修改说明": "统一银盐调色；按 9:16 裁切",
+      "出处签": "LIBRARY OF CONGRESS · CA. 1865"
+    },
+    {
+      "id": "IMG02",
+      "file": "public/images/calhoun_1852.jpg",
+      "标题": "John C. Calhoun",
+      "作者": "A.H. Ritchie 刻，T. Hicks 原画，据 Brady 银版像",
+      "年份": "1852",
+      "来源URL": "https://www.loc.gov/pictures/item/2003679757/",
+      "馆藏号": "LC-DIG-pga-02499",
+      "许可": "公有领域（1852 年出版的版画）；LoC 权利说明待直连复核",
+      "原图分辨率": "767×1024（用户上传 / 官方数据集；片中用 767×1024，只缩不放）",
+      "用途": "封面、闪烁比对（按配准矩阵逐像素对齐）、出借人单张、反讽",
+      "修改说明": "统一调色；与 IMG01 做仿射对齐",
+      "出处签": "LIBRARY OF CONGRESS · 1852"
+    },
+    {
+      "id": "IMG03",
+      "file": "public/images/mumler_mary_lincoln.jpg",
+      "标题": "Mary Todd Lincoln with the 'spirit' of Abraham Lincoln",
+      "作者": "William H. Mumler",
+      "年份": "c.1872（有争议，见 F08）",
+      "来源URL": "https://commons.wikimedia.org/wiki/File:Mumler_(Lincoln).jpg",
+      "馆藏号": "原件：Lincoln Financial Foundation Collection",
+      "许可": "PD-US（Commons）",
+      "原图分辨率": "559×889（用户上传 / 官方数据集；片中用 559×889，只缩不放）",
+      "用途": "名片照托盘、显影盘（鬼影最后浮现）、第 3 张之问、接触印样",
+      "修改说明": "统一调色；显影动画（标「示意」）；未放大。扫描件为 Commons 559×889 副本，原件属 LFFC（ACPL）",
+      "出处签": "LFFC · VIA WIKIMEDIA COMMONS · CA. 1872"
+    },
+    {
+      "id": "IMG04",
+      "file": "public/images/grant_city_point.jpg",
+      "标题": "General Grant at City Point（合成）",
+      "作者": "Levin C. Handy",
+      "年份": "c.1902",
+      "来源URL": "https://www.loc.gov/item/2007681056/",
+      "馆藏号": "LC-DIG-ppmsca-15886",
+      "许可": "公有领域（© 1902 L.C. Handy，1931 年前出版）；LoC 权利说明待直连复核",
+      "原图分辨率": "1024×823（用户上传 / 官方数据集；片中用 1024×823，只缩不放）",
+      "用途": "S10 合成像，朱砂标注头 / 马和身体 / 背景",
+      "修改说明": "统一调色；未放大（Commons 另有 5139×3743 副本，未取得）",
+      "出处签": "LIBRARY OF CONGRESS · 1902"
+    },
+    {
+      "id": "IMG05",
+      "file": "public/images/houdini_lincoln_ghost.jpg",
+      "标题": "[Houdini and the ghost of Abraham Lincoln]（玻璃幻灯片）",
+      "作者": "Harry Houdini（制作）",
+      "年份": "1920–1930",
+      "来源URL": "https://www.loc.gov/pictures/item/96520658/",
+      "馆藏号": "LOT 7426",
+      "许可": "No known restrictions on publication（LoC）",
+      "原图分辨率": "1024×936（用户上传 / 官方数据集；片中用 1024×936，只缩不放）",
+      "用途": "反转（唯一一次色彩还原）、100 年（只取胡迪尼半边）、接触印样",
+      "修改说明": "平时统一调色；反转时回到原扫描色",
+      "出处签": "LIBRARY OF CONGRESS · 1920–1930"
+    },
+    {
+      "id": "IMG06",
+      "file": "public/images/houdini_family.jpg",
+      "标题": "[Harry Houdini, with his wife Beatrice and mother Cecilia Steiner Weiss, full-length portrait]",
+      "作者": "不详（McManus-Young Collection）",
+      "年份": "约 1900s",
+      "来源URL": "https://www.loc.gov/item/96518779/",
+      "馆藏号": "LCCN 96518779",
+      "许可": "No known restrictions on publication（LoC 96518779 权利说明，WebSearch 著录摘要，2026-10-31）；约 1900 年作品，公有领域",
+      "原图分辨率": "817×1024（用户上传 / 官方数据集；片中用 817×1024，只缩不放）",
+      "用途": "暗号、反向显影（著录未写人物位置，片中不圈人、不指认）",
+      "修改说明": "统一调色；S14 反向显影到白纸",
+      "出处签": "LIBRARY OF CONGRESS"
+    },
+    {
+      "id": "IMG07",
+      "file": "public/images/houdini_clippings.jpg",
+      "标题": "[Two newspaper articles announcing Houdini's death on October 31, 1926]",
+      "作者": "San Francisco Chronicle / Long Beach Press-Telegram",
+      "年份": "1926",
+      "来源URL": "https://www.loc.gov/item/2018682515/",
+      "馆藏号": "LoC 2018682515",
+      "许可": "公有领域（1926 年美国报纸，1931 年前出版）；LoC 权利说明待直连复核",
+      "原图分辨率": "1072×1980（用户上传 / 官方数据集；片中用 1072×1980，只缩不放）",
+      "用途": "S14 剪报（死讯）",
+      "修改说明": "只取报头和大标题一条（裁掉 Student's Blow 那行副标题，那是有争议的死因说法）；统一调色",
+      "出处签": "LIBRARY OF CONGRESS · 1926"
+    },
+    {
+      "id": "IMG08a",
+      "file": "public/images/mumler_spirit_a.jpg",
+      "标题": "Moses A. Dow with the 'spirit' of Mabel Warren（老年男子与女性「灵体」，灵体头戴花环）",
+      "作者": "William H. Mumler",
+      "年份": "ca. 1871（片中只标 1860S–70S，F25）",
+      "来源URL": "https://commons.wikimedia.org/wiki/File:Mumler_(Dow).jpg",
+      "馆藏号": "原件：American Museum of Photography（photographymuseum.com，The Mumler Mystery）",
+      "许可": "PD（作者 W. H. Mumler 1884 年去世；Commons 标为公有领域）",
+      "原图分辨率": "374×600",
+      "出处签": "W. H. MUMLER · 1860S–70S",
+      "用途": "S06 名片照托盘、S08 一排三张依次圈出鬼影",
+      "修改说明": "统一调色；未放大"
+    },
+    {
+      "id": "IMG08b",
+      "file": "public/images/mumler_spirit_b.jpg",
+      "标题": "Fanny Conant with the 'spirit' of her brother（女子与男性「灵体」）",
+      "作者": "William H. Mumler",
+      "年份": "1870s（片中只标 1860S–70S，F25）",
+      "来源URL": "https://commons.wikimedia.org/wiki/File:Mumler_(Conant).jpg",
+      "馆藏号": "原件：American Museum of Photography",
+      "许可": "PD（作者 W. H. Mumler 1884 年去世；Commons 标为公有领域）",
+      "原图分辨率": "388×600",
+      "出处签": "W. H. MUMLER · 1860S–70S",
+      "用途": "S06 名片照托盘、S08 一排三张依次圈出鬼影",
+      "修改说明": "统一调色；未放大"
+    },
+    {
+      "id": "IMG08c",
+      "file": "public/images/mumler_spirit_c.jpg",
+      "标题": "Unidentified man with two 'spirits'（青年男子与两个「灵体」）",
+      "作者": "William H. Mumler",
+      "年份": "ca. 1870（片中只标 1860S–70S，F25）",
+      "来源URL": "https://commons.wikimedia.org/wiki/File:Mumler_(unidentified).jpg",
+      "馆藏号": "原件：American Museum of Photography",
+      "许可": "PD（作者 W. H. Mumler 1884 年去世；Commons 标为公有领域）",
+      "原图分辨率": "369×600",
+      "出处签": "W. H. MUMLER · 1860S–70S",
+      "用途": "S06 名片照托盘、S08 一排三张依次圈出鬼影",
+      "修改说明": "统一调色；未放大"
+    },
+    {
+      "id": "IMG10",
+      "file": "public/images/grant_cold_harbor.jpg",
+      "标题": "Grant at Cold Harbor headquarters（格兰特合成像的头部来源）",
+      "作者": "Brady studio",
+      "年份": "1864",
+      "来源URL": "https://www.loc.gov/item/2018667429/",
+      "馆藏号": "LC-B8175-2",
+      "许可": "公有领域（1864 年 Brady 工作室底片）；LoC 权利说明待直连复核",
+      "原图分辨率": "830×1024（用户上传 / 官方数据集；片中用 830×1024，只缩不放）",
+      "用途": "S10 三件原件之一（头）",
+      "修改说明": "按扫描原样显示，不做负片反相；统一调色",
+      "出处签": "LIBRARY OF CONGRESS · 1864"
+    },
+    {
+      "id": "IMG11",
+      "file": "public/images/mccook_horseback.jpg",
+      "标题": "Maj. Gen. Alexander McD. McCook（马和身体的来源）",
+      "作者": "Brady studio",
+      "年份": "1864",
+      "来源URL": "https://www.loc.gov/item/2018667065/",
+      "馆藏号": "LC-B817-7204",
+      "许可": "公有领域（1864 年 Brady 工作室底片）；LoC 权利说明待直连复核",
+      "原图分辨率": "1024×827（用户上传 / 官方数据集；片中用 1024×827，只缩不放）",
+      "用途": "S10 三件原件之一（马和身体）",
+      "修改说明": "按扫描原样显示，不做负片反相；统一调色",
+      "出处签": "LIBRARY OF CONGRESS · 1864"
+    },
+    {
+      "id": "IMG12",
+      "file": "public/images/confederate_prisoners.jpg",
+      "标题": "Confederate prisoners captured at Fisher's Hill（背景来源；F12 只确认是照片，不确认是底片）",
+      "作者": "不详",
+      "年份": "1864",
+      "来源URL": "https://www.loc.gov/item/2007684716/",
+      "馆藏号": "LOT 4181",
+      "许可": "公有领域（1864 年照片）；LoC 权利说明待直连复核",
+      "原图分辨率": "1024×733（用户上传 / 官方数据集；片中用 1024×733，只缩不放）",
+      "用途": "S10 三件原件之一（背景）",
+      "修改说明": "按扫描原样显示，不做负片反相；统一调色",
+      "出处签": "LIBRARY OF CONGRESS · 1864"
+    },
+    {
+      "id": "IMG14",
+      "file": "public/images/met_287722_sitter.jpg",
+      "标题": "[British Official]",
+      "作者": "Unknown",
+      "年份": "1858–61（The Met 著录）",
+      "来源URL": "https://www.metmuseum.org/art/collection/search/287722",
+      "馆藏号": "The Met 287722（Gilman Collection）",
+      "许可": "CC0（The Met Open Access，已从 Met 官方公开数据集下载）",
+      "原图分辨率": "2886×3405（用户上传 / 官方数据集；片中用 2034×2400，只缩不放）",
+      "用途": "S09 双重曝光示意（无名人物，与本案无关，角标「示意」）",
+      "修改说明": "负片反相 + 叠加示意",
+      "出处签": "THE MET · CC0"
+    }
+  ],
+  "sfx": [
+    {
+      "file": "public/sfx/stamp.wav",
+      "标题": "朱砂印章盖下",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.15 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/shutter.wav",
+      "标题": "快门",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.13 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/paper_slide.wav",
+      "标题": "相纸滑动",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 7.14 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/page_turn.wav",
+      "标题": "翻纸",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 7.14 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/projector_click.wav",
+      "标题": "幻灯放映机咔嗒",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.06 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/liquid.wav",
+      "标题": "显影液轻响",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 25.96 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/pen.wav",
+      "标题": "红笔划纸",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 10.79 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/tag_drop.wav",
+      "标题": "档案签落纸",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.06 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/sub_hit.wav",
+      "标题": "低频冲击（反转）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.37 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/sub_hit_low.wav",
+      "标题": "低频冲击（低）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.25 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/flip.wav",
+      "标题": "纸张翻动",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 4.69 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/paper_tick_0.wav",
+      "标题": "字幕纸张点击（音高变体 0）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.03 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/typewriter_0.wav",
+      "标题": "打字机按键（音高变体 0）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.03 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/paper_tick_1.wav",
+      "标题": "字幕纸张点击（音高变体 1）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.24 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/typewriter_1.wav",
+      "标题": "打字机按键（音高变体 1）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.03 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/paper_tick_2.wav",
+      "标题": "字幕纸张点击（音高变体 2）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.13 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/typewriter_2.wav",
+      "标题": "打字机按键（音高变体 2）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.02 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/paper_tick_3.wav",
+      "标题": "字幕纸张点击（音高变体 3）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.07 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/typewriter_3.wav",
+      "标题": "打字机按键（音高变体 3）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.02 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/paper_tick_4.wav",
+      "标题": "字幕纸张点击（音高变体 4）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.02 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/typewriter_4.wav",
+      "标题": "打字机按键（音高变体 4）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.02 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/room_tone.wav",
+      "标题": "房间底噪（暗房滴水、放映机风扇）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 123.65 帧，按峰值对齐画面"
+    }
+  ],
+  "music": [
+    {
+      "file": "public/music/score.wav",
+      "标题": "Three Fake Lincolns — score",
+      "作者": "本项目原创（scripts/synth_audio.py：numpy 合成 pad / 低音 / 打击 + 采样钢琴）",
+      "许可": "原创",
+      "修改说明": "75 BPM × 28 小节，A 小调",
+      "年份": "2026"
+    },
+    {
+      "file": "assets/piano_src/*.wav",
+      "标题": "Salamander Grand Piano V3（30 个采样：C2–F#5，力度层 v7 / v11）",
+      "作者": "Alexander Holm（sfz 重映射：sfzinstruments）",
+      "来源URL": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+      "许可": "CC BY 3.0",
+      "修改说明": "FLAC 转 WAV；按音高重采样（≤ ±1.5 半音）；加制音器释放",
+      "年份": "—"
+    }
+  ],
+  "fonts": [
+    {
+      "name": "Noto Serif SC 900 / Noto Sans SC 500·700",
+      "作者": "Google / Adobe（notofonts/noto-cjk）",
+      "许可": "SIL OFL 1.1",
+      "修改说明": "按片中用字截子集为 woff2"
+    },
+    {
+      "name": "EB Garamond Italic 400",
+      "作者": "The EB Garamond Project Authors",
+      "许可": "SIL OFL 1.1",
+      "修改说明": "Google Fonts latin 子集"
+    },
+    {
+      "name": "IBM Plex Mono 400 / 500",
+      "作者": "IBM Corp.",
+      "许可": "SIL OFL 1.1",
+      "修改说明": "Google Fonts latin 子集"
+    }
+  ],
+  "notes": [
+    "IMG09（Harper's 版面）、IMG13（负片示意）已删，片中不使用",
+    "所有图片只缩不放：原图长边 ≥ 显示尺寸 × 1.5（含镜头呼吸 1.5%）"
+  ],
+  "graphics": [
+    {
+      "file": "src/components/LineArt.tsx, Illustrations.tsx, Desk.tsx, FilmLook.tsx, Props.tsx",
+      "标题": "线稿插图（湿版相机光路、时间线、幻灯放映机、百年刻度尺、档案夹与回形针、相纸夹、剪刀裁切线、扭索纹底纹）、胶片颗粒与灰尘划痕滤镜、档案签与印章",
+      "作者": "本项目原创（代码绘制）",
+      "许可": "原创",
+      "修改说明": "暗房示意里的人物轮廓由 The Met 287722 照片自动描边得到（CC0）"
+    }
+  ]
+}
