@@ -194,14 +194,14 @@ export const SFX: readonly SfxEvent[] = [
   { at: 120, sound: "tag_drop", gainDb: -24 },
   ...typewriterRun(144, 3, 16, -26),
   { at: 192, sound: "paper_tick", gainDb: -28 },
-  { at: 240, sound: "stamp", gainDb: -22 },
+  { at: 240, sound: "stamp", gainDb: -24 },
   // fake No.1
   { at: 288, sound: "paper_slide", gainDb: -22 },
   { at: 306, sound: "paper_slide", gainDb: -26 },
   // blink comparator: one hard switch per eighth note
-  { at: 342, sound: "paper_tick", gainDb: -22 },
-  { at: 354, sound: "paper_tick", gainDb: -22 },
-  { at: 366, sound: "paper_tick", gainDb: -22 },
+  { at: 342, sound: "paper_tick", gainDb: -24 },
+  { at: 354, sound: "paper_tick", gainDb: -24 },
+  { at: 366, sound: "paper_tick", gainDb: -24 },
   { at: 378, sound: "paper_tick", gainDb: -25 },
   { at: 432, sound: "tag_drop", gainDb: -28 },
   { at: 480, sound: "pen", gainDb: -26 },
@@ -224,7 +224,7 @@ export const SFX: readonly SfxEvent[] = [
   { at: 1008, sound: "pen", gainDb: -28 },
   { at: 1020, sound: "pen", gainDb: -28 },
   { at: 1056, sound: "pen", gainDb: -26 },
-  { at: 1158, sound: "drip", gainDb: -22 },
+  { at: 1158, sound: "drip", gainDb: -25 },
   { at: 1176, sound: "paper_slide", gainDb: -28 },
   { at: 1200, sound: "paper_slide", gainDb: -26 },
   // trial, mystery
@@ -239,8 +239,8 @@ export const SFX: readonly SfxEvent[] = [
   // darkroom
   { at: 1392, sound: "paper_slide", gainDb: -28 },
   { at: 1400, sound: "paper_slide", gainDb: -30 },
-  { at: 1416, sound: "shutter", gainDb: -22 },
-  { at: 1488, sound: "shutter", gainDb: -22 },
+  { at: 1416, sound: "shutter", gainDb: -24 },
+  { at: 1488, sound: "shutter", gainDb: -24 },
   // Grant
   { at: 1584, sound: "paper_slide", gainDb: -28 },
   { at: 1584, sound: "tag_drop", gainDb: -26 },
@@ -255,7 +255,7 @@ export const SFX: readonly SfxEvent[] = [
   { at: 1824, sound: "paper_slide", gainDb: -24 },
   // twist: the one punch
   { at: 1920, sound: "projector_click", gainDb: -17 },
-  { at: 1920, sound: "sub_hit", gainDb: -16 },
+  { at: 1920, sound: "sub_hit", gainDb: -22 },
   { at: 1944, sound: "tag_drop", gainDb: -28 },
   { at: 1968, sound: "pen", gainDb: -26 },
   // code, séances

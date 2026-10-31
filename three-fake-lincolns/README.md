@@ -23,7 +23,7 @@ npm run render:draft                   # → out/draft.mp4
 
 # 定稿：全尺寸，CRF 16，快速运动的帧开运动模糊（8 采样，快门 180°）
 npm run render:final                   # → out/final_raw.mp4
-scripts/loudnorm.sh out/final_raw.mp4 out/final.mp4   # 母带 + loudnorm 两遍：−14 LUFS / −1.5 dBTP
+scripts/loudnorm.sh out/final_raw.mp4 out/final.mp4   # 母带：压缩 + 真峰值限幅，输入增益按实测求解到 −14 LUFS（不用 loudnorm，保留动态）
 
 # 质检、字幕、封面
 python3 -I scripts/qa.py out/final.mp4  # 画幅、帧率、时长、响度、静默段、循环接缝、朱砂占比、静止段

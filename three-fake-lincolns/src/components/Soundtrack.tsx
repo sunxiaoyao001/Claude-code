@@ -11,13 +11,14 @@ const MANIFEST = manifest as unknown as Record<string, ManifestEntry>;
 // Mix: the score sits at −6 dB; timeline gains are relative to the sound files plus this bus offset,
 // so a −26 dB pen lands a few dB under the score and the −12 dB sub hit peaks just under full scale.
 // The finished render is loudness-normalised to −14 LUFS afterwards (see README).
-const MUSIC_GAIN = 0.5;
+const MUSIC_GAIN = 0.63;
 const SFX_BUS_DB = 12;
 const ROOM_TONE_DB = -40;
 const dbToGain = (db: number) => 10 ** (db / 20);
 
-// The score steps back (−4 dB) under the seal and the twist.
-const DUCKS = [240, 1920];
+// The score steps back (−4 dB) under the seal. Not under the twist: there the score's own low chord
+// is part of the hit (it is what a phone speaker plays).
+const DUCKS = [240];
 const DUCK_GAIN = dbToGain(-4);
 
 // Paper and pen friction sit 6 dB under the other effects: they must stay below the score.
