@@ -199,11 +199,202 @@
   ],
   "sfx": [
     {
-      "file": "public/sfx/*.wav",
-      "标题": "全部音效（纸张、打字机、印章、快门、放大镜、放映机、显影液、红笔、档案签、sub hit、房间底噪）",
+      "file": "public/sfx/stamp.wav",
+      "标题": "朱砂印章盖下",
       "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
       "许可": "原创",
-      "修改说明": "峰值偏移见 public/sfx/manifest.json"
+      "修改说明": "峰值偏移 0.15 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/shutter.wav",
+      "标题": "快门",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.13 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/paper_slide.wav",
+      "标题": "相纸滑动",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 7.14 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/page_turn.wav",
+      "标题": "翻纸",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 7.14 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/projector_click.wav",
+      "标题": "幻灯放映机咔嗒",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.06 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/liquid.wav",
+      "标题": "显影液轻响",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 25.96 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/pen.wav",
+      "标题": "红笔划纸",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 10.79 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/tag_drop.wav",
+      "标题": "档案签落纸",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.06 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/sub_hit.wav",
+      "标题": "低频冲击（反转）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.37 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/sub_hit_low.wav",
+      "标题": "低频冲击（低）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.25 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/flip.wav",
+      "标题": "纸张翻动",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 4.69 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/paper_tick_0.wav",
+      "标题": "字幕纸张点击（音高变体 0）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.03 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/typewriter_0.wav",
+      "标题": "打字机按键（音高变体 0）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.03 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/paper_tick_1.wav",
+      "标题": "字幕纸张点击（音高变体 1）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.24 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/typewriter_1.wav",
+      "标题": "打字机按键（音高变体 1）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.03 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/paper_tick_2.wav",
+      "标题": "字幕纸张点击（音高变体 2）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.13 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/typewriter_2.wav",
+      "标题": "打字机按键（音高变体 2）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.02 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/paper_tick_3.wav",
+      "标题": "字幕纸张点击（音高变体 3）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.07 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/typewriter_3.wav",
+      "标题": "打字机按键（音高变体 3）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.02 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/paper_tick_4.wav",
+      "标题": "字幕纸张点击（音高变体 4）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.02 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/typewriter_4.wav",
+      "标题": "打字机按键（音高变体 4）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 0.02 帧，按峰值对齐画面"
+    },
+    {
+      "file": "public/sfx/room_tone.wav",
+      "标题": "房间底噪（暗房滴水、放映机风扇）",
+      "作者": "本项目原创（scripts/synth_audio.py，numpy 合成）",
+      "年份": "2026",
+      "来源URL": "—",
+      "许可": "原创",
+      "修改说明": "峰值偏移 123.65 帧，按峰值对齐画面"
     }
   ],
   "music": [
@@ -212,7 +403,8 @@
       "标题": "Three Fake Lincolns — score",
       "作者": "本项目原创（scripts/synth_audio.py：numpy 合成 pad / 低音 / 打击 + 采样钢琴）",
       "许可": "原创",
-      "修改说明": "75 BPM × 28 小节，A 小调"
+      "修改说明": "75 BPM × 28 小节，A 小调",
+      "年份": "2026"
     },
     {
       "file": "assets/piano_src/*.wav",
@@ -220,7 +412,8 @@
       "作者": "Alexander Holm（sfz 重映射：sfzinstruments）",
       "来源URL": "https://github.com/sfzinstruments/SalamanderGrandPiano",
       "许可": "CC BY 3.0",
-      "修改说明": "FLAC 转 WAV；按音高重采样（≤ ±1.5 半音）；加制音器释放"
+      "修改说明": "FLAC 转 WAV；按音高重采样（≤ ±1.5 半音）；加制音器释放",
+      "年份": "—"
     }
   ],
   "fonts": [
