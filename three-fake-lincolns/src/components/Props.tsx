@@ -181,3 +181,39 @@ export const TypedMono: React.FC<{ readonly typed: Typed; readonly sceneFrom: nu
     </MonoText>
   );
 };
+
+// Rectangular archive stamp in vermilion ink (double rule), pressed down like the seal.
+export const ArchiveStamp: React.FC<{ readonly label: string; readonly number: string; readonly left: number; readonly top: number; readonly at: number; readonly tilt?: number }> = ({
+  label,
+  number,
+  left,
+  top,
+  at,
+  tilt = -7,
+}) => {
+  const frame = useCurrentFrame();
+  if (frame < at) return null;
+  const press = interpolate(frame, [at, at + 6], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left,
+        top,
+        rotate: `${tilt}deg`,
+        scale: 1.25 - 0.25 * press,
+        opacity: 0.5 + 0.42 * press,
+        border: `3px solid ${COLORS.vermilion}`,
+        outline: `1px solid ${COLORS.vermilion}`,
+        outlineOffset: 4,
+        padding: "8px 18px 6px",
+        color: COLORS.vermilion,
+        textAlign: "center",
+        filter: "url(#ink)",
+      }}
+    >
+      <div style={{ fontFamily: FONTS.mono, fontWeight: 500, fontSize: TYPE.label, letterSpacing: TYPE.monoTracking }}>{label}</div>
+      <div style={{ fontFamily: FONTS.mono, fontWeight: 500, fontSize: TYPE.subtitleEn, letterSpacing: TYPE.monoTracking, lineHeight: 1.1 }}>{number}</div>
+    </div>
+  );
+};

@@ -4,6 +4,7 @@ import { linearTiming, TransitionSeries, type TransitionPresentation } from "@re
 import { AbsoluteFill, Sequence, Track, useCurrentFrame, useVideoConfig } from "remotion";
 import "./fonts";
 import { Desk } from "./components/Desk";
+import { FilmLook } from "./components/FilmLook";
 import { Soundtrack } from "./components/Soundtrack";
 import { irisShutter, slideCarrier, sweepOff } from "./components/Transitions";
 import { InkFilter } from "./components/Props";
@@ -124,13 +125,14 @@ export const Main: React.FC<MainProps> = ({ watermark, motionBlur }) => {
         <InkFilter />
         <Desk />
         {/* Own stacking context: transitions layer scenes with z-index but never cover subtitles. */}
-        <AbsoluteFill style={{ isolation: "isolate" }}>
+        <AbsoluteFill style={{ isolation: "isolate", filter: "contrast(1.08)" }}>
           <MaybeBlur on={motionBlur}>
             <Scenes />
           </MaybeBlur>
         </AbsoluteFill>
         <Subtitles />
         <Chrome watermark={watermark} />
+        <FilmLook />
         <Soundtrack />
       </AbsoluteFill>
     </TimeScale.Provider>

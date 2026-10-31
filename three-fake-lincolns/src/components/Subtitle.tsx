@@ -1,29 +1,11 @@
 import { fillTextBox, fitText } from "@remotion/layout-utils";
 import React from "react";
 import { interpolate, useCurrentFrame } from "remotion";
+import { splitGroups } from "../text";
 import { CLAMP, COLORS, EASE, FONTS, SAFE, SUBTITLE_MOTION, TYPE } from "../theme";
 
 // Subtitles are left-aligned in the safe column between the left margin and the right UI band.
 export const SUBTITLE_WIDTH = SAFE.right - SAFE.margin;
-
-type Chunk = { readonly text: string; readonly keyword: boolean };
-
-// "这张林肯像，身子是*借*的" -> word groups that rise one after another. Groups break after
-// Chinese punctuation and around the keyword (marked with *...*).
-export const splitGroups = (zh: string): Chunk[] => {
-  const parts = zh.split(/(\*[^*]+\*)/).filter(Boolean);
-  const chunks: Chunk[] = [];
-  for (const part of parts) {
-    if (part.startsWith("*")) {
-      chunks.push({ text: part.slice(1, -1), keyword: true });
-      continue;
-    }
-    for (const piece of part.split(/(?<=[，：；、])/)) {
-      if (piece) chunks.push({ text: piece, keyword: false });
-    }
-  }
-  return chunks;
-};
 
 const enStyle = (fontSize: number): React.CSSProperties => ({
   fontFamily: FONTS.italicEn,
@@ -107,6 +89,28 @@ export const Subtitle: React.FC<Props> = ({ zh, en, durationInFrames, isStatic =
       <div style={{ position: "relative", fontFamily: FONTS.sansZh, fontSize: zhSize, lineHeight: 1.3, color: COLORS.printWhite, fontWeight: 500 }}>
         {chunks.map((c, i) => {
           const p = rise(i);
+          if (c.keyword) {
+            // The keyword is stamped, not raised: it lands oversized and tilted, presses flat in 8
+            // frames, and keeps an inked edge (the composition's #ink filter).
+            const s = isStatic ? 1 : interpolate(frame, [i * wordStaggerFrames, i * wordStaggerFrames + 8], [0, 1], { ...CLAMP, easing: EASE.out });
+            return (
+              <span key={i} style={{ display: "inline-block", verticalAlign: "bottom", whiteSpace: "pre" }}>
+                <span
+                  style={{
+                    display: "inline-block",
+                    color: COLORS.vermilion,
+                    fontWeight: 700,
+                    opacity: Math.min(1, s * 3),
+                    scale: 1.45 - 0.45 * s,
+                    rotate: `${-5 * (1 - s)}deg`,
+                    filter: "url(#ink)",
+                  }}
+                >
+                  {c.text}
+                </span>
+              </span>
+            );
+          }
           return (
             <span key={i} style={{ display: "inline-block", overflow: "hidden", verticalAlign: "bottom", whiteSpace: "pre" }}>
               <span

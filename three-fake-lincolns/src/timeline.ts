@@ -1,3 +1,6 @@
+// Explicit extension: the timeline is also imported by Node scripts (export_srt, export_timeline).
+import { splitGroups } from "./text.ts";
+
 // The single timeline: picture, subtitles and sound effects are all driven from here.
 // Every frame number is a base frame at 30 fps for the 89.6 s cut (75 BPM, 28 bars of 96 f).
 // Changing `durationSec` rescales all of them through useTime() (see time.ts).
@@ -180,6 +183,9 @@ const typedSfx = (x: Typed, gainDb: number): SfxEvent[] =>
 export const SFX: readonly SfxEvent[] = [
   // cover, bet, title
   { at: 3, sound: "pen", gainDb: -26 },
+  { at: 27, sound: "pen", gainDb: -30 },
+  { at: 39, sound: "pen", gainDb: -30 },
+  { at: 51, sound: "pen", gainDb: -30 },
   { at: 108, sound: "tag_drop", gainDb: -24 },
   { at: 120, sound: "tag_drop", gainDb: -24 },
   ...typewriterRun(144, 3, 16, -26),
@@ -196,6 +202,8 @@ export const SFX: readonly SfxEvent[] = [
   { at: 432, sound: "tag_drop", gainDb: -28 },
   { at: 480, sound: "pen", gainDb: -26 },
   { at: 504, sound: "pen", gainDb: -26 },
+  { at: 532, sound: "paper_tick", gainDb: -26 },
+  { at: 544, sound: "paper_tick", gainDb: -26 },
   { at: 576, sound: "pen", gainDb: -26 },
   { at: 600, sound: "pen", gainDb: -26 },
   // fake No.2 (prints swept off the table at 672)
@@ -204,6 +212,7 @@ export const SFX: readonly SfxEvent[] = [
   { at: 684, sound: "tag_drop", gainDb: -30 },
   { at: 696, sound: "tag_drop", gainDb: -30 },
   { at: 708, sound: "tag_drop", gainDb: -30 },
+  { at: 720, sound: "stamp", gainDb: -22 },
   { at: 744, sound: "paper_slide", gainDb: -26 },
   { at: 768, sound: "liquid", gainDb: -28 },
   { at: 936, sound: "liquid", gainDb: -32 },
@@ -260,9 +269,10 @@ export const SFX: readonly SfxEvent[] = [
   { at: 2604, sound: "flip", gainDb: -26 },
 ];
 
-// One soft paper tick per subtitle entrance (except lines that are already on screen).
-export const SUBTITLE_TICKS: readonly SfxEvent[] = LINES.filter((l) => !l.isStatic).map((l) => ({
-  at: l.from,
-  sound: "paper_tick" as const,
-  gainDb: -30,
-}));
+// One soft paper tick per subtitle entrance, and a light stamp as its keyword presses down
+// (except lines that are already on screen).
+export const SUBTITLE_TICKS: readonly SfxEvent[] = LINES.filter((l) => !l.isStatic).flatMap((l) => {
+  const k = splitGroups(l.zh).findIndex((c) => c.keyword);
+  const tick = { at: l.from, sound: "paper_tick" as const, gainDb: -30 };
+  return k < 0 ? [tick] : [tick, { at: l.from + k * 2 + 6, sound: "stamp" as const, gainDb: -34 }];
+});

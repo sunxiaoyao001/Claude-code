@@ -3,6 +3,7 @@ import { AbsoluteFill, interpolate, Sequence, useCurrentFrame, useVideoConfig } 
 import { CALHOUN_TO_LINCOLN, fitWidth, IMG, lincolnRectToCalhoun, region } from "../assets";
 import { Breath, Dolly } from "../components/Breath";
 import { EngravedFrame } from "../components/Illustrations";
+import { Drawing, Ink } from "../components/LineArt";
 import { AlignedCalhoun, DifferenceOverlay } from "../components/Overlays";
 import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
 import { ManilaTag, MonoText, PenMark, Seal } from "../components/Props";
@@ -66,12 +67,13 @@ const useTagSway = (phase: number) => {
 };
 
 // The cover: both prints, the lender's head under a "?" tag. Also the loop's last shot (Outro).
-export const CoverPrints: React.FC<{ readonly phase?: number; readonly captionOpacity?: number; readonly lincolnMarks?: React.ReactNode; readonly sheenAt?: number }> = ({
-  phase = 0,
-  captionOpacity = 1,
-  lincolnMarks,
-  sheenAt,
-}) => {
+export const CoverPrints: React.FC<{
+  readonly phase?: number;
+  readonly captionOpacity?: number;
+  readonly lincolnMarks?: React.ReactNode;
+  readonly sheenAt?: number;
+  readonly matches?: React.ReactNode;
+}> = ({ phase = 0, captionOpacity = 1, lincolnMarks, sheenAt, matches }) => {
   const sway = useTagSway(phase);
   return (
     <>
@@ -88,8 +90,57 @@ export const CoverPrints: React.FC<{ readonly phase?: number; readonly captionOp
       >
         <MonoText size={TYPE.subtitleZh} color={COLORS.vermilion}>?</MonoText>
       </ManilaTag>
+      {matches}
       <SourceCaption text="LIBRARY OF CONGRESS · CA. 1865 / 1852" left={COVER.lincoln.left} top={COVER.calhoun.top + OUTER_H + 24} opacity={captionOpacity} />
     </>
+  );
+};
+
+// The same three features on both prints (Lincoln-normalised coordinates; the Calhoun print shows
+// the registered region, so the same window position is the same feature): hand on the table,
+// the globe, the left foot.
+const MATCHES = [
+  { u: 0.645, v: 0.545 },
+  { u: 0.215, v: 0.64 },
+  { u: 0.51, v: 0.78 },
+] as const;
+const dot = (x: number, y: number, r = 7) => `M ${x - r} ${y} a ${r} ${r} 0 1 0 ${2 * r} 0 a ${r} ${r} 0 1 0 ${-2 * r} 0`;
+
+const MatchLines: React.FC<{ readonly from: number; readonly out: number }> = ({ from, out }) => {
+  const frame = useCurrentFrame();
+  const fade = interpolate(frame, [out, out + 10], [1, 0], { ...CLAMP, easing: EASE.inOut });
+  if (fade <= 0) return null;
+  return (
+    <Drawing opacity={fade}>
+      {MATCHES.map((m, i) => {
+        const w = win(m.u, m.v);
+        const a = { x: COVER.lincoln.left + BORDER + w.x, y: COVER.lincoln.top + BORDER + w.y };
+        const b = { x: COVER.calhoun.left + BORDER + w.x, y: COVER.calhoun.top + BORDER + w.y };
+        const at = from + i * 12;
+        return (
+          <React.Fragment key={i}>
+            <Ink d={dot(a.x, a.y)} from={at} duration={6} color={COLORS.vermilion} width={2.5} opacity={1} />
+            <Ink d={`M ${a.x} ${a.y} L ${b.x} ${b.y}`} from={at + 3} duration={9} color={COLORS.vermilion} width={2} dash="7 6" opacity={0.95} />
+            <Ink d={dot(b.x, b.y)} from={at + 10} duration={6} color={COLORS.vermilion} width={2.5} opacity={1} />
+          </React.Fragment>
+        );
+      })}
+    </Drawing>
+  );
+};
+
+// A pair of scissors (line art) cutting along a dashed line at the neck.
+const scissors = (x: number, y: number) =>
+  [dot(x - 28, y - 9, 7), dot(x - 28, y + 9, 7), `M ${x - 21} ${y - 6} L ${x + 20} ${y + 3}`, `M ${x - 21} ${y + 6} L ${x + 20} ${y - 3}`].join(" ");
+const CutLine: React.FC<{ readonly left: number; readonly top: number; readonly from: number }> = ({ left, top, from }) => {
+  const y = top + BORDER + (NECK_TL.y + NECK_BR.y) / 2;
+  const x0 = left - 6;
+  const x1 = left + OUTER_W + 10;
+  return (
+    <Drawing>
+      <Ink d={scissors(x0, y)} from={from} duration={8} width={2} opacity={0.9} />
+      <Ink d={`M ${x0 + 24} ${y} H ${x1}`} from={from + 4} duration={12} color={COLORS.vermilion} width={2} dash="9 7" opacity={0.95} />
+    </Drawing>
   );
 };
 
@@ -111,6 +162,7 @@ const CoverBetTitle: React.FC = () => {
       <AbsoluteFill style={{ transformOrigin: `${COVER.lincoln.left}px ${COVER.lincoln.top}px`, scale: groupScale, translate: `0 ${-36 * group}px` }}>
         <CoverPrints
           sheenAt={t(4)}
+          matches={<MatchLines from={t(24)} out={t(84)} />}
           captionOpacity={1 - group}
           lincolnMarks={
             // The seam: one stroke across the neck, reaching half a neck-width past it on each side.
@@ -320,6 +372,9 @@ const Irony: React.FC = () => {
       <CalhounPrint {...COVER.calhoun}>
         <PenMark kind="circle" {...faceBox} from={t(24)} durationInFrames={18} seed={9} />
       </CalhounPrint>
+      {/* Where the head was cut and the body kept: a dashed cut line across each neck. */}
+      <CutLine left={COVER.lincoln.left} top={COVER.lincoln.top} from={t(48)} />
+      <CutLine left={COVER.calhoun.left} top={COVER.calhoun.top} from={t(60)} />
       {/* Context notes in vermilion pencil, so they never read as the prints' own dates. */}
       <PencilNote text="EMANCIPATION PROCLAMATION · 1863" left={COVER.lincoln.left + 6} top={COVER.lincoln.top - 58} from={0} tilt={-1.2} />
       <PencilNote text="“A POSITIVE GOOD” · 1837" left={COVER.calhoun.left + 40} top={COVER.calhoun.top + OUTER_H + 22} from={t(24)} tilt={1} />

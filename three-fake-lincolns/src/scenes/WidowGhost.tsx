@@ -3,7 +3,8 @@ import { AbsoluteFill, CanvasImage, interpolate, Sequence, staticFile, useCurren
 import { fitWidth, IMG, region, type ImageKey } from "../assets";
 import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
-import { PenMark } from "../components/Props";
+import { Drawing, Ink } from "../components/LineArt";
+import { ArchiveStamp, PenMark } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
 import { photoGrade } from "../grade";
 import { useTime } from "../time";
@@ -73,6 +74,8 @@ const CardTray: React.FC = () => {
         );
       })}
       <SourceCaption text="W. H. MUMLER · SPIRIT PHOTOGRAPHS · 1860S–70S" left={120} top={1090} />
+      {/* The second file is stamped open. */}
+      <ArchiveStamp label="ARCHIVE" number="No.002" left={660} top={760} at={t(48)} tilt={-8} />
     </AbsoluteFill>
   );
 };
@@ -95,6 +98,14 @@ const HandMark: React.FC<{ readonly area: string; readonly from: number; readonl
   return <PenMark kind="underline" left={a.x} top={a.y} width={b.x - a.x} height={b.y - a.y} from={from} durationInFrames={10} seed={seed} />;
 };
 
+// Darkroom print tongs: two long strips hinged at the top, rubber-tipped jaws on the corner.
+const PrintTongs: React.FC<{ readonly x: number; readonly y: number; readonly from: number }> = ({ x, y, from }) => (
+  <Drawing>
+    <Ink d={`M ${x - 16} ${y + 18} L ${x + 104} ${y - 196} M ${x + 8} ${y + 26} L ${x + 140} ${y - 178} M ${x + 104} ${y - 196} Q ${x + 128} ${y - 214} ${x + 140} ${y - 178}`} from={from} duration={10} width={3} opacity={0.85} />
+    <Ink d={`M ${x - 16} ${y + 18} L ${x - 6} ${y} M ${x + 8} ${y + 26} L ${x + 18} ${y + 8}`} from={from + 6} duration={4} width={7} color={COLORS.ink} opacity={1} />
+  </Drawing>
+);
+
 const PHOTO = region("maryLincolnGhost", "photo");
 // No zoom beyond the breath: this source is small, so the print is capped by the 1.5x budget.
 const DEV_W = Math.floor(fitWidth("maryLincolnGhost", PHOTO, 380, BREATH_MAX_ZOOM));
@@ -115,6 +126,10 @@ const DeveloperTray: React.FC = () => {
   const trayH = DEV_H + 150;
   const trayLeft = 540 - trayW / 2 - 40;
   const trayTop = 300;
+  // Print tongs (line art) close on the corner, lift the print with it, then leave.
+  const printLeft = trayLeft + 70 - 10 + out * 70;
+  const printTop = trayTop + 75 - 10 - out * 46;
+  const tongsAway = interpolate(frame, [t(426), t(442)], [0, 1], { ...CLAMP, easing: EASE.inOut });
   return (
     <AbsoluteFill>
       <div
@@ -156,6 +171,11 @@ const DeveloperTray: React.FC = () => {
         <HandMark area="ghostHandRight" from={t(252)} seed={14} />
         <GhostMark from={t(288)} />
       </PhotoPrint>
+      {tongsAway < 1 ? (
+        <div style={{ position: "absolute", inset: 0, translate: `${tongsAway * 120}px ${-tongsAway * 260}px`, opacity: 1 - tongsAway }}>
+          <PrintTongs x={printLeft + DEV_W + 20 - 8} y={printTop + 6} from={t(372)} />
+        </div>
+      ) : null}
       <SourceCaption text={IMG.maryLincolnGhost.caption} left={trayLeft} top={trayTop + trayH + 20} />
     </AbsoluteFill>
   );
