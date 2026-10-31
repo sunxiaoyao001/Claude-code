@@ -111,7 +111,7 @@ export const PenMark: React.FC<{
   readonly seed?: number;
 }> = ({ kind, left, top, width, height, from, durationInFrames = 20, seed = 7 }) => {
   const frame = useCurrentFrame();
-  const progress = interpolate(frame, [from, from + durationInFrames], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  const progress = interpolate(frame, [from, from + durationInFrames], [0, 1], { ...CLAMP, easing: EASE.ink });
   const box = <div style={{ width, height }} />;
   const common = { progress, color: COLORS.vermilion, seed, roughness: 1.4 } as const;
   return (

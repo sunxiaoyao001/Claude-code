@@ -58,7 +58,7 @@ const CardTray: React.FC = () => {
   return (
     <AbsoluteFill>
       {CARDS.map((c) => {
-        const inP = interpolate(frame, [t(c.at), t(c.at) + 12], [0, 1], { ...CLAMP, easing: EASE.spring });
+        const inP = interpolate(frame, [t(c.at), t(c.at) + 12], [0, 1], { ...CLAMP, easing: EASE.land });
         const isWidow = c.key === "maryLincolnGhost";
         const p = isWidow ? pick : 0;
         return (
@@ -75,7 +75,7 @@ const CardTray: React.FC = () => {
       })}
       <SourceCaption text="W. H. MUMLER · SPIRIT PHOTOGRAPHS · 1860S–70S" left={120} top={1090} />
       {/* The second file is stamped open. */}
-      <ArchiveStamp label="ARCHIVE" number="No.002" left={660} top={760} at={t(48)} tilt={-8} />
+      <ArchiveStamp label="ARCHIVE" number="No.002" left={660} top={760} at={t(60)} tilt={-8} />
     </AbsoluteFill>
   );
 };
@@ -111,61 +111,103 @@ const PHOTO = region("maryLincolnGhost", "photo");
 const DEV_W = Math.floor(fitWidth("maryLincolnGhost", PHOTO, 380, BREATH_MAX_ZOOM));
 const DEV_H = Math.round((DEV_W * ((PHOTO[3] - PHOTO[1]) * IMG.maryLincolnGhost.height)) / ((PHOTO[2] - PHOTO[0]) * IMG.maryLincolnGhost.width));
 
+// The tray: a white enamel darkroom dish (a chipped rim, a pouring lip) holding dark developer.
+const TRAY_RIM = 26;
+const Tray: React.FC<{ readonly left: number; readonly top: number; readonly width: number; readonly height: number; readonly sheen: number }> = ({ left, top, width, height, sheen }) => (
+  <div
+    style={{
+      position: "absolute",
+      left,
+      top,
+      width,
+      height,
+      borderRadius: 22,
+      backgroundColor: COLORS.printWhite,
+      // Enamel under the lamp: lit from the top left, falling off toward the far corner.
+      backgroundImage: "linear-gradient(150deg, rgba(14,14,16,0.02) 0%, rgba(14,14,16,0.22) 70%, rgba(14,14,16,0.36) 100%)",
+      boxShadow: "0 2px 3px rgba(0,0,0,0.5), 10px 24px 50px rgba(0,0,0,0.55), inset 0 2px 0 rgba(236,230,218,0.6), inset 0 -3px 6px rgba(14,14,16,0.35)",
+    }}
+  >
+    {/* Chips in the enamel, the dark iron showing through. */}
+    {[
+      [0.12, 0.012, 7],
+      [0.83, 0.985, 5],
+      [0.988, 0.42, 4],
+    ].map(([u, v, r], i) => (
+      <div key={i} style={{ position: "absolute", left: u * width - r, top: v * height - r, width: 2 * r, height: 1.4 * r, borderRadius: "45%", backgroundColor: COLORS.ink, opacity: 0.75 }} />
+    ))}
+    {/* The pouring lip on the near-left corner. */}
+    <div style={{ position: "absolute", left: -10, top: height - 70, width: 22, height: 40, borderRadius: "50% 0 0 50%", backgroundColor: COLORS.printWhite, opacity: 0.85 }} />
+    {/* The well, full of developer: dark liquid with the lamp's reflection drifting across it. */}
+    <div
+      style={{
+        position: "absolute",
+        inset: TRAY_RIM,
+        borderRadius: 12,
+        backgroundColor: COLORS.ink,
+        boxShadow: "inset 0 10px 24px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(236,230,218,0.25)",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ position: "absolute", inset: 0, background: `linear-gradient(105deg, transparent ${sheen * 100 - 16}%, rgba(236,230,218,0.1) ${sheen * 100}%, transparent ${sheen * 100 + 16}%)` }} />
+    </div>
+  </div>
+);
+
 const DeveloperTray: React.FC = () => {
   const frame = useCurrentFrame();
   const t = useTime();
-  // Local 0 = 768. Darkest tones first, the faint "spirit" last (it lands on 1056, a phrase downbeat).
-  const develop = interpolate(frame, [t(6), t(168), t(276), t(300)], [0, 0.35, 0.68, 1], { ...CLAMP, easing: EASE.inOut });
-  // The developer's surface: a slow sheen that keeps travelling, so the tray reads as liquid.
+  // Local 0 = 768. The print goes in with its shadows already coming up (no blank sheet); the face and
+  // dress by 840, the hands by 936 (marked 1008/1020), the faint "spirit" last, fully there at 1032 and
+  // circled on the 1056 downbeat. Continuous tone throughout (see grade.ts).
+  const develop = interpolate(frame, [0, t(72), t(168), t(264)], [0.12, 0.5, 0.78, 1], { ...CLAMP, easing: EASE.inOut });
+  // The developer's surface: a slow reflection that keeps travelling, over the print too.
   const sheen = EASE.inOut((frame / t(144)) % 1) * 1.8 - 0.4;
   // 1152: the print is lifted out of the tray and laid on the table beside it.
   const out = interpolate(frame, [t(384), t(408)], [0, 1], { ...CLAMP, easing: EASE.inOut });
   const down = interpolate(frame, [t(408), t(426)], [0, 1], { ...CLAMP, easing: EASE.out });
   const printLift = out * (1 - down) * 0.9;
-  const trayW = DEV_W + 140;
-  const trayH = DEV_H + 150;
+  const trayW = DEV_W + 2 * TRAY_RIM + 100;
+  const trayH = DEV_H + 2 * TRAY_RIM + 110;
   const trayLeft = 540 - trayW / 2 - 40;
   const trayTop = 300;
   // Print tongs (line art) close on the corner, lift the print with it, then leave.
-  const printLeft = trayLeft + 70 - 10 + out * 70;
-  const printTop = trayTop + 75 - 10 - out * 46;
+  const printLeft = trayLeft + TRAY_RIM + 40 + out * 70;
+  const printTop = trayTop + TRAY_RIM + 45 - out * 46;
   const tongsAway = interpolate(frame, [t(426), t(442)], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  // Under the liquid: the surface reflection and a faint darkening ride over the print until it is
+  // lifted out.
+  const wet = 1 - out;
+  // The 示意 mark qualifies only the developing animation; it leaves once the print has developed.
+  const markOpacity = interpolate(frame, [0, 8, t(264), t(276)], [0, 1, 1, 0], { ...CLAMP, easing: EASE.inOut });
   return (
     <AbsoluteFill>
-      <div
-        style={{
-          position: "absolute",
-          left: trayLeft,
-          top: trayTop,
-          width: trayW,
-          height: trayH,
-          backgroundColor: COLORS.ink,
-          borderRadius: 10,
-          boxShadow: `inset 0 0 0 3px ${COLORS.silver}55, inset 0 3px 0 4px rgba(236,230,218,0.12), inset 0 18px 40px rgba(0,0,0,0.7), 0 20px 50px rgba(0,0,0,0.55)`,
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: `linear-gradient(105deg, transparent ${sheen * 100 - 14}%, rgba(236,230,218,0.09) ${sheen * 100}%, transparent ${sheen * 100 + 14}%)`,
-          }}
-        />
-      </div>
+      <Tray left={trayLeft} top={trayTop} width={trayW} height={trayH} sheen={sheen} />
       <PhotoPrint
         src={IMG.maryLincolnGhost.file}
         imgW={IMG.maryLincolnGhost.width}
         imgH={IMG.maryLincolnGhost.height}
         width={DEV_W}
         crop={rectToCrop(PHOTO)}
-        left={trayLeft + 70 - 10 + out * 70}
-        top={trayTop + 75 - 10 - out * 46}
+        left={printLeft}
+        top={printTop}
         tilt={0.4 + out * 2.2}
         border={10}
         develop={develop}
         lift={printLift}
         sheenAt={t(392)}
+        layers={
+          wet > 0.01 ? (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                opacity: wet,
+                background: `linear-gradient(105deg, transparent ${sheen * 100 - 16}%, rgba(236,230,218,0.16) ${sheen * 100}%, transparent ${sheen * 100 + 16}%), rgba(14,14,16,0.06)`,
+              }}
+            />
+          ) : null
+        }
       >
         <HandMark area="ghostHandLeft" from={t(240)} seed={12} />
         <HandMark area="ghostHandRight" from={t(252)} seed={14} />
@@ -176,6 +218,7 @@ const DeveloperTray: React.FC = () => {
           <PrintTongs x={printLeft + DEV_W + 20 - 8} y={printTop + 6} from={t(372)} />
         </div>
       ) : null}
+      {markOpacity > 0 ? <IllustrativeMark text="显影过程为示意" left={trayLeft + trayW - 196} top={trayTop - 46} opacity={markOpacity} /> : null}
       <SourceCaption text={IMG.maryLincolnGhost.caption} left={trayLeft} top={trayTop + trayH + 20} />
     </AbsoluteFill>
   );
@@ -191,17 +234,15 @@ export const WidowGhost: React.FC = () => {
             <CardTray />
           </Dolly>
         </Sequence>
-        {/* 14 seconds in the developer: the camera creeps in the whole time (0.9 → 1). The tray is a
-            schematic (an albumen carte was printed out in daylight), so it carries the 示意 mark. */}
+        {/* 14 seconds in the developer: the camera creeps in the whole time (0.9 → 1). The developing
+            is a schematic (an albumen carte was printed out in daylight), so it carries a 示意 mark
+            while it develops; the developed print is the real photograph and carries none. */}
         <Sequence from={t(96)} layout="none">
           <Dolly from={0.9} end={420} originX={500} originY={640}>
             <DeveloperTray />
           </Dolly>
         </Sequence>
       </Breath>
-      <Sequence from={t(96)} layout="none">
-        <IllustrativeMark />
-      </Sequence>
     </AbsoluteFill>
   );
 };

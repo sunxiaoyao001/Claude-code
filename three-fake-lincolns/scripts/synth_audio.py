@@ -106,8 +106,14 @@ def _nearest_sample(midi):
     for octave in range(2, 6):
         for letter, offset in SAMPLE_NOTES.items():
             m = 12 * (octave + 1) + offset
+            if not os.path.exists(os.path.join(PIANO_DIR, f"{letter}{octave}v11.wav")):
+                continue
             if best is None or abs(m - midi) < abs(best[1] - midi):
                 best = (f"{letter}{octave}", m)
+    # Never stretch a sample by more than 1.5 semitones: a note outside the sampled range
+    # (C2–F#5) is an error in the score, not something to resample.
+    if abs(best[1] - midi) > 1.5:
+        raise ValueError(f"MIDI {midi} is outside the sampled range (nearest {best[0]})")
     return best
 
 
@@ -130,7 +136,7 @@ def piano(midi, dur, vel=0.7):
     return y * rel[:, None] * (0.55 + 0.6 * vel)
 
 
-def pad(midis, dur, bright=1400):
+def pad(midis, dur, bright=1400, attack=1.4):
     n = int((dur + 2.5) * SR)
     t = np.arange(n) / SR
     out = np.zeros((n, 2))
@@ -143,7 +149,7 @@ def pad(midis, dur, bright=1400):
             s = sum(np.sin(2 * np.pi * ff * h * lfo * t) / h for h in range(1, 7))
             out[:, side] += s
     out = lowpass(out, bright, order=2)
-    a = np.clip(t / 1.4, 0, 1) ** 2
+    a = np.clip(t / max(attack, 1e-3), 0, 1) ** 2
     r = np.ones(n)
     r0 = int(dur * SR)
     r[r0:] = np.exp(-np.arange(n - r0) / SR / 0.9)
@@ -163,8 +169,9 @@ def bass(midi, dur):
 
 def brush(vel=0.5):
     n = int(0.22 * SR)
-    x = bandpass(rng.standard_normal(n), 1800, 9000) * env_ad(n, 0.012, 0.06)
-    return x * vel
+    # kept darker than the paper and pen effects (2–6 kHz), so the two layers do not blur together
+    x = bandpass(rng.standard_normal(n), 1500, 5000) * env_ad(n, 0.012, 0.06)
+    return x * vel * 0.7
 
 
 def tick(vel=0.5):
@@ -224,10 +231,13 @@ def build_score(bpm, bars, fps, silence_frames):
         t0 = b * bar
         bar_no = b + 1
         bright = 900 if bar_no <= 3 else (2200 if bar_no == GOLDEN_BAR else 1500)
-        place("pad", pad(CHORDS[ch], bar, bright), t0, 0.42 if bar_no <= 3 else 0.45)
-        # downbeat accents: the reveal (bar 4) and the ghost (bar 12), kept below the twist
+        # The hook is pad only and sits ~3 dB under the body of the film, so the sections have range.
+        # Bar 1 has no attack: the last bar's pad is folded onto the start (seamless loop).
+        place("pad", pad(CHORDS[ch], bar, bright, attack=0.01 if bar_no == 1 else 1.4), t0, 0.30 if bar_no <= 3 else 0.45)
+        # downbeat accents: the reveal (bar 4) and the ghost (bar 12), kept well below the twist and
+        # the golden line
         if bar_no in (4, 12):
-            g = 0.7 if bar_no == 4 else 0.8
+            g = 0.55 if bar_no == 4 else 0.62
             place("piano", piano(ROOTS[ch], 3.0, 0.95), t0, 0.9 * g, -0.1)
             place("piano", piano(ROOTS[ch] + 12, 3.0, 0.9), t0, 0.7 * g, 0.1)
             for m in CHORDS[ch]:
@@ -239,6 +249,10 @@ def build_score(bpm, bars, fps, silence_frames):
                 m = tones[k % len(tones)]
                 v = 0.42 if k % 2 else 0.5
                 place("piano", piano(m, beat * 0.45, v), t0 + k * beat / 2, 0.45, 0.15 * ((k % 3) - 1))
+        if bar_no == 21:
+            # the punch: a full low A minor chord with the sub hit, so it carries on a phone speaker
+            for m, gm in ((45, 0.8), (52, 0.6), (57, 0.55), (60, 0.4)):
+                place("piano", piano(m, bar * 0.9, 0.95), t0, gm)
         if 21 <= bar_no <= 24:
             # twist: low octaves, one per half bar
             place("piano", piano(ROOTS[ch], bar * 0.48, 0.8), t0, 0.6)
@@ -249,13 +263,14 @@ def build_score(bpm, bars, fps, silence_frames):
         if bar_no == GOLDEN_BAR:
             for k, chord in enumerate(GOLDEN_CHORDS):
                 for m in chord:
-                    place("piano", piano(m, beat * 1.9, 0.6), t0 + 2 * k * beat, 0.4, 0.1)
+                    place("piano", piano(m, beat * 1.9, 0.6), t0 + 2 * k * beat, 0.5, 0.1)
             # one clear note per character on every eighth (v11 layer), and a held chord under the
             # last character, 信; an octave above the chords opens the top of the line.
             for k, m in enumerate(GOLDEN_MELODY):
-                place("piano", piano(m, beat * 0.9, 0.8), t0 + k * beat / 2, 0.75, -0.1)
+                place("piano", piano(m, beat * 0.9, 0.8), t0 + k * beat / 2, 0.92, -0.1)
             for m in GOLDEN_CHORDS[0]:
-                place("piano", piano(m + 12, beat * 1.5, 0.55), t0, 0.25, 0.15)
+                if m + 12 <= 78:  # the samples stop at F#5
+                    place("piano", piano(m + 12, beat * 1.5, 0.55), t0, 0.25, 0.15)
             for m in GOLDEN_CHORDS[0]:
                 place("piano", piano(m, beat * 3.0, 0.6), t0 + 3.5 * beat, 0.4, 0.05)
         if bar_no == GOLDEN_BAR + 1:
@@ -333,23 +348,34 @@ def sfx_shutter():
     return norm_peak(add_reverb(x, 0.1, 0.4), -3)
 
 
+def grain(n, rate=55.0, depth=0.7):
+    """Random amplitude grain: the fibre-by-fibre catch of paper or a nib, not a steady hiss."""
+    k = max(2, int(n / SR * rate))
+    g = rng.uniform(1 - depth, 1, k)
+    return np.interp(np.arange(n), np.linspace(0, n - 1, k), g)
+
+
+def friction(n, lo=1000, hi=6000):
+    x = bandpass(rng.standard_normal(n), lo, hi)
+    # gentle −4 dB shelf above ~5 kHz: no hiss on phone speakers
+    return x - 0.37 * highpass(x, 5000)
+
+
 def sfx_paper_slide(seconds=0.55):
     n = int(seconds * SR)
     t = np.arange(n) / SR
-    x = bandpass(rng.standard_normal(n), 700, 6000)
-    grain = 1 + 0.5 * np.sin(2 * np.pi * 37 * t + rng.uniform(0, 6))
-    e = np.sin(np.pi * np.clip(t / seconds, 0, 1)) ** 1.5
-    return norm_peak(x * grain * e, -4)
+    # paper pushed across a desk: a quick catch, then a body of friction that slows and stops
+    e = np.clip(t / 0.02, 0, 1) * np.exp(-t / (seconds * 0.45))
+    return norm_peak(friction(n, 900, 5500) * grain(n, 60) * e, -4)
 
 
 def sfx_page_turn():
     n = int(0.7 * SR)
     t = np.arange(n) / SR
-    x = rng.standard_normal(n)
-    sweep = np.array([bandpass(x[i:i + 2400], 600 + 5000 * (i / n), 7000 + 4000 * (i / n)) for i in range(0, n, 2400)], dtype=object)
-    y = np.concatenate(sweep)[:n]
-    e = np.exp(-((t - 0.28) / 0.13) ** 2) + 0.4 * np.exp(-((t - 0.45) / 0.05) ** 2)
-    return norm_peak(y * e, -4)
+    # the sheet lifts (soft, rising), turns, and lands (a short slap)
+    lift = friction(n, 700, 4000) * grain(n, 40) * np.exp(-((t - 0.22) / 0.12) ** 2)
+    land = bandpass(rng.standard_normal(n), 500, 3500) * np.exp(-np.maximum(t - 0.42, 0) / 0.03) * (t >= 0.42)
+    return norm_peak(lift + 0.8 * land, -4)
 
 
 def sfx_loupe():
@@ -384,10 +410,10 @@ def sfx_liquid():
 def sfx_pen():
     n = int(0.45 * SR)
     t = np.arange(n) / SR
-    x = bandpass(rng.standard_normal(n), 2500, 9000)
-    mod = 0.5 + 0.5 * np.abs(np.sin(2 * np.pi * 9 * t))
-    e = np.clip(t / 0.03, 0, 1) * np.clip((0.45 - t) / 0.08, 0, 1)
-    return norm_peak(x * mod * e, -6)
+    # A nib on paper, following the stroke's speed (EASE.ink: fastest at the start, slowing to the
+    # end): a 4 ms catch, loudest at once, the scratch thinning out over the stroke.
+    e = np.clip(t / 0.004, 0, 1) * np.exp(-t / 0.16)
+    return norm_peak(friction(n, 1500, 6000) * grain(n, 90, 0.8) * e, -6)
 
 
 def sfx_tag_drop():
@@ -403,7 +429,24 @@ def sfx_sub_hit(seconds=2.2, low=False):
     f = (70 if not low else 60) * np.exp(-t / 0.35) + 32
     s = np.sin(2 * np.pi * np.cumsum(f) / SR) * env_ad(n, 0.004, 0.7)
     air = lowpass(rng.standard_normal(n), 400) * env_ad(n, 0.003, 0.08) * 0.15
-    return norm_peak(s + air, -1)
+    # Soft saturation adds odd harmonics (≈ 210, 350 Hz on the attack) that a phone speaker can play;
+    # a 1–4 kHz body knock gives the hit a front edge.
+    sat = np.tanh(2.6 * s) / np.tanh(2.6)
+    knock = bandpass(rng.standard_normal(n), 900, 4000) * env_ad(n, 0.0008, 0.035) * 0.35
+    return norm_peak(0.55 * s + 0.45 * sat + air + knock, -1)
+
+
+def sfx_drip():
+    n = int(0.6 * SR)
+    x = np.zeros(n)
+    # the print leaves the developer: a pour off its edge and three drops falling back
+    pour = bandpass(rng.standard_normal(n), 300, 2500) * grain(n, 30) * np.exp(-np.arange(n) / SR / 0.08)
+    x += 0.6 * pour
+    for at, g in ((0.16, 1.0), (0.29, 0.7), (0.44, 0.5)):
+        i = int(at * SR)
+        m = int(0.05 * SR)
+        x[i:i + m] += g * bandpass(rng.standard_normal(m), 600, 3000) * env_ad(m, 0.0006, 0.01)
+    return norm_peak(add_reverb(x, 0.15, 0.6), -4)
 
 
 def sfx_flip():
@@ -419,8 +462,8 @@ def sfx_flip():
 def room_tone(seconds):
     n = int(seconds * SR)
     t = np.arange(n) / SR
-    # Air of a quiet room (150 Hz – 8 kHz) plus a faint projector-fan rumble; audible on a phone.
-    air = bandpass(rng.standard_normal((n, 2)), 150, 8000)
+    # Air of a quiet room (mostly 300 Hz – 3 kHz) plus a faint projector-fan rumble; audible on a phone.
+    air = bandpass(rng.standard_normal((n, 2)), 300, 3000) + 0.4 * bandpass(rng.standard_normal((n, 2)), 3000, 7000)
     air = air / np.max(np.abs(air))
     brown = np.cumsum(rng.standard_normal((n, 2)), axis=0)
     brown = lowpass(highpass(brown, 60), 300)
@@ -466,6 +509,7 @@ def main():
         "sub_hit": sfx_sub_hit(),
         "sub_hit_low": sfx_sub_hit(1.6, low=True),
         "flip": sfx_flip(),
+        "drip": sfx_drip(),
     }
     for k, st in enumerate((-1, -0.5, 0, 0.5, 1)):
         sfx[f"paper_tick_{k}"] = sfx_paper_tick(st)

@@ -85,20 +85,22 @@ const CaseCard: React.FC<{ readonly left: number; readonly top: number; readonly
 );
 
 // 1200: the trial date is typed on a blank case card.
-// 1296: the card makes room; Mumler's spirit cards are dealt and one ghost is circled per eighth note.
+// 1280–1294: the case card is filed away to the left, so the spirit cards dealt at 1296 are never laid
+// on the case file (they are not trial exhibits; one of them postdates the trial). One ghost is
+// circled per eighth note.
 export const Trial: React.FC = () => {
   const frame = useCurrentFrame();
   const t = useTime();
   const caseIn = interpolate(frame, [0, t(12)], [0, 1], { ...CLAMP, easing: EASE.spring });
-  const caseDown = interpolate(frame, [t(80), t(96)], [0, 1], { ...CLAMP, easing: EASE.spring });
+  const caseOut = interpolate(frame, [t(80), t(94)], [0, 1], { ...CLAMP, easing: EASE.inOut });
   const caseLeft = Math.round((SAFE.margin + SAFE.right) / 2 - CASE.width / 2);
   return (
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
         <Dolly from={0.95} end={192} originX={513} originY={650}>
-        <CaseCard left={caseLeft + (1 - caseIn) * 900} top={420 + caseDown * (ROW_BOTTOM + 130 - 420)} tilt={-0.8 + caseDown * 1.4} />
+        {caseOut < 1 ? <CaseCard left={caseLeft + (1 - caseIn) * 900 - caseOut * 1000} top={420} tilt={-0.8 - caseOut * 2} /> : null}
         {CARDS.map((c, i) => {
-          const inP = interpolate(frame, [t(c.at) - 10, t(c.at)], [0, 1], { ...CLAMP, easing: EASE.out });
+          const inP = interpolate(frame, [t(c.at) - 10, t(c.at)], [0, 1], { ...CLAMP, easing: EASE.land });
           if (frame < t(c.at) - 10) return null;
           return (
             <PhotoPrint

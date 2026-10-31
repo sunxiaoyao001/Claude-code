@@ -123,7 +123,8 @@ export const Grant: React.FC = () => {
   const active = (i: number) =>
     interpolate(frame, [t(MARK_AT[i]), t(MARK_AT[i]) + 6, t(MARK_AT[i] + 24) - 2, t(MARK_AT[i] + 24) + 4], [0, 1, 1, i === 2 ? 1 : 0], { ...CLAMP, easing: EASE.inOut });
   const dimFor = (j: number) => Math.max(...PARTS.map((_, i) => (i === j ? 0 : active(i))));
-  const compIn = interpolate(frame, [t(COMP_AT) - 12, t(COMP_AT)], [0, 1], { ...CLAMP, easing: EASE.out });
+  // The composite is not slid in: it is exposed on the shutter (1656) and develops up in 12 frames.
+  const compDevelop = interpolate(frame, [t(COMP_AT), t(COMP_AT) + 12], [0.3, 1], { ...CLAMP, easing: EASE.out });
   return (
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
@@ -132,7 +133,7 @@ export const Grant: React.FC = () => {
           const w = widthOf(p);
           const left = SOURCE_LEFT[i];
           // Each original falls onto the table and lands on its beat.
-          const land = interpolate(frame, [t(p.at) - 10, t(p.at)], [0, 1], { ...CLAMP, easing: EASE.out });
+          const land = interpolate(frame, [t(p.at) - 10, t(p.at)], [0, 1], { ...CLAMP, easing: EASE.land });
           return (
             <PhotoPrint
               key={p.key}
@@ -160,12 +161,13 @@ export const Grant: React.FC = () => {
           imgH={IMG.grantCityPoint.height}
           width={COMP_W}
           crop={rectToCrop(MOUNT)}
-          left={COMP_LEFT + (1 - compIn) * 1000}
+          left={COMP_LEFT}
           top={COMP_TOP}
           tilt={0.4}
           border={COMP_BORDER}
-          lift={(1 - compIn) * 0.8}
+          develop={compDevelop}
           sheenAt={t(COMP_AT)}
+          style={{ opacity: frame >= t(COMP_AT) ? 1 : 0 }}
         >
           {PARTS.map((p, i) => (
             <RegionMark key={p.part} k="grantCityPoint" area={p.part} kind={p.kind} from={t(MARK_AT[i])} seed={41 + i} />

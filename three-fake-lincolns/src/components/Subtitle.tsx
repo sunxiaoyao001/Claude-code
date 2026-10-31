@@ -13,8 +13,11 @@ const enStyle = (fontSize: number): React.CSSProperties => ({
   fontWeight: 400,
   fontSize,
   lineHeight: 1.25,
-  color: COLORS.silver,
+  // Paper white at 78%: brighter than silver, so the English line still reads on a phone, while
+  // staying clearly secondary to the Chinese line.
+  color: COLORS.printWhite,
 });
+export const EN_OPACITY = 0.78;
 
 // The English line may wrap to two lines; shrink it (never below 30 px) if two lines are not enough.
 const fitEnglish = (en: string) => {
@@ -133,7 +136,7 @@ export const Subtitle: React.FC<Props> = ({ zh, en, durationInFrames, isStatic =
           position: "relative",
           marginTop: 10,
           ...enStyle(enSize),
-          opacity: rise(chunks.length),
+          opacity: EN_OPACITY * rise(chunks.length),
           translate: `0 ${(1 - rise(chunks.length)) * riseLines}px`,
         }}
       >

@@ -21,7 +21,7 @@ const TOP = 390;
 const HoudiniTag: React.FC<{ readonly from: number }> = ({ from }) => {
   const frame = useCurrentFrame();
   const g = usePrint();
-  const p = interpolate(frame, [from - 10, from], [0, 1], { ...CLAMP, easing: EASE.out });
+  const p = interpolate(frame, [from - 10, from], [0, 1], { ...CLAMP, easing: EASE.land });
   if (frame < from - 10) return null;
   const at = toWindow(g, 0.08, 0.84);
   return (
@@ -57,23 +57,21 @@ export const Twist: React.FC = () => {
   const winT = lerp(EMPTY_SLOT.top, TOP - 40);
   const winR = lerp(EMPTY_SLOT.left + EMPTY_SLOT.width, LEFT + SLIDE_W + 40);
   const winB = lerp(EMPTY_SLOT.top + EMPTY_SLOT.height, TOP + SLIDE_H + 40);
-  // The light throws well past the viewfinder while the lamp is hot, then narrows to a rim.
-  const throwPad = 260 * Math.min(1, lamp / 0.85);
+  // No glow: the light is the projected rectangle itself. The screen margin around the slide is lit
+  // at full on 1920 and settles to a dim rim; a faint wedge of beam runs back to the lantern's lens.
+  const lens = { x: 330, y: 1062 };
   return (
     <AbsoluteFill>
       <Breath phase={t(1920)} originX={cx} originY={cy}>
         <Dolly from={0.97} start={20} end={96} originX={cx} originY={cy}>
-        {/* Projector light: brightest at the centre of the beam, falling off toward its edge. */}
-        <div
-          style={{
-            position: "absolute",
-            left: winL - throwPad,
-            top: winT - throwPad,
-            width: winR - winL + 2 * throwPad,
-            height: winB - winT + 2 * throwPad,
-            background: `radial-gradient(ellipse 50% 50% at 50% 50%, rgba(236,230,218,${lamp}) 0%, rgba(236,230,218,${lamp * 0.75}) 55%, rgba(236,230,218,0) 100%)`,
-          }}
-        />
+        <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
+          <polygon
+            points={`${lens.x},${lens.y - 14} ${winL},${winT} ${winR},${winT} ${winR},${winB} ${lens.x},${lens.y + 14}`}
+            fill={COLORS.printWhite}
+            opacity={0.035 + 0.05 * lamp}
+          />
+        </svg>
+        <div style={{ position: "absolute", left: winL, top: winT, width: winR - winL, height: winB - winT, backgroundColor: COLORS.printWhite, opacity: 0.12 + 0.88 * lamp }} />
         <div style={{ position: "absolute", inset: 0, clipPath: `inset(${winT}px ${1080 - winR}px ${1920 - winB}px ${winL}px)` }}>
           <PhotoPrint
             src={IMG.houdiniLincolnGhost.file}
@@ -92,7 +90,8 @@ export const Twist: React.FC = () => {
           </PhotoPrint>
         </div>
         <MagicLantern from={t(28)} target={{ left: LEFT - 40, top: TOP - 40, right: LEFT + SLIDE_W + 40, bottom: TOP + SLIDE_H + 40 }} />
-        <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={950} top={TOP + SLIDE_H + 94} opacity={open} />
+        {/* The caption sits on the dark table above the projected image, out of the light and the beam. */}
+        <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={950} top={TOP - 40 - 44} opacity={open} />
         </Dolly>
       </Breath>
     </AbsoluteFill>

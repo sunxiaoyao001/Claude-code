@@ -22,12 +22,25 @@ export const Watermark: React.FC<{ readonly handle: string }> = ({ handle }) => 
 
 export type ArchiveEntry = { readonly from: number; readonly text: string };
 
-// Top-right chapter tag. When the chapter changes the new text is typed over, one character per frame.
+// Top-right chapter tag. When the chapter changes, only the part that differs is rewritten: the old
+// tail is backspaced two characters a frame, then the new tail is typed one character a frame, so
+// "ARCHIVE No.002" never retypes its own prefix.
 export const ArchiveTag: React.FC<{ readonly entries: readonly ArchiveEntry[] }> = ({ entries }) => {
   const frame = useCurrentFrame();
-  const current = [...entries].reverse().find((e) => frame >= e.from);
-  if (!current) return null;
-  const typed = current.from === 0 ? current.text.length : Math.min(current.text.length, frame - current.from + 1);
+  const index = entries.reduce((found, e, i) => (frame >= e.from ? i : found), -1);
+  if (index < 0) return null;
+  const current = entries[index];
+  const prev = index > 0 ? entries[index - 1].text : "";
+  let common = 0;
+  while (common < prev.length && common < current.text.length && prev[common] === current.text[common]) common++;
+  const k = frame - current.from;
+  const eraseFrames = Math.ceil((prev.length - common) / 2);
+  const text =
+    current.from === 0
+      ? current.text
+      : k < eraseFrames
+        ? prev.slice(0, Math.max(common, prev.length - 2 * (k + 1)))
+        : current.text.slice(0, Math.min(current.text.length, common + (k - eraseFrames) + 1));
   return (
     <div
       style={{
@@ -39,7 +52,7 @@ export const ArchiveTag: React.FC<{ readonly entries: readonly ArchiveEntry[] }>
         textAlign: "right",
       }}
     >
-      {current.text.slice(0, typed)}
+      {text}
     </div>
   );
 };
@@ -97,24 +110,35 @@ export const SourceCaption: React.FC<{ readonly text: string; readonly left: num
   // Never let a caption run into the right-hand UI band (x > SAFE.right).
   const { width } = measureText({ text: text.toUpperCase(), fontFamily: FONTS.mono, fontSize: TYPE.label, letterSpacing: TYPE.monoTracking, fontWeight: "400" });
   const x = Math.max(SAFE.margin, Math.min(left, SAFE.right - width));
-  return <div style={{ ...monoLabel, position: "absolute", left: x, top, color: COLORS.silver, opacity }}>{text}</div>;
+  // Paper white at 70% (not silver): a provenance line has to stay readable on a phone.
+  return <div style={{ ...monoLabel, position: "absolute", left: x, top, color: COLORS.printWhite, opacity: 0.7 * opacity }}>{text}</div>;
 };
 
-// Fixed corner mark on reconstructions and schematics.
-export const IllustrativeMark: React.FC = () => (
-  <div
-    style={{
-      position: "absolute",
-      right: 1080 - SAFE.right,
-      top: SAFE.bottom - 128,
-      fontFamily: FONTS.sansZh,
-      fontWeight: 700,
-      fontSize: TYPE.subtitleEn,
-      color: COLORS.printWhite,
-      border: `1px solid ${COLORS.silver}`,
-      padding: "4px 10px",
-    }}
-  >
-    示意
-  </div>
-);
+// Mark on reconstructions and schematics. By default the fixed corner mark of a schematic scene;
+// `left`/`top` pin a smaller one to the thing it qualifies (e.g. the developing animation only).
+export const IllustrativeMark: React.FC<{ readonly text?: string; readonly left?: number; readonly top?: number; readonly opacity?: number }> = ({
+  text = "示意",
+  left,
+  top,
+  opacity = 1,
+}) => {
+  const pinned = left !== undefined && top !== undefined;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        ...(pinned ? { left, top } : { right: 1080 - SAFE.right, top: SAFE.bottom - 128 }),
+        fontFamily: FONTS.sansZh,
+        fontWeight: 700,
+        fontSize: pinned ? TYPE.label : TYPE.subtitleEn,
+        color: COLORS.printWhite,
+        border: `1px solid ${COLORS.silver}`,
+        padding: pinned ? "2px 8px" : "4px 10px",
+        whiteSpace: "nowrap",
+        opacity,
+      }}
+    >
+      {text}
+    </div>
+  );
+};

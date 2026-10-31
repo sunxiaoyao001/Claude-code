@@ -25,7 +25,7 @@ export type Line = {
   readonly facts: readonly string[];
 };
 
-// Subtitles. The golden line (2400–2544) is not here: it has its own component.
+// Subtitles. The golden line (2400–2568) is not here: it has its own component.
 export const LINES: readonly Line[] = [
   { from: 0, to: 96, zh: "林肯的头，*借*来的身子", en: "Lincoln's head, a borrowed body", isStatic: true, size: 72, facts: ["F01", "F02"] },
   { from: 96, to: 192, zh: "猜猜，跟*谁*借的", en: "Guess whose body it is", facts: ["F05", "F22"] },
@@ -50,14 +50,14 @@ export const LINES: readonly Line[] = [
   { from: 2112, to: 2208, zh: "他死在*万圣节*，她招魂 10 年", en: "He died on Halloween; she held séances for 10 years", facts: ["F14", "F16"] },
   { from: 2208, to: 2304, zh: "最后那场，什么也*没来*", en: "At the last one, nothing came", facts: ["F17"] },
   { from: 2304, to: 2400, zh: "今年万圣节，他走了 *100* 年", en: "This Halloween marks 100 years since he died", facts: ["F14", "F19"] },
-  { from: 2544, to: 2616, zh: "最近哪张图*骗*过你", en: "What's the last picture that fooled you?", facts: [] },
-  { from: 2616, to: 2688, zh: "林肯的头，*借*来的身子", en: "Lincoln's head, a borrowed body", isStatic: true, size: 72, facts: ["F01", "F02"] },
+  { from: 2568, to: 2640, zh: "最近哪张图*骗*过你", en: "What's the last picture that fooled you?", facts: [] },
+  { from: 2640, to: 2688, zh: "林肯的头，*借*来的身子", en: "Lincoln's head, a borrowed body", isStatic: true, size: 72, facts: ["F01", "F02"] },
 ];
 
 // The golden line falls one character per eighth note (brief), two lines, then the English.
 export const GOLDEN = {
   from: 2400,
-  to: 2544,
+  to: 2568,
   lines: [
     [
       { at: 2400, text: "骗", keyword: false },
@@ -89,8 +89,8 @@ export const SCENES = {
   code: { from: 2016, to: 2112 },
   seances: { from: 2112, to: 2304 },
   centenary: { from: 2304, to: 2400 },
-  golden: { from: 2400, to: 2544 },
-  outro: { from: 2544, to: 2688 },
+  golden: { from: 2400, to: 2568 },
+  outro: { from: 2568, to: 2688 },
 } as const;
 
 // Bottom progress: one slot per fake (the chapter tags No.001 / No.002 / No.003).
@@ -110,19 +110,21 @@ export const BLUR_WINDOWS: readonly (readonly [number, number])[] = [
   [1392, 1408], // leaf shutter, plate holder
   [1574, 1600], // sweep-off, first original falls
   [1598, 1634], // originals fall
-  [1644, 1658], // composite pushed in
   [1776, 1800], // sweep-off, prints slide in
   [1824, 1844], // slide box
   [2016, 2034], // slide carrier
   [2112, 2128], // clipping laid over
   [2208, 2224], // clipping pulled away
   [2304, 2322], // leaf shutter, print slides in
-  [2544, 2558], // credits card in
-  [2604, 2618], // credits card out
+  [2568, 2582], // credits card in
+  [2628, 2642], // credits card out
 ];
 
 // The 0.5 s of musical silence before the twist.
 export const SILENCE = { from: 1905, to: 1920 } as const;
+
+// The credits card leaves and the progress bar rewinds to the start over these frames.
+export const REWIND = [2628, 2640] as const;
 
 // Top-right chapter tag. The date and place only show while that very item is on screen.
 export const ARCHIVE_TAGS = [
@@ -132,13 +134,14 @@ export const ARCHIVE_TAGS = [
   { from: 672, text: "ARCHIVE No.002" },
   { from: 768, text: "ARCHIVE No.002 · CA. 1872 · BOSTON" },
   { from: 1200, text: "ARCHIVE No.002" },
-  { from: 1584, text: "EXHIBIT · CA. 1902 · © L.C. HANDY" },
+  { from: 1392, text: "SCHEMATIC · NOT AN ARCHIVE ITEM" },
+  { from: 1584, text: "EXHIBIT · CA. 1902 · L.C. HANDY" },
   { from: 1776, text: "ARCHIVE No.003 · ?" },
   { from: 1920, text: "ARCHIVE No.003 · 1920S" },
   { from: 2016, text: "ARCHIVE No.003" },
   { from: 2304, text: "ARCHIVE No.003 · 1920S" },
   { from: 2400, text: "ARCHIVE No.001 — No.003" },
-  { from: 2616, text: "ARCHIVE No.001 · CA. 1865 · NEW YORK" },
+  { from: 2640, text: "ARCHIVE No.001 · CA. 1865 · NEW YORK" },
 ] as const;
 
 // Typed text on screen: one character every `every` frames from `from`. The keystroke sounds
@@ -161,6 +164,7 @@ export type SfxName =
   | "loupe"
   | "projector_click"
   | "liquid"
+  | "drip"
   | "pen"
   | "tag_drop"
   | "sub_hit"
@@ -182,7 +186,7 @@ const typedSfx = (x: Typed, gainDb: number): SfxEvent[] =>
 
 export const SFX: readonly SfxEvent[] = [
   // cover, bet, title
-  { at: 3, sound: "pen", gainDb: -26 },
+  { at: 3, sound: "pen", gainDb: -30 },
   { at: 27, sound: "pen", gainDb: -30 },
   { at: 39, sound: "pen", gainDb: -30 },
   { at: 51, sound: "pen", gainDb: -30 },
@@ -208,21 +212,24 @@ export const SFX: readonly SfxEvent[] = [
   { at: 600, sound: "pen", gainDb: -26 },
   // fake No.2 (prints swept off the table at 672)
   { at: 672, sound: "paper_slide", gainDb: -26 },
-  { at: 672, sound: "tag_drop", gainDb: -28 },
+  // the four cartes land on the table, one per eighth note; then the file is stamped
   { at: 684, sound: "tag_drop", gainDb: -30 },
   { at: 696, sound: "tag_drop", gainDb: -30 },
   { at: 708, sound: "tag_drop", gainDb: -30 },
-  { at: 720, sound: "stamp", gainDb: -22 },
+  { at: 720, sound: "tag_drop", gainDb: -28 },
+  { at: 732, sound: "stamp", gainDb: -22 },
   { at: 744, sound: "paper_slide", gainDb: -26 },
-  // the developer, rocked in its tray: a low continuous slosh under the whole shot
-  ...[768, 840, 912, 984, 1056, 1128].map((at) => ({ at, sound: "liquid" as const, gainDb: at === 768 ? -30 : -36 })),
+  // the print slips into the developer; at 1158 it is lifted out and drips back into the tray
+  { at: 768, sound: "liquid", gainDb: -22 },
   { at: 1008, sound: "pen", gainDb: -28 },
   { at: 1020, sound: "pen", gainDb: -28 },
   { at: 1056, sound: "pen", gainDb: -26 },
+  { at: 1158, sound: "drip", gainDb: -22 },
   { at: 1176, sound: "paper_slide", gainDb: -28 },
   { at: 1200, sound: "paper_slide", gainDb: -26 },
   // trial, mystery
   ...typedSfx(TYPED.trialStamp, -32),
+  { at: 1280, sound: "paper_slide", gainDb: -30 },
   { at: 1296, sound: "tag_drop", gainDb: -30 },
   { at: 1300, sound: "tag_drop", gainDb: -30 },
   { at: 1304, sound: "tag_drop", gainDb: -30 },
@@ -247,9 +254,9 @@ export const SFX: readonly SfxEvent[] = [
   { at: 1776, sound: "paper_slide", gainDb: -26 },
   { at: 1824, sound: "paper_slide", gainDb: -24 },
   // twist: the one punch
-  { at: 1920, sound: "projector_click", gainDb: -20 },
+  { at: 1920, sound: "projector_click", gainDb: -17 },
   { at: 1920, sound: "sub_hit", gainDb: -16 },
-  { at: 1938, sound: "tag_drop", gainDb: -28 },
+  { at: 1944, sound: "tag_drop", gainDb: -28 },
   { at: 1968, sound: "pen", gainDb: -26 },
   // code, séances
   { at: 2016, sound: "projector_click", gainDb: -26 },
@@ -261,16 +268,18 @@ export const SFX: readonly SfxEvent[] = [
   // centenary, golden line, outro
   { at: 2304, sound: "paper_slide", gainDb: -28 },
   ...typedSfx(TYPED.centenary, -32),
-  { at: 2544, sound: "flip", gainDb: -24 },
-  { at: 2604, sound: "flip", gainDb: -26 },
+  { at: 2568, sound: "flip", gainDb: -24 },
+  { at: 2628, sound: "flip", gainDb: -26 },
 ];
 
 // One soft paper tick per subtitle entrance, and a light stamp as its keyword presses down
 // (except lines that are already on screen).
+// The tick is left out where another effect already lands within 2 frames of the line.
 export const SUBTITLE_TICKS: readonly SfxEvent[] = LINES.filter((l) => !l.isStatic).flatMap((l) => {
   const k = splitGroups(l.zh).findIndex((c) => c.keyword);
-  const tick = { at: l.from, sound: "paper_tick" as const, gainDb: -30 };
+  const covered = SFX.some((e) => Math.abs(e.at - l.from) <= 2);
+  const tick = covered ? [] : [{ at: l.from, sound: "paper_tick" as const, gainDb: -30 }];
   // The stamp sound is kept for the four phrase openings only; elsewhere the keyword lands silently.
   const phraseOpening = [288, 672, 1056, 1920].includes(l.from);
-  return k < 0 || !phraseOpening ? [tick] : [tick, { at: l.from + k * 2 + 6, sound: "stamp" as const, gainDb: -32 }];
+  return k < 0 || !phraseOpening ? tick : [...tick, { at: l.from + k * 2 + 6, sound: "stamp" as const, gainDb: -32 }];
 });

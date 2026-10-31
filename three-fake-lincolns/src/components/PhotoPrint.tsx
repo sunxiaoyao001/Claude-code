@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from "react";
 import { CanvasImage, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { MIN_SOURCE_PER_DISPLAY } from "../assets";
-import { photoGrade } from "../grade";
+import { developOpacity, photoGrade } from "../grade";
 import { BREATH_MAX_ZOOM } from "./Breath";
 import { CLAMP, COLORS, EASE } from "../theme";
 
@@ -127,7 +127,7 @@ export const PhotoPrint: React.FC<Props> = ({
             width={Math.round(imgW * scale)}
             height={Math.round(imgH * scale)}
             fit="fill"
-            style={{ position: "absolute", left: -crop.x0 * imgW * scale, top: -crop.y0 * imgH * scale }}
+            style={{ position: "absolute", left: -crop.x0 * imgW * scale, top: -crop.y0 * imgH * scale, opacity: developOpacity(develop) }}
             effects={photoGrade({ frame, develop, colorRestore })}
           />
           {layers}

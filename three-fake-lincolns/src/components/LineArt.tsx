@@ -8,7 +8,7 @@ import { CLAMP, COLORS, EASE } from "../theme";
 
 export const useInk = (from: number, duration: number) => {
   const frame = useCurrentFrame();
-  return interpolate(frame, [from, from + duration], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  return interpolate(frame, [from, from + duration], [0, 1], { ...CLAMP, easing: EASE.ink });
 };
 
 type StrokeProps = {

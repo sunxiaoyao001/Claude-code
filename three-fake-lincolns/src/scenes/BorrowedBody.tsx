@@ -1,3 +1,4 @@
+import { measureText } from "@remotion/layout-utils";
 import React from "react";
 import { AbsoluteFill, interpolate, Sequence, useCurrentFrame, useVideoConfig } from "remotion";
 import { CALHOUN_TO_LINCOLN, fitWidth, IMG, lincolnRectToCalhoun, region } from "../assets";
@@ -9,7 +10,7 @@ import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
 import { ManilaTag, MonoText, PenMark, Seal } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
-import { arc, CLAMP, COLORS, EASE, FONTS, swing, TYPE } from "../theme";
+import { arc, CLAMP, COLORS, EASE, FONTS, SAFE, swing, TYPE } from "../theme";
 
 // ---- shared geometry ---------------------------------------------------------------------
 const L_CROP = region("lincolnComposite", "engraving");
@@ -144,7 +145,7 @@ const CutLine: React.FC<{ readonly left: number; readonly top: number; readonly 
   );
 };
 
-const optionStyle: React.CSSProperties = { fontFamily: FONTS.sansZh, fontWeight: 700, fontSize: 44, color: COLORS.ink, marginLeft: 18 };
+const optionStyle: React.CSSProperties = { fontFamily: FONTS.sansZh, fontWeight: 700, fontSize: TYPE.subtitleZh, color: COLORS.ink, marginLeft: 18 };
 
 // ---- 0–288: cover, bet, title (one continuous shot) ----------------------------------------
 const CoverBetTitle: React.FC = () => {
@@ -154,7 +155,7 @@ const CoverBetTitle: React.FC = () => {
   // During the bet the prints rise and shrink so the two options never cover the evidence.
   const group = interpolate(frame, [t(96), t(120)], [0, 1], spring);
   const groupScale = 1 - 0.2 * group;
-  const tagIn = (at: number) => interpolate(frame, [t(at) - 10, t(at)], [1, 0], spring);
+  const tagIn = (at: number) => interpolate(frame, [t(at) - 10, t(at)], [1, 0], { ...CLAMP, easing: EASE.land });
   const count = frame >= t(176) ? "01" : frame >= t(160) ? "02" : frame >= t(144) ? "03" : "";
   const titleRise = (at: number) => interpolate(frame, [t(at), t(at) + 12], [0, 1], { ...CLAMP, easing: EASE.out });
   return (
@@ -188,7 +189,8 @@ const CoverBetTitle: React.FC = () => {
         <span style={optionStyle}>一位蓄奴派</span>
       </ManilaTag>
       {count && frame < t(192) ? (
-        <div style={{ position: "absolute", left: 760, top: 900, fontFamily: FONTS.mono, fontWeight: 500, fontSize: TYPE.subtitleZh, letterSpacing: TYPE.monoTracking, color: COLORS.vermilion }}>{count}</div>
+        // The countdown at title size, beside the two options, so it reads as a countdown on a phone.
+        <div style={{ position: "absolute", left: 700, top: 868, fontFamily: FONTS.mono, fontWeight: 500, fontSize: TYPE.title, lineHeight: 1, letterSpacing: "0.02em", color: COLORS.vermilion }}>{count}</div>
       ) : null}
       {/* Title card in the lower half; the question stays visible above it. */}
       {frame >= t(192) ? (
@@ -246,10 +248,10 @@ const RegistrationLock: React.FC<{ readonly at: number; readonly left: number; r
     <>
       {/* Hairlines through the corners, drawn outward from the print. */}
       {[top, top + height].map((y) => (
-        <div key={`h${y}`} style={{ position: "absolute", left: left - 900 * rule, width: width + 1800 * rule, top: y, height: 1, backgroundColor: COLORS.silver, opacity: 0.45 * settle }} />
+        <div key={`h${y}`} style={{ position: "absolute", left: left - 60 * rule, width: width + 120 * rule, top: y, height: 1, backgroundColor: COLORS.silver, opacity: 0.45 * settle }} />
       ))}
       {[left, left + width].map((x) => (
-        <div key={`v${x}`} style={{ position: "absolute", top: top - 600 * rule, height: height + 1200 * rule, left: x, width: 1, backgroundColor: COLORS.silver, opacity: 0.45 * settle }} />
+        <div key={`v${x}`} style={{ position: "absolute", top: top - 60 * rule, height: height + 120 * rule, left: x, width: 1, backgroundColor: COLORS.silver, opacity: 0.45 * settle }} />
       ))}
       {corners.map(([x, y]) => (
         <div key={`${x}-${y}`} style={{ position: "absolute", left: x - 20, top: y - 20, width: 40, height: 40, scale: 1.7 - 0.7 * lock, rotate: `${45 * (1 - lock)}deg`, opacity: lock * (0.4 + 0.6 * settle) }}>
@@ -313,11 +315,12 @@ const Reveal: React.FC = () => {
         </ManilaTag>
         <PenMark kind="circle" left={0} top={110} width={330} height={92} from={0} durationInFrames={10} />
       </div>
-      {/* The lender's tag lands while his print is the one showing (354–366). */}
-      <Sequence from={t(66)} layout="none">
-        <ManilaTag left={ALIGNED.left + 40} top={ALIGNED.top + OUTER_H + 26} height={96} tilt={1.5} style={{ flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: 6 }}>
-          <MonoText size={TYPE.label}>JOHN C. CALHOUN</MonoText>
-          <MonoText size={TYPE.label} style={{ opacity: 0.7 }}>VICE PRESIDENT · 1825–1832</MonoText>
+      {/* The lender's tag lands only once the blink comparator has stopped on his print (378), so it
+          never hangs under Lincoln's face. */}
+      <Sequence from={t(90)} layout="none">
+        <ManilaTag left={ALIGNED.left - 60} top={ALIGNED.top + OUTER_H + 26} height={124} tilt={1.5} style={{ flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: 6 }}>
+          <MonoText size={TYPE.subtitleEn}>JOHN C. CALHOUN</MonoText>
+          <MonoText size={TYPE.subtitleEn} style={{ opacity: 0.7 }}>VICE PRESIDENT · 1825–1832</MonoText>
         </ManilaTag>
       </Sequence>
     </AbsoluteFill>
@@ -332,23 +335,28 @@ const Lender: React.FC = () => {
       <CalhounPrint left={153} top={330} tilt={0.6} sheenAt={t(6)} />
       <SourceCaption text={IMG.calhoun1852.caption} left={153} top={330 + OUTER_H + 20} />
       <Sequence from={t(48)} layout="none">
-        <ManilaTag left={153 + 30} top={330 + OUTER_H + 64} height={64} tilt={-1.5}>
-          <MonoText size={TYPE.label}>SENATE · 1837 · “A POSITIVE GOOD”</MonoText>
+        <ManilaTag left={153 + 30} top={330 + OUTER_H + 64} height={124} tilt={-1.5} style={{ flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: 6 }}>
+          <MonoText size={TYPE.subtitleEn}>SENATE · 1837</MonoText>
+          <MonoText size={TYPE.subtitleEn}>“A POSITIVE GOOD”</MonoText>
         </ManilaTag>
       </Sequence>
     </AbsoluteFill>
   );
 };
 
+// A context note in vermilion pencil at the English-subtitle size (it carries the irony, so it must
+// read on a phone). It never runs into the right-hand UI band.
 const PencilNote: React.FC<{ readonly text: string; readonly left: number; readonly top: number; readonly from: number; readonly tilt: number }> = ({ text, left, top, from, tilt }) => {
   const frame = useCurrentFrame();
   if (frame < from) return null;
+  const { width } = measureText({ text: text.toUpperCase(), fontFamily: FONTS.mono, fontSize: TYPE.subtitleEn, letterSpacing: TYPE.monoTracking, fontWeight: "500" });
+  const x = Math.min(left, SAFE.right - width);
   return (
-    <div style={{ position: "absolute", left, top, rotate: `${tilt}deg` }}>
-      <MonoText color={COLORS.vermilion} style={{ fontWeight: 500 }}>
+    <div style={{ position: "absolute", left: x, top, rotate: `${tilt}deg` }}>
+      <MonoText size={TYPE.subtitleEn} color={COLORS.vermilion} style={{ fontWeight: 500 }}>
         {text}
       </MonoText>
-      <PenMark kind="underline" left={0} top={0} width={Math.round(text.length * 17.3)} height={34} from={from + 4} durationInFrames={10} seed={17} />
+      <PenMark kind="underline" left={0} top={0} width={Math.round(width)} height={48} from={from + 4} durationInFrames={10} seed={17} />
     </div>
   );
 };
@@ -369,7 +377,7 @@ const Irony: React.FC = () => {
       <CutLine left={COVER.lincoln.left} top={COVER.lincoln.top} from={t(48)} />
       <CutLine left={COVER.calhoun.left} top={COVER.calhoun.top} from={t(60)} />
       {/* Context notes in vermilion pencil, so they never read as the prints' own dates. */}
-      <PencilNote text="EMANCIPATION PROCLAMATION · 1863" left={COVER.lincoln.left + 6} top={COVER.lincoln.top - 58} from={0} tilt={-1.2} />
+      <PencilNote text="EMANCIPATION PROCLAMATION · 1863" left={COVER.lincoln.left + 6} top={COVER.lincoln.top - 68} from={0} tilt={-1.2} />
       <PencilNote text="“A POSITIVE GOOD” · 1837" left={COVER.calhoun.left + 40} top={COVER.calhoun.top + OUTER_H + 22} from={t(24)} tilt={1} />
     </AbsoluteFill>
   );
@@ -417,7 +425,7 @@ const Difference: React.FC = () => {
         <PenMark kind="box" {...toWin(papers)} from={t(24)} durationInFrames={14} seed={5} />
       </LincolnPrint>
       <div style={{ position: "absolute", left: ALIGNED.left, top: ALIGNED.top + OUTER_H + 24, fontFamily: FONTS.sansZh, fontWeight: 500, fontSize: TYPE.label, color: COLORS.silver }}>
-        差异图 · 由两张原件配准计算
+        差异图 · 由两张馆藏扫描件配准计算
       </div>
     </AbsoluteFill>
   );

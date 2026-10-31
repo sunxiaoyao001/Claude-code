@@ -54,6 +54,12 @@ export const EASE = {
   inOut: Easing.bezier(0.65, 0, 0.35, 1),
   out: Easing.bezier(0.16, 1, 0.3, 1),
   spring: Easing.spring({ damping: 200 }),
+  // Something dealt or dropped onto the table: it is still travelling on its last frame and stops
+  // there, so the landing (and its sound) is exactly on the frame the motion ends, not 4–8 frames
+  // earlier as with a long ease-out tail. No overshoot.
+  land: Easing.bezier(0.35, 0, 0.7, 0.85),
+  // A pen stroke: ink from the first frame, slowing toward the end of the stroke.
+  ink: Easing.bezier(0.2, 0.6, 0.35, 1),
 } as const;
 
 export const CLAMP = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;

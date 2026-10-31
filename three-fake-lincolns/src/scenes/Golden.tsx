@@ -5,6 +5,7 @@ import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
 import { MonoText, PenMark } from "../components/Props";
 import { useTime } from "../time";
+import { EN_OPACITY } from "../components/Subtitle";
 import { GOLDEN } from "../timeline";
 import { CLAMP, COLORS, EASE, FONTS, SAFE, TYPE } from "../theme";
 
@@ -17,10 +18,11 @@ const STRIP: readonly { key: ImageKey; crop: string; width: number; left: number
   { key: "houdiniLincolnGhost", crop: "slide", width: 290, left: 594, label: "No.003" },
 ];
 const FRAME_TOP = SHEET.top + 40;
-// `soft` puts the sheet slightly out of focus (depth of field) behind the golden line; `markFrom`
-// is when the editor's grease pencil rings the third frame (the magician's fake).
-export const ContactSheet: React.FC<{ readonly dim: number; readonly soft?: number; readonly markFrom?: number }> = ({ dim, soft = 0, markFrom }) => (
-  <AbsoluteFill style={{ filter: soft > 0.05 ? `blur(${soft}px)` : undefined }}>
+// The sheet stays sharp (all three fakes must stay recognisable); `dim` lowers it a little under the
+// golden line. `markFrom` is when the editor's grease pencil rings the third frame (the magician's fake).
+export const GOLDEN_DIM = 0.28;
+export const ContactSheet: React.FC<{ readonly dim: number; readonly markFrom?: number }> = ({ dim, markFrom }) => (
+  <AbsoluteFill>
     <div style={{ position: "absolute", ...SHEET, backgroundColor: COLORS.printWhite, rotate: "-0.4deg", boxShadow: "0 12px 30px rgba(0,0,0,0.5)" }} />
     {STRIP.map((s) => (
       <React.Fragment key={s.key}>
@@ -77,8 +79,8 @@ export const Golden: React.FC = () => {
   return (
     <AbsoluteFill>
       <Breath phase={t(base)}>
-        <Dolly from={0.97} end={144} originX={513} originY={464}>
-          <ContactSheet dim={0.6} soft={interpolate(frame, [0, t(24)], [0, 1.6], { ...CLAMP, easing: EASE.inOut })} markFrom={t(120)} />
+        <Dolly from={0.97} end={168} originX={513} originY={464}>
+          <ContactSheet dim={GOLDEN_DIM} markFrom={t(120)} />
         </Dolly>
       </Breath>
       <div style={{ position: "absolute", left: SAFE.margin, top: 820, fontFamily: FONTS.serifZh, fontWeight: 900, fontSize: TYPE.golden, lineHeight: "172px", letterSpacing: TYPE.titleTracking }}>
@@ -99,8 +101,8 @@ export const Golden: React.FC = () => {
           fontFamily: FONTS.italicEn,
           fontStyle: "italic",
           fontSize: TYPE.subtitleEn,
-          color: COLORS.silver,
-          opacity: enIn,
+          color: COLORS.printWhite,
+          opacity: EN_OPACITY * enIn,
           translate: `0 ${(1 - enIn) * 10}px`,
         }}
       >

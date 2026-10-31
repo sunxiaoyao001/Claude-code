@@ -20,8 +20,11 @@ const PAGE_W = Math.floor(fitWidth("houdiniClippings", PAGE, 640, BREATH_MAX_ZOO
 const PAGE_H = Math.round((PAGE_W * (PAGE[3] - PAGE[1]) * IMG.houdiniClippings.height) / ((PAGE[2] - PAGE[0]) * IMG.houdiniClippings.width));
 const PAGE_LEFT = 120;
 // The headline strip is laid across the lower half of the family print, leaving the faces visible.
-const PAGE_TOP = 620;
+// Its bottom edge overhangs the family print by 28 px, so its source caption sits on the dark table
+// below both prints, never on the white border of the print underneath.
+const PAGE_OVERHANG = 28;
 const PAGE_BORDER = 12;
+const PAGE_TOP = FAMILY_BOTTOM + PAGE_OVERHANG - (PAGE_H + PAGE_BORDER * 2);
 const PULL_AT = 96;
 
 const DIGIT_H = 64;
@@ -35,7 +38,7 @@ const RollingDigit: React.FC<{ readonly prev: string; readonly next: string; rea
   </span>
 );
 
-const COUNTER_TOP = Math.max(FAMILY_BOTTOM, PAGE_TOP + PAGE_H + PAGE_BORDER * 2) + 70;
+const COUNTER_TOP = Math.max(FAMILY_BOTTOM, PAGE_TOP + PAGE_H + PAGE_BORDER * 2) + 92;
 
 // Ten Halloweens as calendar cells, 1927–1936, each ticked as it is counted (a neutral tally: the
 // facts say she held a séance each year, not what happened at each). The last one is marked LAST (F17).
@@ -126,7 +129,7 @@ export const Seances: React.FC = () => {
               lift={pageOut * 0.7}
               sheenAt={t(10)}
             />
-            <SourceCaption text={IMG.houdiniClippings.caption} left={PAGE_LEFT} top={PAGE_TOP + PAGE_H + PAGE_BORDER * 2 + 14} opacity={pageIn * (1 - pageOut)} />
+            <SourceCaption text={IMG.houdiniClippings.caption} left={PAGE_LEFT} top={PAGE_TOP + PAGE_H + PAGE_BORDER * 2 + 22} opacity={pageIn * (1 - pageOut)} />
           </>
         ) : null}
         <Counter />

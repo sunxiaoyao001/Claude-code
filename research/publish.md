@@ -6,14 +6,14 @@
 ## 抖音
 
 - **标题**：林肯这张像，身子借了 1 个蓄奴派的
-- **简介**：1865 年前后的林肯版画，身子来自 1852 年的卡尔霍恩；林肯遗孀的照片里站着「林肯的鬼」；第 3 张，是魔术师胡迪尼亲手做来打假的。今年万圣节，是胡迪尼逝世 100 周年。最近哪张图骗过你？
+- **简介**：1865 年前后的林肯版画，身子来自 1852 年的卡尔霍恩版画；林肯遗孀的照片里站着「林肯的鬼」；第 3 张，是魔术师胡迪尼做来打假的。今年万圣节，是胡迪尼逝世 100 周年。最近哪张图骗过你？
 - **标签**：#历史 #档案 #林肯 #胡迪尼 #万圣节 #老照片 #冷知识
 - **置顶评论**：见文末「置顶评论（通用）」
 
 ## B 站
 
 - **标题**：【档案】林肯的 3 张假像：借来的身子和魔术师的反击
-- **简介**：用美国国会图书馆的原件，把三张「林肯假像」一张张拆开：版画换头、灵异照片、胡迪尼的打假幻灯片。差异图由两张原件配准计算，可复现。完整出处见置顶评论。
+- **简介**：用美国国会图书馆等馆藏的扫描件，把三张「林肯假像」一张张拆开：版画换头、灵异照片、胡迪尼的打假幻灯片。差异图由两张馆藏扫描件配准计算，可复现。完整出处见置顶评论。
 - **标签**：历史、档案、林肯、胡迪尼、万圣节、摄影史、老照片、冷知识
 
 ## TikTok
@@ -38,9 +38,9 @@
 
 出处：
 - 美国国会图书馆（LoC）：2003654314（林肯合成像，[1865?]）· 2003679757（卡尔霍恩，1852）· 2007681056（格兰特合成像，约 1902）· 2018667429 · 2018667065 · 2007684716（格兰特合成像的三件原件，1864）· 96520658（胡迪尼与「林肯鬼魂」幻灯片，1920–1930）· 96518779（胡迪尼与妻子、母亲）· 2018682515（1926 年死讯剪报）
-- W. H. Mumler 灵异照片：Wikimedia Commons（公有领域）：File:Mumler_(Dow).jpg · File:Mumler_(Conant).jpg · File:Mumler_(unidentified).jpg · File:Mumler_(Lincoln).jpg；玛丽·林肯那张原件属 Lincoln Financial Foundation Collection（ACPL），片中用的是 Commons 副本
+- W. H. Mumler 灵异照片：Wikimedia Commons（公有领域）：File:Mumler_(Dow).jpg · File:Mumler_(Conant).jpg · File:Mumler_(unidentified).jpg · File:Mumler_(Lincoln).jpg；前三张原件藏 American Museum of Photography，玛丽·林肯那张原件属 Lincoln Financial Foundation Collection（ACPL），片中用的都是 Commons 副本
 - 双重曝光示意人物：The Met 287722（CC0），与本案无关
-- 差异图：由两张 LoC 原件配准计算（SIFT + RANSAC），可复现
+- 差异图：由两张 LoC 扫描件配准计算（SIFT + RANSAC），可复现
 - 配乐与音效：原创；钢琴采样 Salamander Grand Piano（Alexander Holm，CC BY 3.0，https://creativecommons.org/licenses/by/3.0/ ，经重采样与混音修改）
 - 字体：Noto Serif SC / Noto Sans SC / EB Garamond / IBM Plex Mono（SIL OFL）
 

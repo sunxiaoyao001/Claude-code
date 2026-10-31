@@ -20,6 +20,10 @@ const dbToGain = (db: number) => 10 ** (db / 20);
 const DUCKS = [240, 1920];
 const DUCK_GAIN = dbToGain(-4);
 
+// Paper and pen friction sit 6 dB under the other effects: they must stay below the score.
+const FRICTION: readonly SfxName[] = ["pen", "paper_slide", "page_turn", "flip"];
+const FRICTION_TRIM_DB = -6;
+
 // Friction and slosh sounds start on the picture event (the stroke, the slide begins) and peak later;
 // clicks and hits put their peak on the event.
 const ONSET_ALIGNED: readonly SfxName[] = ["pen", "paper_slide", "page_turn", "flip", "liquid"];
@@ -62,13 +66,13 @@ const SoundEvent: React.FC<{ readonly e: SfxEvent }> = ({ e }) => {
   const length = Math.ceil(entry.durationSec * fps) + 2;
   return (
     <Sequence from={Math.max(0, start)} durationInFrames={length} name={e.sound} layout="none">
-      <Audio src={staticFile(entry.file)} trimBefore={Math.max(0, -start)} volume={dbToGain(e.gainDb + SFX_BUS_DB)} />
+      <Audio src={staticFile(entry.file)} trimBefore={Math.max(0, -start)} volume={dbToGain(e.gainDb + SFX_BUS_DB + (FRICTION.includes(e.sound) ? FRICTION_TRIM_DB : 0))} />
     </Sequence>
   );
 };
 
-// The room stays under everything, except in the half second before the twist, where it drops
-// 24 dB so the silence is a silence.
+// The room stays under everything; in the half second before the twist it is the only thing left
+// (the score and effects stop), so the silence is a room, not digital black.
 const RoomTone: React.FC = () => {
   const t = useTime();
   return (
@@ -76,7 +80,7 @@ const RoomTone: React.FC = () => {
       src={staticFile(MANIFEST.room_tone.file)}
       volume={(f) =>
         dbToGain(ROOM_TONE_DB) *
-        interpolate(f, [t(SILENCE.from) - 2, t(SILENCE.from), t(SILENCE.to) - 1, t(SILENCE.to)], [1, 0.06, 0.06, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })
+        interpolate(f, [t(SILENCE.from) - 2, t(SILENCE.from), t(SILENCE.to) - 1, t(SILENCE.to)], [1, 0.8, 0.8, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })
       }
     />
   );

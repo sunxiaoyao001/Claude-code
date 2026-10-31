@@ -25,7 +25,7 @@ import { Twist } from "./scenes/Twist";
 import { WidowGhost } from "./scenes/WidowGhost";
 import { EASE } from "./theme";
 import { TimeScale, useTime } from "./time";
-import { ARCHIVE_TAGS, BAR, BASE_TOTAL, BLUR_WINDOWS, CHAPTERS, LINES, SCENES } from "./timeline";
+import { ARCHIVE_TAGS, BAR, BASE_TOTAL, BLUR_WINDOWS, CHAPTERS, LINES, REWIND, SCENES } from "./timeline";
 
 const Subtitles: React.FC = () => {
   const t = useTime();
@@ -46,7 +46,7 @@ const Chrome: React.FC<{ readonly watermark: string }> = ({ watermark }) => {
     <>
       <Watermark handle={watermark} />
       <ArchiveTag entries={ARCHIVE_TAGS.map((e) => ({ from: t(e.from), text: e.text }))} />
-      <ArchiveProgress bounds={CHAPTERS.bounds.map(t)} labels={CHAPTERS.labels} barFrames={t(BAR)} rewind={[t(2604), t(2616)]} />
+      <ArchiveProgress bounds={CHAPTERS.bounds.map(t)} labels={CHAPTERS.labels} barFrames={t(BAR)} rewind={[t(REWIND[0]), t(REWIND[1])]} />
     </>
   );
 };
@@ -100,14 +100,15 @@ const Scenes: React.FC = () => {
   );
 };
 
-// Motion blur for the final render (shutter 180°, 8 samples), only on frames with fast movement
-// (BLUR_WINDOWS); drafts leave it off.
+// Motion blur for the final render, only on frames with fast movement (BLUR_WINDOWS); drafts leave
+// it off. A 100° shutter with 10 samples keeps the sub-frame copies ≤ 4 px apart at the fastest
+// sweep (~130 px/frame), so edges smear instead of showing a comb of discrete copies.
 const MaybeBlur: React.FC<{ readonly on: boolean; readonly children: React.ReactNode }> = ({ on, children }) => {
   const frame = useCurrentFrame();
   const t = useTime();
   const moving = on && BLUR_WINDOWS.some(([a, b]) => frame >= t(a) && frame <= t(b));
   return moving ? (
-    <CameraMotionBlur shutterAngle={180} samples={8}>
+    <CameraMotionBlur shutterAngle={100} samples={10}>
       {children}
     </CameraMotionBlur>
   ) : (

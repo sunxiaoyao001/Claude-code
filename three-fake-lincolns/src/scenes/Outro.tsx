@@ -4,22 +4,27 @@ import { Breath } from "../components/Breath";
 import { MonoText } from "../components/Props";
 import { useTime } from "../time";
 import { SCENES } from "../timeline";
-import { CLAMP, COLORS, EASE } from "../theme";
+import { CLAMP, COLORS, EASE, TYPE } from "../theme";
 import { COVER_ORIGIN, COVER_SCALE, CoverPrints } from "./BorrowedBody";
-import { ContactSheet } from "./Golden";
+import { ContactSheet, GOLDEN_DIM } from "./Golden";
 
-// Scene-local frames: 0 = 2544. An index card with the credits is pushed over the table (fully
-// readable 2556–2604), then pulled away to reveal the cover already laid out underneath. The breath
+// Scene-local frames: 0 = 2568. An index card with the credits is pushed over the table (fully
+// readable 2580–2628), then pulled away to reveal the cover already laid out underneath. The breath
 // and the "?" tag run on the film's own clock, so the last frame flows into frame 0.
+// The card is set at 36 px (the English subtitle size), so it reads on a phone; the item numbers and
+// the full licences are in the description and the pinned comment.
 const BASE = SCENES.outro.from;
-const CARD = { left: 76, top: 250, width: 870 } as const;
+// Wide enough to cover the contact sheet (76–950, tilted) while the cover is swapped in under it.
+const CARD = { left: 68, top: 246, width: 890 } as const;
+const CARD_TYPE = TYPE.subtitleEn;
 
-const CREDITS: readonly { readonly head?: string; readonly lines: readonly string[] }[] = [
-  { head: "IMAGES", lines: ["LIBRARY OF CONGRESS", "2003654314 · 2003679757 · 2007681056", "96520658 · 96518779 · 2018682515", "2018667429 · 2018667065 · 2007684716"] },
-  { lines: ["W. H. MUMLER (PD) · WIKIMEDIA COMMONS", "THE MET 287722 (CC0)", "DIFFERENCE MAP: COMPUTED FROM LOC SCANS"] },
-  { head: "MUSIC & SOUND", lines: ["ORIGINAL SCORE AND EFFECTS", "PIANO: SALAMANDER GRAND, A. HOLM (CC BY 3.0)"] },
-  { head: "FONTS (OFL)", lines: ["NOTO SERIF SC · NOTO SANS SC", "EB GARAMOND · IBM PLEX MONO"] },
-  { lines: ["FULL SOURCES IN THE DESCRIPTION"] },
+const CREDITS: readonly string[] = [
+  "LIBRARY OF CONGRESS · 9 ITEMS",
+  "W. H. MUMLER (PD) · COMMONS",
+  "THE MET 287722 · CC0",
+  "PIANO · SALAMANDER GRAND",
+  "A. HOLM · CC BY 3.0",
+  "FULL LIST IN DESCRIPTION",
 ];
 
 const CreditsCard: React.FC<{ readonly left: number; readonly lift: number }> = ({ left, lift }) => (
@@ -29,21 +34,24 @@ const CreditsCard: React.FC<{ readonly left: number; readonly lift: number }> = 
       left,
       top: CARD.top,
       width: CARD.width,
-      padding: "40px 36px 36px",
+      padding: "56px 44px 44px",
       boxSizing: "border-box",
       backgroundColor: COLORS.printWhite,
       rotate: `${-0.6 + lift * 1.5}deg`,
       boxShadow: `0 ${10 + lift * 24}px ${26 + lift * 40}px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.5)`,
+      display: "flex",
+      flexDirection: "column",
+      gap: 14,
     }}
   >
-    <div style={{ position: "absolute", left: 0, right: 0, top: 18, height: 3, backgroundColor: COLORS.vermilion }} />
-    {CREDITS.map((block, i) => (
-      <div key={i} style={{ marginTop: i === 0 ? 0 : 18, display: "flex", flexDirection: "column", gap: 4 }}>
-        {block.head ? <MonoText style={{ opacity: 0.6 }}>{block.head}</MonoText> : null}
-        {block.lines.map((line) => (
-          <MonoText key={line}>{line}</MonoText>
-        ))}
-      </div>
+    <div style={{ position: "absolute", left: 0, right: 0, top: 22, height: 3, backgroundColor: COLORS.vermilion }} />
+    <MonoText size={CARD_TYPE} style={{ opacity: 0.55 }}>
+      SOURCES
+    </MonoText>
+    {CREDITS.map((line) => (
+      <MonoText key={line} size={CARD_TYPE}>
+        {line}
+      </MonoText>
     ))}
   </div>
 );
@@ -60,7 +68,7 @@ export const Outro: React.FC = () => {
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
         {frame < t(12) ? (
-          <ContactSheet dim={0.6} soft={1.6} markFrom={-100} />
+          <ContactSheet dim={GOLDEN_DIM} markFrom={-100} />
         ) : (
           <AbsoluteFill style={{ transformOrigin: `${COVER_ORIGIN.x}px ${COVER_ORIGIN.y}px`, scale: settle }}>
             <CoverPrints phase={t(BASE)} />
