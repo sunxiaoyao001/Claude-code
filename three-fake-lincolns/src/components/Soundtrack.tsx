@@ -8,17 +8,19 @@ import { SFX, SILENCE, SUBTITLE_TICKS, type SfxEvent, type SfxName } from "../ti
 type ManifestEntry = { readonly file: string; readonly durationSec: number; readonly peakOffsetFrames: number };
 const MANIFEST = manifest as unknown as Record<string, ManifestEntry>;
 
-// Mix: the score sits at about −4 dB (the synth peak-normalises it to −3 dBFS, and the twist chord
-// is its peak, so this gain restores the bars around it to their earlier level); timeline gains are relative to the sound files plus this bus offset,
-// so a −26 dB pen lands a few dB under the score and the −12 dB sub hit peaks just under full scale.
-// The finished render is loudness-normalised to −14 LUFS afterwards (see README).
-const MUSIC_GAIN = 0.87;
+// Mix: the score sits at about −1.6 dB. The synth peak-normalises it, and the twist chord is its
+// peak, so this gain is set to keep the other bars where they were when the chord changes. Timeline
+// gains are relative to the sound files plus the SFX bus offset, so a −26 dB pen lands a few dB
+// under the score. The sub hit is kept low (−32): its energy is below what a phone plays, and on its
+// own it would drive the master limiter and turn the audible part of the twist down.
+// The finished render is mastered to −14 LUFS afterwards (see README).
+const MUSIC_GAIN = 0.83;
 const SFX_BUS_DB = 12;
 const ROOM_TONE_DB = -40;
 const dbToGain = (db: number) => 10 ** (db / 20);
 
-// The score steps back (−4 dB) under the seal. Not under the twist: there the score's own low chord
-// is part of the hit (it is what a phone speaker plays).
+// The score steps back (−4 dB) under the seal. Not under the twist: there the score's own chord
+// is the audible part of the hit on a phone speaker.
 const DUCKS = [240];
 const DUCK_GAIN = dbToGain(-4);
 

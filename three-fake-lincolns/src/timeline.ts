@@ -255,7 +255,7 @@ export const SFX: readonly SfxEvent[] = [
   { at: 1824, sound: "paper_slide", gainDb: -24 },
   // twist: the one punch
   { at: 1920, sound: "projector_click", gainDb: -17 },
-  { at: 1920, sound: "sub_hit", gainDb: -22 },
+  { at: 1920, sound: "sub_hit", gainDb: -32 },
   { at: 1944, sound: "tag_drop", gainDb: -28 },
   { at: 1968, sound: "pen", gainDb: -26 },
   // code, séances

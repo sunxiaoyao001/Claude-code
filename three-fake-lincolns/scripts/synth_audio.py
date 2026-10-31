@@ -70,6 +70,12 @@ def add_reverb(x, wet=0.25, rt60=2.2):
     return (1 - wet) * x2 + wet * w
 
 
+# The twist chord (bar 21), A minor: (MIDI note, gain). Weighted to the E4–E5 octave: a phone
+# speaker plays almost nothing under ~250 Hz, and low notes only use up the master limiter's
+# headroom (it then turns the whole hit down). A light A2 keeps the floor on headphones.
+TWIST_CHORD = ((45, 0.25), (57, 0.45), (60, 0.55), (64, 0.65), (69, 0.75), (72, 0.6), (76, 0.45))
+
+
 def norm_peak(x, dbfs=-1.0):
     p = np.max(np.abs(x))
     return x if p == 0 else x * (10 ** (dbfs / 20) / p)
@@ -250,10 +256,9 @@ def build_score(bpm, bars, fps, silence_frames):
                 v = 0.42 if k % 2 else 0.5
                 place("piano", piano(m, beat * 0.45, v), t0 + k * beat / 2, 0.45, 0.15 * ((k % 3) - 1))
         if bar_no == 21:
-            # the punch: a full A minor chord with the sub hit. The low voicing gives the weight on
-            # headphones; the upper voicing (E4–C5, above a phone speaker's ~300 Hz roll-off) is what
-            # a phone actually plays, so the twist stays the loudest hit there too.
-            for m, gm in ((45, 0.8), (52, 0.6), (57, 0.55), (60, 0.4), (64, 0.5), (69, 0.55), (72, 0.4)):
+            # the punch: an open A minor chord with the sub hit (see TWIST_CHORD), so the twist is
+            # the loudest hit on a phone speaker too.
+            for m, gm in TWIST_CHORD:
                 place("piano", piano(m, bar * 0.9, 0.95), t0, gm)
         if 21 <= bar_no <= 24:
             # twist: low octaves, one per half bar
