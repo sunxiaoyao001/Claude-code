@@ -101,14 +101,14 @@ const Scenes: React.FC = () => {
   );
 };
 
-// Motion blur for the final render (shutter 180°, 6 samples), only on frames with fast movement
+// Motion blur for the final render (shutter 180°, 8 samples), only on frames with fast movement
 // (BLUR_WINDOWS); drafts leave it off.
 const MaybeBlur: React.FC<{ readonly on: boolean; readonly children: React.ReactNode }> = ({ on, children }) => {
   const frame = useCurrentFrame();
   const t = useTime();
   const moving = on && BLUR_WINDOWS.some(([a, b]) => frame >= t(a) && frame <= t(b));
   return moving ? (
-    <CameraMotionBlur shutterAngle={180} samples={6}>
+    <CameraMotionBlur shutterAngle={180} samples={8}>
       {children}
     </CameraMotionBlur>
   ) : (
