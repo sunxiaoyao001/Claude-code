@@ -1,6 +1,5 @@
 import { AbsoluteFill, Sequence } from "remotion";
 import "../fonts";
-import { Loupe } from "../components/Loupe";
 import { PhotoPrint } from "../components/PhotoPrint";
 import { InkFilter, ManilaTag, MonoText, PenMark, Seal } from "../components/Props";
 import { ArchiveProgress, ArchiveTag, SourceCaption, Watermark } from "../components/SeriesChrome";
@@ -12,7 +11,6 @@ export const DevComponents = () => (
   <AbsoluteFill style={{ backgroundColor: COLORS.darkPaper }}>
     <InkFilter />
     <PhotoPrint src="dev/test_print.png" imgW={1600} imgH={2400} width={560} left={140} top={260} tilt={-0.8}>
-      <Loupe u={0.5} v={0.4} radius={110} presence={1} />
       <PenMark kind="circle" left={150} top={480} width={260} height={140} from={0} durationInFrames={10} />
     </PhotoPrint>
     <SourceCaption text="LIBRARY OF CONGRESS · CA. 1865" left={156} top={1150} />
@@ -25,7 +23,7 @@ export const DevComponents = () => (
     <Seal text="假" left={800} top={700} size={120} at={0} />
     <Watermark handle="@your_handle" />
     <ArchiveTag entries={[{ from: 0, text: "ARCHIVE No.001 · CA. 1865 · NEW YORK" }]} />
-    <ArchiveProgress bounds={[0, 672, 1776, 2688]} labels={["No.001", "No.002", "No.003"]} />
+    <ArchiveProgress bounds={[0, 672, 1776, 2688]} labels={["No.001", "No.002", "No.003"]} barFrames={96} />
     <Sequence durationInFrames={96}>
       <Subtitle zh="这张林肯像，身子是*借*的" en="This Lincoln's body is borrowed" durationInFrames={96} isStatic />
     </Sequence>

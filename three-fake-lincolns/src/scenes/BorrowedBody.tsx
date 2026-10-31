@@ -1,13 +1,13 @@
 import React from "react";
 import { AbsoluteFill, interpolate, Sequence, useCurrentFrame, useVideoConfig } from "remotion";
 import { CALHOUN_TO_LINCOLN, fitWidth, IMG, lincolnRectToCalhoun, region } from "../assets";
-import { Breath } from "../components/Breath";
+import { Breath, Dolly } from "../components/Breath";
 import { AlignedCalhoun, DifferenceOverlay } from "../components/Overlays";
 import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
 import { ManilaTag, MonoText, PenMark, Seal } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
-import { CLAMP, COLORS, EASE, FONTS, TYPE } from "../theme";
+import { arc, CLAMP, COLORS, EASE, FONTS, swing, TYPE } from "../theme";
 
 // ---- shared geometry ---------------------------------------------------------------------
 const L_CROP = region("lincolnComposite", "engraving");
@@ -25,6 +25,9 @@ export const COVER = {
   calhoun: { left: 76 + OUTER_W - 77, top: 300 + 96, tilt: 1.0 },
 };
 const ALIGNED = { left: 220, top: 330, tilt: -0.8 };
+// The cover's camera: frame 0 (and the loop's last frame) sits slightly wide, centred on both prints.
+export const COVER_SCALE = 0.96;
+export const COVER_ORIGIN = { x: 460, y: 628 } as const;
 
 // Window-relative (px) position of a Lincoln-normalised point; both prints share the framing.
 const win = (u: number, v: number) => ({
@@ -38,7 +41,15 @@ const NECK_TL = win(NECK[0], NECK[1]);
 const NECK_BR = win(NECK[2], NECK[3]);
 const blobs = CALHOUN_TO_LINCOLN.differenceBlobs;
 
-type PrintPlacement = { readonly left: number; readonly top: number; readonly tilt: number; readonly lift?: number; readonly layers?: React.ReactNode; readonly children?: React.ReactNode };
+type PrintPlacement = {
+  readonly left: number;
+  readonly top: number;
+  readonly tilt: number;
+  readonly lift?: number;
+  readonly sheenAt?: number;
+  readonly layers?: React.ReactNode;
+  readonly children?: React.ReactNode;
+};
 const LincolnPrint: React.FC<PrintPlacement> = (p) => (
   <PhotoPrint src={IMG.lincolnComposite.file} imgW={IMG.lincolnComposite.width} imgH={IMG.lincolnComposite.height} width={PRINT_W} crop={rectToCrop(L_CROP)} border={BORDER} {...p} />
 );
@@ -50,20 +61,23 @@ const CalhounPrint: React.FC<PrintPlacement> = (p) => (
 const useTagSway = (phase: number) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  return 1.6 * Math.sin((2 * Math.PI * (frame + phase)) / fps / 3.2);
+  return 1.6 * (2 * swing((frame + phase) / fps, 3.2) - 1);
 };
 
 // The cover: both prints, the lender's head under a "?" tag. Also the loop's last shot (Outro).
-export const CoverPrints: React.FC<{ readonly phase?: number; readonly captionOpacity?: number; readonly lincolnMarks?: React.ReactNode }> = ({
+export const CoverPrints: React.FC<{ readonly phase?: number; readonly captionOpacity?: number; readonly lincolnMarks?: React.ReactNode; readonly sheenAt?: number }> = ({
   phase = 0,
   captionOpacity = 1,
   lincolnMarks,
+  sheenAt,
 }) => {
   const sway = useTagSway(phase);
   return (
     <>
-      <LincolnPrint {...COVER.lincoln}>{lincolnMarks}</LincolnPrint>
-      <CalhounPrint {...COVER.calhoun} />
+      <LincolnPrint {...COVER.lincoln} sheenAt={sheenAt}>
+        {lincolnMarks}
+      </LincolnPrint>
+      <CalhounPrint {...COVER.calhoun} sheenAt={sheenAt === undefined ? undefined : sheenAt + 8} />
       <ManilaTag
         left={COVER.calhoun.left + BORDER + HEAD_C.x - 58}
         top={COVER.calhoun.top + BORDER + HEAD_C.y - 46}
@@ -95,9 +109,19 @@ const CoverBetTitle: React.FC = () => {
     <AbsoluteFill>
       <AbsoluteFill style={{ transformOrigin: `${COVER.lincoln.left}px ${COVER.lincoln.top}px`, scale: groupScale, translate: `0 ${-36 * group}px` }}>
         <CoverPrints
+          sheenAt={t(4)}
           captionOpacity={1 - group}
           lincolnMarks={
-            <PenMark kind="underline" left={NECK_TL.x - 6} top={NECK_TL.y} width={NECK_BR.x - NECK_TL.x + 12} height={NECK_BR.y - NECK_TL.y} from={t(12)} durationInFrames={12} />
+            // The seam: one stroke across the neck, reaching half a neck-width past it on each side.
+            <PenMark
+              kind="underline"
+              left={NECK_TL.x - (NECK_BR.x - NECK_TL.x) / 2}
+              top={NECK_TL.y}
+              width={(NECK_BR.x - NECK_TL.x) * 2}
+              height={NECK_BR.y - NECK_TL.y}
+              from={t(3)}
+              durationInFrames={12}
+            />
           }
         />
       </AbsoluteFill>
@@ -143,6 +167,46 @@ const CoverBetTitle: React.FC = () => {
   );
 };
 
+// Registration marks that lock onto the four corners when the two prints snap into alignment,
+// with hairlines drawn out through them (scene-local frame `at`).
+const RegistrationLock: React.FC<{ readonly at: number; readonly left: number; readonly top: number; readonly width: number; readonly height: number }> = ({
+  at,
+  left,
+  top,
+  width,
+  height,
+}) => {
+  const frame = useCurrentFrame();
+  if (frame < at) return null;
+  const lock = interpolate(frame, [at, at + 10], [0, 1], { ...CLAMP, easing: EASE.out });
+  const rule = interpolate(frame, [at, at + 14], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  const settle = interpolate(frame, [at + 18, at + 36], [1, 0.35], { ...CLAMP, easing: EASE.inOut });
+  const corners = [
+    [left, top],
+    [left + width, top],
+    [left, top + height],
+    [left + width, top + height],
+  ] as const;
+  return (
+    <>
+      {/* Hairlines through the corners, drawn outward from the print. */}
+      {[top, top + height].map((y) => (
+        <div key={`h${y}`} style={{ position: "absolute", left: left - 900 * rule, width: width + 1800 * rule, top: y, height: 1, backgroundColor: COLORS.silver, opacity: 0.45 * settle }} />
+      ))}
+      {[left, left + width].map((x) => (
+        <div key={`v${x}`} style={{ position: "absolute", top: top - 600 * rule, height: height + 1200 * rule, left: x, width: 1, backgroundColor: COLORS.silver, opacity: 0.45 * settle }} />
+      ))}
+      {corners.map(([x, y]) => (
+        <div key={`${x}-${y}`} style={{ position: "absolute", left: x - 20, top: y - 20, width: 40, height: 40, scale: 1.7 - 0.7 * lock, rotate: `${45 * (1 - lock)}deg`, opacity: lock * (0.4 + 0.6 * settle) }}>
+          <div style={{ position: "absolute", left: 19, top: 0, width: 2, height: 40, backgroundColor: COLORS.vermilion }} />
+          <div style={{ position: "absolute", left: 0, top: 19, width: 40, height: 2, backgroundColor: COLORS.vermilion }} />
+          <div style={{ position: "absolute", left: 11, top: 11, width: 18, height: 18, border: `2px solid ${COLORS.vermilion}`, borderRadius: "50%", boxSizing: "border-box" }} />
+        </div>
+      ))}
+    </>
+  );
+};
+
 // ---- 288–384: answer, alignment, wipe ---------------------------------------------------------
 const Reveal: React.FC = () => {
   const frame = useCurrentFrame();
@@ -164,14 +228,15 @@ const Reveal: React.FC = () => {
   const optionsOut = interpolate(frame, [12, 24], [0, 1], { ...CLAMP, easing: EASE.inOut });
   return (
     <AbsoluteFill>
-      <LincolnPrint {...lincolnPos} layers={showCalhoun ? <AlignedCalhoun revealFromX={0} /> : null} />
+      <LincolnPrint {...lincolnPos} layers={showCalhoun ? <AlignedCalhoun revealFromX={0} /> : null} sheenAt={t(42)} />
+      <RegistrationLock at={t(42)} left={ALIGNED.left} top={ALIGNED.top} width={OUTER_W} height={OUTER_H} />
       {aligned ? (
         <div style={{ position: "absolute", left: ALIGNED.left + OUTER_W + 18, top: ALIGNED.top + 40, display: "flex", flexDirection: "column", gap: 10 }}>
           <MonoText color={showCalhoun ? COLORS.silver : COLORS.printWhite} style={{ opacity: showCalhoun ? 0.5 : 1 }}>CA. 1865</MonoText>
           <MonoText color={showCalhoun ? COLORS.printWhite : COLORS.silver} style={{ opacity: showCalhoun ? 1 : 0.5 }}>1852</MonoText>
         </div>
       ) : null}
-      {!aligned ? <CalhounPrint {...calhounPos} lift={Math.sin(Math.PI * align) * 0.6} /> : null}
+      {!aligned ? <CalhounPrint {...calhounPos} lift={arc(align) * 0.6} /> : null}
       {/* The "?" tag is lifted off the lender's face. */}
       <ManilaTag
         left={COVER.calhoun.left + BORDER + HEAD_C.x - 58 + 120 * tagLift}
@@ -200,7 +265,8 @@ const Reveal: React.FC = () => {
           <br />3 张假像
         </div>
       </div>
-      <Sequence from={t(78)} layout="none">
+      {/* The lender's tag lands while his print is the one showing (354–366). */}
+      <Sequence from={t(66)} layout="none">
         <ManilaTag left={ALIGNED.left + 40} top={ALIGNED.top + OUTER_H + 26} height={96} tilt={1.5} style={{ flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: 6 }}>
           <MonoText size={TYPE.label}>JOHN C. CALHOUN</MonoText>
           <MonoText size={TYPE.label} style={{ opacity: 0.7 }}>VICE PRESIDENT · 1825–1832</MonoText>
@@ -215,7 +281,7 @@ const Lender: React.FC = () => {
   const t = useTime();
   return (
     <AbsoluteFill>
-      <CalhounPrint left={153} top={330} tilt={0.6} />
+      <CalhounPrint left={153} top={330} tilt={0.6} sheenAt={t(6)} />
       <SourceCaption text={IMG.calhoun1852.caption} left={153} top={330 + OUTER_H + 20} />
       <Sequence from={t(48)} layout="none">
         <ManilaTag left={153 + 30} top={330 + OUTER_H + 64} height={64} tilt={-1.5}>
@@ -274,17 +340,30 @@ const Difference: React.FC = () => {
     const r = toWin(b);
     return `inset(${r.top}px ${PRINT_W - r.left - r.width}px ${PRINT_H - r.top - r.height}px ${r.left}px)`;
   };
+  // The comparison is computed top to bottom: a scan line crosses the print and the difference map
+  // is left behind it. Each region is boxed as the line clears it (head ≈ 588, papers ≈ 600).
+  const scan = interpolate(frame, [0, t(30)], [0, 1], ease);
+  const scanY = scan * PRINT_H;
+  const behind = `inset(0 0 ${PRINT_H - scanY}px 0)`;
   return (
     <AbsoluteFill>
       <LincolnPrint {...ALIGNED}>
-        <div style={{ position: "absolute", inset: 0, clipPath: clip(head) }}>
-          <DifferenceOverlay opacity={interpolate(frame, [0, 12], [0, 0.55], ease)} />
+        <div style={{ position: "absolute", inset: 0, clipPath: behind }}>
+          <div style={{ position: "absolute", inset: 0, clipPath: clip(head) }}>
+            <DifferenceOverlay opacity={0.55} />
+          </div>
+          <div style={{ position: "absolute", inset: 0, clipPath: clip(papers) }}>
+            <DifferenceOverlay opacity={0.55} />
+          </div>
         </div>
-        <div style={{ position: "absolute", inset: 0, clipPath: clip(papers) }}>
-          <DifferenceOverlay opacity={interpolate(frame, [t(24), t(24) + 12], [0, 0.55], ease)} />
-        </div>
-        <PenMark kind="box" {...toWin(head)} from={0} durationInFrames={18} seed={4} />
-        <PenMark kind="box" {...toWin(papers)} from={t(24)} durationInFrames={18} seed={5} />
+        {scan > 0 && scan < 1 ? (
+          <>
+            <div style={{ position: "absolute", left: -BORDER - 18, width: PRINT_W + 2 * BORDER + 36, top: scanY - 1, height: 2, backgroundColor: COLORS.printWhite, opacity: 0.85 }} />
+            <div style={{ position: "absolute", left: -BORDER - 18, width: PRINT_W + 2 * BORDER + 36, top: scanY + 2, height: 1, backgroundColor: COLORS.vermilion }} />
+          </>
+        ) : null}
+        <PenMark kind="box" {...toWin(head)} from={t(12)} durationInFrames={14} seed={4} />
+        <PenMark kind="box" {...toWin(papers)} from={t(24)} durationInFrames={14} seed={5} />
       </LincolnPrint>
       <div style={{ position: "absolute", left: ALIGNED.left, top: ALIGNED.top + OUTER_H + 24, fontFamily: FONTS.sansZh, fontWeight: 500, fontSize: TYPE.label, color: COLORS.silver }}>
         差异图 · 由两张原件配准计算
@@ -298,20 +377,31 @@ export const BorrowedBody: React.FC = () => {
   return (
     <AbsoluteFill>
       <Breath>
+        {/* The cover starts wide (frame 0 = the loop's last frame) and settles in over the first bar. */}
         <Sequence durationInFrames={t(288)} layout="none">
-          <CoverBetTitle />
+          <Dolly from={COVER_SCALE} end={96} originX={COVER_ORIGIN.x} originY={COVER_ORIGIN.y}>
+            <CoverBetTitle />
+          </Dolly>
         </Sequence>
         <Sequence from={t(288)} durationInFrames={t(96)} layout="none">
-          <Reveal />
+          <Dolly from={0.97} end={42} originX={ALIGNED.left + OUTER_W / 2} originY={ALIGNED.top + OUTER_H / 2}>
+            <Reveal />
+          </Dolly>
         </Sequence>
         <Sequence from={t(384)} durationInFrames={t(96)} layout="none">
-          <Lender />
+          <Dolly from={0.93} end={96} originX={153 + BORDER + HEAD_C.x} originY={330 + BORDER + HEAD_C.y}>
+            <Lender />
+          </Dolly>
         </Sequence>
         <Sequence from={t(480)} durationInFrames={t(96)} layout="none">
-          <Irony />
+          <Dolly from={0.97} to={0.97} end={96} originX={460} originY={628} panX={[24, -24]}>
+            <Irony />
+          </Dolly>
         </Sequence>
-        <Sequence from={t(576)} durationInFrames={t(96)} layout="none">
-          <Difference />
+        <Sequence from={t(576)} layout="none">
+          <Dolly from={0.95} end={96} originX={ALIGNED.left + OUTER_W / 2} originY={ALIGNED.top + OUTER_H / 2}>
+            <Difference />
+          </Dolly>
         </Sequence>
       </Breath>
     </AbsoluteFill>

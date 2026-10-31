@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region } from "../assets";
-import { Breath, BREATH_MAX_ZOOM } from "../components/Breath";
+import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
 import { MonoText, TypedMono } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
@@ -10,7 +10,7 @@ import { SCENES, TYPED } from "../timeline";
 import { CLAMP, COLORS, EASE, SAFE, TYPE } from "../theme";
 
 // Scene-local frames: 0 = 2304. Only Houdini's half of the slide, so "he" cannot be read as the
-// Lincoln ghost; the dates are typed below (F14, F19, F20).
+// Lincoln ghost. Below: the date of death, then "+100 YEARS" typed in (F14, F19).
 const BASE = SCENES.centenary.from;
 const HALF = region("houdiniLincolnGhost", "houdiniHalf");
 const W = Math.floor(fitWidth("houdiniLincolnGhost", HALF, 420, BREATH_MAX_ZOOM));
@@ -27,6 +27,7 @@ export const Centenary: React.FC = () => {
   return (
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
+        <Dolly from={0.93} end={96} originX={LEFT + W / 2} originY={TOP + H / 2}>
         <PhotoPrint
           src={IMG.houdiniLincolnGhost.file}
           imgW={IMG.houdiniLincolnGhost.width}
@@ -37,14 +38,16 @@ export const Centenary: React.FC = () => {
           top={TOP}
           tilt={-0.7}
           border={BORDER}
+          sheenAt={t(12)}
         />
         <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={LEFT} top={BOTTOM + 16} opacity={inP} />
         <div style={{ position: "absolute", left: 153, top: BOTTOM + 84 }}>
-          <MonoText color={COLORS.silver}>HARRY HOUDINI</MonoText>
+          <MonoText color={COLORS.silver}>HARRY HOUDINI · DIED OCT. 31, 1926</MonoText>
           <div style={{ marginTop: 8 }}>
             <TypedMono typed={TYPED.centenary} sceneFrom={BASE} size={TYPE.subtitleZh} color={COLORS.printWhite} />
           </div>
         </div>
+        </Dolly>
       </Breath>
     </AbsoluteFill>
   );

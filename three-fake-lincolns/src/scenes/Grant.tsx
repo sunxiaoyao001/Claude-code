@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region, type ImageKey, type Rect } from "../assets";
-import { Breath, BREATH_MAX_ZOOM } from "../components/Breath";
+import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
 import { ManilaTag, MonoText, PenMark } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
@@ -66,6 +66,41 @@ const compositePoint = (u: number, v: number) => {
   };
 };
 
+// Left edge of each original in the top row.
+const SOURCE_LEFT = PARTS.reduce<number[]>((acc, p, i) => [...acc, i === 0 ? ROW_LEFT : acc[i - 1] + widthOf(PARTS[i - 1]) + SRC_BORDER * 2 + GAP], []);
+
+// Centre of a region of one original, in screen pixels (tilt ignored: it is under 1.5°).
+const sourcePoint = (i: number, area: string) => {
+  const p = PARTS[i];
+  const crop = region(p.key, p.crop);
+  const r = region(p.key, area);
+  const scale = widthOf(p) / ((crop[2] - crop[0]) * IMG[p.key].width);
+  return {
+    x: SOURCE_LEFT[i] + SRC_BORDER + (((r[0] + r[2]) / 2 - crop[0]) * IMG[p.key].width) * scale,
+    y: ROW_TOP + SRC_BORDER + (((r[1] + r[3]) / 2 - crop[1]) * IMG[p.key].height) * scale,
+  };
+};
+
+// An exploded-diagram leader line from a part of an original to the same part of the composite,
+// drawn on the beat the part is marked.
+const LeaderLine: React.FC<{ readonly i: number; readonly from: number }> = ({ i, from }) => {
+  const frame = useCurrentFrame();
+  if (frame < from) return null;
+  const p = interpolate(frame, [from, from + 12], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  const a = sourcePoint(i, PARTS[i].area);
+  const r = region("grantCityPoint", PARTS[i].part);
+  const b = compositePoint((r[0] + r[2]) / 2, (r[1] + r[3]) / 2);
+  const cx = (a.x + b.x) / 2 + (i - 1) * 90;
+  const cy = (a.y + b.y) / 2 - 40;
+  return (
+    <svg width={1080} height={1920} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
+      <path d={`M ${a.x} ${a.y} Q ${cx} ${cy} ${b.x} ${b.y}`} pathLength={1} fill="none" stroke={COLORS.vermilion} strokeWidth={2} strokeOpacity={0.9} strokeDasharray={1} strokeDashoffset={1 - p} />
+      <circle cx={a.x} cy={a.y} r={4} fill={COLORS.vermilion} opacity={Math.min(1, p * 4)} />
+      <circle cx={b.x} cy={b.y} r={4} fill={COLORS.vermilion} opacity={p > 0.95 ? 1 : 0} />
+    </svg>
+  );
+};
+
 const LABEL_POS = (() => {
   const head = region("grantCityPoint", "head");
   const body = region("grantCityPoint", "horseAndBody");
@@ -86,17 +121,16 @@ export const Grant: React.FC = () => {
   const t = useTime();
   // While a part is being marked, the other two originals step back.
   const active = (i: number) =>
-    interpolate(frame, [t(MARK_AT[i]), t(MARK_AT[i]) + 6, t(MARK_AT[i] + 24) - 2, t(MARK_AT[i] + 24) + 4], [0, 1, 1, i === 2 ? 1 : 0], CLAMP);
+    interpolate(frame, [t(MARK_AT[i]), t(MARK_AT[i]) + 6, t(MARK_AT[i] + 24) - 2, t(MARK_AT[i] + 24) + 4], [0, 1, 1, i === 2 ? 1 : 0], { ...CLAMP, easing: EASE.inOut });
   const dimFor = (j: number) => Math.max(...PARTS.map((_, i) => (i === j ? 0 : active(i))));
   const compIn = interpolate(frame, [t(COMP_AT) - 12, t(COMP_AT)], [0, 1], { ...CLAMP, easing: EASE.out });
-  let x = ROW_LEFT;
   return (
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
+        <Dolly from={0.95} end={192} originX={513} originY={COMP_TOP + 260}>
         {PARTS.map((p, i) => {
           const w = widthOf(p);
-          const left = x;
-          x += w + SRC_BORDER * 2 + GAP;
+          const left = SOURCE_LEFT[i];
           // Each original falls onto the table and lands on its beat.
           const land = interpolate(frame, [t(p.at) - 10, t(p.at)], [0, 1], { ...CLAMP, easing: EASE.out });
           return (
@@ -112,7 +146,8 @@ export const Grant: React.FC = () => {
               tilt={p.tilt}
               border={SRC_BORDER}
               lift={(1 - land) * 0.8}
-              style={{ filter: `brightness(${1 - 0.55 * dimFor(i)})` }}
+              sheenAt={t(p.at)}
+              style={{ filter: `brightness(${1 - 0.55 * dimFor(i)}) blur(${1.4 * dimFor(i)}px)` }}
             >
               <RegionMark k={p.key} area={p.area} kind={p.kind} from={t(MARK_AT[i])} seed={31 + i} />
             </PhotoPrint>
@@ -130,6 +165,7 @@ export const Grant: React.FC = () => {
           tilt={0.4}
           border={COMP_BORDER}
           lift={(1 - compIn) * 0.8}
+          sheenAt={t(COMP_AT)}
         >
           {PARTS.map((p, i) => (
             <RegionMark key={p.part} k="grantCityPoint" area={p.part} kind={p.kind} from={t(MARK_AT[i])} seed={41 + i} />
@@ -150,6 +186,10 @@ export const Grant: React.FC = () => {
             </ManilaTag>
           ) : null,
         )}
+        {PARTS.map((p, i) => (
+          <LeaderLine key={p.part} i={i} from={t(MARK_AT[i]) + 4} />
+        ))}
+        </Dolly>
       </Breath>
     </AbsoluteFill>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region } from "../assets";
-import { Breath, BREATH_MAX_ZOOM } from "../components/Breath";
+import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
 import { ManilaTag, TypedMono } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
@@ -24,10 +24,10 @@ const FAMILY_H = Math.round((FAMILY.width * (PHOTO[3] - PHOTO[1]) * IMG.houdiniF
 export const FAMILY_BOTTOM = FAMILY.top + FAMILY_H + FAMILY.border * 2;
 
 // The LoC record names the three sitters but not who stands where, so nobody is circled or labelled.
-export const FAMILY_CAPTION = "LIBRARY OF CONGRESS · HOUDINI WITH WIFE AND MOTHER";
+export const FAMILY_CAPTION = "LIBRARY OF CONGRESS · HOUDINI, WIFE, MOTHER";
 
 // `develop` < 1 bleaches the print back towards blank paper.
-export const FamilyPrint: React.FC<{ readonly left?: number; readonly develop?: number }> = ({ left = FAMILY.left, develop = 1 }) => (
+export const FamilyPrint: React.FC<{ readonly left?: number; readonly develop?: number; readonly sheenAt?: number }> = ({ left = FAMILY.left, develop = 1, sheenAt }) => (
   <PhotoPrint
     src={IMG.houdiniFamily.file}
     imgW={IMG.houdiniFamily.width}
@@ -39,6 +39,7 @@ export const FamilyPrint: React.FC<{ readonly left?: number; readonly develop?: 
     tilt={FAMILY.tilt}
     border={FAMILY.border}
     develop={develop}
+    sheenAt={sheenAt}
   />
 );
 
@@ -56,11 +57,13 @@ export const Code: React.FC = () => {
   return (
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
-        <FamilyPrint left={FAMILY.left + (1 - inP) * 900} />
+        <Dolly from={0.95} end={96} originX={FAMILY.left + FAMILY.width / 2} originY={FAMILY.top + 300}>
+        <FamilyPrint left={FAMILY.left + (1 - inP) * 900} sheenAt={t(12)} />
         <SourceCaption text={FAMILY_CAPTION} left={FAMILY.left} top={FAMILY_BOTTOM + 16} opacity={inP} />
         <ManilaTag left={153 - (1 - tagIn) * 700} top={FAMILY_BOTTOM + 70} height={84} tilt={-1.4}>
           <TypedMono typed={TYPED.code} sceneFrom={BASE} size={TYPE.subtitleEn} />
         </ManilaTag>
+        </Dolly>
       </Breath>
     </AbsoluteFill>
   );

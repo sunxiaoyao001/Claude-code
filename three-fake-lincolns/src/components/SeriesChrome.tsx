@@ -1,6 +1,7 @@
 import React from "react";
-import { useCurrentFrame } from "remotion";
-import { COLORS, FONTS, SAFE, TYPE } from "../theme";
+import { measureText } from "@remotion/layout-utils";
+import { interpolate, useCurrentFrame } from "remotion";
+import { CLAMP, COLORS, EASE, FONTS, SAFE, TYPE } from "../theme";
 
 const monoLabel: React.CSSProperties = {
   fontFamily: FONTS.mono,
@@ -45,8 +46,17 @@ export const ArchiveTag: React.FC<{ readonly entries: readonly ArchiveEntry[] }>
 
 // Three archive slots along the bottom of the safe area, one per fake. The current slot fills as its
 // chapter plays; a vermilion dot marks the playhead.
-export const ArchiveProgress: React.FC<{ readonly bounds: readonly number[]; readonly labels: readonly string[] }> = ({ bounds, labels }) => {
+export const ArchiveProgress: React.FC<{ readonly bounds: readonly number[]; readonly labels: readonly string[]; readonly barFrames: number }> = ({
+  bounds,
+  labels,
+  barFrames,
+}) => {
   const frame = useCurrentFrame();
+  // Advance one bar at a time, each step eased over 12 frames (no constant-speed creep).
+  const stepped = (f: number) => {
+    const bar = Math.floor(f / barFrames);
+    return (bar + interpolate(f - bar * barFrames, [0, 12], [0, 1], { ...CLAMP, easing: EASE.inOut })) * barFrames;
+  };
   const gap = 18;
   const total = SAFE.right - SAFE.margin;
   const slotW = (total - gap * (labels.length - 1)) / labels.length;
@@ -56,7 +66,7 @@ export const ArchiveProgress: React.FC<{ readonly bounds: readonly number[]; rea
       {labels.map((label, i) => {
         const from = bounds[i];
         const to = bounds[i + 1];
-        const p = Math.min(1, Math.max(0, (frame - from) / (to - from)));
+        const p = Math.min(1, Math.max(0, (stepped(frame) - from) / (to - from)));
         const current = frame >= from && frame < to;
         const left = SAFE.margin + i * (slotW + gap);
         return (
@@ -78,9 +88,12 @@ export const SourceCaption: React.FC<{ readonly text: string; readonly left: num
   left,
   top,
   opacity = 1,
-}) => (
-  <div style={{ ...monoLabel, position: "absolute", left, top, color: COLORS.silver, opacity }}>{text}</div>
-);
+}) => {
+  // Never let a caption run into the right-hand UI band (x > SAFE.right).
+  const { width } = measureText({ text: text.toUpperCase(), fontFamily: FONTS.mono, fontSize: TYPE.label, letterSpacing: TYPE.monoTracking, fontWeight: "400" });
+  const x = Math.max(SAFE.margin, Math.min(left, SAFE.right - width));
+  return <div style={{ ...monoLabel, position: "absolute", left: x, top, color: COLORS.silver, opacity }}>{text}</div>;
+};
 
 // Fixed corner mark on reconstructions and schematics.
 export const IllustrativeMark: React.FC = () => (
@@ -88,7 +101,7 @@ export const IllustrativeMark: React.FC = () => (
     style={{
       position: "absolute",
       right: 1080 - SAFE.right,
-      top: SAFE.bottom - 72,
+      top: SAFE.bottom - 112,
       fontFamily: FONTS.sansZh,
       fontWeight: 500,
       fontSize: TYPE.label,

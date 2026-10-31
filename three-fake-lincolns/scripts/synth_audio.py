@@ -201,8 +201,8 @@ PROGRESSION = [
     "F", "Am", "Dm", "Am",          # P7 25-28 centenary, golden line (bar 26), credits, loop
 ]
 GOLDEN_BAR = 26  # the golden line lands on its first beat (frame 2400)
-GOLDEN_CHORDS = [[57, 64, 69, 72], [53, 60, 65, 69]]  # one chord per word group, beats 1 and 2
-GOLDEN_TAIL = [76, 74, 72, 69]  # eighths after the line has formed
+GOLDEN_CHORDS = [[57, 64, 69, 72], [53, 60, 65, 69]]  # Am on beat 1, F on beat 3
+GOLDEN_MELODY = [76, 74, 72, 69, 71, 72, 74, 76]  # one note per character, each on an eighth note
 
 
 def build_score(bpm, bars, fps, silence_frames):
@@ -248,9 +248,9 @@ def build_score(bpm, bars, fps, silence_frames):
         if bar_no == GOLDEN_BAR:
             for k, chord in enumerate(GOLDEN_CHORDS):
                 for m in chord:
-                    place("piano", piano(m, beat * 1.8, 0.6), t0 + k * beat, 0.4, 0.1)
-            for k, m in enumerate(GOLDEN_TAIL):
-                place("piano", piano(m, beat * 0.9, 0.5), t0 + 2 * beat + k * beat / 2, 0.4, -0.1)
+                    place("piano", piano(m, beat * 1.9, 0.6), t0 + 2 * k * beat, 0.4, 0.1)
+            for k, m in enumerate(GOLDEN_MELODY):
+                place("piano", piano(m, beat * 0.9, 0.5), t0 + k * beat / 2, 0.45, -0.1)
         if bar_no == GOLDEN_BAR + 1:
             for k in (0, 2, 4, 6):
                 place("piano", piano(ARP[ch][k % 4], beat * 0.9, 0.42), t0 + k * beat / 2, 0.4)

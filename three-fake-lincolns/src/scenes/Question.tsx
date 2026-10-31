@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region } from "../assets";
-import { Breath, BREATH_MAX_ZOOM } from "../components/Breath";
+import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
 import { ManilaTag, MonoText } from "../components/Props";
 import { useTime } from "../time";
@@ -63,6 +63,7 @@ export const Question: React.FC = () => {
   return (
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
+        <Dolly from={0.94} end={129} originX={SLOT_LEFT + SLOT_W / 2} originY={ROW_TOP + SLOT_H / 2}>
         <PhotoPrint
           src={IMG.lincolnComposite.file}
           imgW={IMG.lincolnComposite.width}
@@ -73,6 +74,7 @@ export const Question: React.FC = () => {
           top={ROW_TOP}
           tilt={-1.2}
           border={BORDER}
+          sheenAt={t(14)}
         />
         <PhotoPrint
           src={IMG.maryLincolnGhost.file}
@@ -84,6 +86,7 @@ export const Question: React.FC = () => {
           top={ROW_TOP + 14}
           tilt={0.9}
           border={BORDER}
+          sheenAt={t(18)}
         />
         {/* The empty third place: a bare patch of table and its catalogue tag. */}
         <div
@@ -104,6 +107,7 @@ export const Question: React.FC = () => {
           </MonoText>
         </ManilaTag>
         <SlideBox top={BOX.top + (1 - boxIn) * 1100} />
+        </Dolly>
       </Breath>
     </AbsoluteFill>
   );

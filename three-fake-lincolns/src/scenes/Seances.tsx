@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region } from "../assets";
-import { Breath, BREATH_MAX_ZOOM } from "../components/Breath";
+import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
 import { MonoText } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
@@ -22,21 +22,42 @@ const PAGE_TOP = 236;
 const PAGE_BORDER = 12;
 const PULL_AT = 96;
 
+const DIGIT_H = 64;
+// One digit of a mechanical counter: when it changes it rolls up through its window (6 frames).
+const RollingDigit: React.FC<{ readonly prev: string; readonly next: string; readonly p: number }> = ({ prev, next, p }) => (
+  <span style={{ display: "inline-block", position: "relative", height: DIGIT_H, overflow: "hidden", verticalAlign: "top" }}>
+    <span style={{ display: "block", translate: `0 ${prev === next ? 0 : -p * DIGIT_H}px` }}>
+      <span style={{ display: "block", height: DIGIT_H, lineHeight: `${DIGIT_H}px` }}>{prev}</span>
+      <span style={{ display: "block", height: DIGIT_H, lineHeight: `${DIGIT_H}px` }}>{next}</span>
+    </span>
+  </span>
+);
+
 const Counter: React.FC = () => {
   const frame = useCurrentFrame();
   const t = useTime();
   const { from, every, first, last } = SEANCE_COUNTER;
   let year = 0;
+  let changedAt = 0;
   for (let y = first; y <= last; y++) {
-    if (t(from + (y - first) * every) - t(BASE) <= frame) year = y;
+    const at = t(from + (y - first) * every) - t(BASE);
+    if (at <= frame) {
+      year = y;
+      changedAt = at;
+    }
   }
   if (!year) return null;
+  const roll = interpolate(frame, [changedAt, changedAt + 6], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  const prev = String(year === first ? year : year - 1);
+  const next = String(year);
   return (
     <div style={{ position: "absolute", left: 153, top: Math.max(FAMILY_BOTTOM, PAGE_TOP + PAGE_H + PAGE_BORDER * 2) + 70 }}>
       <MonoText color={COLORS.silver}>HALLOWEEN SÉANCE</MonoText>
       <div style={{ marginTop: 6 }}>
-        <MonoText size={TYPE.subtitleZh} color={COLORS.printWhite}>
-          {year}
+        <MonoText size={TYPE.subtitleZh} color={COLORS.printWhite} style={{ display: "inline-flex" }}>
+          {[...next].map((d, i) => (
+            <RollingDigit key={i} prev={prev[i]} next={d} p={roll} />
+          ))}
         </MonoText>
       </div>
     </div>
@@ -53,6 +74,7 @@ export const Seances: React.FC = () => {
   return (
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
+        <Dolly from={0.95} end={192} originX={420} originY={580}>
         <FamilyPrint develop={develop} />
         <SourceCaption text={FAMILY_CAPTION} left={140} top={FAMILY_BOTTOM + 16} opacity={pageOut} />
         {pageOut < 1 ? (
@@ -68,11 +90,13 @@ export const Seances: React.FC = () => {
               tilt={1.1 - 2 * pageOut}
               border={PAGE_BORDER}
               lift={pageOut * 0.7}
+              sheenAt={t(10)}
             />
             <SourceCaption text={IMG.houdiniClippings.caption} left={PAGE_LEFT} top={PAGE_TOP + PAGE_H + PAGE_BORDER * 2 + 14} opacity={pageIn * (1 - pageOut)} />
           </>
         ) : null}
         <Counter />
+        </Dolly>
       </Breath>
     </AbsoluteFill>
   );

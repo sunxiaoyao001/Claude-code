@@ -5,7 +5,7 @@ import { MonoText } from "../components/Props";
 import { useTime } from "../time";
 import { SCENES } from "../timeline";
 import { CLAMP, COLORS, EASE } from "../theme";
-import { CoverPrints } from "./BorrowedBody";
+import { COVER_ORIGIN, COVER_SCALE, CoverPrints } from "./BorrowedBody";
 import { ContactSheet } from "./Golden";
 
 // Scene-local frames: 0 = 2544. An index card with the credits is pushed over the table (fully
@@ -53,15 +53,16 @@ export const Outro: React.FC = () => {
   const t = useTime();
   const cardIn = interpolate(frame, [0, t(12)], [0, 1], { ...CLAMP, easing: EASE.spring });
   const cardOut = interpolate(frame, [t(60), t(72)], [0, 1], { ...CLAMP, easing: EASE.inOut });
-  // The camera settles on the cover as the card leaves (ease-out, so it arrives at rest).
-  const settle = interpolate(frame, [t(60), t(72)], [0.985, 1], { ...CLAMP, easing: EASE.out });
+  // As the card leaves, the camera eases back to the cover's opening framing (COVER_SCALE) and
+  // arrives at rest, so the last frame is frame 0.
+  const settle = interpolate(frame, [t(56), t(74)], [1, COVER_SCALE], { ...CLAMP, easing: EASE.inOut });
   return (
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
         {frame < t(12) ? (
-          <ContactSheet dim={0.6} />
+          <ContactSheet dim={0.6} soft={1.6} />
         ) : (
-          <AbsoluteFill style={{ transformOrigin: "540px 760px", scale: settle }}>
+          <AbsoluteFill style={{ transformOrigin: `${COVER_ORIGIN.x}px ${COVER_ORIGIN.y}px`, scale: settle }}>
             <CoverPrints phase={t(BASE)} />
           </AbsoluteFill>
         )}

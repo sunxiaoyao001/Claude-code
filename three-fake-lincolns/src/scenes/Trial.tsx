@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region, type ImageKey } from "../assets";
-import { Breath, BREATH_MAX_ZOOM } from "../components/Breath";
+import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
 import { MonoText, PenMark, TypedMono } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
@@ -71,6 +71,7 @@ export const Trial: React.FC = () => {
   return (
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
+        <Dolly from={0.95} end={192} originX={513} originY={650}>
         <CaseCard left={caseLeft + (1 - caseIn) * 900} top={420 + caseDown * (ROW_BOTTOM + 90 - 420)} tilt={-0.8 + caseDown * 1.4} />
         {CARDS.map((c, i) => {
           const inP = interpolate(frame, [t(c.at) - 10, t(c.at)], [0, 1], { ...CLAMP, easing: EASE.out });
@@ -87,13 +88,16 @@ export const Trial: React.FC = () => {
               top={ROW_TOP}
               tilt={c.tilt}
               border={0}
+              radius={7}
               lift={(1 - inP) * 0.6}
+              sheenAt={t(c.at)}
             >
               <GhostMark k={c.key} from={t(c.mark)} seed={c.seed} />
             </PhotoPrint>
           );
         })}
-        <SourceCaption text={IMG.mumlerElderlyMan.caption} left={ROW_LEFT} top={ROW_BOTTOM + 28} opacity={interpolate(frame, [t(104), t(112)], [0, 1], CLAMP)} />
+        <SourceCaption text={IMG.mumlerElderlyMan.caption} left={ROW_LEFT} top={ROW_BOTTOM + 28} opacity={interpolate(frame, [t(104), t(112)], [0, 1], { ...CLAMP, easing: EASE.inOut })} />
+        </Dolly>
       </Breath>
     </AbsoluteFill>
   );

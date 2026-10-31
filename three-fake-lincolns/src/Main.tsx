@@ -1,8 +1,11 @@
 import React from "react";
+import { CameraMotionBlur } from "@remotion/motion-blur";
+import { linearTiming, TransitionSeries, type TransitionPresentation } from "@remotion/transitions";
 import { AbsoluteFill, Sequence, Track, useVideoConfig } from "remotion";
 import "./fonts";
 import { Desk } from "./components/Desk";
 import { Soundtrack } from "./components/Soundtrack";
+import { irisShutter, slideCarrier, sweepOff } from "./components/Transitions";
 import { InkFilter } from "./components/Props";
 import { ArchiveProgress, ArchiveTag, Watermark } from "./components/SeriesChrome";
 import { Subtitle } from "./components/Subtitle";
@@ -19,8 +22,9 @@ import { Seances } from "./scenes/Seances";
 import { Trial } from "./scenes/Trial";
 import { Twist } from "./scenes/Twist";
 import { WidowGhost } from "./scenes/WidowGhost";
+import { EASE } from "./theme";
 import { TimeScale, useTime } from "./time";
-import { ARCHIVE_TAGS, BASE_TOTAL, CHAPTERS, LINES, SCENES } from "./timeline";
+import { ARCHIVE_TAGS, BAR, BASE_TOTAL, CHAPTERS, LINES, SCENES } from "./timeline";
 
 const Subtitles: React.FC = () => {
   const t = useTime();
@@ -41,7 +45,7 @@ const Chrome: React.FC<{ readonly watermark: string }> = ({ watermark }) => {
     <>
       <Watermark handle={watermark} />
       <ArchiveTag entries={ARCHIVE_TAGS.map((e) => ({ from: t(e.from), text: e.text }))} />
-      <ArchiveProgress bounds={CHAPTERS.bounds.map(t)} labels={CHAPTERS.labels} />
+      <ArchiveProgress bounds={CHAPTERS.bounds.map(t)} labels={CHAPTERS.labels} barFrames={t(BAR)} />
     </>
   );
 };
@@ -61,31 +65,65 @@ const SCENE_COMPONENTS: Record<keyof typeof SCENES, { name: string; Component: R
   outro: { name: "Credits and loop", Component: Outro },
 };
 
+// Scene changes that grow out of the content (custom presentations, Transitions.tsx). The key is
+// the outgoing scene; the incoming scene still starts exactly on its boundary, the outgoing one is
+// extended under the transition. Scenes not listed cut hard on the beat.
+const TRANSITIONS: Partial<Record<keyof typeof SCENES, { readonly length: number; readonly make: () => TransitionPresentation<Record<string, never>> }>> = {
+  borrowedBody: { length: 16, make: sweepOff },
+  widowGhost: { length: 16, make: sweepOff },
+  trial: { length: 12, make: irisShutter },
+  darkroom: { length: 16, make: sweepOff },
+  grant: { length: 16, make: sweepOff },
+  twist: { length: 14, make: slideCarrier },
+  seances: { length: 12, make: irisShutter },
+};
+
 const Scenes: React.FC = () => {
   const t = useTime();
+  const keys = Object.keys(SCENE_COMPONENTS) as (keyof typeof SCENES)[];
   return (
-    <Track name="Scenes">
-      {(Object.keys(SCENE_COMPONENTS) as (keyof typeof SCENES)[]).map((key) => {
+    <TransitionSeries>
+      {keys.flatMap((key) => {
         const entry = SCENE_COMPONENTS[key];
         const s = SCENES[key];
-        return (
-          <Sequence key={key} name={entry.name} from={t(s.from)} durationInFrames={t(s.to) - t(s.from)}>
+        const tr = TRANSITIONS[key];
+        const items = [
+          <TransitionSeries.Sequence key={key} name={entry.name} durationInFrames={t(s.to) - t(s.from) + (tr ? t(tr.length) : 0)}>
             <entry.Component />
-          </Sequence>
-        );
+          </TransitionSeries.Sequence>,
+        ];
+        if (tr) {
+          items.push(<TransitionSeries.Transition key={`${key}-out`} timing={linearTiming({ durationInFrames: t(tr.length), easing: EASE.inOut })} presentation={tr.make()} />);
+        }
+        return items;
       })}
-    </Track>
+    </TransitionSeries>
   );
 };
 
-export const Main: React.FC<MainProps> = ({ watermark }) => {
+// Motion blur for the final render (shutter 180°); drafts leave it off.
+const MaybeBlur: React.FC<{ readonly on: boolean; readonly children: React.ReactNode }> = ({ on, children }) =>
+  on ? (
+    <CameraMotionBlur shutterAngle={180} samples={6}>
+      {children}
+    </CameraMotionBlur>
+  ) : (
+    <>{children}</>
+  );
+
+export const Main: React.FC<MainProps> = ({ watermark, motionBlur }) => {
   const { durationInFrames } = useVideoConfig();
   return (
     <TimeScale.Provider value={durationInFrames / BASE_TOTAL}>
       <AbsoluteFill>
         <InkFilter />
         <Desk />
-        <Scenes />
+        {/* Own stacking context: transitions layer scenes with z-index but never cover subtitles. */}
+        <AbsoluteFill style={{ isolation: "isolate" }}>
+          <MaybeBlur on={motionBlur}>
+            <Scenes />
+          </MaybeBlur>
+        </AbsoluteFill>
         <Subtitles />
         <Chrome watermark={watermark} />
         <Soundtrack />

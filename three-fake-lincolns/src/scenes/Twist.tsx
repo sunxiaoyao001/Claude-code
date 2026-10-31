@@ -1,9 +1,9 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region } from "../assets";
-import { Breath, BREATH_MAX_ZOOM } from "../components/Breath";
+import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
-import { PenMark } from "../components/Props";
+import { ManilaTag, MonoText, PenMark } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
 import { CLAMP, COLORS, EASE } from "../theme";
@@ -14,6 +14,20 @@ const SLIDE_W = Math.floor(fitWidth("houdiniLincolnGhost", SLIDE, 700, BREATH_MA
 const SLIDE_H = Math.round((SLIDE_W * ((SLIDE[3] - SLIDE[1]) * IMG.houdiniLincolnGhost.height)) / ((SLIDE[2] - SLIDE[0]) * IMG.houdiniLincolnGhost.width));
 const LEFT = Math.round(540 - SLIDE_W / 2 - 30);
 const TOP = 390;
+
+// As the lamp settles, a tag names the man in the slide (F13, F20), so the next line's "胡迪尼" lands.
+const HoudiniTag: React.FC<{ readonly from: number }> = ({ from }) => {
+  const frame = useCurrentFrame();
+  const g = usePrint();
+  const p = interpolate(frame, [from - 10, from], [0, 1], { ...CLAMP, easing: EASE.out });
+  if (frame < from - 10) return null;
+  const at = toWindow(g, 0.08, 0.84);
+  return (
+    <ManilaTag left={at.x} top={at.y - (1 - p) * 40} height={52} tilt={-1.5} style={{ opacity: p }}>
+      <MonoText>HARRY HOUDINI</MonoText>
+    </ManilaTag>
+  );
+};
 
 const GhostHeadMark: React.FC<{ readonly from: number }> = ({ from }) => {
   const g = usePrint();
@@ -42,6 +56,7 @@ export const Twist: React.FC = () => {
   return (
     <AbsoluteFill>
       <Breath phase={t(1920)} originX={cx} originY={cy}>
+        <Dolly from={0.97} start={20} end={96} originX={cx} originY={cy}>
         {/* Flat projector light (no glow): a warm field that throws well past the slide on the punch. */}
         <div
           style={{
@@ -50,7 +65,7 @@ export const Twist: React.FC = () => {
             top: cy - (h + throwY) / 2,
             width: w + throwX,
             height: h + throwY,
-            backgroundColor: COLORS.highlightWarm,
+            backgroundColor: COLORS.printWhite,
             opacity: lamp,
           }}
         />
@@ -67,10 +82,12 @@ export const Twist: React.FC = () => {
             colorRestore={restore}
             style={{ backgroundColor: COLORS.ink, boxShadow: "none" }}
           >
+            <HoudiniTag from={t(24)} />
             <GhostHeadMark from={t(48)} />
           </PhotoPrint>
         </div>
-        <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={LEFT} top={TOP + SLIDE_H + 54} opacity={open} />
+        <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={LEFT} top={TOP + SLIDE_H + 94} opacity={open} />
+        </Dolly>
       </Breath>
     </AbsoluteFill>
   );

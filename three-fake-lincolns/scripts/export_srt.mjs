@@ -9,7 +9,7 @@ const outDir = process.argv[2] ?? "out";
 const ms = (frame) => Math.round((frame / BASE_FPS) * 1000);
 const entries = [
   ...LINES.map((l) => ({ from: l.from, to: l.to, zh: l.zh.replace(/\*/g, ""), en: l.en })),
-  { from: GOLDEN.from, to: GOLDEN.to, zh: GOLDEN.groups.map((g) => g.text).join(""), en: GOLDEN.en },
+  { from: GOLDEN.from, to: GOLDEN.to, zh: GOLDEN.lines.flat().map((c) => c.text).join(""), en: GOLDEN.en },
 ].sort((a, b) => a.from - b.from);
 
 fs.mkdirSync(outDir, { recursive: true });

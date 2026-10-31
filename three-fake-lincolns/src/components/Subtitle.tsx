@@ -108,7 +108,7 @@ export const Subtitle: React.FC<Props> = ({ zh, en, durationInFrames, isStatic =
         {chunks.map((c, i) => {
           const p = rise(i);
           return (
-            <span key={i} style={{ display: "inline-block", overflow: "hidden", verticalAlign: "bottom" }}>
+            <span key={i} style={{ display: "inline-block", overflow: "hidden", verticalAlign: "bottom", whiteSpace: "pre" }}>
               <span
                 style={{
                   display: "inline-block",

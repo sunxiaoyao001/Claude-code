@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, CanvasImage, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region } from "../assets";
-import { Breath, BREATH_MAX_ZOOM } from "../components/Breath";
+import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop, usePrint } from "../components/PhotoPrint";
 import { MonoText } from "../components/Props";
 import { IllustrativeMark, SourceCaption } from "../components/SeriesChrome";
@@ -27,9 +27,9 @@ const TABLE_TOP = 240;
 const HOLDER_LEFT = TABLE_LEFT + (TABLE_W - HOLDER_W) / 2;
 const HOLDER_TOP = TABLE_TOP + (TABLE_H - HOLDER_H) / 2;
 
-// Exposure times inside the scene (base frames from the scene start): 1488 and 1536.
-const EXPOSURE_1 = 96;
-const EXPOSURE_2 = 144;
+// Exposure times inside the scene (base frames from the scene start): 1416 and 1488.
+const EXPOSURE_1 = 24;
+const EXPOSURE_2 = 96;
 
 // The second exposure: the same sitter, shifted and fainter, feathered so only the figure shows.
 const SecondExposure: React.FC<{ readonly amount: number }> = ({ amount }) => {
@@ -70,18 +70,23 @@ const ExposureLabel: React.FC<{ readonly n: number; readonly at: number; readonl
 export const Darkroom: React.FC = () => {
   const frame = useCurrentFrame();
   const t = useTime();
-  const inP = interpolate(frame, [0, t(20)], [0, 1], { ...CLAMP, easing: EASE.spring });
+  const inP = interpolate(frame, [0, t(12)], [0, 1], { ...CLAMP, easing: EASE.spring });
   // The dark slide is drawn out of the holder before the first exposure.
-  const slide = interpolate(frame, [t(48), t(76)], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  const slide = interpolate(frame, [t(8), t(22)], [0, 1], { ...CLAMP, easing: EASE.inOut });
   // Each shutter lands on its beat: the latent image comes up, then the faint "ghost".
   const develop = interpolate(frame, [t(EXPOSURE_1), t(EXPOSURE_1) + 18], [0, 1], { ...CLAMP, easing: EASE.out });
   const ghost = interpolate(frame, [t(EXPOSURE_2), t(EXPOSURE_2) + 14], [0, 1], { ...CLAMP, easing: EASE.out });
+  // Each shutter release is one flash of exposure light across the plate (a single event per click).
+  const flash = Math.max(
+    ...[EXPOSURE_1, EXPOSURE_2].map((e) => interpolate(frame, [t(e) - 1, t(e) + 1, t(e) + 10], [0, 0.6, 0], { ...CLAMP, easing: EASE.out })),
+  );
   const rise = (1 - inP) * 1100;
   return (
     <AbsoluteFill>
       <Breath phase={t(BASE)}>
+        <Dolly from={0.94} end={192} originX={TABLE_LEFT + TABLE_W / 2} originY={TABLE_TOP + TABLE_H / 2}>
         {/* Viewing table: a flat field of warm light, no glow. */}
-        <div style={{ position: "absolute", left: TABLE_LEFT, top: TABLE_TOP, width: TABLE_W, height: TABLE_H, backgroundColor: COLORS.highlightWarm, opacity: 0.16 }} />
+        <div style={{ position: "absolute", left: TABLE_LEFT, top: TABLE_TOP, width: TABLE_W, height: TABLE_H, backgroundColor: COLORS.printWhite, opacity: 0.16 }} />
         <div style={{ position: "absolute", left: 0, top: rise, width: 1080, height: 1920 }}>
           <div
             style={{
@@ -91,7 +96,7 @@ export const Darkroom: React.FC = () => {
               width: HOLDER_W,
               height: HOLDER_H,
               backgroundColor: COLORS.ink,
-              boxShadow: "inset 0 0 0 2px #2a2926, 0 18px 40px rgba(0,0,0,0.55)",
+              boxShadow: "inset 0 0 0 2px rgba(142,138,132,0.25), 0 18px 40px rgba(0,0,0,0.55)",
             }}
           />
           <PhotoPrint
@@ -105,7 +110,12 @@ export const Darkroom: React.FC = () => {
             border={0}
             develop={develop}
             style={{ boxShadow: "none" }}
-            layers={<SecondExposure amount={ghost} />}
+            layers={
+              <>
+                <SecondExposure amount={ghost} />
+                <div style={{ position: "absolute", inset: 0, backgroundColor: COLORS.printWhite, opacity: flash }} />
+              </>
+            }
           />
           {/* Dark slide, pulled straight up out of the holder. */}
           <div
@@ -115,16 +125,17 @@ export const Darkroom: React.FC = () => {
               top: HOLDER_TOP + FRAME - 6 - slide * (HOLDER_H + 700),
               width: PLATE_W + 12,
               height: PLATE_H + 12,
-              backgroundColor: "#121214",
-              boxShadow: "inset 0 0 0 2px #2a2926",
+              backgroundColor: COLORS.ink,
+              boxShadow: "inset 0 0 0 2px rgba(142,138,132,0.25)",
             }}
           >
-            <div style={{ position: "absolute", left: "50%", top: 14, width: 120, height: 10, marginLeft: -60, borderRadius: 5, backgroundColor: "#2a2926" }} />
+            <div style={{ position: "absolute", left: "50%", top: 14, width: 120, height: 10, marginLeft: -60, borderRadius: 5, backgroundColor: COLORS.darkPaper }} />
           </div>
         </div>
         <ExposureLabel n={1} at={t(EXPOSURE_1)} top={TABLE_TOP + TABLE_H + 26} />
         <ExposureLabel n={2} at={t(EXPOSURE_2)} top={TABLE_TOP + TABLE_H + 66} />
         <SourceCaption text="THE MET 287722 · CC0 · SITTER UNRELATED" left={TABLE_LEFT} top={TABLE_TOP + TABLE_H + 112} />
+        </Dolly>
       </Breath>
       <IllustrativeMark />
     </AbsoluteFill>

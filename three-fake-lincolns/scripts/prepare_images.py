@@ -24,7 +24,7 @@ MAX_EDGE = 2400
 SOURCES = {
     "lincolnComposite": ("uploads/IMG01_lincoln_composite__loc-2003654314.jpg", "lincoln_composite.jpg", "LIBRARY OF CONGRESS · CA. 1865"),
     "calhoun1852": ("uploads/IMG02_calhoun_1852__loc-2003679757.jpg", "calhoun_1852.jpg", "LIBRARY OF CONGRESS · 1852"),
-    "maryLincolnGhost": ("uploads/IMG03_mumler_mary_lincoln__commons-Mumler_Lincoln.jpg", "mumler_mary_lincoln.jpg", "LINCOLN FINANCIAL FOUNDATION COLL. · CA. 1872"),
+    "maryLincolnGhost": ("uploads/IMG03_mumler_mary_lincoln__commons-Mumler_Lincoln.jpg", "mumler_mary_lincoln.jpg", "LINCOLN FINANCIAL FDN. COLL. · CA. 1872"),
     "grantCityPoint": ("uploads/IMG04_grant_city_point__loc-2007681056.jpg", "grant_city_point.jpg", "LIBRARY OF CONGRESS · 1902"),
     "houdiniLincolnGhost": ("uploads/IMG05_houdini_lincoln_ghost__loc-96520658.jpg", "houdini_lincoln_ghost.jpg", "LIBRARY OF CONGRESS · 1920–1930"),
     "houdiniFamily": ("uploads/IMG06_houdini_bess_mother__loc-96518779.jpg", "houdini_family.jpg", "LIBRARY OF CONGRESS"),

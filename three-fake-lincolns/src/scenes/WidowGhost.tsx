@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, CanvasImage, interpolate, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region, type ImageKey } from "../assets";
-import { Breath, BREATH_MAX_ZOOM } from "../components/Breath";
+import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
 import { PhotoPrint, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
 import { PenMark } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
@@ -18,7 +18,14 @@ const CARDS: readonly { key: ImageKey; left: number; top: number; tilt: number; 
   { key: "maryLincolnGhost", left: 330, top: 690, tilt: 1.2, at: 36 },
 ];
 
-const Card: React.FC<{ readonly k: ImageKey; readonly left: number; readonly top: number; readonly tilt: number; readonly lift?: number }> = ({ k, left, top, tilt, lift = 0 }) => {
+const Card: React.FC<{ readonly k: ImageKey; readonly left: number; readonly top: number; readonly tilt: number; readonly lift?: number; readonly blur?: number }> = ({
+  k,
+  left,
+  top,
+  tilt,
+  lift = 0,
+  blur = 0,
+}) => {
   const frame = useCurrentFrame();
   const img = IMG[k];
   const h = (CARD_W * img.height) / img.width;
@@ -31,7 +38,10 @@ const Card: React.FC<{ readonly k: ImageKey; readonly left: number; readonly top
         width: CARD_W,
         height: h,
         rotate: `${tilt}deg`,
-        boxShadow: `0 ${4 + lift * 26}px ${10 + lift * 40}px rgba(0,0,0,${0.5 - lift * 0.12})`,
+        borderRadius: 7,
+        overflow: "hidden",
+        filter: blur > 0.05 ? `blur(${blur}px)` : undefined,
+        boxShadow: `0 1px 2px rgba(0,0,0,0.55), ${3 + lift * 20}px ${6 + lift * 26}px ${12 + lift * 40}px rgba(0,0,0,${0.5 - lift * 0.12})`,
       }}
     >
       <CanvasImage src={staticFile(img.file)} width={CARD_W} height={Math.round(h)} fit="fill" effects={photoGrade({ frame })} />
@@ -53,6 +63,7 @@ const CardTray: React.FC = () => {
         return (
           <Card
             key={c.key}
+            blur={isWidow ? 0 : 2.4 * pick}
             k={c.key}
             left={c.left + (1 - inP) * 900 + p * 40}
             top={c.top - p * 90}
@@ -95,7 +106,7 @@ const DeveloperTray: React.FC = () => {
   // Local 0 = 768. Darkest tones first, the faint "spirit" last (it lands on 1056, a phrase downbeat).
   const develop = interpolate(frame, [t(72), t(168), t(276), t(300)], [0, 0.35, 0.68, 1], { ...CLAMP, easing: EASE.inOut });
   // The developer's surface: a slow sheen that keeps travelling, so the tray reads as liquid.
-  const sheen = ((frame / t(144)) % 1) * 1.8 - 0.4;
+  const sheen = EASE.inOut((frame / t(144)) % 1) * 1.8 - 0.4;
   // 1152: the print is lifted out of the tray and laid on the table beside it.
   const out = interpolate(frame, [t(384), t(408)], [0, 1], { ...CLAMP, easing: EASE.inOut });
   const down = interpolate(frame, [t(408), t(426)], [0, 1], { ...CLAMP, easing: EASE.out });
@@ -139,9 +150,10 @@ const DeveloperTray: React.FC = () => {
         border={10}
         develop={develop}
         lift={printLift}
+        sheenAt={t(392)}
       >
-        <HandMark area="ghostHandLeft" from={t(192)} seed={12} />
-        <HandMark area="ghostHandRight" from={t(204)} seed={14} />
+        <HandMark area="ghostHandLeft" from={t(240)} seed={12} />
+        <HandMark area="ghostHandRight" from={t(252)} seed={14} />
         <GhostMark from={t(288)} />
       </PhotoPrint>
       <SourceCaption text={IMG.maryLincolnGhost.caption} left={trayLeft} top={trayTop + trayH + 20} />
@@ -155,10 +167,15 @@ export const WidowGhost: React.FC = () => {
     <AbsoluteFill>
       <Breath phase={t(672)}>
         <Sequence durationInFrames={t(96)} layout="none">
-          <CardTray />
+          <Dolly from={0.96} end={96} originX={460} originY={700}>
+            <CardTray />
+          </Dolly>
         </Sequence>
+        {/* 14 seconds in the developer: the camera creeps in the whole time (0.9 → 1). */}
         <Sequence from={t(96)} layout="none">
-          <DeveloperTray />
+          <Dolly from={0.9} end={420} originX={500} originY={640}>
+            <DeveloperTray />
+          </Dolly>
         </Sequence>
       </Breath>
     </AbsoluteFill>

@@ -58,6 +58,15 @@ export const EASE = {
 
 export const CLAMP = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
+// Periodic motion from the same bezier: 0 → 1 → 0 once per `period`, eased at both turns (no sine).
+export const swing = (seconds: number, period: number) => {
+  const p = (((seconds / period) % 1) + 1) % 1;
+  return EASE.inOut(p < 0.5 ? p * 2 : 2 - p * 2);
+};
+
+// A one-off rise and fall (0 → 1 → 0) over progress 0..1, e.g. a print lifted while it moves.
+export const arc = (progress: number) => EASE.inOut(1 - Math.abs(2 * progress - 1));
+
 // One grade for every photograph (silver-gelatin black and white).
 export const GRADE = {
   grainAmount: 0.025,

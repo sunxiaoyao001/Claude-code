@@ -1,9 +1,9 @@
 import React, { createContext, useContext } from "react";
-import { CanvasImage, staticFile, useCurrentFrame } from "remotion";
+import { CanvasImage, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { MIN_SOURCE_PER_DISPLAY } from "../assets";
 import { photoGrade } from "../grade";
 import { BREATH_MAX_ZOOM } from "./Breath";
-import { COLORS } from "../theme";
+import { CLAMP, COLORS, EASE } from "../theme";
 
 // A crop window in normalised image coordinates (0..1 on both axes).
 export type Crop = { readonly x0: number; readonly y0: number; readonly x1: number; readonly y1: number };
@@ -51,6 +51,10 @@ type Props = {
   readonly develop?: number;
   readonly colorRestore?: number;
   readonly lift?: number;
+  // Frame (scene-local) at which a gloss highlight sweeps across the paper, e.g. as it lands.
+  readonly sheenAt?: number;
+  // Rounded corners for mounted cards (cartes de visite).
+  readonly radius?: number;
   // Image layers (overlays, second exposures): clipped to the print's window.
   readonly layers?: React.ReactNode;
   // Annotations (pen marks): positioned in window pixels but never clipped, so a circle near the
@@ -73,6 +77,8 @@ export const PhotoPrint: React.FC<Props> = ({
   develop = 1,
   colorRestore = 0,
   lift = 0,
+  sheenAt,
+  radius = 0,
   layers,
   children,
   style,
@@ -86,8 +92,17 @@ export const PhotoPrint: React.FC<Props> = ({
   }
   const height = (crop.y1 - crop.y0) * imgH * scale;
   const geometry: PrintGeometry = { src, imgW, imgH, scale, crop, develop, colorRestore };
-  // Lifting a print off the table lengthens and softens its shadow.
-  const shadow = `0 ${6 + lift * 24}px ${14 + lift * 40}px rgba(0,0,0,${0.42 - lift * 0.1}), 0 1px 3px rgba(0,0,0,0.5)`;
+  // The lamp is above and to the left: a tight contact shadow, a key shadow down and to the right
+  // that grows and softens as the print is lifted, and a wide ambient shadow.
+  const shadow = [
+    "0 1px 2px rgba(0,0,0,0.55)",
+    `${4 + lift * 22}px ${8 + lift * 28}px ${18 + lift * 44}px rgba(0,0,0,${0.46 - lift * 0.12})`,
+    "0 0 42px rgba(0,0,0,0.22)",
+  ].join(", ");
+  // Gloss: one diagonal highlight travels across the paper (scene-local frames), plus a soft
+  // highlight while the print is lifted toward the lamp.
+  const sweep = sheenAt === undefined ? -1 : interpolate(frame, [sheenAt, sheenAt + 22], [-0.5, 1.5], { ...CLAMP, easing: EASE.inOut });
+  const sheenBand = sweep > -0.5 && sweep < 1.5 ? `linear-gradient(115deg, rgba(236,230,218,0) ${sweep * 100 - 18}%, rgba(236,230,218,0.22) ${sweep * 100}%, rgba(236,230,218,0) ${sweep * 100 + 18}%)` : null;
 
   return (
     <div
@@ -97,13 +112,16 @@ export const PhotoPrint: React.FC<Props> = ({
         top,
         padding: border,
         backgroundColor: COLORS.printWhite,
+        // Paper: a faint fall-off across the sheet, away from the lamp.
+        backgroundImage: "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(14,14,16,0.09) 100%)",
         boxShadow: shadow,
+        borderRadius: radius,
         rotate: `${tilt}deg`,
         ...style,
       }}
     >
       <PrintContext.Provider value={geometry}>
-        <div style={{ position: "relative", width, height, overflow: "hidden", backgroundColor: COLORS.printWhite }}>
+        <div style={{ position: "relative", width, height, overflow: "hidden", backgroundColor: COLORS.printWhite, borderRadius: Math.max(0, radius - border) }}>
           <CanvasImage
             src={staticFile(src)}
             width={Math.round(imgW * scale)}
@@ -113,7 +131,21 @@ export const PhotoPrint: React.FC<Props> = ({
             effects={photoGrade({ frame, develop, colorRestore })}
           />
           {layers}
+          {/* Emulsion edge: a hairline and a little edge burning, as a darkroom print has. */}
+          <div style={{ position: "absolute", inset: 0, boxShadow: "inset 0 0 0 1px rgba(14,14,16,0.3), inset 0 0 22px rgba(14,14,16,0.22)", borderRadius: Math.max(0, radius - border) }} />
         </div>
+        {sheenBand || lift > 0.02 ? (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              borderRadius: radius,
+              mixBlendMode: "screen",
+              pointerEvents: "none",
+              backgroundImage: [sheenBand, `linear-gradient(160deg, rgba(236,230,218,${0.1 * lift}) 0%, rgba(236,230,218,0) 55%)`].filter(Boolean).join(", "),
+            }}
+          />
+        ) : null}
         {children ? <div style={{ position: "absolute", left: border, top: border, width, height }}>{children}</div> : null}
       </PrintContext.Provider>
     </div>

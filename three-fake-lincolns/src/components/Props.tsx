@@ -5,7 +5,7 @@ import { useTime } from "../time";
 import type { Typed } from "../timeline";
 import { CLAMP, COLORS, EASE, FONTS, TYPE } from "../theme";
 
-// Manila archive tag. Colour is the palette's warm highlight, not a new hue.
+// Archive tag in print white (palette colour); the punched hole and shadow make it read as a tag.
 export const ManilaTag: React.FC<{
   readonly left: number;
   readonly top: number;
@@ -23,7 +23,7 @@ export const ManilaTag: React.FC<{
       whiteSpace: "nowrap",
       paddingRight: 24,
       rotate: `${tilt}deg`,
-      backgroundColor: COLORS.highlightWarm,
+      backgroundColor: COLORS.printWhite,
       boxShadow: "0 8px 18px rgba(0,0,0,0.45), 0 1px 2px rgba(0,0,0,0.4)",
       clipPath: `polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 calc(100% - 14px), 0 14px)`,
       display: "flex",

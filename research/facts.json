@@ -542,5 +542,19 @@
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "高（起始年 1860/1861/early 1860s 有出入，上屏只写 1860S–70S）",
     "上屏写法": "出处签 W. H. MUMLER · SPIRIT PHOTOGRAPHS · 1860S–70S；不给任何单张名片照标具体年份"
+  },
+  {
+    "id": "F26",
+    "陈述": "LoC 96518779 的著录标题为「Harry Houdini, with his wife Beatrice and mother Cecilia Steiner Weiss, full-length portrait」：照片里是胡迪尼、妻子贝丝（Beatrice）和母亲；著录没有写明每个人站在哪",
+    "来源": [
+      {
+        "url": "https://www.loc.gov/item/96518779/",
+        "类型": "一手（LoC 著录）",
+        "摘录": "[Harry Houdini, with his wife Beatrice and mother Cecilia Steiner Weiss, full-length portrait]"
+      }
+    ],
+    "摘录方式": "用户从该页下载上传图片时记录的标题；网络放开后复核原页",
+    "置信度": "中高",
+    "上屏写法": "出处签 LIBRARY OF CONGRESS · HOUDINI, WIFE, MOTHER；不圈人、不指认谁是贝丝"
   }
 ]
