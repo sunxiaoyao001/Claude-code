@@ -7,7 +7,12 @@ final="$1"
 out="${2:-$here/../output}"
 research="$here/../research"
 mkdir -p "$out"
-cp "$final" "$out/final.mp4"
+# The delivery file: H.264 High at 7 Mb/s (two-pass), so it stays under GitHub's 100 MB file limit
+# and inside every platform's upload spec (they all re-encode anyway). The mastered audio is copied
+# untouched. The CRF 16 master stays in out/.
+pass="$(mktemp -d)/x264"
+ffmpeg -v error -y -i "$final" -c:v libx264 -preset slow -profile:v high -level 4.2 -pix_fmt yuv420p -b:v 7000k -maxrate 9000k -bufsize 14000k -pass 1 -passlogfile "$pass" -an -f null /dev/null
+ffmpeg -v error -y -i "$final" -c:v libx264 -preset slow -profile:v high -level 4.2 -pix_fmt yuv420p -b:v 7000k -maxrate 9000k -bufsize 14000k -pass 2 -passlogfile "$pass" -c:a copy -movflags +faststart "$out/final.mp4"
 # Cover: frame 0 of the delivered file (the loop frame), high-quality JPEG.
 ffmpeg -v error -y -i "$out/final.mp4" -vf "select=eq(n\,0)" -frames:v 1 -q:v 2 "$out/cover.jpg"
 (cd "$here" && node --no-warnings scripts/export_srt.mjs "$here/out" >/dev/null)

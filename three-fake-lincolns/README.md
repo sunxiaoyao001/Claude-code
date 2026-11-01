@@ -21,7 +21,7 @@ npx remotion studio
 # 草稿：半尺寸，不开运动模糊
 npm run render:draft                   # → out/draft.mp4
 
-# 定稿：全尺寸，CRF 16，快速运动的帧开运动模糊（8 采样，快门 180°）
+# 定稿：全尺寸，CRF 16，快速运动的帧开运动模糊（10 采样，快门 100°）
 npm run render:final                   # → out/final_raw.mp4
 scripts/loudnorm.sh out/final_raw.mp4 out/final.mp4   # 母带：压缩 + 真峰值限幅，输入增益按实测求解到 −14 LUFS（不用 loudnorm，保留动态）
 
@@ -29,6 +29,9 @@ scripts/loudnorm.sh out/final_raw.mp4 out/final.mp4   # 母带：压缩 + 真峰
 python3 -I scripts/qa.py out/final.mp4  # 画幅、帧率、时长、响度、静默段、循环接缝、朱砂占比、静止段
 npm run srt                            # → out/three-fake-lincolns.zh.srt / .en.srt（serializeSrt）
 npx remotion still Main out/cover.jpg --frame=0
+
+# 交付：../output/（成片按 7 Mb/s 两遍编码，< 100 MB；封面、中英字幕、credits、记分卡、发布文案、ffprobe 报告）
+scripts/deliver.sh out/final.mp4
 ```
 
 定稿用 `scripts/chrome-wrapper.sh` 启动无头 Chrome，把 WebGL 上下文上限调到 256。运动模糊会把每张调色相纸在一帧里渲染多次，默认上限 16 不够用。
@@ -58,10 +61,12 @@ python3 -I scripts/synth_audio.py --bpm 89.6 --silence 1595 1607
 | `src/theme.ts` | 色板、字体、字号、安全区、缓动（只用 bezier 和无回弹 spring）、调色参数 |
 | `src/grade.ts` | 统一银盐调色：grayscale → vignette → 颗粒 → levels（显影）→ 分离色调 LUT |
 | `src/scenes/` | 12 个场景组件 |
-| `src/components/` | PhotoPrint（相纸，内置 1.5× 分辨率硬校验）、Breath / Dolly（镜头呼吸与推镜，缩放永远 ≤ 1）、Transitions（扫下桌、叶片快门、幻灯片换片）、Subtitle、SeriesChrome、Props、Desk、Soundtrack |
+| `src/components/` | PhotoPrint（相纸，内置 1.5× 分辨率硬校验；PrintDodge 局部提亮）、Breath / Dolly（镜头呼吸与推镜，缩放永远 ≤ 1）、Transitions（扫下桌、关灯）、Engravings（19 幅雕版风线稿插画和全片花纹底层）、Subtitle、SeriesChrome、Props、Desk、Soundtrack |
 | `scripts/prepare_images.py` | 原图只缩不放地转成 public/images，并配准两张版画、计算差异图 |
 | `scripts/synth_audio.py` | 用 numpy 合成配乐和全部音效；钢琴用 Salamander 采样；写出音效峰值偏移 manifest |
 | `scripts/subset_fonts.py` | 按片中用到的字裁出中文字体子集 |
 | `scripts/qa.py`、`scripts/review_package.py` | 自动质检、评审包（联系表、手机尺寸预览、音频波形 / 频谱 / 对齐表、响度报告） |
+| `scripts/sync_sfx_credits.py` | 按实际用到的音效重写 credits 的音效清单 |
+| `scripts/deliver.sh` | 组装 ../output/ 交付目录 |
 
 图片来源、许可和事实核查分别在 `../research/credits.draft.json` 和 `../research/facts.json`。
