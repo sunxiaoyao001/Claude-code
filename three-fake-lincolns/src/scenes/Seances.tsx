@@ -10,6 +10,7 @@ import { useTime } from "../time";
 import { SCENES, SEANCE_COUNTER } from "../timeline";
 import { CLAMP, COLORS, EASE, TYPE } from "../theme";
 import { FAMILY_BOTTOM, FAMILY_CAPTION, FamilyPrint } from "./Code";
+import { Candle, Crescent } from "../components/Engravings";
 
 // Scene-local frames: 0 = 2112. The 1926 death notices are laid over the family print while the
 // Halloween séances are counted 1927 → 1936 (F14, F16). 2208: the clipping is taken away and the
@@ -137,6 +138,9 @@ export const Seances: React.FC = () => {
         ) : null}
         <Counter />
         <HalloweenCells />
+        {/* The séance: a candle beside the photograph and a Halloween crescent above it. */}
+        <Crescent x={850} y={330} r={48} from={t(8)} />
+        <Candle x={866} y={700} h={120} from={t(14)} seed={2} />
         </Dolly>
       </Breath>
     </AbsoluteFill>

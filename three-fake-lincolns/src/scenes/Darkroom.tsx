@@ -9,6 +9,8 @@ import { photoGrade } from "../grade";
 import { useTime } from "../time";
 import { SCENES } from "../timeline";
 import { CLAMP, COLORS, EASE, SAFE } from "../theme";
+import { GuillocheBand } from "../components/Engravings";
+import { Drawing } from "../components/LineArt";
 
 // Scene-local frames: 0 = 1392. A schematic of double exposure with an unrelated, anonymous sitter
 // (The Met, CC0). It shows the general technique only, not how Mumler worked (F11).
@@ -125,6 +127,9 @@ export const Darkroom: React.FC = () => {
           </div>
         </div>
         <SourceCaption text="THE MET 287722 · CC0 · SITTER UNRELATED" left={SAFE.margin} top={236} />
+        <Drawing>
+          <GuillocheBand y={TABLE_TOP + TABLE_H + 22} lines={6} gap={5} opacity={0.22} cycles={1} period={t(192)} />
+        </Drawing>
         {/* Pinned on the bench under the plate holder: clear of the platform buttons on the right. */}
         <IllustrativeMark left={TABLE_LEFT + 18} top={TABLE_TOP + TABLE_H - 64} />
         </Dolly>

@@ -9,6 +9,7 @@ import { IllustrativeMark, SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
 import { SCENES, TYPED } from "../timeline";
 import { CLAMP, COLORS, EASE, SAFE, TYPE } from "../theme";
+import { Courthouse, PlateCamera, Scales } from "../components/Engravings";
 
 // Scene-local frames: 0 = 1200 in the base timeline.
 const BASE = SCENES.trial.from;
@@ -102,6 +103,16 @@ export const Trial: React.FC = () => {
       <Breath phase={t(BASE)}>
         <Dolly from={0.95} end={192} originX={513} originY={650}>
         {caseOut < 1 ? <CaseCard left={caseLeft + (1 - caseIn) * 900 - caseOut * 1000} top={420} tilt={-0.8 - caseOut * 2} /> : null}
+        {/* The court under the case card: a courthouse front and the scales, which settle level as
+            the judge lets him go; both are filed away with the card. */}
+        {caseOut < 1 ? (
+          <div style={{ position: "absolute", inset: 0, translate: `${(1 - caseIn) * 900 - caseOut * 1000}px 0` }}>
+            <Courthouse x={560} y={1196} w={300} from={t(4)} />
+            <Scales x={300} y={1196} from={t(8)} settleAt={t(30)} />
+          </div>
+        ) : null}
+        {/* How was it done? A field camera on its tripod under the spirit cards. */}
+        <PlateCamera x={400} y={930} legs={200} from={t(104)} />
         {CARDS.map((c, i) => {
           const inP = interpolate(frame, [t(c.at) - 10, t(c.at)], [0, 1], { ...CLAMP, easing: EASE.land });
           if (frame < t(c.at) - 10) return null;

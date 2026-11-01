@@ -8,6 +8,8 @@ import { useTime } from "../time";
 import { EN_OPACITY } from "../components/Subtitle";
 import { GOLDEN } from "../timeline";
 import { CLAMP, COLORS, EASE, FONTS, SAFE, TYPE } from "../theme";
+import { Laurel, Rosette } from "../components/Engravings";
+import { Drawing } from "../components/LineArt";
 
 // The three fakes as a contact sheet: one sheet of paper, each frame with a black film edge and its
 // number, held down so the golden line owns the frame.
@@ -83,6 +85,12 @@ export const Golden: React.FC = () => {
           <ContactSheet dim={GOLDEN_DIM} markFrom={t(120)} />
         </Dolly>
       </Breath>
+      {/* Behind the line: a banknote rosette turning a quarter turn; under it, two laurel sprays. */}
+      <Drawing>
+        <Rosette cx={540} cy={1000} r={340} opacity={0.11} turns={0.25} period={t(168)} />
+        <Laurel x={520} y={1310} len={300} from={t(GOLDEN.enAt - base) + 4} flip />
+        <Laurel x={560} y={1310} len={300} from={t(GOLDEN.enAt - base) + 4} />
+      </Drawing>
       <div style={{ position: "absolute", left: SAFE.margin, top: 820, fontFamily: FONTS.serifZh, fontWeight: 900, fontSize: TYPE.golden, lineHeight: "172px", letterSpacing: TYPE.titleTracking }}>
         {/* One character per eighth note, each falling into its own mask. */}
         {GOLDEN.lines.map((line, i) => (

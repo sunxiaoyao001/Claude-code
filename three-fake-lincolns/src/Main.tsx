@@ -26,6 +26,7 @@ import { WidowGhost } from "./scenes/WidowGhost";
 import { EASE } from "./theme";
 import { TimeScale, useTime } from "./time";
 import { ARCHIVE_TAGS, BAR, BASE_TOTAL, BLUR_WINDOWS, CHAPTERS, LINES, REWIND, SCENES } from "./timeline";
+import { PatternField } from "./components/Engravings";
 
 const Subtitles: React.FC = () => {
   const t = useTime();
@@ -123,6 +124,7 @@ export const Main: React.FC<MainProps> = ({ watermark, motionBlur }) => {
       <AbsoluteFill>
         <InkFilter />
         <Desk />
+        <PatternField period={durationInFrames} />
         {/* Own stacking context: transitions layer scenes with z-index but never cover subtitles. */}
         <AbsoluteFill style={{ isolation: "isolate", filter: "contrast(1.08)" }}>
           <MaybeBlur on={motionBlur}>

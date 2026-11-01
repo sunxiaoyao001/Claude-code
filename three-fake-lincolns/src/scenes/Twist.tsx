@@ -9,6 +9,7 @@ import { EMPTY_SLOT } from "./Question";
 import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
 import { CLAMP, COLORS, EASE } from "../theme";
+import { Proscenium } from "../components/Engravings";
 
 const SLIDE = region("houdiniLincolnGhost", "slide");
 // The scan caps the slide's width (1.5x budget); the projector light fills the rest of the frame.
@@ -99,8 +100,10 @@ export const Twist: React.FC = () => {
           </PhotoPrint>
         </div>
         <MagicLantern from={t(28)} target={{ left: LEFT - 40, top: TOP - 40, right: LEFT + SLIDE_W + 40, bottom: TOP + SLIDE_H + 40 }} />
-        {/* The caption sits on the dark table above the projected image, out of the light and the beam. */}
-        <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={950} top={TOP - 40 - 44} opacity={open} />
+        {/* A magician's stage around the projection: valance and curtains drawn back. */}
+        <Proscenium left={LEFT - 40} top={TOP - 70} right={LEFT + SLIDE_W + 40} bottom={TOP + SLIDE_H - 40} from={t(4)} />
+        {/* The caption sits on the dark table under the projected image, out of the light and the stage. */}
+        <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={950} top={TOP + SLIDE_H + 56} opacity={open} />
         </Dolly>
       </Breath>
     </AbsoluteFill>

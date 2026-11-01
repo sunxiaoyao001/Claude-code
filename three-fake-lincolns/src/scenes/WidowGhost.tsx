@@ -9,6 +9,7 @@ import { IllustrativeMark, SourceCaption } from "../components/SeriesChrome";
 import { photoGrade } from "../grade";
 import { useTime } from "../time";
 import { CLAMP, COLORS, EASE } from "../theme";
+import { ChemicalBottles, DarkroomTimer, PosingStand, Safelight } from "../components/Engravings";
 
 // Scene-local frames: 0 = 672 in the base timeline.
 const CARD_W = 210; // every carte de visite on the table shares one physical size
@@ -76,6 +77,8 @@ const CardTray: React.FC = () => {
       <SourceCaption text="W. H. MUMLER · SPIRIT PHOTOGRAPHS · CA. 1861–1879" left={120} top={1090} />
       {/* The second file is stamped open. */}
       <ArchiveStamp label="ARCHIVE" number="No.002" left={612} top={800} at={t(60)} tilt={-8} />
+      {/* The portrait studio's iron head rest, which held a sitter still for the exposure. */}
+      <PosingStand x={884} y={1010} h={380} from={t(16)} />
     </AbsoluteFill>
   );
 };
@@ -265,6 +268,11 @@ const DeveloperTray: React.FC = () => {
       </div>
       {markOpacity > 0 ? <IllustrativeMark text="显影过程为示意" left={markAt.x - 272} top={markAt.y - 66} opacity={markOpacity} /> : null}
       <SourceCaption text={IMG.maryLincolnGhost.caption} left={trayLeft} top={trayTop + trayH + 20} />
+      {/* The darkroom around the tray: the safelight, the timer running while it develops, the
+          developer and fixer bottles. */}
+      <Safelight x={150} y={440} cordTop={240} from={0} />
+      <DarkroomTimer x={884} y={560} r={60} from={t(6)} runFrom={0} runTo={t(264)} />
+      <ChemicalBottles x={110} y={1250} from={t(18)} />
     </AbsoluteFill>
   );
 };

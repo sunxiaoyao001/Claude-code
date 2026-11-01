@@ -8,6 +8,7 @@ import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
 import { SCENES, TYPED } from "../timeline";
 import { CLAMP, EASE, TYPE } from "../theme";
+import { Rose } from "../components/Engravings";
 
 // Scene-local frames: 0 = 2016. Houdini with his wife and his mother; the code he and his wife
 // agreed on is typed on a tag in front of the print (F15).
@@ -63,6 +64,8 @@ export const Code: React.FC = () => {
         <ManilaTag left={153 - (1 - tagIn) * 700} top={FAMILY_BOTTOM + 70} height={84} tilt={-1.4}>
           <TypedMono typed={TYPED.code} sceneFrom={BASE} size={TYPE.subtitleEn} />
         </ManilaTag>
+        {/* "Rosabelle": an engraved rose beside the family photograph. */}
+        <Rose x={830} y={470} s={0.85} from={t(14)} />
         </Dolly>
       </Breath>
     </AbsoluteFill>

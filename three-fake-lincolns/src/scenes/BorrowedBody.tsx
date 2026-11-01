@@ -11,6 +11,7 @@ import { ManilaTag, MonoText, PenMark, Seal } from "../components/Props";
 import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
 import { arc, CLAMP, COLORS, EASE, FONTS, SAFE, swing, TYPE } from "../theme";
+import { BrokenChain, BurinPlate, Loupe, QuillInkwell } from "../components/Engravings";
 
 // ---- shared geometry ---------------------------------------------------------------------
 const L_CROP = region("lincolnComposite", "engraving");
@@ -315,6 +316,8 @@ const Reveal: React.FC = () => {
         </ManilaTag>
         <PenMark kind="circle" left={0} top={110} width={330} height={92} from={0} durationInFrames={10} />
       </div>
+      {/* Fake No.1 is an engraving: a burin cuts hatching into a copper plate under the prints. */}
+      <BurinPlate x={150} y={990} from={t(20)} />
     </AbsoluteFill>
   );
 };
@@ -343,6 +346,8 @@ const Lender: React.FC = () => {
           <MonoText size={TYPE.subtitleEn}>“A POSITIVE GOOD”</MonoText>
         </ManilaTag>
       </Sequence>
+      {/* The 1837 speech: a quill in its inkwell, beside the prints. */}
+      <QuillInkwell x={700} y={1040} from={t(8)} />
     </AbsoluteFill>
   );
 };
@@ -382,6 +387,8 @@ const Irony: React.FC = () => {
       {/* Context notes in vermilion pencil, so they never read as the prints' own dates. */}
       <PencilNote text="EMANCIPATION PROCLAMATION · 1863" left={COVER.lincoln.left + 6} top={COVER.lincoln.top - 68} from={0} tilt={-1.2} />
       <PencilNote text="“A POSITIVE GOOD” · 1837" left={COVER.calhoun.left + 40} top={COVER.calhoun.top + OUTER_H + 22} from={t(24)} tilt={1} />
+      {/* A chain whose middle link breaks open: the Emancipator's head on a pro-slavery body. */}
+      <BrokenChain x={540 - 4 * 52} y={1140} from={t(30)} />
     </AbsoluteFill>
   );
 };
@@ -431,6 +438,15 @@ const Difference: React.FC = () => {
       <div style={{ position: "absolute", left: ALIGNED.left - 60, top: ALIGNED.top + OUTER_H + 22, fontFamily: FONTS.sansZh, fontWeight: 700, fontSize: TYPE.subtitleEn, color: COLORS.printWhite, opacity: 0.85 }}>
         差异图 · 由两张馆藏扫描件配准计算
       </div>
+      {/* A reading loupe passes from the head to the papers: the two places that changed. */}
+      <Loupe
+        path={[
+          [ALIGNED.left + BORDER + toWin(head).left + toWin(head).width / 2, ALIGNED.top + BORDER + toWin(head).top + toWin(head).height / 2],
+          [ALIGNED.left + BORDER + toWin(papers).left + toWin(papers).width / 2, ALIGNED.top + BORDER + toWin(papers).top + toWin(papers).height / 2],
+        ]}
+        from={t(36)}
+        to={t(84)}
+      />
     </AbsoluteFill>
   );
 };

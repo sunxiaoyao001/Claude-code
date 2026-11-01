@@ -8,6 +8,7 @@ import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
 import { SCENES } from "../timeline";
 import { CLAMP, COLORS, EASE, FONTS, SAFE, TYPE } from "../theme";
+import { ScissorsPaste } from "../components/Engravings";
 
 // Scene-local frames: 0 = 1584. Three 1864 originals land one per beat, then the 1902 composite
 // made from them (F12). Each part of the composite is marked together with the original it came from.
@@ -191,6 +192,8 @@ export const Grant: React.FC = () => {
         {PARTS.map((p, i) => (
           <LeaderLine key={p.part} i={i} from={t(MARK_AT[i]) + 4} />
         ))}
+        {/* Cut and paste: scissors snipping and a paste pot under the composite. */}
+        <ScissorsPaste x={560} y={1180} from={t(20)} />
         </Dolly>
       </Breath>
     </AbsoluteFill>

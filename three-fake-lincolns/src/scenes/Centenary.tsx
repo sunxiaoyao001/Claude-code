@@ -9,6 +9,7 @@ import { SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
 import { SCENES, TYPED } from "../timeline";
 import { CLAMP, COLORS, EASE, SAFE, TYPE } from "../theme";
+import { PocketWatch } from "../components/Engravings";
 
 // Scene-local frames: 0 = 2304. Only Houdini's half of the slide, so "he" cannot be read as the
 // Lincoln ghost. Below: the date of death, then "+100 YEARS" typed in (F14, F19).
@@ -43,6 +44,8 @@ export const Centenary: React.FC = () => {
         />
         <SourceCaption text={IMG.houdiniLincolnGhost.caption} left={LEFT} top={BOTTOM + 16} opacity={inP} />
         <CenturyRuler from={t(12)} duration={t(66)} left={153} right={927} y={BOTTOM + 250} />
+        {/* A pocket watch whose hands race through the hundred years with the ruler. */}
+        <PocketWatch x={872} y={BOTTOM + 162} r={50} from={t(4)} runFrom={t(12)} runTo={t(78)} />
         <div style={{ position: "absolute", left: 153, top: BOTTOM + 84 }}>
           <MonoText color={COLORS.silver}>HARRY HOUDINI · DIED OCT. 31, 1926</MonoText>
           <div style={{ marginTop: 8 }}>
