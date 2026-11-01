@@ -272,7 +272,11 @@ const DeveloperTray: React.FC = () => {
           developer and fixer bottles. */}
       <Safelight x={150} y={440} cordTop={240} from={0} />
       <DarkroomTimer x={884} y={560} r={60} from={t(6)} runFrom={0} runTo={t(264)} />
-      <ChemicalBottles x={110} y={1250} from={t(18)} />
+      {/* Left of the tray, under the safelight, at 72% size: clear of the caption and the subtitles
+          at every point of the camera move. */}
+      <div style={{ position: "absolute", inset: 0, scale: 0.72, transformOrigin: "96px 900px" }}>
+        <ChemicalBottles x={96} y={900} from={t(18)} />
+      </div>
     </AbsoluteFill>
   );
 };
