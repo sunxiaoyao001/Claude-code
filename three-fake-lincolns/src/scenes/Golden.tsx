@@ -1,0 +1,122 @@
+import React from "react";
+import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { fitWidth, IMG, region, type ImageKey } from "../assets";
+import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
+import { PhotoPrint, rectToCrop } from "../components/PhotoPrint";
+import { MonoText, PenMark } from "../components/Props";
+import { useTime } from "../time";
+import { EN_OPACITY } from "../components/Subtitle";
+import { GOLDEN } from "../timeline";
+import { CLAMP, COLORS, EASE, FONTS, SAFE, TYPE } from "../theme";
+import { Laurel, Rosette } from "../components/Engravings";
+import { Drawing } from "../components/LineArt";
+
+// The three fakes as a contact sheet: one sheet of paper, each frame with a black film edge and its
+// number, held down so the golden line owns the frame.
+const SHEET = { left: 76, top: 268, width: 874, height: 430 } as const;
+const STRIP: readonly { key: ImageKey; crop: string; width: number; left: number; label: string }[] = [
+  { key: "lincolnComposite", crop: "engraving", width: 200, left: 112, label: "No.001" },
+  { key: "maryLincolnGhost", crop: "photo", width: 170, left: 368, label: "No.002" },
+  { key: "houdiniLincolnGhost", crop: "slide", width: 290, left: 594, label: "No.003" },
+];
+const FRAME_TOP = SHEET.top + 40;
+// The sheet stays sharp (all three fakes must stay recognisable); `dim` lowers it a little under the
+// golden line. `markFrom` is when the editor's grease pencil rings the third frame (the magician's fake).
+export const GOLDEN_DIM = 0.28;
+export const ContactSheet: React.FC<{ readonly dim: number; readonly markFrom?: number }> = ({ dim, markFrom }) => (
+  <AbsoluteFill>
+    <div style={{ position: "absolute", ...SHEET, backgroundColor: COLORS.printWhite, rotate: "-0.4deg", boxShadow: "0 12px 30px rgba(0,0,0,0.5)" }} />
+    {STRIP.map((s) => (
+      <React.Fragment key={s.key}>
+        <PhotoPrint
+          src={IMG[s.key].file}
+          imgW={IMG[s.key].width}
+          imgH={IMG[s.key].height}
+          width={Math.floor(fitWidth(s.key, region(s.key, s.crop), s.width, BREATH_MAX_ZOOM))}
+          crop={rectToCrop(region(s.key, s.crop))}
+          left={s.left}
+          top={FRAME_TOP}
+          border={7}
+          style={{ backgroundColor: COLORS.ink, boxShadow: "none" }}
+        />
+        <div style={{ position: "absolute", left: s.left, top: SHEET.top + SHEET.height - 46 }}>
+          <MonoText>{s.label}</MonoText>
+        </div>
+      </React.Fragment>
+    ))}
+    {/* A flat dark field with feathered edges holds the sheet down; the photos are not masked. */}
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: SHEET.top - 70,
+        height: SHEET.height + 140,
+        opacity: dim,
+        background: `linear-gradient(to bottom, rgba(14,14,16,0) 0, ${COLORS.ink} 70px, ${COLORS.ink} calc(100% - 70px), rgba(14,14,16,0) 100%)`,
+      }}
+    />
+    {markFrom !== undefined ? (
+      <PenMark kind="circle" left={STRIP[2].left + 4} top={FRAME_TOP + 14} width={STRIP[2].width - 4} height={252} from={markFrom} durationInFrames={14} seed={33} />
+    ) : null}
+  </AbsoluteFill>
+);
+
+const Group: React.FC<{ readonly text: string; readonly at: number; readonly keyword: boolean }> = ({ text, at, keyword }) => {
+  const frame = useCurrentFrame();
+  const p = interpolate(frame, [at, at + 12], [0, 1], { ...CLAMP, easing: EASE.out });
+  return (
+    <span style={{ display: "inline-block", overflow: "hidden", verticalAlign: "bottom", paddingTop: 8 }}>
+      {/* Starts fully above its own mask (−110% of its height) and falls into place. */}
+      <span style={{ display: "inline-block", translate: `0 ${(p - 1) * 110}%`, color: keyword ? COLORS.vermilion : COLORS.printWhite }}>{text}</span>
+    </span>
+  );
+};
+
+export const Golden: React.FC = () => {
+  const frame = useCurrentFrame();
+  const t = useTime();
+  const base = GOLDEN.from;
+  const enIn = interpolate(frame, [t(GOLDEN.enAt - base), t(GOLDEN.enAt - base) + 12], [0, 1], { ...CLAMP, easing: EASE.out });
+  return (
+    <AbsoluteFill>
+      <Breath phase={t(base)}>
+        <Dolly from={0.97} end={168} originX={513} originY={464}>
+          <ContactSheet dim={GOLDEN_DIM} markFrom={t(120)} />
+        </Dolly>
+      </Breath>
+      {/* Behind the line: a banknote rosette turning a quarter turn; under it, two laurel sprays. */}
+      <Drawing>
+        <Rosette cx={540} cy={1000} r={340} opacity={0.11} turns={0.25} period={t(168)} />
+        <Laurel x={520} y={1310} len={300} from={t(GOLDEN.enAt - base) + 4} flip />
+        <Laurel x={560} y={1310} len={300} from={t(GOLDEN.enAt - base) + 4} />
+      </Drawing>
+      <div style={{ position: "absolute", left: SAFE.margin, top: 820, fontFamily: FONTS.serifZh, fontWeight: 900, fontSize: TYPE.golden, lineHeight: "172px", letterSpacing: TYPE.titleTracking }}>
+        {/* One character per eighth note, each falling into its own mask. */}
+        {GOLDEN.lines.map((line, i) => (
+          <div key={i}>
+            {line.map((c) => (
+              <Group key={c.at} text={c.text} at={t(c.at - base)} keyword={c.keyword} />
+            ))}
+          </div>
+        ))}
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          left: SAFE.margin,
+          top: 1196,
+          fontFamily: FONTS.italicEn,
+          fontStyle: "italic",
+          fontSize: TYPE.subtitleEn,
+          color: COLORS.printWhite,
+          opacity: EN_OPACITY * enIn,
+          translate: `0 ${(1 - enIn) * 10}px`,
+        }}
+      >
+        {GOLDEN.en}
+      </div>
+      {/* 2508: one stroke under 想相信, an eighth after the line has formed. */}
+    </AbsoluteFill>
+  );
+};

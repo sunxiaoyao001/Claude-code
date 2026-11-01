@@ -1,0 +1,6 @@
+review/**/*.mp4
+review/**/contact/
+review/**/keyframes/
+review/**/phone/
+output/*.mp4
+!output/final.mp4
