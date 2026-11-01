@@ -38,14 +38,14 @@ export const LINES: readonly Line[] = [
   { from: 840, to: 936, zh: "她报*假名*，摄影师说没认出", en: "She gave a false name; he said he didn't know her", facts: ["F09"] },
   { from: 936, to: 1056, zh: "一双手，搭在她*肩*上", en: "A pair of hands on her shoulders", facts: ["F07"] },
   { from: 1056, to: 1200, zh: "她身后，站着「*林肯*」", en: "Behind her stands \"Lincoln\"", facts: ["F07", "F11"] },
-  { from: 1200, to: 1296, zh: "摄影师曾被控诈骗，法官*放*人", en: "Tried for fraud, the photographer walked free", facts: ["F10"] },
+  { from: 1200, to: 1296, zh: "摄影师曾被控诈骗，法官*放*人", en: "He had been tried for fraud in 1869, and walked free", facts: ["F10"] },
   { from: 1296, to: 1392, zh: "怎么做的，至今说*不清*", en: "How he did it is still unclear", facts: ["F11"] },
   { from: 1392, to: 1488, zh: "鬼影的常见造法：*双重曝光*", en: "The usual trick for ghosts: double exposure", facts: ["F11"] },
   { from: 1488, to: 1584, zh: "底片不换，再曝光 *1* 次", en: "Same plate, exposed a second time", facts: ["F11"] },
   { from: 1584, to: 1680, zh: "另一种造假：*拼*起来的照片", en: "Another kind of fake: a composite", facts: ["F12"] },
   { from: 1680, to: 1776, zh: "头是*格兰特*，其余都不是", en: "Only the head is Grant's", facts: ["F12"] },
   { from: 1776, to: 1905, zh: "那第 3 张*林肯*呢", en: "So who made the third Lincoln?", facts: [] },
-  { from: 1920, to: 2016, zh: "第 3 张，是*魔术师*做来打假的", en: "The third was made by a magician, to expose the fakers", facts: ["F13", "F20"] },
+  { from: 1920, to: 2016, zh: "第 3 张，是*魔术师*做来打假的", en: "The third was made by a magician, to expose the fakers", size: 64, facts: ["F13", "F20"] },
   { from: 2016, to: 2112, zh: "胡迪尼约妻子：死后报*暗号*", en: "Houdini promised his wife a code from beyond", facts: ["F15"] },
   { from: 2112, to: 2208, zh: "他死在*万圣节*，她招魂 10 年", en: "He died on Halloween; she held séances for 10 years", facts: ["F14", "F16"] },
   { from: 2208, to: 2304, zh: "最后那场，什么也*没来*", en: "At the last one, nothing came", facts: ["F17"] },
@@ -112,7 +112,7 @@ export const BLUR_WINDOWS: readonly (readonly [number, number])[] = [
   [1598, 1634], // originals fall
   [1776, 1800], // sweep-off, prints slide in
   [1824, 1844], // slide box
-  [2016, 2034], // slide carrier
+  [2016, 2034], // the family print laid in as the lamp goes off
   [2112, 2128], // clipping laid over
   [2208, 2224], // clipping pulled away
   [2304, 2322], // leaf shutter, print slides in
@@ -137,9 +137,9 @@ export const ARCHIVE_TAGS = [
   { from: 1392, text: "SCHEMATIC · NOT AN ARCHIVE ITEM" },
   { from: 1584, text: "EXHIBIT · CA. 1902 · L.C. HANDY" },
   { from: 1776, text: "ARCHIVE No.003 · ?" },
-  { from: 1920, text: "ARCHIVE No.003 · 1920S" },
+  { from: 1920, text: "ARCHIVE No.003 · 1920–1930" },
   { from: 2016, text: "ARCHIVE No.003" },
-  { from: 2304, text: "ARCHIVE No.003 · 1920S" },
+  { from: 2304, text: "ARCHIVE No.003 · 1920–1930" },
   { from: 2400, text: "ARCHIVE No.001 — No.003" },
   { from: 2640, text: "ARCHIVE No.001 · CA. 1865 · NEW YORK" },
 ] as const;
@@ -173,16 +173,27 @@ export type SfxName =
   | "paper_tick"
   | "typewriter";
 
-// Sound events at the frame the picture event happens; Audio.tsx subtracts each file's measured
-// peak offset so the transient (not the file start) lands on that frame.
+// Sound events at the frame the picture event happens. Soundtrack.tsx subtracts each file's measured
+// peak offset so the transient (not the file start) lands on that frame, except for ONSET_ALIGNED
+// sounds, whose first sample is the picture event.
 export type SfxEvent = { readonly at: number; readonly sound: SfxName; readonly gainDb: number };
+
+// Friction and plunge sounds start on the picture event (the stroke, the slide, the print entering
+// the developer) and swell afterwards; every other sound puts its peak on the event.
+export const ONSET_ALIGNED: readonly SfxName[] = ["pen", "paper_slide", "page_turn", "flip", "liquid"];
 
 const typewriterRun = (from: number, count: number, every: number, gainDb = -30): SfxEvent[] =>
   Array.from({ length: count }, (_, i) => ({ at: from + i * every, sound: "typewriter" as const, gainDb }));
 
-// One keystroke per visible character (the space bar is silent).
-const typedSfx = (x: Typed, gainDb: number): SfxEvent[] =>
-  [...x.text].flatMap((ch, i) => (ch === " " ? [] : [{ at: x.from + i * x.every, sound: "typewriter" as const, gainDb }]));
+// One keystroke per visible character (the space bar is silent). With `accentEnds`, only the first
+// and last keys and every other key between them are struck at full level; the rest are 8 dB softer,
+// so a long line reads as typing without turning into a rattle.
+const typedSfx = (x: Typed, gainDb: number, accentEnds = false): SfxEvent[] => {
+  const last = x.text.length - 1;
+  return [...x.text].flatMap((ch, i) =>
+    ch === " " ? [] : [{ at: x.from + i * x.every, sound: "typewriter" as const, gainDb: accentEnds && i !== 0 && i !== last && i % 2 === 1 ? gainDb - 8 : gainDb }],
+  );
+};
 
 export const SFX: readonly SfxEvent[] = [
   // cover, bet, title
@@ -199,10 +210,11 @@ export const SFX: readonly SfxEvent[] = [
   { at: 288, sound: "paper_slide", gainDb: -22 },
   { at: 306, sound: "paper_slide", gainDb: -26 },
   // blink comparator: one hard switch per eighth note
-  { at: 342, sound: "paper_tick", gainDb: -24 },
-  { at: 354, sound: "paper_tick", gainDb: -24 },
-  { at: 366, sound: "paper_tick", gainDb: -24 },
-  { at: 378, sound: "paper_tick", gainDb: -25 },
+  { at: 342, sound: "paper_tick", gainDb: -28 },
+  { at: 354, sound: "paper_tick", gainDb: -28 },
+  { at: 366, sound: "paper_tick", gainDb: -28 },
+  { at: 378, sound: "paper_tick", gainDb: -29 },
+  { at: 396, sound: "tag_drop", gainDb: -28 },
   { at: 432, sound: "tag_drop", gainDb: -28 },
   { at: 480, sound: "pen", gainDb: -26 },
   { at: 504, sound: "pen", gainDb: -26 },
@@ -261,10 +273,10 @@ export const SFX: readonly SfxEvent[] = [
   // code, séances
   { at: 2016, sound: "projector_click", gainDb: -26 },
   { at: 2016, sound: "paper_slide", gainDb: -28 },
-  ...typedSfx(TYPED.code, -30),
+  ...typedSfx(TYPED.code, -30, true),
   { at: 2112, sound: "page_turn", gainDb: -24 },
   { at: 2208, sound: "paper_slide", gainDb: -28 },
-  ...typewriterRun(SEANCE_COUNTER.from, SEANCE_COUNTER.last - SEANCE_COUNTER.first + 1, SEANCE_COUNTER.every, -34),
+  ...typewriterRun(SEANCE_COUNTER.from, SEANCE_COUNTER.last - SEANCE_COUNTER.first + 1, SEANCE_COUNTER.every, -40),
   // centenary, golden line, outro
   { at: 2304, sound: "paper_slide", gainDb: -28 },
   ...typedSfx(TYPED.centenary, -32),
@@ -278,8 +290,9 @@ export const SFX: readonly SfxEvent[] = [
 export const SUBTITLE_TICKS: readonly SfxEvent[] = LINES.filter((l) => !l.isStatic).flatMap((l) => {
   const k = splitGroups(l.zh).findIndex((c) => c.keyword);
   const covered = SFX.some((e) => Math.abs(e.at - l.from) <= 2);
-  const tick = covered ? [] : [{ at: l.from, sound: "paper_tick" as const, gainDb: -30 }];
+  // −37: under every graphic effect (tags −28, pen −26), a texture rather than an event
+  const tick = covered ? [] : [{ at: l.from, sound: "paper_tick" as const, gainDb: -37 }];
   // The stamp sound is kept for the four phrase openings only; elsewhere the keyword lands silently.
   const phraseOpening = [288, 672, 1056, 1920].includes(l.from);
-  return k < 0 || !phraseOpening ? tick : [...tick, { at: l.from + k * 2 + 6, sound: "stamp" as const, gainDb: -32 }];
+  return k < 0 || !phraseOpening ? tick : [...tick, { at: l.from + k * 2 + 6, sound: "stamp" as const, gainDb: -35 }];
 });

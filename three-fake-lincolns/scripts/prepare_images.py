@@ -24,17 +24,17 @@ MAX_EDGE = 2400
 SOURCES = {
     "lincolnComposite": ("uploads/IMG01_lincoln_composite__loc-2003654314.jpg", "lincoln_composite.jpg", "LIBRARY OF CONGRESS · CA. 1865"),
     "calhoun1852": ("uploads/IMG02_calhoun_1852__loc-2003679757.jpg", "calhoun_1852.jpg", "LIBRARY OF CONGRESS · 1852"),
-    "maryLincolnGhost": ("uploads/IMG03_mumler_mary_lincoln__commons-Mumler_Lincoln.jpg", "mumler_mary_lincoln.jpg", "LFFC · VIA WIKIMEDIA COMMONS · CA. 1872"),
+    "maryLincolnGhost": ("uploads/IMG03_mumler_mary_lincoln__commons-Mumler_Lincoln.jpg", "mumler_mary_lincoln.jpg", "W. H. MUMLER · CA. 1872 · VIA WIKIMEDIA COMMONS"),
     "grantCityPoint": ("uploads/IMG04_grant_city_point__loc-2007681056.jpg", "grant_city_point.jpg", "LIBRARY OF CONGRESS · 1902"),
     "houdiniLincolnGhost": ("uploads/IMG05_houdini_lincoln_ghost__loc-96520658.jpg", "houdini_lincoln_ghost.jpg", "LIBRARY OF CONGRESS · 1920–1930"),
     "houdiniFamily": ("uploads/IMG06_houdini_bess_mother__loc-96518779.jpg", "houdini_family.jpg", "LIBRARY OF CONGRESS"),
     "houdiniClippings": ("uploads/IMG07_houdini_death_clippings__loc-2018682515.jpg", "houdini_clippings.jpg", "LIBRARY OF CONGRESS · 1926"),
-    "mumlerElderlyMan": ("uploads/IMG08a_mumler_spirit_elderly_man__commons.jpg", "mumler_spirit_a.jpg", "W. H. MUMLER · 1860S–70S"),
-    "mumlerWoman": ("uploads/IMG08b_mumler_spirit_woman__commons.jpg", "mumler_spirit_b.jpg", "W. H. MUMLER · 1860S–70S"),
-    "mumlerYoungMan": ("uploads/IMG08c_mumler_spirit_young_man__commons.jpg", "mumler_spirit_c.jpg", "W. H. MUMLER · 1860S–70S"),
+    "mumlerElderlyMan": ("uploads/IMG08a_mumler_spirit_elderly_man__commons.jpg", "mumler_spirit_a.jpg", "W. H. MUMLER · CA. 1861–1879"),
+    "mumlerWoman": ("uploads/IMG08b_mumler_spirit_woman__commons.jpg", "mumler_spirit_b.jpg", "W. H. MUMLER · CA. 1861–1879"),
+    "mumlerYoungMan": ("uploads/IMG08c_mumler_spirit_young_man__commons.jpg", "mumler_spirit_c.jpg", "W. H. MUMLER · CA. 1861–1879"),
     "grantColdHarbor": ("uploads/IMG10_grant_coldharbor_negative__loc-2018667429.jpg", "grant_cold_harbor.jpg", "LIBRARY OF CONGRESS · 1864"),
     "mccookHorseback": ("uploads/IMG11_mccook_horseback_negative__loc-2018667065.jpg", "mccook_horseback.jpg", "LIBRARY OF CONGRESS · 1864"),
-    "confederatePrisoners": ("uploads/IMG12_confederate_prisoners__loc-2007684716.jpg", "confederate_prisoners.jpg", "LIBRARY OF CONGRESS · 1864"),
+    "confederatePrisoners": ("uploads/IMG12_confederate_prisoners__loc-2007684716.jpg", "confederate_prisoners.jpg", "LIBRARY OF CONGRESS · 1862"),
     "metSitter": ("met/met_287722.jpg", "met_287722_sitter.jpg", "THE MET · CC0"),
 }
 

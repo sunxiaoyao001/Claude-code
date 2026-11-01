@@ -2,20 +2,22 @@ import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region, type ImageKey } from "../assets";
 import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
-import { PhotoPrint, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
+import { PhotoPrint, PrintDodge, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
 import { Ink, InkLabel } from "../components/LineArt";
 import { MonoText, PenMark, TypedMono } from "../components/Props";
-import { SourceCaption } from "../components/SeriesChrome";
+import { IllustrativeMark, SourceCaption } from "../components/SeriesChrome";
 import { useTime } from "../time";
 import { SCENES, TYPED } from "../timeline";
 import { CLAMP, COLORS, EASE, SAFE, TYPE } from "../theme";
 
 // Scene-local frames: 0 = 1200 in the base timeline.
 const BASE = SCENES.trial.from;
-const CARDS: readonly { key: ImageKey; tilt: number; at: number; mark: number; seed: number }[] = [
-  { key: "mumlerElderlyMan", tilt: -1.6, at: 96, mark: 108, seed: 21 },
-  { key: "mumlerWoman", tilt: 1.1, at: 100, mark: 120, seed: 22 },
-  { key: "mumlerYoungMan", tilt: -0.6, at: 104, mark: 132, seed: 23 },
+// `dodge`: the tone range stretched over each faint "spirit" as it is circled (measured on the scan:
+// roughly its 25th–95th percentiles), labelled 局部提亮 under the row.
+const CARDS: readonly { key: ImageKey; tilt: number; at: number; mark: number; seed: number; dodge: readonly [number, number] }[] = [
+  { key: "mumlerElderlyMan", tilt: -1.6, at: 96, mark: 108, seed: 21, dodge: [0.58, 0.9] },
+  { key: "mumlerWoman", tilt: 1.1, at: 100, mark: 120, seed: 22, dodge: [0.46, 0.67] },
+  { key: "mumlerYoungMan", tilt: -0.6, at: 104, mark: 132, seed: 23, dodge: [0.4, 0.7] },
 ];
 // Cartes de visite share one physical size, capped by the smallest scan.
 const CARD_W = Math.floor(Math.min(...CARDS.map((c) => fitWidth(c.key, region(c.key, "card"), 250, BREATH_MAX_ZOOM))));
@@ -54,7 +56,8 @@ const PaperClip: React.FC = () => (
 
 // A blank case card: printed heading, the date typed in. It is never laid on a photograph, so it
 // cannot be read as the date of any picture (F10 dates the trial only).
-const CASE = { width: 660, height: 260 } as const;
+// About ten grid columns: the card is the shot, so it is set large enough to read on a phone.
+const CASE = { width: 800, height: 330 } as const;
 const CaseCard: React.FC<{ readonly left: number; readonly top: number; readonly tilt: number }> = ({ left, top, tilt }) => (
   <div
     style={{
@@ -78,9 +81,9 @@ const CaseCard: React.FC<{ readonly left: number; readonly top: number; readonly
     <svg width={40} height={110} style={{ position: "absolute", left: 46, top: -34, overflow: "visible" }}>
       <PaperClip />
     </svg>
-    <MonoText>W. H. MUMLER · FRAUD TRIAL</MonoText>
-    <div style={{ height: 1, backgroundColor: COLORS.silver, opacity: 0.6, margin: "18px 0 30px" }} />
-    <TypedMono typed={TYPED.trialStamp} sceneFrom={BASE} size={TYPE.subtitleEn} />
+    <MonoText size={TYPE.subtitleEn}>W. H. MUMLER · FRAUD TRIAL</MonoText>
+    <div style={{ height: 1, backgroundColor: COLORS.silver, opacity: 0.6, margin: "22px 0 36px" }} />
+    <TypedMono typed={TYPED.trialStamp} sceneFrom={BASE} size={TYPE.subtitleZh} />
   </div>
 );
 
@@ -117,12 +120,14 @@ export const Trial: React.FC = () => {
               radius={7}
               lift={(1 - inP) * 0.6}
               sheenAt={t(c.at)}
+              layers={<PrintDodge rect={region(c.key, "ghost")} amount={interpolate(frame, [t(c.mark), t(c.mark) + 8], [0, 1], { ...CLAMP, easing: EASE.inOut })} blackPoint={c.dodge[0]} whitePoint={c.dodge[1]} spread={1.35} />}
             >
               <GhostMark k={c.key} from={t(c.mark)} seed={c.seed} />
             </PhotoPrint>
           );
         })}
         <SourceCaption text={IMG.mumlerElderlyMan.caption} left={ROW_LEFT} top={ROW_BOTTOM + 28} opacity={interpolate(frame, [t(104), t(112)], [0, 1], { ...CLAMP, easing: EASE.inOut })} />
+        <IllustrativeMark text="鬼影局部提亮" left={ROW_LEFT + CARDS.length * CARD_W + (CARDS.length - 1) * GAP - 236} top={ROW_BOTTOM + 78} opacity={interpolate(frame, [t(108), t(116)], [0, 1], { ...CLAMP, easing: EASE.inOut })} />
         </Dolly>
       </Breath>
     </AbsoluteFill>

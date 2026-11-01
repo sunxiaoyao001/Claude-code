@@ -3,7 +3,7 @@ import React from "react";
 import { interpolate, Sequence, staticFile, useVideoConfig } from "remotion";
 import manifest from "../../public/sfx/manifest.json";
 import { useTime } from "../time";
-import { SFX, SILENCE, SUBTITLE_TICKS, type SfxEvent, type SfxName } from "../timeline";
+import { ONSET_ALIGNED, SFX, SILENCE, SUBTITLE_TICKS, type SfxEvent, type SfxName } from "../timeline";
 
 type ManifestEntry = { readonly file: string; readonly durationSec: number; readonly peakOffsetFrames: number };
 const MANIFEST = manifest as unknown as Record<string, ManifestEntry>;
@@ -28,9 +28,6 @@ const DUCK_GAIN = dbToGain(-4);
 const FRICTION: readonly SfxName[] = ["pen", "paper_slide", "page_turn", "flip"];
 const FRICTION_TRIM_DB = -6;
 
-// Friction and slosh sounds start on the picture event (the stroke, the slide begins) and peak later;
-// clicks and hits put their peak on the event.
-const ONSET_ALIGNED: readonly SfxName[] = ["pen", "paper_slide", "page_turn", "flip", "liquid"];
 
 // Sounds with pitch variants; the variant is picked from the frame so renders are deterministic.
 const VARIANTS: Partial<Record<SfxName, number>> = { paper_tick: 5, typewriter: 5 };

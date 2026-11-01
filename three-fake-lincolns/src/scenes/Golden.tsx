@@ -55,7 +55,7 @@ export const ContactSheet: React.FC<{ readonly dim: number; readonly markFrom?: 
       }}
     />
     {markFrom !== undefined ? (
-      <PenMark kind="circle" left={STRIP[2].left - 6} top={FRAME_TOP - 6} width={STRIP[2].width + 26} height={290} from={markFrom} durationInFrames={14} seed={33} />
+      <PenMark kind="circle" left={STRIP[2].left + 4} top={FRAME_TOP + 14} width={STRIP[2].width - 4} height={252} from={markFrom} durationInFrames={14} seed={33} />
     ) : null}
   </AbsoluteFill>
 );
@@ -109,7 +109,6 @@ export const Golden: React.FC = () => {
         {GOLDEN.en}
       </div>
       {/* 2508: one stroke under 想相信, an eighth after the line has formed. */}
-      <PenMark kind="underline" left={SAFE.margin + 2 * 150} top={820 + 172 + 8} width={3 * 150} height={150} from={t(GOLDEN.enAt - base + 12)} durationInFrames={12} seed={27} />
     </AbsoluteFill>
   );
 };

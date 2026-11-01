@@ -125,9 +125,10 @@ export const Darkroom: React.FC = () => {
           </div>
         </div>
         <SourceCaption text="THE MET 287722 · CC0 · SITTER UNRELATED" left={SAFE.margin} top={236} />
+        {/* Pinned on the bench under the plate holder: clear of the platform buttons on the right. */}
+        <IllustrativeMark left={TABLE_LEFT + 18} top={TABLE_TOP + TABLE_H - 64} />
         </Dolly>
       </Breath>
-      <IllustrativeMark />
     </AbsoluteFill>
   );
 };

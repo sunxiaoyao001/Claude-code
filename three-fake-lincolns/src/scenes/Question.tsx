@@ -31,7 +31,10 @@ export const EMPTY_SLOT = { left: SLOT_LEFT, top: ROW_TOP, width: SLOT_W + BORDE
 const BOX = { left: 250, top: 880, width: 560, height: 240 } as const;
 const BOX_AT = 48;
 
-// A wooden box of glass slides seen from above: rim, the slides' edges, a manila label.
+// A wooden box of glass lantern slides, seen from the front and a little above: the slides stand
+// in their grooves, each bound in black tape with a white paper mat around a rounded window, the
+// ones behind showing only their tops; the low front wall carries a manila label.
+const SLIDE = { w: 200, h: 158, count: 8, dx: 36, dy: 5 } as const;
 const SlideBox: React.FC<{ readonly top: number; readonly left: number }> = ({ top, left }) => (
   <div
     style={{
@@ -40,17 +43,62 @@ const SlideBox: React.FC<{ readonly top: number; readonly left: number }> = ({ t
       top,
       width: BOX.width,
       height: BOX.height,
-      backgroundColor: COLORS.darkPaper,
-      boxShadow: `inset 0 0 0 10px ${COLORS.ink}, inset 0 0 0 12px rgba(142,138,132,0.28), 0 22px 50px rgba(0,0,0,0.6)`,
+      backgroundColor: "#151412",
+      borderRadius: 4,
+      boxShadow: `inset 0 0 0 8px #2B2621, inset 0 10px 18px rgba(0,0,0,0.7), 0 22px 50px rgba(0,0,0,0.6)`,
+      overflow: "hidden",
     }}
   >
-    {Array.from({ length: 22 }, (_, i) => (
-      <div
-        key={i}
-        style={{ position: "absolute", left: 30 + i * 23, top: 26, width: 3, height: BOX.height - 52, backgroundColor: COLORS.silver, opacity: 0.18 + (i % 3) * 0.06 }}
-      />
-    ))}
-    <ManilaTag left={BOX.width / 2 - 170} top={BOX.height - 74} height={52} tilt={-0.8}>
+    {Array.from({ length: SLIDE.count }, (_, i) => {
+      const front = i === SLIDE.count - 1;
+      return (
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            left: 26 + i * SLIDE.dx,
+            top: 22 + (SLIDE.count - 1 - i) * SLIDE.dy,
+            width: SLIDE.w,
+            height: SLIDE.h,
+            boxSizing: "border-box",
+            border: `5px solid ${COLORS.ink}`,
+            backgroundColor: COLORS.printWhite,
+            boxShadow: "-6px 0 10px rgba(0,0,0,0.55)",
+            filter: front ? undefined : `brightness(${0.55 + i * 0.05})`,
+          }}
+        >
+          {/* the mat's rounded window: a dark positive on glass, too small to read */}
+          <div
+            style={{
+              position: "absolute",
+              left: 18,
+              top: 14,
+              right: 18,
+              bottom: 34,
+              borderRadius: 14,
+              background: `radial-gradient(ellipse at 45% 40%, ${COLORS.silver} 0%, #3A3835 55%, ${COLORS.ink} 100%)`,
+              opacity: 0.9,
+            }}
+          />
+          {/* the handwritten label strip on the mat */}
+          <div style={{ position: "absolute", left: 30, right: 60, bottom: 14, height: 3, backgroundColor: COLORS.ink, opacity: 0.35 }} />
+        </div>
+      );
+    })}
+    {/* the box's low front wall */}
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: 84,
+        backgroundColor: "#2B2621",
+        backgroundImage: "repeating-linear-gradient(90deg, rgba(236,230,218,0.03) 0px, rgba(236,230,218,0.03) 2px, transparent 2px, transparent 19px), linear-gradient(180deg, rgba(236,230,218,0.12) 0px, rgba(236,230,218,0) 6px)",
+        boxShadow: "0 -8px 14px rgba(0,0,0,0.55)",
+      }}
+    />
+    <ManilaTag left={BOX.width / 2 - 170} top={BOX.height - 68} height={52} tilt={-0.8}>
       <MonoText>GLASS LANTERN SLIDES</MonoText>
     </ManilaTag>
   </div>

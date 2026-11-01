@@ -130,10 +130,11 @@ export const IllustrativeMark: React.FC<{ readonly text?: string; readonly left?
         ...(pinned ? { left, top } : { right: 1080 - SAFE.right, top: SAFE.bottom - 128 }),
         fontFamily: FONTS.sansZh,
         fontWeight: 700,
-        fontSize: pinned ? TYPE.label : TYPE.subtitleEn,
+        // 36 px everywhere: a disclosure that cannot be read on a phone is no disclosure.
+        fontSize: TYPE.subtitleEn,
         color: COLORS.printWhite,
         border: `1px solid ${COLORS.silver}`,
-        padding: pinned ? "2px 8px" : "4px 10px",
+        padding: "4px 10px",
         whiteSpace: "nowrap",
         opacity,
       }}

@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill, CanvasImage, interpolate, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { fitWidth, IMG, region, type ImageKey } from "../assets";
 import { Breath, BREATH_MAX_ZOOM, Dolly } from "../components/Breath";
-import { PhotoPrint, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
+import { PhotoPrint, PrintDodge, rectToCrop, toWindow, usePrint } from "../components/PhotoPrint";
 import { Drawing, Ink } from "../components/LineArt";
 import { ArchiveStamp, PenMark } from "../components/Props";
 import { IllustrativeMark, SourceCaption } from "../components/SeriesChrome";
@@ -73,9 +73,9 @@ const CardTray: React.FC = () => {
           />
         );
       })}
-      <SourceCaption text="W. H. MUMLER · SPIRIT PHOTOGRAPHS · 1860S–70S" left={120} top={1090} />
+      <SourceCaption text="W. H. MUMLER · SPIRIT PHOTOGRAPHS · CA. 1861–1879" left={120} top={1090} />
       {/* The second file is stamped open. */}
-      <ArchiveStamp label="ARCHIVE" number="No.002" left={660} top={760} at={t(60)} tilt={-8} />
+      <ArchiveStamp label="ARCHIVE" number="No.002" left={612} top={800} at={t(60)} tilt={-8} />
     </AbsoluteFill>
   );
 };
@@ -136,16 +136,20 @@ const Tray: React.FC<{ readonly left: number; readonly top: number; readonly wid
     ].map(([u, v, r], i) => (
       <div key={i} style={{ position: "absolute", left: u * width - r, top: v * height - r, width: 2 * r, height: 1.4 * r, borderRadius: "45%", backgroundColor: COLORS.ink, opacity: 0.75 }} />
     ))}
-    {/* The pouring lip on the near-left corner. */}
-    <div style={{ position: "absolute", left: -10, top: height - 70, width: 22, height: 40, borderRadius: "50% 0 0 50%", backgroundColor: COLORS.printWhite, opacity: 0.85 }} />
+    {/* The pouring spout: the far-left corner of the rim is pressed into a V. */}
+    <div style={{ position: "absolute", left: -6, top: -6, width: 44, height: 44, borderRadius: "40% 8px 8px 8px", backgroundColor: COLORS.printWhite, rotate: "45deg", boxShadow: "inset 2px 2px 3px rgba(14,14,16,0.25)" }} />
     {/* The well, full of developer: dark liquid with the lamp's reflection drifting across it. */}
     <div
       style={{
         position: "absolute",
         inset: TRAY_RIM,
         borderRadius: 12,
-        backgroundColor: COLORS.ink,
-        boxShadow: "inset 0 10px 24px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(236,230,218,0.25)",
+        // Developer seen through its own depth: warm dark grey, darker toward the far wall, never a
+        // flat black screen.
+        backgroundColor: "#2A2622",
+        backgroundImage: "linear-gradient(180deg, rgba(14,14,16,0.55) 0%, rgba(14,14,16,0.1) 45%, rgba(236,230,218,0.05) 100%)",
+        // The inner walls: the far wall in shadow, the near wall catching the lamp.
+        boxShadow: "inset 0 22px 18px -6px rgba(0,0,0,0.75), inset 0 -10px 10px -4px rgba(236,230,218,0.18), inset 0 0 0 1px rgba(236,230,218,0.25)",
         overflow: "hidden",
       }}
     >
@@ -167,21 +171,56 @@ const DeveloperTray: React.FC = () => {
   const out = interpolate(frame, [t(384), t(408)], [0, 1], { ...CLAMP, easing: EASE.inOut });
   const down = interpolate(frame, [t(408), t(426)], [0, 1], { ...CLAMP, easing: EASE.out });
   const printLift = out * (1 - down) * 0.9;
-  const trayW = DEV_W + 2 * TRAY_RIM + 100;
-  const trayH = DEV_H + 2 * TRAY_RIM + 110;
-  const trayLeft = 540 - trayW / 2 - 40;
-  const trayTop = 300;
+  // A dish much larger than the print, with the print lying off-centre and a little skewed in it:
+  // a screen has a thin even bezel around a centred picture, a tray does not.
+  const trayW = DEV_W + 2 * TRAY_RIM + 190;
+  const trayH = DEV_H + 2 * TRAY_RIM + 150;
+  const trayLeft = 540 - trayW / 2 - 20;
+  const trayTop = 270;
   // Print tongs (line art) close on the corner, lift the print with it, then leave.
-  const printLeft = trayLeft + TRAY_RIM + 40 + out * 70;
-  const printTop = trayTop + TRAY_RIM + 45 - out * 46;
+  const printLeft = trayLeft + TRAY_RIM + 58 + out * 70;
+  const printTop = trayTop + TRAY_RIM + 92 - out * 80;
   const tongsAway = interpolate(frame, [t(426), t(442)], [0, 1], { ...CLAMP, easing: EASE.inOut });
   // Under the liquid: the surface reflection and a faint darkening ride over the print until it is
   // lifted out.
   const wet = 1 - out;
   // The 示意 mark qualifies only the developing animation; it leaves once the print has developed.
   const markOpacity = interpolate(frame, [0, 8, t(264), t(276)], [0, 1, 1, 0], { ...CLAMP, easing: EASE.inOut });
+  // 1044–1056: the "spirit" is dodged (its tones stretched) so it reads on a phone, and labelled.
+  const dodge = interpolate(frame, [t(276), t(288)], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  // The tray is first seen from the chair, at a steep angle (a dish on the bench, its front wall
+  // showing); as the hands are marked the camera rises over it (1000–1056), and it is straight
+  // overhead when the print is lifted out.
+  const rise = interpolate(frame, [t(228), t(288)], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  const tiltX = (36 - 28 * rise) * (1 - out);
+  const ghost = region("maryLincolnGhost", "ghost");
+  const ghostTop = ((ghost[1] - PHOTO[1]) / (PHOTO[3] - PHOTO[1])) * DEV_H + 12;
+  // Where a point of the (tilted) bench plane lands on screen, for marks drawn flat over it.
+  const project = (x: number, y: number) => {
+    const h = trayTop + trayH - y;
+    const rad = (tiltX * Math.PI) / 180;
+    const k = 1600 / (1600 + h * Math.sin(rad));
+    return { x: 540 + (x - 540) * k, y: trayTop + trayH - h * Math.cos(rad) * k };
+  };
+  const markAt = project(trayLeft + trayW, trayTop);
   return (
     <AbsoluteFill>
+      <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", transform: `perspective(1600px) rotateX(${tiltX}deg)`, transformOrigin: `540px ${trayTop + trayH}px` }}>
+      {/* The dish's near wall, standing up from the bench toward the camera. */}
+      <div
+        style={{
+          position: "absolute",
+          left: trayLeft + 10,
+          top: trayTop + trayH - 1,
+          width: trayW - 20,
+          height: 44,
+          transformOrigin: "top",
+          transform: "rotateX(-90deg)",
+          borderRadius: "0 0 18px 18px",
+          backgroundColor: COLORS.printWhite,
+          backgroundImage: "linear-gradient(180deg, rgba(14,14,16,0.08) 0%, rgba(14,14,16,0.42) 100%)",
+        }}
+      />
       <Tray left={trayLeft} top={trayTop} width={trayW} height={trayH} sheen={sheen} />
       <PhotoPrint
         src={IMG.maryLincolnGhost.file}
@@ -191,13 +230,15 @@ const DeveloperTray: React.FC = () => {
         crop={rectToCrop(PHOTO)}
         left={printLeft}
         top={printTop}
-        tilt={0.4 + out * 2.2}
+        tilt={2.6 + out * 1.2}
         border={10}
         develop={develop}
         lift={printLift}
         sheenAt={t(392)}
         layers={
-          wet > 0.01 ? (
+          <>
+          <PrintDodge rect={ghost} amount={dodge} blackPoint={0.56} whitePoint={0.84} />
+          {wet > 0.01 ? (
             <div
               style={{
                 position: "absolute",
@@ -206,19 +247,23 @@ const DeveloperTray: React.FC = () => {
                 background: `linear-gradient(105deg, transparent ${sheen * 100 - 16}%, rgba(236,230,218,0.16) ${sheen * 100}%, transparent ${sheen * 100 + 16}%), rgba(14,14,16,0.06)`,
               }}
             />
-          ) : null
+          ) : null}
+          </>
         }
       >
         <HandMark area="ghostHandLeft" from={t(240)} seed={12} />
         <HandMark area="ghostHandRight" from={t(252)} seed={14} />
         <GhostMark from={t(288)} />
+        {/* Pinned on the empty wall left of the circled "spirit", so it travels with the print. */}
+        {dodge > 0 ? <IllustrativeMark text="局部提亮" left={-26} top={ghostTop} opacity={dodge} /> : null}
       </PhotoPrint>
       {tongsAway < 1 ? (
         <div style={{ position: "absolute", inset: 0, translate: `${tongsAway * 300}px ${-tongsAway * 40}px`, opacity: 1 - tongsAway }}>
           <PrintTongs x={printLeft + DEV_W + 20 - 8} y={printTop + 6} from={t(372)} />
         </div>
       ) : null}
-      {markOpacity > 0 ? <IllustrativeMark text="显影过程为示意" left={trayLeft + trayW - 196} top={trayTop - 46} opacity={markOpacity} /> : null}
+      </div>
+      {markOpacity > 0 ? <IllustrativeMark text="显影过程为示意" left={markAt.x - 272} top={markAt.y - 66} opacity={markOpacity} /> : null}
       <SourceCaption text={IMG.maryLincolnGhost.caption} left={trayLeft} top={trayTop + trayH + 20} />
     </AbsoluteFill>
   );
@@ -234,12 +279,16 @@ export const WidowGhost: React.FC = () => {
             <CardTray />
           </Dolly>
         </Sequence>
-        {/* 14 seconds in the developer: the camera creeps in the whole time (0.9 → 1). The developing
-            is a schematic (an albumen carte was printed out in daylight), so it carries a 示意 mark
-            while it develops; the developed print is the real photograph and carries none. */}
+        {/* 14 seconds in the developer, in two camera moves: a wide creep over the tray while the
+            print develops (768–1008), then a push toward the "spirit" as the hands are marked and it
+            is circled on the 1056 downbeat. Never past 1 (the source is small). The developing is a
+            schematic (an albumen carte was printed out in daylight), so it carries a 示意 mark while
+            it develops; the developed print is the real photograph and carries none. */}
         <Sequence from={t(96)} layout="none">
-          <Dolly from={0.9} end={420} originX={500} originY={640}>
-            <DeveloperTray />
+          <Dolly from={0.84} end={240} originX={500} originY={700}>
+            <Dolly from={0.9} start={228} end={288} originX={560} originY={420}>
+              <DeveloperTray />
+            </Dolly>
           </Dolly>
         </Sequence>
       </Breath>

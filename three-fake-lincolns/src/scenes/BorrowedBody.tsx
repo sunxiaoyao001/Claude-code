@@ -315,25 +315,28 @@ const Reveal: React.FC = () => {
         </ManilaTag>
         <PenMark kind="circle" left={0} top={110} width={330} height={92} from={0} durationInFrames={10} />
       </div>
-      {/* The lender's tag lands only once the blink comparator has stopped on his print (378), so it
-          never hangs under Lincoln's face. */}
-      <Sequence from={t(90)} layout="none">
-        <ManilaTag left={ALIGNED.left - 60} top={ALIGNED.top + OUTER_H + 26} height={124} tilt={1.5} style={{ flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: 6 }}>
-          <MonoText size={TYPE.subtitleEn}>JOHN C. CALHOUN</MonoText>
-          <MonoText size={TYPE.subtitleEn} style={{ opacity: 0.7 }}>VICE PRESIDENT · 1825–1832</MonoText>
-        </ManilaTag>
-      </Sequence>
     </AbsoluteFill>
   );
 };
 
 // ---- 384–480: the lender ------------------------------------------------------------------------
+// His name tag is pinned over the print's top-right corner from the cut (it lands on 396, an eighth
+// after it) and stays the whole shot, 2.8 s; the SENATE tag joins it below at 432.
 const Lender: React.FC = () => {
   const t = useTime();
+  const frame = useCurrentFrame();
+  const nameIn = interpolate(frame, [t(4), t(12)], [1, 0], { ...CLAMP, easing: EASE.land });
   return (
     <AbsoluteFill>
       <CalhounPrint left={153} top={330} tilt={0.6} sheenAt={t(6)} />
       <SourceCaption text={IMG.calhoun1852.caption} left={153} top={330 + OUTER_H + 20} />
+      <div style={{ position: "absolute", left: 0, top: 0, opacity: frame < t(4) ? 0 : 1, translate: `0 ${-70 * nameIn}px`, rotate: `${5 * nameIn}deg` }}>
+        <ManilaTag left={153 + OUTER_W - 70} top={330 + 44} height={176} tilt={2} style={{ flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: 4 }}>
+          <MonoText size={TYPE.subtitleEn}>JOHN C. CALHOUN</MonoText>
+          <MonoText size={TYPE.subtitleEn} style={{ opacity: 0.7 }}>VICE PRESIDENT</MonoText>
+          <MonoText size={TYPE.subtitleEn} style={{ opacity: 0.7 }}>1825–1832</MonoText>
+        </ManilaTag>
+      </div>
       <Sequence from={t(48)} layout="none">
         <ManilaTag left={153 + 30} top={330 + OUTER_H + 64} height={124} tilt={-1.5} style={{ flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: 6 }}>
           <MonoText size={TYPE.subtitleEn}>SENATE · 1837</MonoText>
@@ -424,7 +427,8 @@ const Difference: React.FC = () => {
         <PenMark kind="box" {...toWin(head)} from={t(12)} durationInFrames={14} seed={4} />
         <PenMark kind="box" {...toWin(papers)} from={t(24)} durationInFrames={14} seed={5} />
       </LincolnPrint>
-      <div style={{ position: "absolute", left: ALIGNED.left, top: ALIGNED.top + OUTER_H + 24, fontFamily: FONTS.sansZh, fontWeight: 500, fontSize: TYPE.label, color: COLORS.silver }}>
+      {/* A disclosure, so it is set at the 36 px every disclosure in the film uses. */}
+      <div style={{ position: "absolute", left: ALIGNED.left - 60, top: ALIGNED.top + OUTER_H + 22, fontFamily: FONTS.sansZh, fontWeight: 700, fontSize: TYPE.subtitleEn, color: COLORS.printWhite, opacity: 0.85 }}>
         差异图 · 由两张馆藏扫描件配准计算
       </div>
     </AbsoluteFill>

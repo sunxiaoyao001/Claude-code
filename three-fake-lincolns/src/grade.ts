@@ -82,8 +82,9 @@ export const photoGrade = ({ frame, develop = 1, colorRestore = 0, vignetteAmoun
   return [
     grayscale({ amount: 1 - colorRestore }),
     vignette({ amount: vignetteAmount }),
-    // Grain re-seeds every frame so it reads as film, not a static texture.
-    noise({ amount: GRADE.grainAmount, seed: frame }),
+    // Grain re-seeds every frame so it reads as film, not a static texture. Half strength on the
+    // photographs: the frame-wide film grain is on top, and full grain here ate the engraved lines.
+    noise({ amount: GRADE.grainAmount * 0.5, seed: frame }),
     levels({ blackPoint: 0, whitePoint: 1, gamma: developGamma(develop) }),
     lut({ content: SPLIT_TONE_CUBE, disabled: !graded || colorRestore > 0.5 }),
   ];
@@ -94,4 +95,13 @@ export const newsprintGrade = ({ frame }: { readonly frame: number }) => [
   lut({ content: SPLIT_TONE_CUBE }),
   halftone({ dotSize: GRADE.halftoneDotSize, dotSpacing: GRADE.halftoneDotSize }),
   noise({ amount: GRADE.grainAmount, seed: frame }),
+];
+
+// Local dodge (a darkroom technique): the same print, its tones stretched so the faint "spirit" in
+// a Mumler photograph reads on a phone. Only ever used under a visible 局部提亮 label.
+export const dodgeGrade = ({ frame, blackPoint, whitePoint }: { readonly frame: number; readonly blackPoint: number; readonly whitePoint: number }) => [
+  grayscale({ amount: 1 }),
+  noise({ amount: GRADE.grainAmount * 0.5, seed: frame }),
+  levels({ blackPoint, whitePoint, gamma: 1 }),
+  lut({ content: SPLIT_TONE_CUBE }),
 ];

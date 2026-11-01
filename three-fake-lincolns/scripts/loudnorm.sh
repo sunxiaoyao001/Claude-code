@@ -5,10 +5,15 @@
 # so the chain itself lands on −14 LUFS. No loudnorm: when its linear mode has no true-peak headroom
 # it silently falls back to dynamic AGC, which flattens the loudness range and pumps the loop seam.
 # Usage: scripts/loudnorm.sh <in.mp4|wav> <out.mp4|wav>
+# The output also gets 5 ms fades at both ends (see below).
 set -euo pipefail
 in="$1"
 out="$2"
-chain() { echo "volume=${1}dB,acompressor=threshold=-24dB:ratio=1.6:attack=12:release=220:knee=8,aresample=192000,alimiter=limit=0.79:attack=2:release=60:asc=1:level=disabled,aresample=48000"; }
+# 5 ms fades at both ends: the film loops, and a player that loops sample-exactly would otherwise
+# click where the last sample (mid-chord) meets the first.
+dur=$(ffprobe -v error -select_streams a:0 -show_entries stream=duration -of csv=p=0 "$in")
+fade_out=$(python3 -I -c "print(round($dur - 0.005, 4))")
+chain() { echo "volume=${1}dB,acompressor=threshold=-24dB:ratio=1.6:attack=12:release=220:knee=8,aresample=192000,alimiter=limit=0.79:attack=2:release=60:asc=1:level=disabled,aresample=48000,afade=t=in:d=0.005,afade=t=out:st=${fade_out}:d=0.005"; }
 measure_i() { ffmpeg -hide_banner -nostats -i "$in" -af "$1,ebur128" -f null - 2>&1 | awk '/Summary:/{s=1} s&&/I:/{print $2; exit}'; }
 i_in=$(ffmpeg -hide_banner -nostats -i "$in" -af ebur128 -f null - 2>&1 | awk '/Summary:/{s=1} s&&/I:/{print $2; exit}')
 gain=$(python3 -I -c "print(round(-14 - ($i_in), 2))")

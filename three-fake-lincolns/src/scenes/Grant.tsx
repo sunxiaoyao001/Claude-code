@@ -154,7 +154,7 @@ export const Grant: React.FC = () => {
             </PhotoPrint>
           );
         })}
-        <SourceCaption text="LIBRARY OF CONGRESS · 1864 / CA. 1902" left={ROW_LEFT} top={ROW_BOTTOM + 16} />
+        <SourceCaption text="LIBRARY OF CONGRESS · 1862–64 / CA. 1902" left={ROW_LEFT} top={ROW_BOTTOM + 16} />
         <PhotoPrint
           src={IMG.grantCityPoint.file}
           imgW={IMG.grantCityPoint.width}

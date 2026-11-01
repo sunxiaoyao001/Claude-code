@@ -6,7 +6,7 @@ import "./fonts";
 import { Desk } from "./components/Desk";
 import { FilmLook } from "./components/FilmLook";
 import { Soundtrack } from "./components/Soundtrack";
-import { slideCarrier, sweepOff } from "./components/Transitions";
+import { lampOff, sweepOff } from "./components/Transitions";
 import { InkFilter } from "./components/Props";
 import { ArchiveProgress, ArchiveTag, Watermark } from "./components/SeriesChrome";
 import { Subtitle } from "./components/Subtitle";
@@ -74,7 +74,7 @@ const TRANSITIONS: Partial<Record<keyof typeof SCENES, { readonly length: number
   widowGhost: { length: 16, make: sweepOff },
   darkroom: { length: 16, make: sweepOff },
   grant: { length: 16, make: sweepOff },
-  twist: { length: 14, make: slideCarrier },
+  twist: { length: 14, make: lampOff },
 };
 
 const Scenes: React.FC = () => {

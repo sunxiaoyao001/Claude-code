@@ -76,15 +76,18 @@ const Counter: React.FC = () => {
   const { from, every, first, last } = SEANCE_COUNTER;
   let year = 0;
   let changedAt = 0;
+  // Each year rolls in over the 5 frames before its click and lands on the click frame (with the
+  // tick in its cell), so the big number, the cell and the sound are one event.
+  const LEAD = 5;
   for (let y = first; y <= last; y++) {
     const at = t(from + (y - first) * every) - t(BASE);
-    if (at <= frame) {
+    if (at - LEAD <= frame) {
       year = y;
       changedAt = at;
     }
   }
   if (!year) return null;
-  const roll = interpolate(frame, [changedAt, changedAt + 6], [0, 1], { ...CLAMP, easing: EASE.inOut });
+  const roll = interpolate(frame, [changedAt - LEAD, changedAt], [0, 1], { ...CLAMP, easing: EASE.land });
   const prev = String(year === first ? year : year - 1);
   const next = String(year);
   return (

@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from "react";
 import { CanvasImage, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { MIN_SOURCE_PER_DISPLAY } from "../assets";
-import { developOpacity, photoGrade } from "../grade";
+import { developOpacity, dodgeGrade, photoGrade } from "../grade";
 import { BREATH_MAX_ZOOM } from "./Breath";
 import { CLAMP, COLORS, EASE } from "../theme";
 
@@ -148,6 +148,42 @@ export const PhotoPrint: React.FC<Props> = ({
         ) : null}
         {children ? <div style={{ position: "absolute", left: border, top: border, width, height }}>{children}</div> : null}
       </PrintContext.Provider>
+    </div>
+  );
+};
+
+// A local dodge inside a print (use it in `layers`): the print again, with its tones stretched
+// between blackPoint and whitePoint, feathered to an ellipse around `rect` (image-normalised). The
+// scene must label it (局部提亮).
+export const PrintDodge: React.FC<{ readonly rect: readonly number[]; readonly amount: number; readonly blackPoint: number; readonly whitePoint: number; readonly spread?: number }> = ({
+  rect,
+  amount,
+  blackPoint,
+  whitePoint,
+  spread = 1.5,
+}) => {
+  const frame = useCurrentFrame();
+  const g = usePrint();
+  if (amount <= 0.001) {
+    return null;
+  }
+  const a = toWindow(g, rect[0], rect[1]);
+  const b = toWindow(g, rect[2], rect[3]);
+  const cx = (a.x + b.x) / 2;
+  const cy = (a.y + b.y) / 2;
+  const rx = ((b.x - a.x) / 2) * spread;
+  const ry = ((b.y - a.y) / 2) * spread;
+  const mask = `radial-gradient(ellipse ${rx}px ${ry}px at ${cx}px ${cy}px, #000 45%, transparent 100%)`;
+  return (
+    <div style={{ position: "absolute", inset: 0, opacity: amount, maskImage: mask, WebkitMaskImage: mask }}>
+      <CanvasImage
+        src={staticFile(g.src)}
+        width={Math.round(g.imgW * g.scale)}
+        height={Math.round(g.imgH * g.scale)}
+        fit="fill"
+        style={{ position: "absolute", left: -g.crop.x0 * g.imgW * g.scale, top: -g.crop.y0 * g.imgH * g.scale }}
+        effects={dodgeGrade({ frame, blackPoint, whitePoint })}
+      />
     </div>
   );
 };

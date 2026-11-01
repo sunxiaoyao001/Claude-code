@@ -21,7 +21,7 @@
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "高",
-    "上屏写法": "档案签「No.001 · c.1865 · NEW YORK」（纽约 = 出版地）；称「版画」「肖像」，不称「照片」",
+    "上屏写法": "档案签「No.001 · c.1865 · NEW YORK」（纽约 = 出版地）；称「版画」「肖像」，不称「照片」；S19 时间轴上标在 1865",
     "读图核实": "2026-10-24 读图核实：用户从 LoC 下载并上传的 2003654314 版画（812×1024）上，可读到底部「Published by William Pate, 58 & 60 Fulton St. New York」"
   },
   {
@@ -143,7 +143,7 @@
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "高",
-    "备注": "片中所用扫描件是 Wikimedia Commons 的 559×889 副本（据 Commons 页面，2008 年取自 rogerjnorton.com），原件属 Lincoln Financial Foundation Collection（ACPL）；出处签写作 LFFC · VIA WIKIMEDIA COMMONS；如能取得 ACPL 官方扫描件应替换"
+    "备注": "片中所用扫描件是 Wikimedia Commons 的 559×889 副本（据 Commons 页面，2008 年取自 rogerjnorton.com），原件属 Lincoln Financial Foundation Collection（ACPL）；出处签写作 W. H. MUMLER · CA. 1872 · VIA WIKIMEDIA COMMONS（「原件藏 LFFC」只写在简介里）；如能取得 ACPL 官方扫描件应替换"
   },
   {
     "id": "F08",
@@ -167,7 +167,7 @@
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "中（有争议）",
-    "上屏写法": "只用档案签「c.1872」，字幕不写年份"
+    "上屏写法": "档案签「c.1872」，字幕不写年份；S19 时间轴把这张照片画成 1869–1872 的区间（覆盖争议范围），不标单一年份"
   },
   {
     "id": "F09",
@@ -267,7 +267,9 @@
       }
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
-    "置信度": "高"
+    "置信度": "高",
+    "冲突": "LOT 4181（LoC 2007684716）的现行著录日期是 1862 年 5 月（1900–1910 年间印制），旧标题指向 Front Royal 战役；「费希尔山（1864）」来自格兰特合成像的著录（ppmsca.15886）和照片背面题记。两说不一致，片中出处签写 1862–64，不写战役名（第 3 轮成片评审指出，WebSearch 摘要交叉核实）",
+    "上屏写法": "三件原件合签「LIBRARY OF CONGRESS · 1862–64 / CA. 1902」；馆藏号 LC-B8175-2 / LC-B817-7204 / LOT 4181"
   },
   {
     "id": "F13",
@@ -291,7 +293,7 @@
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
     "置信度": "高",
-    "上屏写法": "档案签「1920s」，不写具体年份"
+    "上屏写法": "档案签「1920–1930」（即 LoC 著录的日期范围），不写单一年份"
   },
   {
     "id": "F14",
@@ -407,6 +409,11 @@
         "url": "https://www.nationalgeographic.com/premium/article/harry-houdini-skeptic-spirits-mediums-fraud",
         "类型": "权威二手",
         "摘录": "likely found the phrase in a Houdini biography"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Arthur_Ford_(psychic)",
+        "类型": "权威二手",
+        "摘录": "Bess initially endorsed Ford's claims, but later repudiated them"
       }
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
@@ -556,8 +563,8 @@
       }
     ],
     "摘录方式": "搜索摘要（WebSearch 返回的引文，未抓取原页；网络放开后逐条复核）",
-    "置信度": "高（起始年 1860/1861/early 1860s 有出入，上屏只写 1860S–70S）",
-    "上屏写法": "出处签 W. H. MUMLER · SPIRIT PHOTOGRAPHS · 1860S–70S；不给任何单张名片照标具体年份"
+    "置信度": "高（起始年 1860/1861/early 1860s 有出入，上屏写 CA. 1861–1879）",
+    "上屏写法": "出处签 W. H. MUMLER · SPIRIT PHOTOGRAPHS · CA. 1861–1879（名片照一排的出处签 W. H. MUMLER · CA. 1861–1879）；不给任何单张名片照标具体年份（等宽标签全大写，不写 1860S–70S：手机上 S 和 5 分不清）"
   },
   {
     "id": "F26",

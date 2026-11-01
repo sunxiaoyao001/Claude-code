@@ -10,7 +10,7 @@ import os
 
 import numpy as np
 from scipy.io import wavfile
-from scipy.signal import butter, fftconvolve, sosfilt
+from scipy.signal import butter, fftconvolve, sosfilt, sosfiltfilt
 
 SR = 48000
 rng = np.random.default_rng(1926)
@@ -69,6 +69,8 @@ def add_reverb(x, wet=0.25, rt60=2.2):
     w = np.stack([fftconvolve(x2[:, c], ir[:, c])[: len(x2)] for c in range(2)], axis=1)
     return (1 - wet) * x2 + wet * w
 
+
+SCORE_GAIN = 0.3494
 
 # The twist chord (bar 21), A minor: (MIDI note, gain). Weighted to the E4–E5 octave: a phone
 # speaker plays almost nothing under ~250 Hz, and low notes only use up the master limiter's
@@ -153,7 +155,10 @@ def pad(midis, dur, bright=1400, attack=1.4):
             lfo = 1 + 0.002 * np.sin(2 * np.pi * 0.17 * t + side)
             # soft saw from 6 harmonics
             s = sum(np.sin(2 * np.pi * ff * h * lfo * t) / h for h in range(1, 7))
-            out[:, side] += s
+            # each detuned voice leans to one side but sounds in both, so the pad stays whole when a
+            # phone folds it to mono (two voices hard-panned apart beat against each other there)
+            out[:, side] += 0.68 * s
+            out[:, 1 - side] += 0.32 * s
     out = lowpass(out, bright, order=2)
     a = np.clip(t / max(attack, 1e-3), 0, 1) ** 2
     r = np.ones(n)
@@ -166,7 +171,9 @@ def bass(midi, dur):
     n = int((dur + 1.0) * SR)
     t = np.arange(n) / SR
     f = midi_hz(midi)
-    s = np.sin(2 * np.pi * f * t) + 0.25 * np.sin(2 * np.pi * 2 * f * t)
+    # fundamental plus 2nd and 3rd harmonics, so the line is heard on a phone speaker, not only
+    # felt on headphones
+    s = np.sin(2 * np.pi * f * t) + 0.45 * np.sin(2 * np.pi * 2 * f * t) + 0.2 * np.sin(2 * np.pi * 3 * f * t)
     e = np.clip(t / 0.02, 0, 1) * np.exp(-t / 2.2)
     r = np.ones(n)
     r[int(dur * SR):] = np.exp(-np.arange(n - int(dur * SR)) / SR / 0.2)
@@ -189,7 +196,9 @@ def tick(vel=0.5):
 def pulse(vel=0.6):
     n = int(0.5 * SR)
     t = np.arange(n) / SR
-    f = 52 * np.exp(-t / 0.08) + 40
+    # a soft heartbeat around 60–100 Hz (it used to sit at 40 Hz, all sub, which a phone cannot play
+    # and which only used up the master limiter's headroom)
+    f = 40 * np.exp(-t / 0.06) + 62
     return np.sin(2 * np.pi * np.cumsum(f) / SR) * env_ad(n, 0.003, 0.16) * vel
 
 
@@ -216,6 +225,8 @@ PROGRESSION = [
 GOLDEN_BAR = 26  # the golden line lands on its first beat (frame 2400)
 GOLDEN_CHORDS = [[57, 64, 69, 72], [53, 60, 65, 69]]  # Am on beat 1, F on beat 3
 GOLDEN_MELODY = [76, 74, 72, 69, 71, 72, 74, 76]  # one note per character, each on an eighth note
+# The golden line sits 3 dB under the twist: the brief keeps one big hit, and it is the twist.
+GOLDEN_GAIN = 0.7
 
 
 def build_score(bpm, bars, fps, silence_frames):
@@ -237,9 +248,9 @@ def build_score(bpm, bars, fps, silence_frames):
         t0 = b * bar
         bar_no = b + 1
         bright = 900 if bar_no <= 3 else (2200 if bar_no == GOLDEN_BAR else 1500)
-        # The hook is pad only and sits ~3 dB under the body of the film, so the sections have range.
+        # The hook is pad only and sits ~1.5 dB under the body of the film, so the sections have range.
         # Bar 1 has no attack: the last bar's pad is folded onto the start (seamless loop).
-        place("pad", pad(CHORDS[ch], bar, bright, attack=0.01 if bar_no == 1 else 1.4), t0, 0.30 if bar_no <= 3 else 0.45)
+        place("pad", pad(CHORDS[ch], bar, bright, attack=0.01 if bar_no == 1 else 1.4), t0, 0.38 if bar_no <= 3 else 0.45)
         # downbeat accents: the reveal (bar 4) and the ghost (bar 12), kept well below the twist and
         # the golden line
         if bar_no in (4, 12):
@@ -270,25 +281,26 @@ def build_score(bpm, bars, fps, silence_frames):
         if bar_no == GOLDEN_BAR:
             for k, chord in enumerate(GOLDEN_CHORDS):
                 for m in chord:
-                    place("piano", piano(m, beat * 1.9, 0.6), t0 + 2 * k * beat, 0.5, 0.1)
+                    place("piano", piano(m, beat * 1.9, 0.6), t0 + 2 * k * beat, 0.35 * GOLDEN_GAIN / 0.7, 0.1)
             # one clear note per character on every eighth (v11 layer), and a held chord under the
             # last character, 信; an octave above the chords opens the top of the line.
             for k, m in enumerate(GOLDEN_MELODY):
-                place("piano", piano(m, beat * 0.9, 0.8), t0 + k * beat / 2, 0.92, -0.1)
+                place("piano", piano(m, beat * 0.9, 0.8), t0 + k * beat / 2, 0.92 * GOLDEN_GAIN, -0.1)
             for m in GOLDEN_CHORDS[0]:
                 if m + 12 <= 78:  # the samples stop at F#5
-                    place("piano", piano(m + 12, beat * 1.5, 0.55), t0, 0.25, 0.15)
+                    place("piano", piano(m + 12, beat * 1.5, 0.55), t0, 0.25 * GOLDEN_GAIN, 0.15)
             for m in GOLDEN_CHORDS[0]:
-                place("piano", piano(m, beat * 3.0, 0.6), t0 + 3.5 * beat, 0.4, 0.05)
+                place("piano", piano(m, beat * 3.0, 0.6), t0 + 3.5 * beat, 0.4 * GOLDEN_GAIN, 0.05)
         if bar_no == GOLDEN_BAR + 1:
             for k in (0, 2, 4, 6):
                 place("piano", piano(ARP[ch][k % 4], beat * 0.9, 0.42), t0 + k * beat / 2, 0.4)
-        if 13 <= bar_no <= GOLDEN_BAR + 1:
-            place("bass", bass(ROOTS[ch] - 12, bar * 0.95), t0, 0.5)
+        if 12 <= bar_no <= GOLDEN_BAR + 1 and bar_no != 21:
+            # an octave above the old sub line (A1 = 55 Hz): A2–C2, 65–110 Hz plus harmonics
+            place("bass", bass(ROOTS[ch], bar * 0.95), t0, 0.42)
         if 8 <= bar_no <= 20:
             for q in (0, 2):
                 place("perc", pulse(0.5), t0 + q * beat, 0.5)
-        if 13 <= bar_no <= 20 or bar_no == GOLDEN_BAR:
+        if 12 <= bar_no <= 20 or bar_no == GOLDEN_BAR:
             for q in (1, 3):
                 place("perc", brush(0.5), t0 + q * beat, 0.35, 0.2)
             for e in range(8):
@@ -302,15 +314,28 @@ def build_score(bpm, bars, fps, silence_frames):
     wrap = min(int(3.0 * SR), len(out) - end)
     out[:wrap] += out[end:end + wrap]
     out = out[:end].copy()
-    # Lows in mono (below 120 Hz) for phone speakers and mono fold-down.
-    lows = lowpass(out, 120)
+    # Nothing under 40 Hz: it only costs the master limiter headroom.
+    out = highpass(out, 40)
+    # The side signal 12 dB down below ~1.2 kHz (the sampled piano's spaced microphones and the
+    # reverb are nearly out of phase there), then fully mono below 250 Hz, so the score keeps its
+    # body when a phone or a Bluetooth speaker folds it to mono.
+    # (zero-phase splits, so the band taken out and the band put back line up sample for sample)
+    lowmid = sosfiltfilt(butter(4, 1200, "low", fs=SR, output="sos"), out, axis=0)
+    mid = lowmid.mean(axis=1, keepdims=True)
+    out = out - lowmid + mid + (lowmid - mid) * 0.25
+    lows = sosfiltfilt(butter(4, 250, "low", fs=SR, output="sos"), out, axis=0)
     out = out - lows + lows.mean(axis=1, keepdims=True)
     # hard silence before the twist (after reverb, so no tail leaks through)
     s0, s1 = (int(f / fps * SR) for f in silence_frames)
     fade = int(0.02 * SR)
     out[s0 - fade:s0] *= np.linspace(1, 0, fade)[:, None]
     out[s0:s1] = 0
-    return norm_peak(out, -3.0)
+    # A fixed gain, not peak normalisation: a change in one bar must not move every other bar.
+    # (0.3494 is the factor the old −3 dBFS peak normalisation gave; the mix gain in Soundtrack.tsx
+    # is set against it.)
+    peak = np.max(np.abs(out)) * SCORE_GAIN
+    assert peak < 0.9, f"score peaks at {20 * np.log10(peak):.1f} dBFS"
+    return out * SCORE_GAIN
 
 
 # ---------- sound effects ----------
@@ -408,10 +433,14 @@ def sfx_projector_click():
 def sfx_liquid():
     n = int(1.4 * SR)
     t = np.arange(n) / SR
-    # Developer rocked in a tray: low-passed water noise with two soft surges, no pitched bubbles.
-    surge = np.sin(np.pi * t / 1.4) ** 2 * (0.6 + 0.4 * np.sin(2 * np.pi * t / 0.7))
-    wash = bandpass(rng.standard_normal(n), 150, 1800) * surge
-    return norm_peak(lowpass(wash, 1500), -6)
+    # The print slipping into the developer: a soft plunge whose attack is on the first sample (the
+    # picture event), then the tray rocked once, 6 dB under it. No pitched bubbles.
+    plunge = bandpass(rng.standard_normal(n), 300, 3500) * env_ad(n, 0.003, 0.07)
+    body = bandpass(rng.standard_normal(n), 120, 700) * env_ad(n, 0.006, 0.16) * 0.8
+    surge = np.sin(np.pi * np.clip((t - 0.15) / 1.25, 0, 1)) ** 2 * (0.6 + 0.4 * np.sin(2 * np.pi * t / 0.7))
+    wash = lowpass(bandpass(rng.standard_normal(n), 150, 1800) * surge, 1500)
+    wash *= 0.5 * np.max(np.abs(plunge + body)) / max(np.max(np.abs(wash)), 1e-9)
+    return norm_peak(plunge + body + wash, -6)
 
 
 def sfx_pen():

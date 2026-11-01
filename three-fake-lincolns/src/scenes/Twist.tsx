@@ -44,10 +44,10 @@ const GhostHeadMark: React.FC<{ readonly from: number }> = ({ from }) => {
 export const Twist: React.FC = () => {
   const frame = useCurrentFrame();
   const t = useTime();
-  // The punch is the very first frame: the viewfinder opens out of the empty No.003 slot of the
-  // previous shot (already the slot's full size), reaches the whole slide in 8 frames, the lamp is
-  // at full on frame 1920, and the colour is cut in hard (the frame before is black and white).
-  const open = interpolate(frame, [0, 8], [0, 1], { ...CLAMP, easing: EASE.out });
+  // The punch is the very first frame: a hard cut to the whole projection, lamp at full and the
+  // colour cut in (the frame before is black and white, after half a second of silence). No growing
+  // window: its lit corner read as a glitch on the first two frames.
+  const open = 1;
   const restore = 1;
   const lamp = interpolate(frame, [0, t(24), t(48)], [1, 0.85, 0.22], { ...CLAMP, easing: EASE.inOut });
   const cx = LEFT + SLIDE_W / 2;
@@ -60,16 +60,25 @@ export const Twist: React.FC = () => {
   // No glow: the light is the projected rectangle itself. The screen margin around the slide is lit
   // at full on 1920 and settles to a dim rim; a faint wedge of beam runs back to the lantern's lens.
   const lens = { x: 330, y: 1062 };
+  // The beam appears with the lantern that casts it (drawn from 1948), never before its source.
+  const beam = interpolate(frame, [t(28), t(40)], [0, 1], { ...CLAMP, easing: EASE.inOut });
   return (
     <AbsoluteFill>
       <Breath phase={t(1920)} originX={cx} originY={cy}>
         <Dolly from={0.97} start={20} end={96} originX={cx} originY={cy}>
+        {/* The beam: a soft cone that is brightest at the lens and thins out toward the screen, its
+            edges feathered (light through air, not a flat grey card). */}
         <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
-          <polygon
-            points={`${lens.x},${lens.y - 14} ${winL},${winT} ${winR},${winT} ${winR},${winB} ${lens.x},${lens.y + 14}`}
-            fill={COLORS.printWhite}
-            opacity={0.035 + 0.05 * lamp}
-          />
+          <defs>
+            <linearGradient id="beam" gradientUnits="userSpaceOnUse" x1={lens.x} y1={lens.y} x2={(winL + winR) / 2} y2={(winT + winB) / 2}>
+              <stop offset="0" stopColor={COLORS.printWhite} stopOpacity={(0.16 + 0.12 * lamp) * beam} />
+              <stop offset="1" stopColor={COLORS.printWhite} stopOpacity={(0.02 + 0.03 * lamp) * beam} />
+            </linearGradient>
+            <filter id="beamSoft" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="10" />
+            </filter>
+          </defs>
+          <polygon points={`${lens.x},${lens.y - 16} ${winL},${winT} ${winR},${winT} ${winR},${winB} ${lens.x},${lens.y + 16}`} fill="url(#beam)" filter="url(#beamSoft)" />
         </svg>
         <div style={{ position: "absolute", left: winL, top: winT, width: winR - winL, height: winB - winT, backgroundColor: COLORS.printWhite, opacity: 0.12 + 0.88 * lamp }} />
         <div style={{ position: "absolute", inset: 0, clipPath: `inset(${winT}px ${1080 - winR}px ${1920 - winB}px ${winL}px)` }}>
