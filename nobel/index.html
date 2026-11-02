@@ -34,6 +34,7 @@
   --rule: oklch(0.80 0.01 260);
   --hazard: oklch(0.72 0.165 58);
   --hazard-deep: oklch(0.58 0.16 50);
+  --hazard-ink: oklch(0.5 0.14 48);
   --drop: oklch(0.94 0.08 100);
   --night: oklch(0.22 0.025 262);
   --on-night: oklch(0.95 0.005 250);
@@ -362,6 +363,166 @@ sub { font-size: 0.62em; line-height: 0; }
   .laureates li { grid-template-columns: 1fr; gap: 2px; }
   .colophon > * { grid-column: 1 / -1; }
 }
+
+/* ---------- game layer ---------- */
+[hidden] { display: none !important; }
+.hud { position: fixed; z-index: 70; top: calc(env(safe-area-inset-top, 0px) + 14px); right: max(14px, env(safe-area-inset-right, 0px)); display: flex; align-items: center; gap: 10px; padding: 7px 8px 7px 14px; background: var(--paper-2); box-shadow: 0 0 0 1px var(--rule), 0 12px 30px -16px oklch(0.2 0.02 260 / 0.5); border-radius: 999px; }
+.hud__gems { display: flex; gap: 3px; }
+.sock { display: block; width: 22px; height: 22px; color: var(--rule); }
+.sock svg { width: 100%; height: 100%; display: block; }
+.hud__count { font-family: var(--latin); font-size: 1.05rem; color: var(--ink); font-variant-numeric: lining-nums tabular-nums; min-width: 2.7em; text-align: center; }
+.hud__btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--rule); background: transparent; color: var(--ink); display: grid; place-items: center; cursor: pointer; transition: background-color 160ms ease-out, color 160ms ease-out, border-color 160ms ease-out; }
+.hud__btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.hud__btn svg { width: 16px; height: 16px; }
+.hud__btn[aria-pressed="false"] .on, .hud__btn[aria-pressed="true"] .off { display: none; }
+.hud__btn:focus-visible { outline: 2px solid var(--hazard); outline-offset: 2px; }
+.toast { position: fixed; z-index: 86; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 26px); transform: translate(-50%, 20px); opacity: 0; background: var(--ink); color: var(--paper); padding: 12px 20px; font-size: var(--step--1); max-width: min(92vw, 520px); text-align: center; pointer-events: none; transition: opacity 240ms ease-out, transform 360ms var(--ease); }
+.toast.is-on { opacity: 1; transform: translate(-50%, 0); }
+.flash { position: fixed; inset: 0; z-index: 88; background: oklch(0.99 0.03 90); opacity: 0; pointer-events: none; }
+.flyer { position: fixed; z-index: 75; pointer-events: none; }
+.flyer svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 10px oklch(0.2 0.02 260 / 0.35)); }
+.loupe { position: fixed; z-index: 79; left: 0; top: 0; width: 190px; height: 190px; margin: -95px 0 0 -95px; border-radius: 50%; background-color: var(--paper-2); background-repeat: no-repeat; box-shadow: 0 0 0 1px var(--ink), 0 0 0 6px var(--paper-2), 0 0 0 7px var(--rule), 0 24px 40px -16px oklch(0.2 0.02 260 / 0.55); pointer-events: none; opacity: 0; transition: opacity 180ms ease-out; }
+.loupe.is-on { opacity: 1; }
+
+.panel { position: fixed; inset: 0; z-index: 85; background: oklch(0.2 0.02 260 / 0); transition: background-color 260ms ease-out; }
+.panel.is-open { background: oklch(0.2 0.02 260 / 0.45); }
+.panel__card { position: absolute; top: 0; right: 0; bottom: 0; width: min(440px, 100%); background: var(--paper-2); padding: calc(env(safe-area-inset-top, 0px) + 28px) max(24px, env(safe-area-inset-right, 0px)) 28px 28px; overflow-y: auto; transform: translateX(100%); transition: transform 380ms var(--ease); display: grid; align-content: start; gap: 18px; }
+.panel.is-open .panel__card { transform: none; }
+.panel__card h2 { font-size: var(--step-2); }
+.panel__close { position: absolute; right: max(18px, env(safe-area-inset-right, 0px)); top: calc(env(safe-area-inset-top, 0px) + 22px); }
+.panel__list { list-style: none; padding: 0; display: grid; border-top: 1px solid var(--rule); }
+.panel__list li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; align-items: center; padding-block: 12px; border-bottom: 1px solid var(--rule); color: var(--ink-soft); }
+.panel__list li.is-on { color: var(--ink); }
+.panel__gem { width: 40px; height: 40px; color: var(--rule); }
+.panel__gem svg { width: 100%; height: 100%; }
+.panel__list b { display: block; font-family: var(--serif); font-weight: 600; }
+.panel__list small { display: block; font-size: var(--step--1); line-height: 1.6; color: var(--ink-soft); }
+.panel__acts { display: flex; flex-wrap: wrap; gap: 10px; }
+.panel__hint { font-size: var(--step--1); color: var(--ink-soft); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font: 500 var(--step--1) / 1.2 var(--sans); padding: 13px 20px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); cursor: pointer; justify-self: start; transition: background-color 160ms ease-out, border-color 160ms ease-out, color 160ms ease-out, transform 160ms ease-out; }
+.btn:hover { background: var(--hazard-ink); border-color: var(--hazard-ink); }
+.btn:active { transform: scale(0.98); }
+.btn--ghost { background: transparent; color: var(--ink); }
+.btn--ghost:hover { color: var(--paper); }
+.btn[aria-pressed="true"] { background: var(--hazard); border-color: var(--hazard); color: var(--ink); }
+.btn:focus-visible, .opt:focus-visible, .choice:focus-visible { outline: 2px solid var(--hazard); outline-offset: 3px; }
+
+/* quests */
+.quest { padding-block: clamp(80px, 13vh, 150px); background: var(--paper); }
+.quest__card { max-width: 1100px; margin-inline: auto; display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 2.1fr); gap: clamp(24px, 4vw, 64px); padding: clamp(24px, 4vw, 56px); background: var(--paper-2); box-shadow: 0 0 0 1px var(--rule), 0 50px 80px -60px oklch(0.2 0.02 260 / 0.55); }
+.quest__gem { display: grid; justify-items: center; align-content: center; gap: 10px; text-align: center; border-right: 1px solid var(--rule); padding-right: clamp(16px, 3vw, 48px); }
+.gemshow { position: relative; width: clamp(96px, 11vw, 150px); aspect-ratio: 1; color: var(--rule); }
+.gemshow svg { width: 100%; height: 100%; display: block; }
+.gemshow__q { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--latin); font-style: italic; font-size: 2.6rem; color: var(--ink-soft); }
+.gemshow__burst { position: absolute; inset: -30%; border-radius: 50%; border: 2px solid var(--hazard); pointer-events: none; }
+.quest__gemname { font-family: var(--serif); font-weight: 600; font-size: var(--step-1); color: var(--ink); }
+.quest__gemnote { font-size: var(--step--1); line-height: 1.6; color: var(--ink-soft); max-width: 16em; }
+.quest__main { min-width: 0; }
+.quest__q { font-size: var(--step-2); line-height: 1.4; margin-top: 12px; }
+.quest__eq { margin-top: 18px; font-size: var(--step-2); color: var(--ink); }
+.blank { display: inline-block; min-width: 1.5em; text-align: center; border-bottom: 2px solid var(--hazard); color: var(--hazard-deep); }
+.quest__opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 24px; }
+.opt { display: flex; align-items: baseline; gap: 12px; text-align: left; padding: 14px 18px; background: var(--paper); border: 1px solid var(--rule); font: 400 var(--step-0) / 1.5 var(--sans); color: var(--ink); cursor: pointer; transition: border-color 160ms ease-out, background-color 160ms ease-out, color 160ms ease-out, transform 200ms var(--ease); }
+.opt .k { font-family: var(--latin); font-style: italic; font-size: 1.3em; color: var(--hazard-deep); min-width: 1em; }
+.opt .yr { margin-left: auto; color: var(--hazard); font-style: italic; }
+.opt:hover:not(:disabled) { border-color: var(--ink); transform: translateY(-2px); }
+.opt:disabled { cursor: default; }
+.opt[aria-pressed="true"], .opt.is-picked { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.opt.is-right { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.opt.is-right .k { color: var(--hazard); }
+.opt.is-wrong { border-color: var(--hazard-deep); color: var(--ink-soft); text-decoration: line-through; text-decoration-color: var(--hazard-deep); }
+.quest__submit { margin-top: 14px; }
+.quest__fb { min-height: 1.9em; margin-top: 16px; font-size: var(--step--1); color: var(--ink); }
+.quest__fb.is-bad { color: var(--hazard-deep); }
+.quest__why { display: grid; gap: 16px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.quest__lock { max-width: 1100px; margin: 18px auto 0; display: flex; align-items: center; gap: 12px; padding: 14px 18px; border: 1px dashed var(--rule); color: var(--ink-soft); font-size: var(--step--1); }
+.quest__lock svg { width: 18px; flex: none; }
+.quest__lock.is-open { display: none; }
+
+.lab { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 22px; align-items: center; margin-top: 24px; }
+.lab__tiles { display: grid; gap: 10px; }
+.tile { touch-action: none; }
+.tile.is-drag { position: relative; z-index: 5; box-shadow: 0 20px 30px -16px oklch(0.2 0.02 260 / 0.5); border-color: var(--ink); transition: none; }
+.lab__beaker { position: relative; justify-self: center; width: min(190px, 100%); color: var(--ink); transition: transform 200ms var(--ease); }
+.lab__beaker svg { width: 100%; height: auto; display: block; overflow: visible; }
+.lab__liquid { fill: var(--drop); transition: fill 600ms ease-out, d 600ms ease-out; }
+.lab__beaker.is-hot { transform: scale(1.05); }
+.lab__beaker.is-hot svg { filter: drop-shadow(0 0 12px color-mix(in oklch, var(--hazard) 70%, transparent)); }
+.lab__beaker.is-calm .lab__liquid { fill: var(--kiesel); }
+.lab__cap { position: absolute; left: 0; right: 0; bottom: 22%; text-align: center; font-size: var(--step--2); color: var(--ink); }
+
+/* conversations */
+.talk-sec { padding-block: clamp(70px, 11vh, 130px); }
+.talk { max-width: 780px; margin-inline: auto; background: var(--paper-2); box-shadow: 0 0 0 1px var(--rule), 0 40px 70px -50px oklch(0.2 0.02 260 / 0.6); }
+.talk__head { display: flex; align-items: center; gap: 14px; padding: 16px 22px; border-bottom: 1px solid var(--rule); }
+.talk__ava { width: 52px; height: 52px; border-radius: 50%; overflow: hidden; flex: none; background: var(--paper); box-shadow: 0 0 0 1px var(--rule); display: grid; place-items: center; }
+.talk__ava img { width: 100%; height: 100%; object-fit: cover; object-position: 38% 22%; transform: scale(1.7); transform-origin: 34% 24%; }
+.talk__ava svg { width: 58%; height: auto; }
+.talk__who { display: block; font-family: var(--serif); font-weight: 600; color: var(--ink); line-height: 1.3; }
+.talk__where { display: block; font-size: var(--step--2); color: var(--ink-soft); }
+.talk__tag { margin-left: auto; font-size: var(--step--2); color: var(--hazard-deep); border: 1px solid currentColor; padding: 3px 10px; white-space: nowrap; }
+.talk__intro { padding: 14px 22px 0; font-size: var(--step--1); color: var(--hazard-deep); }
+.talk__log { padding: 22px; display: grid; gap: 12px; min-height: 200px; align-content: start; cursor: default; }
+.bub { max-width: 84%; padding: 12px 16px; line-height: 1.75; }
+.bub--n { justify-self: start; background: var(--paper); font-family: var(--kai); font-size: var(--step-1); color: var(--ink); border-radius: 2px 14px 14px 14px; box-shadow: 0 0 0 1px var(--rule); }
+.bub--y { justify-self: end; background: var(--ink); color: var(--paper); border-radius: 14px 2px 14px 14px; font-size: var(--step-0); }
+.bub--s { justify-self: center; text-align: center; max-width: 94%; padding: 8px 4px; color: var(--ink-body); font-size: var(--step--1); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.bub--typing { display: inline-flex; gap: 5px; padding: 16px 18px; }
+.bub--typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-soft); animation: dot 520ms ease-in-out 2; }
+.bub--typing i:nth-child(2) { animation-delay: 150ms; }
+.bub--typing i:nth-child(3) { animation-delay: 300ms; }
+@keyframes dot { 0%, 100% { opacity: 0.25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+.talk__choices { padding: 0 22px 22px; display: flex; flex-wrap: wrap; gap: 10px; }
+.choice { font: 500 var(--step--1) / 1.4 var(--sans); padding: 11px 18px; border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; transition: background-color 160ms ease-out, color 160ms ease-out, transform 160ms ease-out; }
+.choice::after { content: " →"; color: var(--hazard-deep); }
+.choice:hover { background: var(--ink); color: var(--paper); }
+.choice:hover::after { color: var(--hazard); }
+.choice:active { transform: scale(0.97); }
+.choice--ghost { border-style: dashed; color: var(--ink-soft); }
+.talk__note { max-width: 780px; margin: 12px auto 0; font-size: var(--step--2); color: var(--ink-soft); }
+.oil .talk__note { color: var(--ink); }
+.sign { display: grid; gap: 12px; width: 100%; }
+.sign__svg { width: min(420px, 100%); height: auto; overflow: visible; }
+.sign__svg { border-bottom: 1px solid var(--rule); }
+.sign__svg text { font-family: var(--latin); font-style: italic; font-size: 44px; fill: oklch(0.34 0.05 50); }
+.sign__btn { position: relative; overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: none; }
+.sign__fill { position: absolute; inset: 0; background: var(--hazard-ink); transform-origin: 0 50%; transform: scaleX(0); }
+.sign__t { position: relative; }
+
+/* finale */
+.finale { margin-top: clamp(70px, 11vh, 120px); padding: clamp(28px, 4vw, 60px); background: var(--paper-2); box-shadow: 0 0 0 1px var(--rule); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(24px, 4vw, 60px); align-items: center; }
+.finale__ring { position: relative; width: min(420px, 100%); aspect-ratio: 1; margin-inline: auto; }
+.finale__ring img { position: absolute; left: 50%; top: 50%; width: 62%; transform: translate(-50%, -50%); mix-blend-mode: multiply; }
+.finale__gem { position: absolute; width: 15%; aspect-ratio: 1; transform: translate(-50%, -50%); }
+.finale__gem svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 8px oklch(0.2 0.02 260 / 0.3)); }
+.finale__text { display: grid; gap: 16px; }
+.finale__text h2 { font-size: var(--step-3); line-height: 1.2; }
+.finale form { display: flex; flex-wrap: wrap; gap: 10px; }
+.finale input { flex: 1 1 200px; min-width: 0; font: 400 var(--step-0) / 1.4 var(--sans); padding: 12px 14px; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); }
+.finale input:focus-visible { outline: 2px solid var(--hazard); outline-offset: 2px; }
+.cert { margin-top: 8px; padding: 26px 28px; background: var(--paper); box-shadow: 0 0 0 1px var(--ink), 0 0 0 6px var(--paper), 0 0 0 7px var(--rule); text-align: center; display: grid; gap: 10px; }
+.cert__k { font-size: var(--step--2); letter-spacing: 0.05em; color: var(--ink-soft); }
+.cert__name { font-family: var(--kai); font-size: var(--step-3); line-height: 1.2; color: var(--ink); }
+.cert__gems { display: flex; justify-content: center; gap: 6px; }
+.cert__gems svg { width: 26px; height: 26px; }
+.cert__date { font-family: var(--latin); font-style: italic; color: var(--ink-soft); }
+
+.rail a.is-locked { opacity: 0.35; cursor: not-allowed; }
+
+@media (max-width: 900px) {
+  .hud { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); right: 50%; transform: translateX(50%); }
+  .sock { width: 18px; height: 18px; }
+  .toast { bottom: calc(env(safe-area-inset-bottom, 0px) + 78px); }
+  .quest__card { grid-template-columns: 1fr; }
+  .quest__gem { border-right: 0; padding-right: 0; border-bottom: 1px solid var(--rule); padding-bottom: 20px; grid-template-columns: auto minmax(0, 1fr); justify-items: start; text-align: left; column-gap: 16px; }
+  .gemshow { width: 76px; grid-row: span 2; }
+  .quest__opts { grid-template-columns: 1fr; }
+  .lab { grid-template-columns: 1fr; }
+  .lab__beaker { width: 140px; }
+  .finale { grid-template-columns: 1fr; }
+  .bub { max-width: 92%; }
+}
 </style>
 </head>
 <body>
@@ -377,6 +538,32 @@ sub { font-size: 0.62em; line-height: 0; }
 </div>
 <div class="progress" aria-hidden="true"></div>
 <div class="cursor" aria-hidden="true"><i></i></div>
+<div class="hud" role="region" aria-label="宝石">
+  <span class="hud__gems"></span>
+  <span class="hud__count" aria-live="polite">0 / 7</span>
+  <button class="hud__btn" type="button" data-act="sound" aria-pressed="true" aria-label="音效">
+    <svg class="on" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8h3l4-3v10l-4-3H3z" fill="currentColor"/><path d="M13 7.5a3.5 3.5 0 0 1 0 5M15 5a7 7 0 0 1 0 10" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+    <svg class="off" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8h3l4-3v10l-4-3H3z" fill="currentColor"/><path d="M13 8l4 4M17 8l-4 4" stroke="currentColor" stroke-width="1.4"/></svg>
+  </button>
+  <button class="hud__btn" type="button" data-act="panel" aria-label="打开宝石匣">
+    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3h10l3 5-8 10L2 8z" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M2 8h16M7.5 3 6 8l4 10 4-10-1.5-5" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+  </button>
+</div>
+<div class="panel" hidden>
+  <div class="panel__card" role="dialog" aria-modal="true" aria-labelledby="panel-title">
+    <button class="hud__btn panel__close" type="button" aria-label="关闭"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15" stroke="currentColor" stroke-width="1.5"/></svg></button>
+    <h2 id="panel-title">宝石匣</h2>
+    <p class="panel__hint">每一章末尾有一道关卡题。答对得到一颗宝石，下一章随之解锁。进度只保存在这台设备的浏览器里。</p>
+    <ul class="panel__list"></ul>
+    <div class="panel__acts">
+      <button class="btn" type="button" data-act="demo" aria-pressed="false">演示模式：全部解锁</button>
+      <button class="btn btn--ghost" type="button" data-act="reset">清空进度，重新开始</button>
+    </div>
+  </div>
+</div>
+<div class="toast" role="status" aria-live="polite"></div>
+<div class="flash" aria-hidden="true"></div>
+<div class="loupe" aria-hidden="true"></div>
 
 <nav class="rail" aria-label="章节">
   <ol>
@@ -422,6 +609,10 @@ sub { font-size: 0.62em; line-height: 0; }
   <p class="name__thesis">化学家、发明家、实业家，一生取得 <span class="latin">355</span> 项专利。1895 年，他在巴黎写下最后一份遗嘱，把绝大部分财产留给<em>“为人类带来最大益处”</em>的人。</p>
 </section>
 
+<section class="talk-sec inset gutter" data-talk="obit" aria-label="情景对话：读讣告"></section>
+<section class="quest inset gutter" data-quest="1" aria-labelledby="q1-t"></section>
+
+<div class="chap-lock" data-lock="2">
 <!-- II. The liquid -->
 <section class="oil" id="ch2" data-chapter="1" data-orange aria-labelledby="oil-title">
   <div class="inset gutter">
@@ -438,6 +629,8 @@ sub { font-size: 0.62em; line-height: 0; }
       <div class="beat"><p class="date">1863</p><p>诺贝尔取得把硝化甘油用作工业炸药的第一项专利。第二年，他为雷管申请专利：先用一小份炸药起爆，再由它引爆硝化甘油。</p></div>
     </div>
   </div>
+
+  <section class="talk-sec inset gutter" data-talk="lab" aria-label="情景：实验台"></section>
 
   <figure class="plate helene">
     <div class="helene__img"><img class="eng" src="assets/heleneborg.webp" alt="斯德哥尔摩海勒内堡的旧屋，铜版线刻效果" width="1312" height="950" loading="lazy" data-parallax="-8"></div>
@@ -468,10 +661,14 @@ sub { font-size: 0.62em; line-height: 0; }
   </div>
 </section>
 
+<section class="quest inset gutter" data-quest="2" aria-labelledby="q2-t"></section>
+</div>
+
+<div class="chap-lock" data-lock="3">
 <!-- III. The earth -->
 <section class="scope" id="ch3" data-chapter="2" aria-labelledby="scope-title">
   <div class="scope__stage">
-    <div class="scope__lens"><img src="assets/diatoms.webp" alt="恩斯特·海克尔绘制的硅藻图版，1904年" width="1335" height="2000" loading="lazy"></div>
+    <div class="scope__lens"><img src="assets/diatoms.webp" alt="恩斯特·海克尔绘制的硅藻图版，1904年" width="1335" height="2000"></div>
     <span class="scope__ring" aria-hidden="true"></span>
     <svg class="scope__drop" viewBox="0 0 200 250" aria-hidden="true">
       <g class="drop__absorb">
@@ -497,6 +694,10 @@ sub { font-size: 0.62em; line-height: 0; }
   </div>
 </section>
 
+<section class="quest inset gutter" data-quest="3" aria-labelledby="q3-t"></section>
+</div>
+
+<div class="chap-lock" data-lock="4">
 <!-- IV. Factories and peace -->
 <section class="works" id="ch4" data-chapter="3" aria-labelledby="works-title">
   <div class="works__head inset gutter grid12">
@@ -526,6 +727,7 @@ sub { font-size: 0.62em; line-height: 0; }
   </div>
 </section>
 
+<section class="talk-sec inset gutter" data-talk="bertha" style="background: var(--kiesel)" aria-label="情景对话：伯尔尼，1892"></section>
 <section class="peace inset gutter grid12" aria-labelledby="peace-q">
   <figure class="plate">
     <div class="frame"><img class="eng" src="assets/waffen-nieder.webp" alt="贝尔塔·冯·苏特纳《放下武器！》1893年版扉页" width="805" height="1300" loading="lazy"></div>
@@ -552,6 +754,11 @@ sub { font-size: 0.62em; line-height: 0; }
   </figure>
 </section>
 
+<section class="quest inset gutter" data-quest="4" aria-labelledby="q4-t"></section>
+</div>
+
+<div class="chap-lock" data-lock="5">
+<section class="talk-sec inset gutter" data-talk="will" aria-label="情景对话：签署遗嘱"></section>
 <!-- V. The will -->
 <section class="will" id="ch5" data-chapter="4" aria-labelledby="will-title">
   <div class="will__bg" aria-hidden="true"></div>
@@ -585,6 +792,10 @@ sub { font-size: 0.62em; line-height: 0; }
   </div>
 </section>
 
+<section class="quest inset gutter" data-quest="5" aria-labelledby="q5-t"></section>
+</div>
+
+<div class="chap-lock" data-lock="6">
 <!-- VI. Self-portrait -->
 <section class="self" id="ch6" data-chapter="5" data-dark aria-labelledby="self-title">
   <div class="inset gutter">
@@ -615,6 +826,10 @@ sub { font-size: 0.62em; line-height: 0; }
   </div>
 </section>
 
+<section class="quest inset gutter" data-quest="6" aria-labelledby="q6-t"></section>
+</div>
+
+<div class="chap-lock" data-lock="7">
 <!-- VII. 1901 -->
 <section class="first inset gutter" id="ch7" data-chapter="6" aria-labelledby="first-title">
   <div class="first__top grid12">
@@ -627,6 +842,8 @@ sub { font-size: 0.62em; line-height: 0; }
       <p>第一届诺贝尔奖颁发。物理、化学、医学和文学奖在斯德哥尔摩，和平奖在克里斯蒂安尼亚，也就是今天的奥斯陆。在那之前，他二十多岁的助手索尔曼作为遗嘱执行人，花了好几年处理亲属的异议和散落在各国的财产。</p>
     </div>
   </div>
+  <div class="quest" data-quest="7" aria-labelledby="q7-t" style="background: transparent"></div>
+  <div class="chap-lock" data-lock="8">
   <ol class="laureates">
     <li><b>物理学</b><span class="who">威廉·伦琴</span><span class="why">发现 X 射线</span></li>
     <li><b>化学</b><span class="who">雅各布斯·范托夫</span><span class="why">发现化学动力学定律和溶液渗透压</span></li>
@@ -644,6 +861,27 @@ sub { font-size: 0.62em; line-height: 0; }
       <a href="https://www.nobelprize.org/alfred-nobel/biographical-information/" target="_blank" rel="noopener">诺贝尔奖官网上的生平年表</a>
     </p>
   </div>
+  <div class="finale" hidden>
+    <div class="finale__ring"><img src="assets/medallion.webp" alt="" width="1200" height="1200" loading="lazy"></div>
+    <div class="finale__text">
+      <p class="label">终章</p>
+      <h2>七颗宝石，集齐了</h2>
+      <p>从一份写错的讣告，到第一届颁奖。写下你的名字或小组名，领一张通关纪念卡。</p>
+      <form>
+        <label class="label" for="cert-name" style="flex-basis:100%">名字或小组名</label>
+        <input id="cert-name" name="name" maxlength="24" placeholder="例如：第一组" autocomplete="off">
+        <button class="btn" type="submit">生成纪念卡</button>
+      </form>
+      <div class="cert" hidden>
+        <p class="cert__k">通关纪念</p>
+        <p class="cert__name"></p>
+        <p>读完了阿尔弗雷德·诺贝尔的一生，集齐七颗宝石。</p>
+        <div class="cert__gems"></div>
+        <p class="cert__date"></p>
+      </div>
+    </div>
+  </div>
+  </div>
   <footer class="colophon">
     <div>
       <h3>史实</h3>
@@ -659,6 +897,7 @@ sub { font-size: 0.62em; line-height: 0; }
     </div>
   </footer>
 </section>
+</div>
 
 </main>
 
@@ -666,6 +905,7 @@ sub { font-size: 0.62em; line-height: 0; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
 <script src="https://unpkg.com/lenis@1.3.4/dist/lenis.min.js"></script>
+<script src="game.js"></script>
 <script>
 (function () {
   'use strict';
@@ -708,6 +948,7 @@ sub { font-size: 0.62em; line-height: 0; }
     if (window.Lenis) {
       lenis = new Lenis({ lerp: 0.085 });
       lenis.on('scroll', ScrollTrigger.update);
+      window.__nobel = { lenis: lenis };
       gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
       gsap.ticker.lagSmoothing(0);
       document.querySelectorAll('a[href^="#"]').forEach(function (a) {
