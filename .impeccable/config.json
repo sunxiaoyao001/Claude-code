@@ -11,6 +11,15 @@
         ],
         "createdAt": "2026-11-02T12:20:09.236Z",
         "reason": "agent triage: flagged bands (.task, .life, .phase) inset via padding-inline max(clamp(16px,5vw,80px), env(safe-area)) and clamp() padding-block; timeline li has padding-block 18px; screenshots at 390/1440 show clear inset; detector does not resolve max()/clamp()/logical padding"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "nobel/index.html"
+        ],
+        "createdAt": "2026-11-02T12:37:00.021Z",
+        "reason": "agent triage: same detector limit as tu-youyou: bands inset via padding-inline max(clamp(), env()) and clamp() padding-block; list rows have padding-block 18-20px; 390/1440 screenshots show clear inset"
       }
     ]
   }

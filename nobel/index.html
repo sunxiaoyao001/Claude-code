@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>死亡商人</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="阿尔弗雷德·诺贝尔：一滴会爆炸的油，一把硅藻土，一份把财产留给全人类的遗嘱。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Noto+Sans+SC:wght@500;900&family=Noto+Serif+SC:wght@400;600&display=swap">
+<script>
+  document.documentElement.lang = 'zh-CN';
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('pre');
+    setTimeout(function () { document.documentElement.classList.remove('pre'); }, 3000);
+  }
+</script>
+<style>
+/* Layout concept: a daylit laboratory notebook. A corrected obituary opens it,
+   a hazard-orange band holds the unstable liquid, and one pinned sheet of
+   letter paper carries the will. */
+:root {
+  --paper: oklch(0.966 0.004 250);
+  --sheet: oklch(0.99 0.002 250);
+  --kiesel: oklch(0.905 0.006 250);
+  --ink: oklch(0.21 0.02 260);
+  --ink-soft: oklch(0.43 0.02 260);
+  --rule: oklch(0.80 0.01 260);
+  --hazard: oklch(0.72 0.165 58);
+  --drop: oklch(0.94 0.08 100);
+  --iron: oklch(0.34 0.05 50);
+  --night: oklch(0.25 0.03 262);
+  --on-night: oklch(0.95 0.005 250);
+  --on-night-soft: oklch(0.80 0.02 255);
+
+  --latin: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --display: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --serif: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+
+  --gx: clamp(16px, 5vw, 80px);
+  --step--1: clamp(0.84rem, 0.82rem + 0.1vw, 0.92rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.12rem);
+  --step-1: clamp(1.18rem, 1.08rem + 0.5vw, 1.45rem);
+  --step-2: clamp(1.6rem, 1.3rem + 1.4vw, 2.5rem);
+  --step-3: clamp(2.1rem, 1.5rem + 2.8vw, 4rem);
+  color-scheme: light;
+}
+
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: var(--step-0);
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1  0 0 0 0 0.11  0 0 0 0 0.15  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+h1, h2, h3, p, ol, figure, blockquote { margin: 0; }
+h1, h2, h3 { font-family: var(--display); font-weight: 900; text-wrap: balance; }
+p { text-wrap: pretty; }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.3em; transition: text-decoration-color 160ms ease-out; }
+a:hover { text-decoration-color: var(--hazard); }
+a:focus-visible { outline: 2px solid var(--hazard); outline-offset: 4px; border-radius: 2px; }
+sub { font-size: 0.6em; line-height: 0; }
+.latin { font-family: var(--latin); }
+
+.gutter {
+  padding-left: max(var(--gx), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gx), env(safe-area-inset-right, 0px));
+}
+.grid12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(12px, 2vw, 32px);
+}
+
+/* ---------- Scene 1: the obituary ---------- */
+.obit {
+  padding-block: clamp(40px, 9vh, 110px) clamp(90px, 16vh, 180px);
+  row-gap: 0;
+}
+.obit__dateline { grid-column: 1 / -1; font-size: var(--step--1); color: var(--ink-soft); letter-spacing: 0.04em; }
+.obit__head {
+  grid-column: 1 / -1;
+  position: relative;
+  margin-top: 14px;
+  font-family: var(--latin);
+  font-weight: 800;
+  font-optical-sizing: auto;
+  font-size: clamp(2.6rem, 0.6rem + 8vw, 8.6rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+.obit__line { display: block; }
+.obit__head .w { display: inline-block; overflow: hidden; padding-bottom: 0.12em; margin-bottom: -0.12em; vertical-align: top; }
+.obit__head .w > span { display: inline-block; }
+.obit__struck { position: relative; display: inline-block; }
+.obit__struck svg { position: absolute; left: -4%; top: 18%; width: 108%; height: 70%; overflow: visible; pointer-events: none; }
+.obit__struck path { fill: none; stroke: var(--hazard); stroke-width: 9; stroke-linecap: round; }
+.obit__note {
+  position: absolute;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(1rem, 0.7rem + 1.2vw, 1.7rem);
+  letter-spacing: 0;
+  line-height: 1.3;
+  color: var(--ink);
+  background: var(--hazard);
+  padding: 8px 14px;
+  transform: rotate(-3deg);
+  left: calc(100% + 0.4em);
+  bottom: 0.15em;
+  white-space: nowrap;
+}
+.obit__fr { grid-column: 1 / -1; margin-top: 22px; font-family: var(--display); font-weight: 500; font-size: var(--step-1); color: var(--ink-soft); }
+.obit__lede { grid-column: 1 / 7; margin-top: clamp(48px, 9vh, 96px); max-width: 30em; display: grid; gap: 1em; }
+.obit__lede .aside { color: var(--ink-soft); font-size: var(--step--1); }
+.obit__who { grid-column: 8 / 13; margin-top: clamp(48px, 9vh, 96px); display: grid; gap: 14px; align-content: start; }
+.obit__name { font-family: var(--display); font-weight: 900; font-size: clamp(1.9rem, 1.2rem + 2.2vw, 3.4rem); line-height: 1.1; white-space: nowrap; }
+.obit__meta { color: var(--ink-soft); font-size: var(--step--1); }
+.obit__thesis { font-size: var(--step-1); line-height: 1.7; margin-top: 8px; }
+.obit__thesis em { font-style: normal; background: linear-gradient(transparent 62%, color-mix(in oklch, var(--hazard) 70%, transparent) 62%); }
+
+/* ---------- Scene 2: the liquid and the earth ---------- */
+.oil { position: relative; background: var(--hazard); isolation: isolate; }
+.oil__grey, .oil__visual-grey { position: absolute; inset: 0; background: var(--kiesel); opacity: 0; z-index: -1; pointer-events: none; }
+.oil__visual-grey { display: none; }
+.oil__grid { position: relative; }
+.oil__visual {
+  grid-column: 1 / 7;
+  grid-row: 1;
+  align-self: start;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+.oil__visual-base { position: absolute; inset: 0; z-index: -2; }
+.oil__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.drop { position: relative; width: min(30vw, 290px); height: auto; overflow: visible; }
+.drop__body { fill: var(--drop); stroke: var(--ink); stroke-width: 1.6; }
+.drop__shine { fill: var(--paper); opacity: 0.75; }
+.drop__ring { fill: none; stroke: var(--ink); stroke-width: 1.4; opacity: 0; }
+.drop__label { position: absolute; left: 0; right: 0; bottom: 14vh; text-align: center; display: grid; gap: 4px; }
+.drop__formula { font-family: var(--latin); font-style: italic; font-size: var(--step-1); }
+.drop__hint { font-family: var(--display); font-weight: 500; font-size: var(--step--1); }
+.oil__text { grid-column: 8 / 13; grid-row: 1; padding-block: 30vh 34vh; display: grid; gap: 46vh; min-width: 0; }
+.beat { display: grid; gap: 0.9em; max-width: 25em; }
+.beat h2 { font-size: var(--step-2); line-height: 1.3; }
+.beat .date { font-family: var(--display); font-weight: 900; font-size: var(--step--1); letter-spacing: 0.04em; }
+
+/* ---------- Scene 3: factories and peace ---------- */
+.war { background: var(--kiesel); padding-block: clamp(60px, 10vh, 120px) clamp(110px, 18vh, 200px); row-gap: 48px; }
+.war__prose { grid-column: 1 / 6; display: grid; gap: 1em; align-content: start; }
+.war__prose h2 { font-size: var(--step-2); line-height: 1.3; }
+.war__quote { grid-column: 7 / 13; display: grid; gap: 22px; align-content: start; }
+.war__quote blockquote { font-family: var(--display); font-weight: 900; font-size: var(--step-3); line-height: 1.32; }
+.war__quote blockquote span.rest { display: block; font-weight: 500; font-size: var(--step-1); line-height: 1.7; margin-top: 18px; }
+.war__quote figcaption { color: var(--ink-soft); font-size: var(--step--1); max-width: 34em; }
+.war__coda { padding-top: 18px; border-top: 1px solid var(--ink); font-family: var(--display); font-weight: 900; font-size: var(--step-1); }
+
+/* ---------- Scene 4: the will (peak) ---------- */
+.will { position: relative; background: var(--paper); }
+.will__bg { display: none; }
+.wphase { position: relative; padding-block: clamp(80px, 14vh, 150px); align-content: center; }
+.wphase--sheet .sheet-wrap { grid-column: 1 / 7; }
+.sheet {
+  position: relative;
+  aspect-ratio: 13 / 16;
+  max-height: 78svh;
+  margin-inline: auto;
+  background: var(--sheet);
+  box-shadow: 0 1px 2px color-mix(in oklch, var(--ink) 18%, transparent), 0 26px 40px -28px color-mix(in oklch, var(--ink) 40%, transparent);
+  transform: rotate(-1.6deg);
+}
+.sheet svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sheet .ruled { stroke: color-mix(in oklch, var(--rule) 65%, transparent); stroke-width: 1; }
+.sheet .hand { fill: none; stroke: var(--iron); stroke-width: 1.25; stroke-linecap: round; stroke-linejoin: round; }
+.sheet .sig { font-family: var(--latin); font-style: italic; fill: var(--iron); }
+.wphase--sheet .will__trans { grid-column: 8 / 13; align-self: center; display: grid; gap: 18px; }
+.will__date { font-family: var(--display); font-weight: 900; font-size: var(--step--1); letter-spacing: 0.04em; }
+.will__text { font-size: var(--step-1); line-height: 1.85; }
+.will__text mark {
+  color: inherit;
+  background: linear-gradient(var(--hazard), var(--hazard)) 0 88% / 100% 0.42em no-repeat;
+}
+.will__src { color: var(--ink-soft); font-size: var(--step--1); }
+
+.wphase--five h2 { grid-column: 1 / -1; text-align: center; font-size: var(--step-3); line-height: 1.2; }
+.wphase--five .five__sub { grid-column: 3 / 11; text-align: center; color: var(--ink-soft); margin-top: 10px; }
+.five__bracket { grid-column: 1 / -1; width: 100%; height: 64px; margin-top: 28px; overflow: visible; }
+.five__bracket path { fill: none; stroke: var(--ink); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.five { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(12px, 2vw, 28px); list-style: none; padding: 0; margin: 14px 0 0; }
+.five li { display: grid; gap: 8px; align-content: start; text-align: center; min-width: 0; }
+.five b { font-family: var(--display); font-weight: 900; font-size: var(--step-1); line-height: 1.3; }
+.five span { font-size: var(--step--1); line-height: 1.7; }
+.five small { display: block; color: var(--ink-soft); font-size: var(--step--1); padding-top: 8px; border-top: 1px solid var(--rule); }
+
+.wphase--nation { background: var(--hazard); }
+.wphase--nation .nation { grid-column: 2 / 12; display: grid; gap: 22px; }
+.nation__big { font-family: var(--display); font-weight: 900; font-size: clamp(2.2rem, 1rem + 5vw, 5.6rem); line-height: 1.18; }
+.nation__big span { display: inline-block; }
+.nation__rest { font-size: var(--step-1); max-width: 30em; }
+
+.will.is-staged .will__stage { position: relative; height: 100svh; overflow: hidden; }
+.will.is-staged .will__bg { display: block; position: absolute; inset: 0; opacity: 0; background: var(--hazard); }
+.will.is-staged .wphase { position: absolute; inset: 0; padding-block: 56px; background: transparent; }
+
+/* ---------- Scene 5: self-portrait ---------- */
+.self { background: var(--night); color: var(--on-night); padding-block: clamp(100px, 16vh, 190px); }
+.self__head { grid-column: 1 / 5; align-self: start; position: sticky; top: 14vh; display: grid; gap: 16px; }
+.self__head h2 { font-size: var(--step-3); line-height: 1.2; }
+.self__head p { color: var(--on-night-soft); }
+.self__list { grid-column: 6 / 13; display: grid; gap: 0; min-width: 0; }
+.self__row { display: grid; grid-template-columns: 7.5em minmax(0, 1fr); gap: 20px; padding-block: 20px; border-bottom: 1px solid color-mix(in oklch, var(--on-night) 18%, transparent); font-size: var(--step-1); line-height: 1.7; }
+.self__row dt { font-family: var(--display); font-weight: 900; color: var(--on-night-soft); font-size: var(--step-0); padding-top: 0.2em; }
+.self__row dd { margin: 0; }
+.self__dl { margin: 0; }
+.self__row--lead { grid-template-columns: 1fr; font-family: var(--display); font-weight: 900; font-size: var(--step-2); line-height: 1.4; }
+.self__after { grid-column: 6 / 13; margin-top: clamp(60px, 10vh, 110px); display: grid; gap: 1.2em; max-width: 34em; }
+.self__after blockquote { font-family: var(--display); font-weight: 500; font-size: var(--step-1); line-height: 1.7; }
+.self__after .src { color: var(--on-night-soft); font-size: var(--step--1); }
+
+/* ---------- Scene 6: 1901 ---------- */
+.first { padding-block: clamp(100px, 16vh, 190px) 0; }
+.first__head { grid-column: 1 / 8; display: grid; gap: 14px; }
+.first__head h2 { font-size: var(--step-3); line-height: 1.15; }
+.first__head p { color: var(--ink-soft); max-width: 30em; }
+.laureates { grid-column: 1 / -1; list-style: none; padding: 0; margin: clamp(40px, 7vh, 72px) 0 0; border-top: 1px solid var(--ink); }
+.laureates li { display: grid; grid-template-columns: 9em minmax(0, 1.1fr) minmax(0, 1.4fr); gap: 20px; padding-block: 18px; border-bottom: 1px solid var(--rule); align-items: baseline; }
+.laureates b { font-family: var(--display); font-weight: 900; }
+.laureates .who { font-size: var(--step-1); font-weight: 600; }
+.laureates .why { color: var(--ink-soft); font-size: var(--step--1); }
+.first__notes { grid-column: 1 / 8; margin-top: clamp(48px, 8vh, 88px); display: grid; gap: 1em; max-width: 34em; }
+.first__notes .big { font-family: var(--display); font-weight: 900; font-size: var(--step-2); line-height: 1.35; }
+.first__links { grid-column: 1 / -1; margin-top: 32px; display: flex; flex-wrap: wrap; gap: 12px 32px; font-family: var(--display); font-weight: 900; }
+.colophon {
+  margin-top: clamp(100px, 16vh, 170px);
+  padding-block: 28px 40px;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-soft);
+  font-size: var(--step--1);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px 40px;
+}
+.colophon p { max-width: 56em; }
+
+.pre .obit [data-intro] { opacity: 0; }
+
+/* ---------- narrow screens ---------- */
+@media (max-width: 860px) {
+  .obit__note { position: relative; left: auto; bottom: auto; display: inline-block; margin: 0.35em 0 0 0.2em; white-space: normal; }
+  .obit__lede, .obit__who { grid-column: 1 / -1; }
+  .obit__who { margin-top: 48px; }
+  .oil__visual { grid-column: 1 / -1; grid-row: 1; height: 54svh; z-index: 2; }
+  .oil__visual-base { background: var(--hazard); }
+  .oil__visual-grey { display: block; }
+  .drop { width: min(42vw, 200px); }
+  .drop__label { bottom: 2.5svh; }
+  .oil__text { grid-column: 1 / -1; grid-row: 1; padding-block: 64svh 30svh; gap: 34svh; position: relative; z-index: 1; }
+  .war__prose, .war__quote { grid-column: 1 / -1; }
+  .wphase--sheet .sheet-wrap { grid-column: 1 / -1; }
+  .sheet { max-height: 42svh; }
+  .wphase--sheet .will__trans { grid-column: 1 / -1; margin-top: 20px; }
+  .will__text { font-size: var(--step-0); }
+  .wphase--five .five__sub { grid-column: 1 / -1; }
+  .five__bracket { display: none; }
+  .five { grid-template-columns: 1fr; gap: 8px; margin-top: 22px; }
+  .five li { text-align: left; grid-template-columns: 6.6em minmax(0, 1fr); gap: 4px 12px; border-top: 1px solid var(--rule); padding-top: 8px; }
+  .five li span, .five li small { grid-column: 2; }
+  .five small { border-top: 0; padding-top: 0; }
+  .wphase--nation .nation { grid-column: 1 / -1; }
+  .will.is-staged .wphase { padding-block: 28px; }
+  .will.is-staged .wphase--five .five span { display: none; }
+  .self__head, .self__list, .self__after { grid-column: 1 / -1; }
+  .self__head { position: static; margin-bottom: 36px; }
+  .self__row { grid-template-columns: 1fr; gap: 4px; }
+  .first__head, .first__notes { grid-column: 1 / -1; }
+  .laureates li { grid-template-columns: 1fr; gap: 2px; }
+}
+</style>
+</head>
+<body>
+
+<main>
+
+<!-- Scene 1: the obituary -->
+<header class="obit gutter grid12" id="top">
+  <p class="obit__dateline" data-intro>1888年4月，一份法国报纸的讣告标题（据传）</p>
+  <h1 class="obit__head" lang="fr" aria-label="Le marchand de la mort est mort. 死亡商人已死。">
+    <span class="obit__line"><span class="w"><span>Le</span></span> <span class="w"><span>marchand</span></span> <span class="w"><span>de</span></span> <span class="w"><span>la</span></span> <span class="w"><span>mort</span></span></span>
+    <span class="obit__line"><span class="obit__struck"><span class="w"><span>est</span></span> <span class="w"><span>mort.</span></span><svg viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M4 38 C 70 30, 150 26, 296 22"/></svg><span class="obit__note" lang="zh-CN" data-intro>死的不是他。</span></span></span>
+  </h1>
+  <p class="obit__fr" data-intro>“死亡商人已死。”</p>
+
+  <div class="obit__lede" data-intro>
+    <p>1888年4月，阿尔弗雷德·诺贝尔的哥哥路德维希在法国戛纳去世。流传最广的说法是，一家报纸把死者错当成了阿尔弗雷德，讣告里写道：他靠发明更快杀死更多人的方法致了富。</p>
+    <p class="aside">这个故事被讲了一百多年，那份报纸的原件却始终没有人找到。它也许经过了后人的修饰，但他确实在那之后重新考虑过，自己会以什么样子被记住。</p>
+  </div>
+
+  <div class="obit__who" data-intro>
+    <p class="obit__name">阿尔弗雷德·诺贝尔</p>
+    <p class="obit__meta">1833–1896　化学家、发明家、实业家　一生取得355项专利</p>
+    <p class="obit__thesis">1895年，他在巴黎写下最后一份遗嘱，把绝大部分财产留给<em>“为人类带来最大益处”</em>的人。</p>
+  </div>
+</header>
+
+<!-- Scene 2: the liquid and the earth -->
+<section class="oil" aria-label="硝化甘油与硅藻土">
+  <div class="oil__grey" aria-hidden="true"></div>
+  <div class="oil__grid gutter grid12">
+    <div class="oil__visual" aria-hidden="true">
+      <div class="oil__visual-base"></div>
+      <div class="oil__visual-grey"></div>
+      <canvas class="oil__canvas" id="diatoms"></canvas>
+      <svg class="drop" id="drop" viewBox="0 0 200 250">
+        <g class="drop__absorb">
+          <circle class="drop__ring" cx="100" cy="165" r="80"/>
+          <g class="drop__shake">
+            <path class="drop__body" d="M100 8 C 96 40, 28 112, 28 164 A 72 72 0 0 0 172 164 C 172 112, 104 40, 100 8 Z"/>
+            <ellipse class="drop__shine" cx="72" cy="150" rx="12" ry="24" transform="rotate(18 72 150)"/>
+          </g>
+        </g>
+      </svg>
+      <div class="drop__label">
+        <span class="drop__formula">C<sub>3</sub>H<sub>5</sub>N<sub>3</sub>O<sub>9</sub>　nitroglycerin</span>
+        <span class="drop__hint" id="hint">快速滚动，它会发抖。</span>
+      </div>
+    </div>
+
+    <div class="oil__text">
+      <article class="beat">
+        <p class="date">1847</p>
+        <h2>一滴会爆炸的油。</h2>
+        <p>意大利化学家索布雷罗合成了硝化甘油。它是一种淡黄色的油状液体，受到撞击、摩擦或加热就可能爆炸。索布雷罗自己被它吓坏了，认为它太危险，没有实际用途。</p>
+      </article>
+      <article class="beat">
+        <p class="date">1863–1864</p>
+        <p>诺贝尔十七岁时在巴黎佩卢兹的实验室工作过一年，后来他的化学老师齐宁又向他提起了硝化甘油。1863年，他取得把硝化甘油用作工业炸药的第一项专利；1864年，他为雷管申请了专利：先用一小份炸药起爆，再由它引爆硝化甘油。</p>
+      </article>
+      <article class="beat">
+        <p class="date">1864年9月3日</p>
+        <p>斯德哥尔摩海勒内堡，诺贝尔家准备硝化甘油的工棚发生爆炸，五人遇难，其中有他二十岁的弟弟埃米尔。</p>
+      </article>
+      <article class="beat">
+        <p class="date">1866</p>
+        <p>液体会渗漏，运输途中事故不断。这一年，他在德国克吕梅尔的工厂也被一场猛烈的爆炸摧毁。他在易北河上的一只木筏上继续做实验，想办法让这种液体安静下来。</p>
+      </article>
+      <article class="beat" id="beat-earth">
+        <h2>答案是一把土。</h2>
+        <p>硅藻土由远古硅藻的硅质外壳堆积而成，布满微小的孔洞。大约三份硝化甘油配一份硅藻土，就成了一种可以揉捏、塑形的膏体，不再一碰就炸。</p>
+      </article>
+      <article class="beat" id="beat-name">
+        <p class="date">1867</p>
+        <p>他在瑞典取得专利，给它取名 <span class="latin" style="font-style:italic">dynamite</span>，来自希腊语 <span class="latin" style="font-style:italic">dynamis</span>，意思是“力量”。有人说是一桶渗漏的硝化甘油碰巧浸进了作包装用的硅藻土，他本人否认过这个说法。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- Scene 3: factories and peace -->
+<section class="war gutter grid12" aria-labelledby="war-title">
+  <div class="war__prose">
+    <h2 id="war-title">它修通了隧道，也装进了枪炮。</h2>
+    <p>炸药让开山凿石变得又快又便宜，铁路、隧道、矿山都用上了它。他在欧洲和美洲建起一连串公司和工厂。1876年，他取得威力更强的爆炸胶专利；1887年，又发明了用作枪炮发射药的无烟火药巴利斯泰；1894年，他买下了瑞典的博福斯工厂。</p>
+    <p>同样是1876年，他登报招聘私人秘书，应聘的是奥地利女伯爵贝尔塔·金斯基。她只做了很短一段时间就离开了，后来以苏特纳的名字成为欧洲最有名的和平运动者。两人通信直到他去世。</p>
+  </div>
+  <figure class="war__quote">
+    <blockquote>
+      也许我的工厂，会比你们的和平大会更早终结战争。
+      <span class="rest">等到有一天，两支军队能在一秒钟内同归于尽，所有文明国家都会惊恐地退缩，解散它们的军队。</span>
+    </blockquote>
+    <figcaption>诺贝尔对贝尔塔·冯·苏特纳说的话，见于苏特纳的回忆录。</figcaption>
+    <p class="war__coda">1914年，第一次世界大战爆发。</p>
+  </figure>
+</section>
+
+<!-- Scene 4: the will (peak) -->
+<section class="will" id="will" aria-label="诺贝尔的遗嘱">
+  <div class="will__stage">
+    <div class="will__bg" aria-hidden="true"></div>
+
+    <div class="wphase wphase--sheet gutter grid12">
+      <div class="sheet-wrap">
+        <div class="sheet"><svg id="hand" viewBox="0 0 520 640" role="img" aria-label="遗嘱手稿示意：横格纸上的笔迹，末尾署名 Alfred Bernhard Nobel"></svg></div>
+      </div>
+      <div class="will__trans">
+        <p class="will__date">1895年11月27日　巴黎　瑞典－挪威俱乐部</p>
+        <p class="will__text" id="will-text">我其余全部可变现的财产，按以下方式处理：由遗嘱执行人将资本换成安全的证券，设立一项基金，其利息每年以奖金的形式，颁给在过去一年中<mark>为人类带来最大益处</mark>的人。</p>
+        <p class="will__src">遗嘱原文为瑞典文，中文据诺贝尔奖官网的英译本译出。</p>
+      </div>
+    </div>
+
+    <div class="wphase wphase--five gutter grid12">
+      <h2>利息平分为五份。</h2>
+      <p class="five__sub">每一份颁给一个领域里贡献最大的人，由他指定的机构评选。</p>
+      <svg class="five__bracket" viewBox="0 0 1000 64" preserveAspectRatio="none" aria-hidden="true">
+        <path pathLength="1" d="M500 0 V26"/>
+        <path pathLength="1" d="M100 26 H900"/>
+        <path pathLength="1" d="M100 26 V64"/><path pathLength="1" d="M300 26 V64"/><path pathLength="1" d="M500 26 V64"/><path pathLength="1" d="M700 26 V64"/><path pathLength="1" d="M900 26 V64"/>
+      </svg>
+      <ol class="five">
+        <li><b>物理学</b><span>在物理学领域做出最重要发现或发明的人</span><small>瑞典皇家科学院</small></li>
+        <li><b>化学</b><span>做出最重要的化学发现或改进的人</span><small>瑞典皇家科学院</small></li>
+        <li><b>生理学或医学</b><span>在生理学或医学领域做出最重要发现的人</span><small>斯德哥尔摩卡罗琳医学院</small></li>
+        <li><b>文学</b><span>在文学领域创作出具有理想倾向的最杰出作品的人</span><small>斯德哥尔摩的学院（瑞典学院）</small></li>
+        <li><b>和平</b><span>为促进民族间的友爱、废除或裁减常备军、举办和推广和平会议做出最多或最好工作的人</span><small>挪威议会选出的五人委员会</small></li>
+      </ol>
+    </div>
+
+    <div class="wphase wphase--nation gutter grid12">
+      <div class="nation">
+        <p class="nation__big" id="nation">颁奖时，完全不考虑国籍。</p>
+        <p class="nation__rest">“我明确希望，颁奖时完全不考虑候选人的国籍，最值得的人就应获奖，无论他是不是斯堪的纳维亚人。”他是瑞典人，在俄国长大，住在巴黎，死在意大利。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Scene 5: self-portrait -->
+<section class="self gutter" aria-labelledby="self-title">
+  <div class="grid12">
+    <div class="self__head">
+      <h2 id="self-title">他给自己写的简介</h2>
+      <p>哥哥路德维希请他为家族纪念册写一段自我介绍。他交上去的是这样一段。</p>
+    </div>
+    <div class="self__list">
+      <p class="self__row self__row--lead">阿尔弗雷德·诺贝尔：可怜的半条命，在他啼哭着来到世上时，就该被一位仁慈的医生掐死。</p>
+      <dl class="self__dl">
+      <div class="self__row"><dt>主要美德</dt><dd>指甲保持干净，从不成为任何人的负担。</dd></div>
+      <div class="self__row"><dt>主要缺点</dt><dd>没有家庭，缺少好心情，也没有好胃口。</dd></div>
+      <div class="self__row"><dt>唯一的愿望</dt><dd>不要被活埋。</dd></div>
+      <div class="self__row"><dt>最大的罪过</dt><dd>不崇拜财神。</dd></div>
+      <div class="self__row"><dt>生平大事</dt><dd>无。</dd></div>
+      </dl>
+    </div>
+    <div class="self__after">
+      <blockquote>“命运真是讽刺，医生竟然让我口服硝化甘油。他们管它叫 Trinitrin，免得吓着药剂师和公众。”</blockquote>
+      <p class="src">1896年10月，他在给助手索尔曼的信里这样写。他患有心绞痛，硝化甘油能扩张血管，至今仍是治疗心绞痛的药。</p>
+      <p>1896年12月10日，他在意大利圣雷莫的家中去世，终年63岁。遗嘱的最后一条，是请医生在他死后切开动脉，确认死亡之后再火化。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Scene 6: 1901 -->
+<section class="first gutter" aria-labelledby="first-title">
+  <div class="grid12">
+    <div class="first__head">
+      <h2 id="first-title">1901年12月10日</h2>
+      <p>他去世五周年的这一天，第一届诺贝尔奖颁发。物理、化学、医学、文学奖在斯德哥尔摩，和平奖在克里斯蒂安尼亚，也就是今天的奥斯陆。在那之前，他二十多岁的助手索尔曼作为遗嘱执行人，花了好几年处理亲属的异议和散在各国的财产。</p>
+    </div>
+    <ol class="laureates">
+      <li><b>物理学</b><span class="who">威廉·伦琴</span><span class="why">发现X射线</span></li>
+      <li><b>化学</b><span class="who">雅各布斯·范托夫</span><span class="why">发现化学动力学定律和溶液渗透压</span></li>
+      <li><b>生理学或医学</b><span class="who">埃米尔·冯·贝林</span><span class="why">血清疗法，用于治疗白喉</span></li>
+      <li><b>文学</b><span class="who">苏利·普吕多姆</span><span class="why">法国诗人</span></li>
+      <li><b>和平</b><span class="who">亨利·杜南、弗雷德里克·帕西</span><span class="why">红十字会创始人；法国和平运动的领袖</span></li>
+    </ol>
+    <div class="first__notes">
+      <p class="big">1905年，和平奖颁给了贝尔塔·冯·苏特纳。她是第一位获得和平奖的女性。</p>
+      <p>今天常说的“诺贝尔经济学奖”设立于1968年，由瑞典中央银行出资纪念诺贝尔，不在他的遗嘱里。</p>
+    </div>
+    <p class="first__links">
+      <a href="https://www.nobelprize.org/alfred-nobel/full-text-of-alfred-nobels-will-2/" target="_blank" rel="noopener">读遗嘱全文</a>
+      <a href="https://www.nobelprize.org/alfred-nobel/biographical-information/" target="_blank" rel="noopener">诺贝尔奖官网上的生平年表</a>
+    </p>
+  </div>
+  <footer class="colophon">
+    <p>史实依据诺贝尔奖官网的生平年表与遗嘱英译全文。“死亡商人”讣告是流传说法，原报纸未见；致苏特纳的话出自她的回忆录；自我简介与1896年的信件为常见的转述。遗嘱手稿为程序生成的示意笔迹，硅藻为示意线描。</p>
+    <p><a href="#top">回到开头</a></p>
+  </footer>
+</section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.3.4/dist/lenis.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+  var root = document.documentElement;
+  var hasGsap = !!(window.gsap && window.ScrollTrigger);
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var INK = '#161b26', DROP = '#efe8b4';
+
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function f(n) { return Math.round(n * 10) / 10; }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
+  /* ---------- diatoms under the microscope ---------- */
+  function sprite(type, size, R) {
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    var pad = size * 0.6;
+    var c = document.createElement('canvas');
+    c.width = c.height = Math.ceil(pad * 2 * dpr);
+    var g = c.getContext('2d');
+    g.scale(dpr, dpr); g.translate(pad, pad);
+    g.strokeStyle = INK; g.fillStyle = INK; g.lineWidth = 0.8;
+    var r = size / 2, i, a;
+    if (type === 0) { // centric, radial striae
+      g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.stroke();
+      g.beginPath(); g.arc(0, 0, r * 0.84, 0, Math.PI * 2); g.stroke();
+      g.beginPath(); g.arc(0, 0, r * 0.14, 0, Math.PI * 2); g.stroke();
+      var n = 28 + Math.floor(R() * 16);
+      for (i = 0; i < n; i++) {
+        a = i / n * Math.PI * 2;
+        g.beginPath(); g.moveTo(Math.cos(a) * r * 0.2, Math.sin(a) * r * 0.2); g.lineTo(Math.cos(a) * r * 0.82, Math.sin(a) * r * 0.82); g.stroke();
+      }
+      for (i = 0; i < n * 2; i++) {
+        a = i / (n * 2) * Math.PI * 2;
+        g.beginPath(); g.arc(Math.cos(a) * r * 0.92, Math.sin(a) * r * 0.92, 0.7, 0, Math.PI * 2); g.fill();
+      }
+    } else if (type === 1) { // centric, hexagonal areolae
+      g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.stroke();
+      var step = r / 6.5;
+      for (var y = -r; y <= r; y += step * 0.866) {
+        var row = Math.round(y / (step * 0.866));
+        for (var x = -r + (row % 2 ? step / 2 : 0); x <= r; x += step) {
+          if (x * x + y * y < (r * 0.86) * (r * 0.86)) { g.beginPath(); g.arc(x, y, step * 0.26, 0, Math.PI * 2); g.fill(); }
+        }
+      }
+    } else { // pennate
+      var rx = r, ry = r * 0.16;
+      g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2); g.stroke();
+      g.beginPath(); g.moveTo(-rx * 0.85, 0); g.lineTo(-rx * 0.08, 0); g.moveTo(rx * 0.08, 0); g.lineTo(rx * 0.85, 0); g.stroke();
+      g.beginPath(); g.arc(0, 0, ry * 0.35, 0, Math.PI * 2); g.stroke();
+      for (x = -rx * 0.86; x <= rx * 0.86; x += rx / 11) {
+        var h = ry * Math.sqrt(Math.max(0, 1 - (x / rx) * (x / rx))) * 0.8;
+        g.beginPath(); g.moveTo(x, -h); g.lineTo(x, -ry * 0.18); g.moveTo(x, ry * 0.18); g.lineTo(x, h); g.stroke();
+      }
+    }
+    return { c: c, pad: pad };
+  }
+
+  function Diatoms(canvas) {
+    var R = rng(11), ctx = canvas.getContext('2d'), items = [], w = 0, h = 0, last = -1;
+    var sprites = [];
+    for (var i = 0; i < 9; i++) sprites.push(sprite(i % 3, 30 + R() * 46, R));
+    function layout() {
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      w = canvas.clientWidth; h = canvas.clientHeight;
+      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var R2 = rng(29), cx = w / 2, cy = h * 0.47, rad = Math.min(w, h) * 0.27;
+      items = [];
+      for (var k = 0; k < 46; k++) {
+        var a = R2() * Math.PI * 2, d = Math.sqrt(R2()) * rad;
+        var sa = R2() * Math.PI * 2, sd = Math.max(w, h) * (0.45 + R2() * 0.4);
+        items.push({
+          s: sprites[k % sprites.length],
+          sx: cx + Math.cos(sa) * sd, sy: cy + Math.sin(sa) * sd,
+          tx: cx + Math.cos(a) * d, ty: cy + Math.sin(a) * d,
+          r0: R2() * Math.PI * 2, spin: (R2() - 0.5) * 2.4,
+          k: 0.55 + R2() * 0.55
+        });
+      }
+      var p = last; last = -1; draw(p < 0 ? 0 : p);
+    }
+    function draw(p) {
+      if (p === last) return; last = p;
+      ctx.clearRect(0, 0, w, h);
+      if (p <= 0.001) return;
+      var e = ease(p), cx = w / 2, cy = h * 0.47, rad = Math.min(w, h) * 0.27;
+      var wash = clamp01((p - 0.45) / 0.55);
+      if (wash > 0) {
+        var gr = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad * 1.25);
+        gr.addColorStop(0, DROP); gr.addColorStop(1, 'rgba(239,232,180,0)');
+        ctx.globalAlpha = wash * 0.85; ctx.fillStyle = gr;
+        ctx.beginPath(); ctx.arc(cx, cy, rad * 1.25, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = clamp01(p * 2.2) * 0.9;
+      items.forEach(function (it) {
+        var x = lerp(it.sx, it.tx, e), y = lerp(it.sy, it.ty, e), rot = it.r0 + it.spin * e;
+        ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(it.k, it.k);
+        ctx.drawImage(it.s.c, -it.s.pad, -it.s.pad, it.s.pad * 2, it.s.pad * 2);
+        ctx.restore();
+      });
+      ctx.globalAlpha = 1;
+    }
+    if (window.ResizeObserver) new ResizeObserver(layout).observe(canvas);
+    layout();
+    return { draw: draw };
+  }
+
+  /* ---------- the will: handwriting texture ---------- */
+  function buildHand(svg) {
+    var R = rng(1895), words = [];
+    var left = 46, right = 478, y0 = 92, lh = 38, lines = 12;
+    for (var r = 0; r < 14; r++) {
+      var ln = document.createElementNS(NS, 'line');
+      ln.setAttribute('x1', 0); ln.setAttribute('x2', 520);
+      ln.setAttribute('y1', y0 + 4 + r * lh); ln.setAttribute('y2', y0 + 4 + r * lh);
+      ln.setAttribute('class', 'ruled');
+      svg.appendChild(ln);
+    }
+    for (var l = 0; l < lines; l++) {
+      var y = y0 + l * lh;
+      var x = left + (l === 0 || l === 7 ? 34 : 0);
+      var end = l === 6 ? right - 150 : l === lines - 1 ? right - 120 : right;
+      while (x < end - 26) {
+        var len = Math.min(26 + R() * 84, end - x);
+        var loops = Math.max(2, Math.round(len / 8.5));
+        var k = len / (loops * Math.PI * 2), d = '', first = true;
+        for (var t = 0; t <= loops * Math.PI * 2; t += 0.32) {
+          var li = Math.floor(t / (Math.PI * 2));
+          var tall = ((li * 7919 + l * 31 + Math.round(x)) % 9 === 0) ? 2.5 : ((li * 104729 + l) % 11 === 0 ? -1.6 : 1);
+          var rr = (3.6 + Math.sin(t * 0.7 + l) * 0.8) * (tall > 0 ? tall : 1);
+          var px = x + t * k - Math.sin(t) * rr * 0.55;
+          var py = tall < 0 ? y + rr * (1 - Math.cos(t)) * 0.9 : y - rr * (1 - Math.cos(t));
+          d += (first ? 'M' : 'L') + f(px) + ' ' + f(py);
+          first = false;
+        }
+        var p = document.createElementNS(NS, 'path');
+        p.setAttribute('d', d); p.setAttribute('class', 'hand'); p.setAttribute('pathLength', '1');
+        svg.appendChild(p); words.push(p);
+        x += len + 10 + R() * 8;
+      }
+    }
+    function text(str, x, y, size, anchor) {
+      var t = document.createElementNS(NS, 'text');
+      t.setAttribute('x', x); t.setAttribute('y', y); t.setAttribute('class', 'sig');
+      t.setAttribute('font-size', size); if (anchor) t.setAttribute('text-anchor', anchor);
+      t.textContent = str; svg.appendChild(t); return t;
+    }
+    var date = text('Paris den 27 November 1895', 46, 566, 19);
+    var sig = text('Alfred Bernhard Nobel', 478, 606, 30, 'end');
+    return { words: words, sign: [date, sig] };
+  }
+
+  // Chinese reads per character, so per-character spans stay readable to screen readers.
+  function splitChars(el) {
+    var out = [];
+    Array.from(el.childNodes).forEach(function (node) {
+      if (node.nodeType !== 3) return;
+      var frag = document.createDocumentFragment();
+      Array.from(node.textContent.replace(/\s+/g, '')).forEach(function (ch) {
+        var s = document.createElement('span');
+        s.textContent = ch; frag.appendChild(s); out.push(s);
+      });
+      el.replaceChild(frag, node);
+    });
+    return out;
+  }
+
+  var diatoms = Diatoms(document.getElementById('diatoms'));
+  var hand = buildHand(document.getElementById('hand'));
+
+  if (!hasGsap || reduce) {
+    diatoms.draw(0.42);
+    root.classList.remove('pre');
+    document.getElementById('hint').textContent = '它对震动极其敏感。';
+    if (!hasGsap) return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+  var mm = gsap.matchMedia();
+
+  mm.add({ motion: '(prefers-reduced-motion: no-preference)', wide: '(min-width: 861px)' }, function (ctx) {
+    var c = ctx.conditions;
+    if (!c.motion) return;
+
+    var lenis = null;
+    if (window.Lenis) {
+      lenis = new Lenis({ lerp: 0.1 });
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+      gsap.ticker.lagSmoothing(0);
+      document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          var target = document.querySelector(a.getAttribute('href'));
+          if (target) { e.preventDefault(); lenis.scrollTo(target, { duration: 1.8 }); }
+        });
+      });
+    }
+
+    /* Scene 1: the obituary is set, then corrected */
+    var strike = document.querySelector('.obit__struck path');
+    gsap.set(strike, { strokeDasharray: 1, strokeDashoffset: 1 });
+    var intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    intro
+      .from('.obit__dateline', { opacity: 0, y: 8, duration: 0.8 }, 0.2)
+      .from('.obit__head .w > span', { yPercent: 105, duration: 1.1, stagger: 0.08, ease: 'expo.out' }, 0.35)
+      .from('.obit__fr', { opacity: 0, y: 10, duration: 0.8 }, 1.1)
+      .to(strike, { strokeDashoffset: 0, duration: 0.55, ease: 'power2.inOut' }, 1.6)
+      .from('.obit__note', { opacity: 0, scale: 0.95, rotation: -9, duration: 0.5, ease: 'back.out(2)' }, 2.05)
+      .from(['.obit__lede', '.obit__who'], { opacity: 0, y: 18, duration: 1, stagger: 0.15 }, 2.3);
+    root.classList.remove('pre');
+
+    /* Scene 2: the drop trembles with scroll speed; the earth calms it */
+    var shake = document.querySelector('.drop__shake');
+    var absorbG = document.querySelector('.drop__absorb');
+    var ring = document.querySelector('.drop__ring');
+    var hint = document.getElementById('hint');
+    var energy = 0, absorb = 0, lastY = window.scrollY, lastShock = 0, oilActive = false;
+    gsap.set([shake, absorbG, ring], { svgOrigin: '100 165' });
+    ScrollTrigger.create({ trigger: '.oil', start: 'top bottom', end: 'bottom top', onToggle: function (s) { oilActive = s.isActive; } });
+    gsap.ticker.add(function (time) {
+      var y = window.scrollY, d = Math.abs(y - lastY); lastY = y;
+      energy += (Math.min(d / 42, 1.5) - energy) * 0.14;
+      if (!oilActive) return;
+      var amp = energy * (1 - absorb);
+      gsap.set(shake, {
+        x: (Math.random() - 0.5) * amp * 18,
+        y: (Math.random() - 0.5) * amp * 9,
+        rotation: (Math.random() - 0.5) * amp * 7,
+        scaleX: 1 + Math.sin(time * 38) * amp * 0.05,
+        scaleY: 1 - Math.sin(time * 38) * amp * 0.05
+      });
+      if (amp > 1.02 && time - lastShock > 1.4) {
+        lastShock = time;
+        gsap.fromTo(ring, { scale: 0.7, opacity: 0.8 }, { scale: 2.4, opacity: 0, duration: 0.7, ease: 'power2.out' });
+        hint.textContent = '它对震动极其敏感。';
+      }
+    });
+    var prog = { p: 0 };
+    gsap.to(prog, {
+      p: 1, ease: 'none',
+      scrollTrigger: { trigger: '#beat-earth', start: 'top 85%', endTrigger: '#beat-name', end: 'bottom 55%', scrub: 0.6 },
+      onUpdate: function () {
+        var p = prog.p;
+        absorb = p;
+        diatoms.draw(p);
+        gsap.set(['.oil__grey', '.oil__visual-grey'], { opacity: p });
+        var s = clamp01((p - 0.3) / 0.7);
+        gsap.set(absorbG, { scale: lerp(1, 0.25, s), opacity: 1 - s });
+        hint.style.opacity = String(1 - clamp01(p * 2));
+      }
+    });
+    gsap.utils.toArray('.oil .beat').forEach(function (b) {
+      gsap.from(b.children, { opacity: 0, y: 20, duration: 0.9, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: b, start: 'top 80%' } });
+    });
+
+    /* Scene 3 */
+    gsap.from('.war__prose > *', { opacity: 0, y: 22, duration: 0.9, stagger: 0.12, ease: 'power3.out', scrollTrigger: { trigger: '.war', start: 'top 70%' } });
+    var qtl = gsap.timeline({ scrollTrigger: { trigger: '.war__quote', start: 'top 72%' } });
+    qtl.from('.war__quote blockquote', { opacity: 0, y: 26, duration: 1.1, ease: 'power3.out' })
+      .from('.war__quote figcaption', { opacity: 0, duration: 0.8 }, '-=0.5')
+      .from('.war__coda', { opacity: 0, x: -14, duration: 0.8, ease: 'power3.out' }, '+=0.3');
+
+    /* Scene 4: the will, pinned */
+    var will = document.querySelector('.will');
+    will.classList.add('is-staged');
+    var transChars = splitChars(document.getElementById('will-text'));
+    var mark = document.querySelector('.will__text mark');
+    var nationChars = splitChars(document.getElementById('nation'));
+    gsap.set(hand.words, { strokeDasharray: 1, strokeDashoffset: 1 });
+    gsap.set(hand.sign, { opacity: 0 });
+    gsap.set('.five__bracket path', { strokeDasharray: 1, strokeDashoffset: 1 });
+    gsap.set(['.wphase--five', '.wphase--nation'], { autoAlpha: 0 });
+    gsap.set(transChars.concat([mark]), { opacity: 0.14 });
+    gsap.set(mark, { backgroundSize: '0% 0.42em' });
+
+    var tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: { trigger: will, start: 'top top', end: c.wide ? '+=380%' : '+=300%', pin: true, scrub: 0.6, anticipatePin: 1 }
+    });
+    tl.from('.sheet', { y: 40, rotation: 2, opacity: 0, duration: 0.4, ease: 'power2.out' }, 0)
+      .to(hand.words, { strokeDashoffset: 0, duration: 0.12, stagger: 2.6 / hand.words.length }, 0.3)
+      .to(hand.sign, { opacity: 1, duration: 0.3, stagger: 0.15 }, 2.9)
+      .to(transChars.concat([mark]), { opacity: 1, duration: 0.1, stagger: 2.4 / (transChars.length + 1) }, 0.6)
+      .to(mark, { backgroundSize: '100% 0.42em', duration: 0.5, ease: 'power1.inOut' }, 3.2)
+      .to('.wphase--sheet', { autoAlpha: 0, y: -30, duration: 0.45, ease: 'power1.in' }, 4.1)
+      .to('.wphase--five', { autoAlpha: 1, duration: 0.3 }, 4.4)
+      .from(['.wphase--five h2', '.five__sub'], { opacity: 0, y: 16, duration: 0.4, stagger: 0.12, ease: 'power2.out' }, 4.4)
+      .to('.five__bracket path', { strokeDashoffset: 0, duration: 0.35, stagger: 0.12 }, 4.8)
+      .from('.five li', { opacity: 0, y: 18, duration: 0.4, stagger: 0.14, ease: 'power2.out' }, 5.1)
+      .to('.wphase--five', { autoAlpha: 0, y: -30, duration: 0.45, ease: 'power1.in' }, 6.6)
+      .to('.will__bg', { opacity: 1, duration: 0.5 }, 6.7)
+      .to('.wphase--nation', { autoAlpha: 1, duration: 0.2 }, 7.0)
+      .from(nationChars, { opacity: 0, y: 24, duration: 0.3, stagger: 0.07, ease: 'power3.out' }, 7.0)
+      .from('.nation__rest', { opacity: 0, y: 14, duration: 0.4, ease: 'power2.out' }, 8.0)
+      .to({}, { duration: 0.8 }, 8.4);
+
+    /* Scene 5: each line of the self-portrait inks in as it arrives */
+    gsap.utils.toArray('.self__row').forEach(function (row) {
+      gsap.fromTo(row, { opacity: 0.18 }, { opacity: 1, ease: 'none', scrollTrigger: { trigger: row, start: 'top 82%', end: 'top 58%', scrub: 0.5 } });
+    });
+    gsap.from('.self__after > *', { opacity: 0, y: 20, duration: 0.9, stagger: 0.14, ease: 'power3.out', scrollTrigger: { trigger: '.self__after', start: 'top 78%' } });
+
+    /* Scene 6 */
+    gsap.from('.first__head > *', { opacity: 0, y: 22, duration: 0.9, stagger: 0.12, ease: 'power3.out', scrollTrigger: { trigger: '.first', start: 'top 70%' } });
+    gsap.from('.laureates li', { opacity: 0, x: -16, duration: 0.7, stagger: 0.09, ease: 'power3.out', scrollTrigger: { trigger: '.laureates', start: 'top 78%' } });
+    gsap.from('.first__notes > *', { opacity: 0, y: 18, duration: 0.9, stagger: 0.14, ease: 'power3.out', scrollTrigger: { trigger: '.first__notes', start: 'top 80%' } });
+
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+
+    return function () {
+      will.classList.remove('is-staged');
+      if (lenis) lenis.destroy();
+    };
+  });
+})();
+</script>
+</body>
+</html>
