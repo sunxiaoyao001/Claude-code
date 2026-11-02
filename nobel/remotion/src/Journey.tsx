@@ -48,7 +48,7 @@ const arc = (a: {x: number; y: number}, b: {x: number; y: number}, k: number) =>
 };
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 
-export const Journey: React.FC = () => {
+export const Journey: React.FC<{hideUi?: boolean}> = ({hideUi = false}) => {
   const f = useCurrentFrame();
   const grat = interpolate(f, [0, 40], [0, 1], {...clamp, easing: Easing.out(Easing.quad)});
   const landIn = interpolate(f, [6, 46], [0, 1], clamp);
@@ -120,6 +120,7 @@ export const Journey: React.FC = () => {
         })}
       </svg>
 
+      {!hideUi && (<>
       <div style={{position: 'absolute', top: 36, left: 40, padding: '14px 20px 16px', background: C.paper, boxShadow: `0 0 0 1px ${C.rule}`, color: C.ink}}>
         <div style={{fontFamily: SERIF, fontSize: 30, letterSpacing: '0.06em'}}>他一生走过的地方</div>
         <div style={{fontFamily: LATIN, fontStyle: 'italic', fontSize: 22, color: C.soft, marginTop: 6, fontVariantNumeric: 'lining-nums'}}>1833 – 1896</div>
@@ -130,6 +131,7 @@ export const Journey: React.FC = () => {
         <div style={{fontFamily: SERIF, fontSize: 26, marginTop: 10}}>{NAMES[cap.city]}</div>
         <div style={{fontFamily: KAI, fontSize: 24, color: C.soft, marginTop: 6, lineHeight: 1.5}}>{cap.text}</div>
       </div>
+      </>)}
     </AbsoluteFill>
   );
 };

@@ -9,5 +9,6 @@ export const RemotionRoot: React.FC = () => (
   <>
     <Composition id="Explosion" component={Explosion} durationInFrames={210} fps={30} width={1280} height={720} />
     <Composition id="Journey" component={Journey} durationInFrames={400} fps={30} width={1280} height={800} />
+    <Composition id="JourneyMap" component={Journey} durationInFrames={400} fps={30} width={1280} height={800} defaultProps={{hideUi: true}} />
   </>
 );

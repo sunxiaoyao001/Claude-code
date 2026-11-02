@@ -20,6 +20,24 @@
         ],
         "createdAt": "2026-11-02T12:37:00.021Z",
         "reason": "agent triage: same detector limit as tu-youyou: bands inset via padding-inline max(clamp(), env()) and clamp() padding-block; list rows have padding-block 18-20px; 390/1440 screenshots show clear inset"
+      },
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "nobel/index.html"
+        ],
+        "createdAt": "2026-11-02T14:36:56.035Z",
+        "reason": "agent triage: body overflow-x clip prevents horizontal scroll; .ceremony and .ce__glint clip the oversized sunburst and the gem shine on purpose"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "nobel/index.html"
+        ],
+        "createdAt": "2026-11-02T14:36:56.047Z",
+        "reason": "agent triage: the only repeating gradient is the rotating sunburst behind the gem in the reward ceremony, the effect itself"
       }
     ]
   }

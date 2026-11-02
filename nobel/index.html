@@ -115,7 +115,7 @@ sub { font-size: 0.62em; line-height: 0; }
 
 /* ---------- loader ---------- */
 .loader { position: fixed; inset: 0; z-index: 90; display: none; pointer-events: none; }
-.motion .loader { display: block; animation: loader-fallback 0.6s 3.5s forwards; }
+.motion .loader { display: block; animation: loader-fallback 0.6s 6s forwards; }
 .loader__panel { position: absolute; left: 0; right: 0; height: 50.5%; background: var(--paper-2); }
 .loader__panel--a { top: 0; }
 .loader__panel--b { bottom: 0; }
@@ -436,9 +436,6 @@ sub { font-size: 0.62em; line-height: 0; }
 .quest__fb { min-height: 1.9em; margin-top: 16px; font-size: var(--step--1); color: var(--ink); }
 .quest__fb.is-bad { color: var(--hazard-deep); }
 .quest__why { display: grid; gap: 16px; padding-top: 18px; border-top: 1px solid var(--rule); }
-.quest__lock { max-width: 1100px; margin: 18px auto 0; display: flex; align-items: center; gap: 12px; padding: 14px 18px; border: 1px dashed var(--rule); color: var(--ink-soft); font-size: var(--step--1); }
-.quest__lock svg { width: 18px; flex: none; }
-.quest__lock.is-open { display: none; }
 
 .lab { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 22px; align-items: center; margin-top: 24px; }
 .lab__tiles { display: grid; gap: 10px; }
@@ -451,44 +448,6 @@ sub { font-size: 0.62em; line-height: 0; }
 .lab__beaker.is-hot svg { filter: drop-shadow(0 0 12px color-mix(in oklch, var(--hazard) 70%, transparent)); }
 .lab__beaker.is-calm .lab__liquid { fill: var(--kiesel); }
 .lab__cap { position: absolute; left: 0; right: 0; bottom: 22%; text-align: center; font-size: var(--step--2); color: var(--ink); }
-
-/* conversations */
-.talk-sec { padding-block: clamp(70px, 11vh, 130px); }
-.talk { max-width: 780px; margin-inline: auto; background: var(--paper-2); box-shadow: 0 0 0 1px var(--rule), 0 40px 70px -50px oklch(0.2 0.02 260 / 0.6); }
-.talk__head { display: flex; align-items: center; gap: 14px; padding: 16px 22px; border-bottom: 1px solid var(--rule); }
-.talk__ava { width: 52px; height: 52px; border-radius: 50%; overflow: hidden; flex: none; background: var(--paper); box-shadow: 0 0 0 1px var(--rule); display: grid; place-items: center; }
-.talk__ava img { width: 100%; height: 100%; object-fit: cover; object-position: 38% 22%; transform: scale(1.7); transform-origin: 34% 24%; }
-.talk__ava svg { width: 58%; height: auto; }
-.talk__who { display: block; font-family: var(--serif); font-weight: 600; color: var(--ink); line-height: 1.3; }
-.talk__where { display: block; font-size: var(--step--2); color: var(--ink-soft); }
-.talk__tag { margin-left: auto; font-size: var(--step--2); color: var(--hazard-deep); border: 1px solid currentColor; padding: 3px 10px; white-space: nowrap; }
-.talk__intro { padding: 14px 22px 0; font-size: var(--step--1); color: var(--hazard-deep); }
-.talk__log { padding: 22px; display: grid; gap: 12px; min-height: 200px; align-content: start; cursor: default; }
-.bub { max-width: 84%; padding: 12px 16px; line-height: 1.75; }
-.bub--n { justify-self: start; background: var(--paper); font-family: var(--kai); font-size: var(--step-1); color: var(--ink); border-radius: 2px 14px 14px 14px; box-shadow: 0 0 0 1px var(--rule); }
-.bub--y { justify-self: end; background: var(--ink); color: var(--paper); border-radius: 14px 2px 14px 14px; font-size: var(--step-0); }
-.bub--s { justify-self: center; text-align: center; max-width: 94%; padding: 8px 4px; color: var(--ink-body); font-size: var(--step--1); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
-.bub--typing { display: inline-flex; gap: 5px; padding: 16px 18px; }
-.bub--typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-soft); animation: dot 520ms ease-in-out 2; }
-.bub--typing i:nth-child(2) { animation-delay: 150ms; }
-.bub--typing i:nth-child(3) { animation-delay: 300ms; }
-@keyframes dot { 0%, 100% { opacity: 0.25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
-.talk__choices { padding: 0 22px 22px; display: flex; flex-wrap: wrap; gap: 10px; }
-.choice { font: 500 var(--step--1) / 1.4 var(--sans); padding: 11px 18px; border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; transition: background-color 160ms ease-out, color 160ms ease-out, transform 160ms ease-out; }
-.choice::after { content: " →"; color: var(--hazard-deep); }
-.choice:hover { background: var(--ink); color: var(--paper); }
-.choice:hover::after { color: var(--hazard); }
-.choice:active { transform: scale(0.97); }
-.choice--ghost { border-style: dashed; color: var(--ink-soft); }
-.talk__note { max-width: 780px; margin: 12px auto 0; font-size: var(--step--2); color: var(--ink-soft); }
-.oil .talk__note { color: var(--ink); }
-.sign { display: grid; gap: 12px; width: 100%; }
-.sign__svg { width: min(420px, 100%); height: auto; overflow: visible; }
-.sign__svg { border-bottom: 1px solid var(--rule); }
-.sign__svg text { font-family: var(--latin); font-style: italic; font-size: 44px; fill: oklch(0.34 0.05 50); }
-.sign__btn { position: relative; overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: none; }
-.sign__fill { position: absolute; inset: 0; background: var(--hazard-ink); transform-origin: 0 50%; transform: scaleX(0); }
-.sign__t { position: relative; }
 
 /* finale */
 .finale { margin-top: clamp(70px, 11vh, 120px); padding: clamp(28px, 4vw, 60px); background: var(--paper-2); box-shadow: 0 0 0 1px var(--rule); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(24px, 4vw, 60px); align-items: center; }
@@ -523,6 +482,207 @@ sub { font-size: 0.62em; line-height: 0; }
   .finale { grid-template-columns: 1fr; }
   .bub { max-width: 92%; }
 }
+
+/* ---------- motion layer v3 ---------- */
+.fx-layer { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 97; pointer-events: none; }
+.loader__drop { position: absolute; left: 50%; top: 50%; width: 46px; margin: -29px 0 0 -23px; opacity: 0; z-index: 2; }
+.loader__drop path { fill: var(--drop); stroke: var(--ink); stroke-width: 6; }
+.loader__drop ellipse { fill: #fff; opacity: 0.8; }
+.tilt { position: relative; transform: perspective(1200px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform 600ms var(--ease); }
+.tilt::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(520px circle at var(--gx, 50%) var(--gy, 50%), oklch(1 0 0 / 0.28), transparent 45%); opacity: 0; transition: opacity 300ms ease-out; z-index: 4; }
+.tilt:hover::after { opacity: 1; }
+.tilt--plain::after { display: none; }
+.chno { position: relative; }
+.chno::after { content: ""; flex: 1 1 auto; align-self: center; height: 1px; max-width: 260px; background: currentColor; opacity: 0.35; transform-origin: 0 50%; transform: scaleX(var(--line, 1)); }
+.is-masked { -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; -webkit-mask-size: var(--m, 0%); mask-size: var(--m, 0%); }
+
+/* scene cards */
+.scene-wrap { padding-block: clamp(70px, 11vh, 130px); }
+.scene-card { max-width: 1100px; margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); background: var(--ink); color: var(--on-night); box-shadow: 0 60px 90px -60px oklch(0.15 0.02 260 / 0.85); }
+.scene-card__img { position: relative; overflow: hidden; background: var(--paper-2); min-height: clamp(240px, 32vw, 420px); }
+.scene-card__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; mix-blend-mode: multiply; transition: transform 1400ms var(--ease); }
+.scene-card:hover .scene-card__img img { transform: scale(1.07); }
+.scene-card__body { padding: clamp(26px, 4vw, 56px); display: grid; gap: 16px; align-content: center; position: relative; z-index: 5; }
+.scene-card .label { color: var(--hazard); }
+.scene-card h2 { color: var(--on-night); font-size: var(--step-3); line-height: 1.2; }
+.scene-card__body > p:not(.label) { color: var(--on-night-soft); }
+.scene-card__go { justify-self: start; display: inline-flex; align-items: center; gap: 14px; padding: 10px 24px 10px 10px; margin-top: 6px; background: var(--hazard); color: var(--ink); border: 0; border-radius: 999px; font: 500 var(--step-0) / 1 var(--sans); cursor: pointer; transition: background-color 200ms ease-out; }
+.scene-card__go:hover { background: oklch(0.8 0.15 64); }
+.scene-card__go:focus-visible { outline: 2px solid var(--on-night); outline-offset: 4px; }
+.scene-card__play { position: relative; width: 42px; height: 42px; border-radius: 50%; background: var(--ink); }
+.scene-card__play::before { content: ""; position: absolute; left: 17px; top: 13px; border-left: 13px solid var(--hazard); border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+.scene-card__play::after { content: ""; position: absolute; inset: -7px; border-radius: 50%; border: 1px solid var(--ink); opacity: 0; }
+.scene-card:hover .scene-card__play::after { animation: ping 1200ms ease-out 2; }
+@keyframes ping { from { transform: scale(0.8); opacity: 0.9; } to { transform: scale(1.5); opacity: 0; } }
+.scene-card__done { display: none; font-size: var(--step--2); color: var(--on-night-soft); }
+.scene-card.is-done .scene-card__done { display: block; }
+
+/* quest veil + gem glow */
+.quest__card { position: relative; }
+.quest__veil { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; align-content: center; gap: 14px; text-align: center; padding: 24px; background: color-mix(in oklch, var(--paper-2) 74%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); color: var(--ink); }
+.quest__veil .lock { width: 46px; overflow: visible; }
+.quest__veil-t { font: 600 var(--step-1) / 1.4 var(--serif); max-width: 18em; }
+.gemshow__glow { position: absolute; inset: -30%; border-radius: 50%; background: radial-gradient(circle, color-mix(in oklch, var(--glow, #fff) 75%, transparent), transparent 62%); opacity: 0; transition: opacity 800ms ease-out; pointer-events: none; }
+.is-won .gemshow__glow { opacity: 1; }
+.gemshow svg { position: relative; }
+
+/* gem ceremony */
+.ceremony { position: fixed; inset: 0; z-index: 92; display: grid; place-items: center; align-content: center; gap: 8px; text-align: center; color: var(--on-night); cursor: pointer; background: radial-gradient(circle at 50% 42%, oklch(0.3 0.03 262 / 0.94), oklch(0.13 0.02 262 / 0.97) 70%); overflow: hidden; }
+.ce__rays { position: absolute; left: 50%; top: 42%; width: 150vmax; height: 150vmax; margin: -75vmax 0 0 -75vmax; background: repeating-conic-gradient(from 0deg, color-mix(in oklch, var(--glow, #fff) 34%, transparent) 0deg 5deg, transparent 5deg 15deg); -webkit-mask: radial-gradient(circle, #000 0, transparent 52%); mask: radial-gradient(circle, #000 0, transparent 52%); pointer-events: none; }
+.ce__stage { position: relative; width: clamp(150px, 24vmin, 250px); aspect-ratio: 1; perspective: 900px; }
+.ce__gem { width: 100%; height: 100%; filter: drop-shadow(0 0 34px var(--glow, #fff)); }
+.ce__gem svg { width: 100%; height: 100%; display: block; }
+.ce__glint { position: absolute; inset: 14%; border-radius: 50%; overflow: hidden; mix-blend-mode: overlay; pointer-events: none; }
+.ce__shine { position: absolute; top: -20%; bottom: -20%; left: 35%; width: 30%; background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.9), transparent); transform: rotate(20deg); }
+.ce__k { margin-top: 22px; font: 500 var(--step--2) / 1 var(--sans); letter-spacing: 0.05em; color: oklch(0.82 0.13 68); }
+.ce__name { font: 600 var(--step-4) / 1.05 var(--serif); color: var(--on-night); }
+.ce__note { max-width: 26em; padding-inline: 20px; color: var(--on-night-soft); font-size: var(--step-0); }
+.ce__skip { position: absolute; left: 0; right: 0; bottom: calc(env(safe-area-inset-bottom, 0px) + 26px); font-size: var(--step--2); color: var(--on-night-soft); }
+
+/* ---------- theatre ---------- */
+.th-open body { overflow: hidden; }
+.theatre { position: fixed; inset: 0; z-index: 95; color: var(--ink); overflow: hidden; outline: none; background: var(--paper-2); }
+.th__stage { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(120% 90% at 50% 38%, var(--paper-2), oklch(0.86 0.008 250)); }
+.theatre[data-tone="dawn"] .th__stage { background: radial-gradient(90% 80% at 70% 20%, oklch(0.97 0.03 80), oklch(0.86 0.02 250) 70%); }
+.th__set { position: absolute; inset: 0; }
+.th__plate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: 0.5; }
+.th__smoke { position: absolute; inset: 0; opacity: 0; pointer-events: none; background: radial-gradient(circle at 45% 55%, oklch(0.34 0.01 260), oklch(0.16 0.01 260)); }
+.th__props { position: absolute; inset: 0; display: grid; place-items: center; perspective: 1400px; padding-bottom: 12vh; }
+.th__actor { position: absolute; right: 3vw; bottom: 9vh; width: min(30vw, 400px); margin: 0; opacity: 0; pointer-events: none; z-index: 1; }
+.theatre[data-side="left"] .th__actor { right: auto; left: 3vw; }
+.th__actor img { width: 100%; mix-blend-mode: multiply; }
+.th__fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+.th__flash { position: absolute; inset: 0; background: oklch(0.99 0.03 90); opacity: 0; pointer-events: none; z-index: 3; }
+.th__vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center, transparent 55%, oklch(0.2 0.02 260 / 0.38)); }
+.th__bar { position: absolute; left: 0; right: 0; height: 9vh; background: var(--ink); z-index: 7; }
+.th__bar--t { top: 0; transform-origin: top; }
+.th__bar--b { bottom: 0; transform-origin: bottom; }
+.th__title { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; align-content: center; gap: 16px; pointer-events: none; opacity: 0; visibility: hidden; color: var(--paper); background: oklch(0.18 0.02 260 / 0.72); }
+.th__title.is-on { opacity: 1; visibility: visible; }
+.th__place { font: 600 clamp(2rem, 1.2rem + 4vw, 4.8rem) / 1.1 var(--serif); letter-spacing: 0.12em; text-align: center; padding-inline: 20px; }
+.th__time { font: italic 400 var(--step-1) / 1.2 var(--latin); color: var(--on-night-soft); font-variant-numeric: lining-nums; }
+.th__rule { width: min(320px, 50vw); height: 1px; background: var(--hazard); }
+.th__cap { position: absolute; left: 50%; bottom: calc(9vh + 34px); transform: translateX(-50%); width: min(880px, 90vw); z-index: 9; text-align: center; font: 400 var(--step-1) / 1.8 var(--serif); color: var(--paper); background: oklch(0.18 0.02 260 / 0.84); padding: 14px 24px; opacity: 0; transition: opacity 300ms ease-out; pointer-events: none; }
+.th__cap.is-on { opacity: 1; }
+.th__box { position: absolute; left: 50%; bottom: calc(9vh + 24px); width: min(900px, 92vw); z-index: 9; transform: translate(-50%, 14px); opacity: 0; transition: opacity 280ms ease-out, transform 420ms var(--ease); background: var(--paper-2); box-shadow: 0 0 0 1px var(--ink), 0 30px 60px -30px oklch(0.2 0.02 260 / 0.6); padding: 24px 30px 26px; pointer-events: none; }
+.th__box.is-on { opacity: 1; transform: translate(-50%, 0); }
+.th__name { position: absolute; top: -16px; left: 22px; background: var(--hazard); color: var(--ink); font: 600 var(--step--1) / 1 var(--serif); padding: 9px 14px; }
+.th__box.is-you .th__name { background: var(--ink); color: var(--paper); }
+.th__line { font: 400 var(--step-1) / 1.8 var(--kai); color: var(--ink); min-height: 1.8em; }
+.th__box.is-you .th__line { font-family: var(--sans); }
+.th__more { position: absolute; right: 22px; bottom: 16px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 9px solid var(--hazard-ink); opacity: 0; }
+.th__more.is-on { opacity: 1; animation: bob 900ms ease-in-out 12; }
+@keyframes bob { 50% { transform: translateY(4px); } }
+.th__choices { position: absolute; left: 50%; bottom: calc(9vh + 24px); transform: translateX(-50%); width: min(760px, 92vw); display: grid; gap: 10px; z-index: 10; }
+.th__choice { position: relative; overflow: hidden; display: flex; align-items: baseline; gap: 16px; text-align: left; padding: 16px 22px; background: var(--paper-2); color: var(--ink); border: 1px solid var(--ink); font: 400 var(--step-0) / 1.5 var(--sans); cursor: pointer; transition: color 260ms ease-out; }
+.th__choice::before { content: ""; position: absolute; inset: 0; background: var(--ink); transform: scaleX(0); transform-origin: 0 50%; transition: transform 420ms var(--ease); }
+.th__choice > * { position: relative; }
+.th__choice:hover, .th__choice:focus-visible { color: var(--paper); }
+.th__choice:hover::before, .th__choice:focus-visible::before { transform: scaleX(1); }
+.th__choice:focus-visible { outline: 2px solid var(--hazard); outline-offset: 3px; }
+.th__choice .n { font: italic 500 1.25em / 1 var(--latin); color: var(--hazard-ink); min-width: 1.6em; }
+.th__choice:hover .n, .th__choice:focus-visible .n { color: var(--hazard); }
+.th__hold { position: relative; overflow: hidden; justify-self: center; padding: 18px 34px; background: var(--ink); color: var(--paper); border: 0; font: 500 var(--step-0) / 1 var(--sans); cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: none; }
+.th__hold-fill { position: absolute; inset: 0; background: var(--hazard-ink); transform-origin: 0 50%; transform: scaleX(0); }
+.th__hold-t { position: relative; }
+.th__hold:focus-visible { outline: 2px solid var(--hazard); outline-offset: 3px; }
+.th__top { position: absolute; top: calc(9vh + 16px); left: 0; right: 0; z-index: 10; display: flex; align-items: center; gap: 16px; padding-inline: max(20px, env(safe-area-inset-left, 0px)) max(20px, env(safe-area-inset-right, 0px)); }
+.th__chip { font-size: var(--step--2); color: var(--ink); background: var(--paper-2); padding: 6px 12px; box-shadow: 0 0 0 1px var(--rule); }
+.th__hint { font-size: var(--step--2); color: var(--ink-soft); }
+.th__close { margin-left: auto; font: 500 var(--step--1) / 1 var(--sans); padding: 11px 18px; background: var(--paper-2); color: var(--ink); border: 1px solid var(--ink); cursor: pointer; transition: background-color 160ms ease-out, color 160ms ease-out; }
+.th__close:hover { background: var(--ink); color: var(--paper); }
+.th__close:focus-visible { outline: 2px solid var(--hazard); outline-offset: 3px; }
+
+/* props: newspaper */
+.np { width: min(600px, 80vw); transform-style: preserve-3d; }
+.np__page { background: oklch(0.94 0.004 250); padding: clamp(18px, 3vw, 34px); box-shadow: 0 2px 4px oklch(0.2 0.02 260 / 0.2), 0 50px 80px -40px oklch(0.2 0.02 260 / 0.6); color: var(--ink); }
+.np__mast { font: 600 0.8rem / 1 var(--latin); letter-spacing: 0.3em; text-align: center; }
+.np__rule { display: block; height: 3px; margin: 10px 0 14px; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.np__kicker { font: 600 0.75rem / 1 var(--latin); letter-spacing: 0.28em; color: var(--ink-soft); }
+.np__head { margin-top: 10px; font: 300 clamp(1.8rem, 1rem + 3vw, 3.4rem) / 1 var(--latin); letter-spacing: -0.01em; }
+.np__struck { position: relative; display: inline-block; }
+.np__struck svg { position: absolute; left: -3%; top: 22%; width: 106%; height: 60%; overflow: visible; }
+.np__struck path { fill: none; stroke: var(--hazard); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.np__cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+.np__cols i { display: block; height: 130px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='9'><rect width='10' height='2' fill='%23babec4'/></svg>"); }
+
+/* props: the lab bench */
+.theatre[data-tone="lab"] .th__plate { opacity: 0.22; object-fit: contain; }
+.th__plate.is-photo { opacity: 0.62 !important; object-fit: cover !important; }
+.theatre[data-tone="map"] .th__plate { opacity: 0.4; }
+.theatre[data-tone="desk"] .th__stage { background: radial-gradient(80% 70% at 62% 42%, oklch(0.97 0.035 82), oklch(0.84 0.012 250) 75%); }
+.labset { position: relative; width: min(1100px, 94vw); aspect-ratio: 1100 / 600; }
+.labset__table { position: absolute; left: 0; right: 0; bottom: 0; height: 14%; overflow: visible; }
+.lp { position: absolute; bottom: 13.2%; display: block; mix-blend-mode: multiply; }
+img.lp, .lp img { height: auto; }
+.lp--retort { left: 1%; width: 27%; }
+.lp--alembic { left: 29%; width: 14%; }
+.lp--flask { left: 46%; width: 10.5%; mix-blend-mode: normal; }
+.lp--flask img { position: relative; width: 100%; display: block; mix-blend-mode: multiply; }
+.flask__liq { position: absolute; inset: 0; width: 100%; height: 100%; }
+.flask__wave { fill: oklch(0.93 0.1 98); opacity: 0.92; }
+.lp--vase { left: 59%; width: 8.5%; }
+.lp--furnace { right: 2%; width: 21%; mix-blend-mode: normal; }
+.lp--furnace img { position: relative; width: 100%; display: block; mix-blend-mode: multiply; }
+.furnace__glow { position: absolute; left: 22%; right: 22%; top: 32%; height: 34%; border-radius: 50%; background: radial-gradient(circle, oklch(0.85 0.17 75), oklch(0.65 0.2 40) 45%, transparent 72%); opacity: 0; filter: blur(4px); }
+.labset__credit { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(9vh + 150px); font-size: var(--step--2); color: var(--ink-soft); white-space: nowrap; }
+
+/* newspaper extras */
+.np__body { display: grid; grid-template-columns: 0.8fr 2.2fr; gap: 14px; margin-top: 18px; }
+.np__fig { margin: 0; border: 1px solid var(--ink); padding: 6px; }
+.np__fig img { width: 100%; display: block; mix-blend-mode: multiply; }
+.np__fig figcaption { font: 600 0.62rem / 1 var(--latin); letter-spacing: 0.2em; text-align: center; margin-top: 6px; }
+.np__body .np__cols { margin-top: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.np__orn { text-align: center; font-family: var(--latin); font-size: 1.2rem; margin-top: 10px; color: var(--ink-soft); }
+.beams { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.beams i { position: absolute; top: -20%; width: 16vw; height: 150%; background: linear-gradient(90deg, transparent, oklch(1 0.03 85 / 0.45), transparent); transform: rotate(24deg); filter: blur(6px); }
+.beams i:nth-child(1) { left: 58%; }
+.beams i:nth-child(2) { left: 70%; width: 8vw; opacity: 0.7; }
+.beams i:nth-child(3) { left: 80%; width: 12vw; opacity: 0.5; }
+
+.theatre[data-tone="lab"] .th__actor { right: auto; left: 2vw; bottom: auto; top: 14vh; width: min(20vw, 260px); }
+/* candle */
+.candle { position: absolute; left: 58%; bottom: 4%; width: 64px; }
+.candle svg { width: 100%; height: auto; display: block; overflow: visible; }
+.candle__glow { position: absolute; left: 50%; top: 4%; width: 460px; height: 460px; margin: -230px 0 0 -230px; border-radius: 50%; background: radial-gradient(circle, oklch(0.9 0.12 80 / 0.55), transparent 60%); pointer-events: none; mix-blend-mode: screen; }
+
+/* actors as oval engraved medallions */
+.th__actor img { -webkit-mask: radial-gradient(ellipse 50% 50% at 50% 46%, #000 58%, transparent 100%); mask: radial-gradient(ellipse 50% 50% at 50% 46%, #000 58%, transparent 100%); }
+
+/* props: Bern */
+.bern__book { position: absolute; right: 12vw; top: 16vh; width: min(24vw, 280px); margin: 0; padding: 16px; background: var(--paper-2); box-shadow: 0 30px 50px -30px oklch(0.2 0.02 260 / 0.6); transform: rotate(6deg); }
+.bern__book img { width: 100%; mix-blend-mode: multiply; }
+.bern__letters { position: absolute; inset: 0; pointer-events: none; }
+.env { position: absolute; width: 66px; }
+.env svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 8px 8px oklch(0.2 0.02 260 / 0.25)); }
+.bern__stamp { position: absolute; left: 50%; top: 36%; width: 170px; height: 170px; margin: -85px 0 0 -85px; border-radius: 50%; display: grid; place-items: center; align-content: center; color: var(--hazard-ink); border: 4px double var(--hazard-ink); background: color-mix(in oklch, var(--hazard) 20%, var(--paper-2)); font: 600 3.2rem / 1 var(--latin); }
+.bern__stamp small { font: 600 var(--step--1) / 1 var(--serif); }
+
+/* props: desk */
+.desk { position: relative; width: min(980px, 94vw); height: min(62vh, 560px); }
+.desk__sheet { position: absolute; left: 6%; top: 0; width: min(430px, 56%); padding: 18px 20px 26px; background: var(--paper-2); box-shadow: 0 2px 4px oklch(0.2 0.02 260 / 0.15), 0 40px 60px -36px oklch(0.2 0.02 260 / 0.6); transform: rotate(-2deg); }
+.desk__hand { width: 100%; height: auto; display: block; }
+.hw { fill: none; stroke: oklch(0.34 0.05 50); stroke-width: 1.2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.desk__sig svg { width: 92%; height: auto; display: block; overflow: visible; clip-path: inset(0 100% 0 0); }
+.desk__sig text { font: italic 400 46px var(--latin); fill: oklch(0.34 0.05 50); }
+.desk__wit { width: 100%; height: auto; display: block; margin-top: 4px; }
+.desk__quill { position: absolute; left: 64%; top: 12%; width: 86px; transform-origin: 6% 96%; filter: drop-shadow(0 10px 8px oklch(0.2 0.02 260 / 0.3)); }
+.desk__ink { position: absolute; left: 74%; bottom: 8%; width: 70px; }
+.desk__seal { position: absolute; right: -14px; bottom: 18px; width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; color: oklch(0.88 0.05 40); font: italic 600 1.6rem / 1 var(--latin); background: radial-gradient(circle at 35% 30%, oklch(0.64 0.17 36), oklch(0.44 0.15 30)); box-shadow: inset 0 0 0 6px oklch(0.52 0.16 32), 0 8px 12px -6px oklch(0.2 0.02 260 / 0.6); }
+
+@media (max-width: 900px) {
+  .scene-card { grid-template-columns: 1fr; }
+  .scene-card__img { min-height: 220px; }
+  .th__actor { width: 40vw; bottom: auto; top: 14vh; opacity: 0; }
+  .th__props { padding-bottom: 26vh; }
+  .bern__book { width: 34vw; right: 6vw; top: 22vh; }
+  .desk { height: 52vh; }
+  .labset { width: 140vw; }
+  .labset__credit { bottom: calc(9vh + 190px); white-space: normal; width: 80vw; text-align: center; }
+  .desk__sheet { width: 70%; }
+  .th__hint { display: none; }
+  .th__cap, .th__box, .th__choices { bottom: calc(9vh + 14px); }
+}
 </style>
 </head>
 <body>
@@ -535,6 +695,7 @@ sub { font-size: 0.62em; line-height: 0; }
     <span class="loader__bar"><i></i></span>
     <span class="loader__cap">Alfred Nobel, 1833 – 1896</span>
   </div>
+  <svg class="loader__drop" viewBox="0 0 200 250" aria-hidden="true"><path d="M100 8 C 96 40, 28 112, 28 164 A 72 72 0 0 0 172 164 C 172 112, 104 40, 100 8 Z"/><ellipse cx="72" cy="150" rx="12" ry="24" transform="rotate(18 72 150)"/></svg>
 </div>
 <div class="progress" aria-hidden="true"></div>
 <div class="cursor" aria-hidden="true"><i></i></div>
@@ -553,13 +714,21 @@ sub { font-size: 0.62em; line-height: 0; }
   <div class="panel__card" role="dialog" aria-modal="true" aria-labelledby="panel-title">
     <button class="hud__btn panel__close" type="button" aria-label="关闭"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15" stroke="currentColor" stroke-width="1.5"/></svg></button>
     <h2 id="panel-title">宝石匣</h2>
-    <p class="panel__hint">每一章末尾有一道关卡题。答对得到一颗宝石，下一章随之解锁。进度只保存在这台设备的浏览器里。</p>
+    <p class="panel__hint">每一章末尾有一道关卡题。答对得到一颗宝石，下一关随之打开；正文随时都能读。进度只保存在这台设备的浏览器里。</p>
     <ul class="panel__list"></ul>
     <div class="panel__acts">
-      <button class="btn" type="button" data-act="demo" aria-pressed="false">演示模式：全部解锁</button>
+      <button class="btn" type="button" data-act="open" aria-pressed="false">演示模式：七关全部打开</button>
       <button class="btn btn--ghost" type="button" data-act="reset">清空进度，重新开始</button>
     </div>
   </div>
+</div>
+<div class="ceremony" hidden>
+  <div class="ce__rays"></div>
+  <div class="ce__stage"><div class="ce__gem"></div><span class="ce__glint"><span class="ce__shine"></span></span></div>
+  <p class="ce__k">获得宝石</p>
+  <p class="ce__name"></p>
+  <p class="ce__note"></p>
+  <p class="ce__skip">点击任意处收下</p>
 </div>
 <div class="toast" role="status" aria-live="polite"></div>
 <div class="flash" aria-hidden="true"></div>
@@ -581,7 +750,7 @@ sub { font-size: 0.62em; line-height: 0; }
 
 <!-- I. The obituary -->
 <header class="hero inset gutter grid12" id="ch1" data-chapter="0">
-  <figure class="plate hero__portrait" data-in>
+  <figure class="plate hero__portrait tilt tilt--plain" data-in>
     <div class="frame"><img class="eng" src="assets/ludvig.webp" alt="路德维希·诺贝尔的肖像，铜版线刻效果" width="1005" height="1300"></div>
     <span class="ring" aria-hidden="true"></span>
     <figcaption>路德维希·诺贝尔，<span class="latin">1831 – 1888</span>。1888 年 4 月死于戛纳的，是他。</figcaption>
@@ -609,10 +778,20 @@ sub { font-size: 0.62em; line-height: 0; }
   <p class="name__thesis">化学家、发明家、实业家，一生取得 <span class="latin">355</span> 项专利。1895 年，他在巴黎写下最后一份遗嘱，把绝大部分财产留给<em>“为人类带来最大益处”</em>的人。</p>
 </section>
 
-<section class="talk-sec inset gutter" data-talk="obit" aria-label="情景对话：读讣告"></section>
+<section class="scene-wrap inset gutter" aria-label="情景：清晨的讣告">
+  <article class="scene-card tilt" data-scene="obit">
+    <div class="scene-card__img"><img class="eng" src="assets/alfred-profile.webp" alt="" loading="lazy"></div>
+    <div class="scene-card__body">
+      <p class="label"><span class="latin">Scene I</span>　情景剧场</p>
+      <h2>清晨的讣告</h2>
+      <p>1888 年 4 月，巴黎。报纸送到他的早餐桌上，讣告栏里印着他自己的名字。你就坐在他对面，看他怎么读这份报纸。</p>
+      <button type="button" class="scene-card__go"><span class="scene-card__play" aria-hidden="true"></span><span>进入情景</span></button>
+      <p class="scene-card__done">已看过，可以换个选择再看一次</p>
+    </div>
+  </article>
+</section>
 <section class="quest inset gutter" data-quest="1" aria-labelledby="q1-t"></section>
 
-<div class="chap-lock" data-lock="2">
 <!-- II. The liquid -->
 <section class="oil" id="ch2" data-chapter="1" data-orange aria-labelledby="oil-title">
   <div class="inset gutter">
@@ -630,7 +809,18 @@ sub { font-size: 0.62em; line-height: 0; }
     </div>
   </div>
 
-  <section class="talk-sec inset gutter" data-talk="lab" aria-label="情景：实验台"></section>
+<section class="scene-wrap inset gutter" style="padding-block: clamp(70px, 11vh, 130px) 0" aria-label="情景：实验台">
+  <article class="scene-card tilt" data-scene="lab">
+    <div class="scene-card__img"><img class="eng" src="assets/factory-hall.webp" alt="" loading="lazy"></div>
+    <div class="scene-card__body">
+      <p class="label"><span class="latin">Scene II</span>　情景剧场</p>
+      <h2>实验台</h2>
+      <p>1864 年夏，斯德哥尔摩海勒内堡。桌上有一瓶刚配好的硝化甘油。你可以把它拿起来、摇一摇，或者放到火上。</p>
+      <button type="button" class="scene-card__go"><span class="scene-card__play" aria-hidden="true"></span><span>进入情景</span></button>
+      <p class="scene-card__done">已看过，可以换个选择再看一次</p>
+    </div>
+  </article>
+</section>
 
   <figure class="plate helene">
     <div class="helene__img"><img class="eng" src="assets/heleneborg.webp" alt="斯德哥尔摩海勒内堡的旧屋，铜版线刻效果" width="1312" height="950" loading="lazy" data-parallax="-8"></div>
@@ -662,9 +852,7 @@ sub { font-size: 0.62em; line-height: 0; }
 </section>
 
 <section class="quest inset gutter" data-quest="2" aria-labelledby="q2-t"></section>
-</div>
 
-<div class="chap-lock" data-lock="3">
 <!-- III. The earth -->
 <section class="scope" id="ch3" data-chapter="2" aria-labelledby="scope-title">
   <div class="scope__stage">
@@ -695,9 +883,7 @@ sub { font-size: 0.62em; line-height: 0; }
 </section>
 
 <section class="quest inset gutter" data-quest="3" aria-labelledby="q3-t"></section>
-</div>
 
-<div class="chap-lock" data-lock="4">
 <!-- IV. Factories and peace -->
 <section class="works" id="ch4" data-chapter="3" aria-labelledby="works-title">
   <div class="works__head inset gutter grid12">
@@ -727,7 +913,18 @@ sub { font-size: 0.62em; line-height: 0; }
   </div>
 </section>
 
-<section class="talk-sec inset gutter" data-talk="bertha" style="background: var(--kiesel)" aria-label="情景对话：伯尔尼，1892"></section>
+<section class="scene-wrap inset gutter" style="background: var(--kiesel)" aria-label="情景：伯尔尼的信">
+  <article class="scene-card tilt" data-scene="bern">
+    <div class="scene-card__img"><img class="eng" src="assets/waffen-nieder.webp" alt="" loading="lazy"></div>
+    <div class="scene-card__body">
+      <p class="label"><span class="latin">Scene III</span>　情景剧场</p>
+      <h2>伯尔尼的信</h2>
+      <p>1892 年 8 月，伯尔尼国际和平大会。你扮演贝尔塔·冯·苏特纳，去说服这位炸药大王支持和平。</p>
+      <button type="button" class="scene-card__go"><span class="scene-card__play" aria-hidden="true"></span><span>进入情景</span></button>
+      <p class="scene-card__done">已看过，可以换个选择再看一次</p>
+    </div>
+  </article>
+</section>
 <section class="peace inset gutter grid12" aria-labelledby="peace-q">
   <figure class="plate">
     <div class="frame"><img class="eng" src="assets/waffen-nieder.webp" alt="贝尔塔·冯·苏特纳《放下武器！》1893年版扉页" width="805" height="1300" loading="lazy"></div>
@@ -755,10 +952,19 @@ sub { font-size: 0.62em; line-height: 0; }
 </section>
 
 <section class="quest inset gutter" data-quest="4" aria-labelledby="q4-t"></section>
-</div>
 
-<div class="chap-lock" data-lock="5">
-<section class="talk-sec inset gutter" data-talk="will" aria-label="情景对话：签署遗嘱"></section>
+<section class="scene-wrap inset gutter" aria-label="情景：最后一个签名">
+  <article class="scene-card tilt" data-scene="will">
+    <div class="scene-card__img"><img class="eng" src="assets/alfred-seated.webp" alt="" loading="lazy"></div>
+    <div class="scene-card__body">
+      <p class="label"><span class="latin">Scene IV</span>　情景剧场</p>
+      <h2>最后一个签名</h2>
+      <p>1895 年 11 月 27 日，巴黎。四页遗嘱已经写好，只差一个签名。先回答他一个问题，再替他签下名字。</p>
+      <button type="button" class="scene-card__go"><span class="scene-card__play" aria-hidden="true"></span><span>进入情景</span></button>
+      <p class="scene-card__done">已看过，可以换个选择再看一次</p>
+    </div>
+  </article>
+</section>
 <!-- V. The will -->
 <section class="will" id="ch5" data-chapter="4" aria-labelledby="will-title">
   <div class="will__bg" aria-hidden="true"></div>
@@ -793,9 +999,7 @@ sub { font-size: 0.62em; line-height: 0; }
 </section>
 
 <section class="quest inset gutter" data-quest="5" aria-labelledby="q5-t"></section>
-</div>
 
-<div class="chap-lock" data-lock="6">
 <!-- VI. Self-portrait -->
 <section class="self" id="ch6" data-chapter="5" data-dark aria-labelledby="self-title">
   <div class="inset gutter">
@@ -827,9 +1031,7 @@ sub { font-size: 0.62em; line-height: 0; }
 </section>
 
 <section class="quest inset gutter" data-quest="6" aria-labelledby="q6-t"></section>
-</div>
 
-<div class="chap-lock" data-lock="7">
 <!-- VII. 1901 -->
 <section class="first inset gutter" id="ch7" data-chapter="6" aria-labelledby="first-title">
   <div class="first__top grid12">
@@ -843,7 +1045,6 @@ sub { font-size: 0.62em; line-height: 0; }
     </div>
   </div>
   <div class="quest" data-quest="7" aria-labelledby="q7-t" style="background: transparent"></div>
-  <div class="chap-lock" data-lock="8">
   <ol class="laureates">
     <li><b>物理学</b><span class="who">威廉·伦琴</span><span class="why">发现 X 射线</span></li>
     <li><b>化学</b><span class="who">雅各布斯·范托夫</span><span class="why">发现化学动力学定律和溶液渗透压</span></li>
@@ -881,7 +1082,6 @@ sub { font-size: 0.62em; line-height: 0; }
       </div>
     </div>
   </div>
-  </div>
   <footer class="colophon">
     <div>
       <h3>史实</h3>
@@ -889,7 +1089,7 @@ sub { font-size: 0.62em; line-height: 0; }
     </div>
     <div>
       <h3>图像</h3>
-      <p>诺贝尔与路德维希的肖像、肖像铜章、博福斯火药厂照片来自瑞典国家技术博物馆；温特维肯工厂与海勒内堡照片来自斯德哥尔摩市立博物馆；硅藻图版出自海克尔《自然界的艺术形态》（1904）；《放下武器！》扉页据多伦多大学藏本。均为百年以上的历史图像，照片经程序处理为铜版线刻效果。</p>
+      <p>诺贝尔与路德维希的肖像、肖像铜章、博福斯火药厂照片来自瑞典国家技术博物馆；温特维肯工厂与海勒内堡照片来自斯德哥尔摩市立博物馆；硅藻图版出自海克尔《自然界的艺术形态》（1904）；实验台场景的器物出自拉瓦锡《化学基础论》（1789）图版三，由玛丽－安妮·拉瓦锡雕刻；《放下武器！》扉页据多伦多大学藏本。均为百年以上的历史图像，照片经程序处理为铜版线刻效果。</p>
     </div>
     <div>
       <h3>动画</h3>
@@ -897,14 +1097,16 @@ sub { font-size: 0.62em; line-height: 0; }
     </div>
   </footer>
 </section>
-</div>
 
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrambleTextPlugin.min.js"></script>
 <script src="https://unpkg.com/lenis@1.3.4/dist/lenis.min.js"></script>
+<script src="fx.js"></script>
+<script src="theatre.js"></script>
 <script src="game.js"></script>
 <script>
 (function () {
@@ -989,6 +1191,7 @@ sub { font-size: 0.62em; line-height: 0; }
     imgs.forEach(function (im) { if (im.complete) loaded++; else { im.addEventListener('load', function () { loaded++; }); im.addEventListener('error', function () { loaded++; }); } });
     var count = { v: 0 };
     var countEl = document.querySelector('.loader__count');
+    var loaderEl = document.querySelector('.loader'), hole = { r: 0 };
     var load = gsap.timeline();
     load.to(count, {
       v: 100, duration: 1.5, ease: 'power2.inOut',
@@ -1000,14 +1203,23 @@ sub { font-size: 0.62em; line-height: 0; }
       }
     })
       .set(countEl, { textContent: 100 })
-      .to('.loader__inner', { opacity: 0, y: -12, duration: 0.45, ease: 'power2.in' })
-      .to('.loader__panel--a', { yPercent: -101, duration: 1.05, ease: 'expo.inOut' }, '<0.2')
-      .to('.loader__panel--b', { yPercent: 101, duration: 1.05, ease: 'expo.inOut' }, '<')
+      .to('.loader__inner', { opacity: 0, y: -16, filter: 'blur(6px)', duration: 0.45, ease: 'power2.in' })
+      .fromTo('.loader__drop', { y: -innerHeight * 0.55, scaleY: 1.35, opacity: 1 }, { y: 0, scaleY: 1, duration: 0.6, ease: 'power3.in' }, '-=0.1')
+      .add(function () {
+        var fx = window.NB && NB.fxCanvas ? NB.fxCanvas() : null, cx = innerWidth / 2, cy = innerHeight / 2;
+        if (window.NB && NB.play) NB.play('drop');
+        if (fx) { fx.splash(cx, cy, { color: '#ef861b', n: 70 }); fx.ring(cx, cy, { r0: 10, r1: Math.max(innerWidth, innerHeight), width: 10, life: 1.2 }); }
+        gsap.set('.loader__drop', { opacity: 0 });
+      })
+      .to(hole, { r: 120, duration: 1.25, ease: 'expo.in', onUpdate: function () {
+        var m = 'radial-gradient(circle at 50% 50%, transparent ' + hole.r + 'vmax, #000 ' + (hole.r + 0.4) + 'vmax)';
+        loaderEl.style.webkitMaskImage = m; loaderEl.style.maskImage = m;
+      } })
       .add(hideLoader);
 
     var strike = document.querySelector('.obit__struck path');
     gsap.set(strike, { strokeDasharray: 1, strokeDashoffset: 1 });
-    var intro = gsap.timeline({ defaults: { ease: 'expo.out' }, delay: 1.9 });
+    var intro = gsap.timeline({ defaults: { ease: 'expo.out' }, delay: 2.75 });
     intro
       .fromTo('.hero__portrait .frame', { clipPath: 'circle(0% at 50% 50%)' }, { clipPath: 'circle(72% at 50% 50%)', duration: 1.8, ease: 'expo.inOut' }, 0)
       .fromTo('.hero__portrait img', { scale: 1.35 }, { scale: 1, duration: 2.4 }, 0)
@@ -1025,11 +1237,19 @@ sub { font-size: 0.62em; line-height: 0; }
     gsap.from(['.name__big', '.name__thesis'], { opacity: 0, y: 40, stagger: 0.15, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: '.name', start: 'top 80%' } });
 
     /* image reveals and parallax */
-    gsap.utils.toArray('.young .frame, .peace .frame').forEach(function (fr) {
+    /* plates bleed in like ink: a blot mask grows from the centre */
+    var blots = window.NB && NB.blot ? [NB.blot(7), NB.blot(23), NB.blot(41)] : null;
+    var inkTargets = '.young .frame, .peace .frame, .self__img .print, .medal, .scene-card__img' + (wide ? '' : ', .gallery .frame');
+    gsap.utils.toArray(inkTargets).forEach(function (fr, i) {
+      if (!blots) return;
       var im = fr.querySelector('img');
-      var st = { trigger: fr, start: 'top 85%' };
-      gsap.fromTo(fr, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.6, ease: 'expo.inOut', scrollTrigger: st });
-      gsap.fromTo(im, { scale: 1.25 }, { scale: 1, duration: 2, ease: 'expo.out', scrollTrigger: st });
+      fr.classList.add('is-masked');
+      fr.style.webkitMaskImage = fr.style.maskImage = 'url(' + blots[i % 3] + ')';
+      fr.style.setProperty('--m', '0%');
+      var o = { m: 0 };
+      var tl = gsap.timeline({ scrollTrigger: { trigger: fr, start: 'top 82%' }, onComplete: function () { fr.classList.remove('is-masked'); fr.style.webkitMaskImage = fr.style.maskImage = ''; } });
+      tl.to(o, { m: 420, duration: 2.2, ease: 'power2.in', onUpdate: function () { fr.style.setProperty('--m', o.m + '%'); } });
+      if (im) tl.fromTo(im, { scale: 1.3, filter: 'blur(6px)' }, { scale: 1, filter: 'blur(0px)', duration: 2.4, ease: 'expo.out' }, 0);
     });
     gsap.utils.toArray('[data-parallax]').forEach(function (im) {
       var amt = +(im.getAttribute('data-parallax') || 8);
@@ -1049,6 +1269,16 @@ sub { font-size: 0.62em; line-height: 0; }
 
     /* II b. the explosion, scrubbed frame by frame */
     var vid = document.getElementById('boom-video');
+    /* load the whole file into memory so seeking never waits on the server */
+    (function () {
+      var srcs = Array.prototype.slice.call(vid.querySelectorAll('source'));
+      var mp4 = srcs.filter(function (x) { return /mp4/.test(x.type); })[0], webm = srcs.filter(function (x) { return /webm/.test(x.type); })[0];
+      var pick = mp4 && vid.canPlayType('video/mp4; codecs="avc1.42E01E"') ? mp4 : (webm && vid.canPlayType('video/webm; codecs="vp9"') ? webm : (mp4 || webm));
+      if (!pick || !window.fetch || !window.URL) return;
+      fetch(pick.getAttribute('src')).then(function (r) { if (!r.ok) throw new Error(r.status); return r.blob(); }).then(function (b) {
+        var t = vid.currentTime; vid.src = URL.createObjectURL(b); vid.load(); vid.addEventListener('loadedmetadata', function () { vid.currentTime = t; }, { once: true });
+      }).catch(function () { /* keep streaming sources */ });
+    })();
     var target = 0, shown = 0;
     vid.pause();
     ScrollTrigger.create({
@@ -1170,6 +1400,51 @@ sub { font-size: 0.62em; line-height: 0; }
     gsap.from('.first__head > *', { opacity: 0, y: 30, stagger: 0.12, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: '.first__head', start: 'top 80%' } });
     gsap.from('.laureates li', { opacity: 0, y: 24, stagger: 0.08, duration: 0.9, ease: 'expo.out', scrollTrigger: { trigger: '.laureates', start: 'top 85%' } });
     gsap.from('.first__notes > *, .first__links', { opacity: 0, y: 20, stagger: 0.12, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.first__notes', start: 'top 88%' } });
+
+    /* chapter marks: numeral turns in, the hairline draws */
+    gsap.utils.toArray('.chno').forEach(function (c) {
+      var n = c.querySelector('.chno__n'), t = c.querySelector('.chno__t');
+      var tl = gsap.timeline({ scrollTrigger: { trigger: c, start: 'top 85%' } });
+      tl.fromTo(n, { rotationX: -95, opacity: 0, y: 30, filter: 'blur(8px)', transformPerspective: 600, transformOrigin: '50% 100%' }, { rotationX: 0, opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.4, ease: 'expo.out' })
+        .fromTo(c, { '--line': 0 }, { '--line': 1, duration: 1.2, ease: 'expo.inOut' }, 0.2);
+      if (t && window.ScrambleTextPlugin) tl.from(t, { opacity: 0, duration: 0.6 }, 0.3);
+    });
+    /* dates scramble into place */
+    if (window.ScrambleTextPlugin) {
+      gsap.registerPlugin(ScrambleTextPlugin);
+      gsap.utils.toArray('.oil__copy .date, .helene__card .date, .scope__steps .date').forEach(function (d) {
+        var txt = d.textContent;
+        gsap.to(d, { scrambleText: { text: txt, chars: '0123456789', speed: 0.5, revealDelay: 0.25 }, duration: 1.4, ease: 'none', scrollTrigger: { trigger: d, start: 'top 88%' } });
+      });
+    }
+    /* body copy settles out of a soft blur */
+    gsap.utils.toArray('.hero__foot p, .name__thesis, .works__head p, .route__head p, .first__head > p, .self__after p, .peace__quote .src').forEach(function (p) {
+      gsap.from(p, { opacity: 0, y: 24, filter: 'blur(10px)', duration: 1.3, ease: 'expo.out', scrollTrigger: { trigger: p, start: 'top 90%' } });
+    });
+    /* the orange chapter and the night chapter flood in as ink */
+    if (blots) {
+      [['.oil', 0], ['.self', 2]].forEach(function (pair) {
+        var sec = document.querySelector(pair[0]); if (!sec) return;
+        var o = { m: 18 };
+        sec.style.webkitMaskImage = sec.style.maskImage = 'url(' + blots[pair[1]] + ')';
+        sec.style.webkitMaskRepeat = sec.style.maskRepeat = 'no-repeat';
+        sec.style.webkitMaskPosition = sec.style.maskPosition = '50% 0%';
+        var apply = function () { var v = o.m + 'vmax'; sec.style.webkitMaskSize = sec.style.maskSize = v + ' ' + v; };
+        apply();
+        gsap.to(o, { m: 900, ease: 'power2.in', onUpdate: apply, onComplete: function () { sec.style.webkitMaskImage = sec.style.maskImage = ''; },
+          scrollTrigger: { trigger: sec, start: 'top 95%', end: 'top 5%', scrub: 0.5, onLeaveBack: function () { sec.style.webkitMaskImage = sec.style.maskImage = 'url(' + blots[pair[1]] + ')'; }, onEnter: function () { sec.style.webkitMaskImage = sec.style.maskImage = 'url(' + blots[pair[1]] + ')'; } } });
+      });
+    }
+    /* magnetic buttons */
+    if (fine) {
+      document.querySelectorAll('.btn, .scene-card__go, .route__replay, .hud__btn').forEach(function (b) {
+        var mx = gsap.quickTo(b, 'x', { duration: 0.5, ease: 'power3.out' }), my = gsap.quickTo(b, 'y', { duration: 0.5, ease: 'power3.out' });
+        b.addEventListener('pointermove', function (e) { var r = b.getBoundingClientRect(); mx((e.clientX - r.left - r.width / 2) * 0.28); my((e.clientY - r.top - r.height / 2) * 0.35); });
+        b.addEventListener('pointerleave', function () { mx(0); my(0); });
+      });
+    }
+    /* the hero portrait breathes */
+    gsap.to('.hero__portrait .ring', { scale: 1.025, duration: 3.2, yoyo: true, repeat: -1, ease: 'sine.inOut' });
 
     /* chapter rail: created last so it measures the page after every pin */
     var railLinks = gsap.utils.toArray('.rail a');
