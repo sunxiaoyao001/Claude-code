@@ -152,7 +152,7 @@ sub { font-size: 0.55em; line-height: 0; }
 }
 .hero__name span { display: inline-block; }
 .hero__lede { font-family: var(--serif); font-size: var(--step-1); line-height: 1.7; max-width: 22em; }
-.hero__meta { color: var(--ink-soft); font-size: var(--step--1); letter-spacing: 0.06em; }
+.hero__meta { color: var(--ink-soft); font-size: var(--step--1); letter-spacing: 0.04em; }
 
 .specimen {
   grid-column: 6 / 10;
@@ -340,7 +340,7 @@ sub { font-size: 0.55em; line-height: 0; }
   letter-spacing: -0.02em;
   white-space: nowrap;
 }
-.temp__unit { font-size: 0.32em; font-weight: 700; letter-spacing: 0; margin-left: 0.08em; vertical-align: 0.95em; }
+.temp__unit { font-size: clamp(1.76rem, 0.96rem + 4.16vw, 5.44rem); font-weight: 700; letter-spacing: 0; margin-left: 0.08em; vertical-align: 0.95em; }
 .temp__copy { grid-column: 9 / 13; grid-row: 1; align-self: center; }
 .phase--temp p, .phase--seal p { color: var(--on-herb-soft); }
 
@@ -419,7 +419,7 @@ sub { font-size: 0.55em; line-height: 0; }
 .gift__inner { position: relative; z-index: 1; }
 .gift__quote { grid-column: 1 / 10; font-family: var(--serif); font-weight: 900; font-size: var(--step-3); line-height: 1.35; text-shadow: 0 0 14px var(--paper), 0 0 4px var(--paper); }
 .gift__quote span { display: inline-block; }
-.gift__cite { grid-column: 1 / 9; margin-top: 22px; font-family: var(--serif); color: var(--ink-soft); font-size: var(--step--1); letter-spacing: 0.08em; }
+.gift__cite { grid-column: 1 / 9; margin-top: 22px; font-family: var(--serif); color: var(--ink-soft); font-size: var(--step--1); letter-spacing: 0.04em; }
 .gift__impact { grid-column: 1 / 7; margin-top: clamp(48px, 9vh, 96px); font-size: var(--step-1); line-height: 1.85; max-width: 26em; }
 .gift__links { grid-column: 1 / 9; margin-top: 32px; display: flex; flex-wrap: wrap; gap: 12px 32px; font-family: var(--serif); }
 .gift__links a { font-weight: 700; }
@@ -457,6 +457,7 @@ sub { font-size: 0.55em; line-height: 0; }
   .phase--text .classic__copy { grid-column: 1 / -1; grid-row: 1; }
   .thermo { display: none; }
   .temp { grid-column: 1 / -1; grid-row: 1; font-size: clamp(4.5rem, 26vw, 8rem); }
+  .temp__unit { font-size: clamp(1.44rem, 8.3vw, 2.56rem); }
   .temp__copy { grid-column: 1 / -1; grid-row: 2; margin-top: 18px; }
   .phase--seal .seal-wrap { grid-column: 1 / -1; justify-self: start; }
   .phase--seal .seal__copy { grid-column: 1 / -1; margin-top: 32px; }
